@@ -8,7 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./modules/system.nix
+      ./modules/system-opts.nix
       ./modules/app-opts.nix
       ./modules/users.nix
       ./modules/gnome.nix
