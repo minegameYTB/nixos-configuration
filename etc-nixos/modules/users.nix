@@ -19,6 +19,7 @@
      testdisk
     #tree
      discord
+     spotify
      vlc
      libreoffice-fresh
      prismlauncher
