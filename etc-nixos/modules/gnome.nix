@@ -57,9 +57,9 @@
           theme = true;
           window-demands-attention-focus = true;
         };
-      };
-    }
-  ];
-};
+       };
+     }
+   ];
+ };
 
 }
