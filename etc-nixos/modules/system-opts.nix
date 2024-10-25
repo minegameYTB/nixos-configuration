@@ -54,12 +54,5 @@
  services.xserver.excludePackages = with pkgs; [
    xterm
  ];
-
- ### Exclude some Gnome default packages
- environment.gnome.excludePackages = with pkgs; [
-   gnome.geary  ### Geary
-   gnome-tour   ### Gnome Tour
-   epiphany     ### Gnome Web
- ];
-
+ 
 }
