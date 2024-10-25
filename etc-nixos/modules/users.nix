@@ -1,7 +1,6 @@
 { config, pkgs, ...  }:
 
 {
-
  ### Fish root
  users.users.root.shell = pkgs.fish;
  

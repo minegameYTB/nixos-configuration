@@ -1,7 +1,6 @@
 { config, pkgs, ...  }:
 
 {
-
  ### Gnome Extensions
   environment.systemPackages = with pkgs.gnomeExtensions; [
     appindicator

@@ -1,7 +1,6 @@
 { config, pkgs, ...  }:
 
 {
-
  ### Programs with options
  ### Firefox
  programs.firefox.enable = true;
@@ -32,15 +31,6 @@
    set autoindent
    set linenumbers 
  '';
-
- ### Virtualisation
- programs.virt-manager.enable = true;
- 
- virtualisation = {
-   spiceUSBRedirection.enable = true;
-   libvirtd.enable = true;
-   libvirtd.qemu.swtpm.enable = true;
- };
 
  ### NerdFonts
  fonts.packages = with pkgs; [
