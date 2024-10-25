@@ -10,10 +10,7 @@
     blur-my-shell
     logo-menu
     just-perfection
-    search-light
     hide-activities-button
-
-  
   ];
 
  ### Exclude some Gnome default packages

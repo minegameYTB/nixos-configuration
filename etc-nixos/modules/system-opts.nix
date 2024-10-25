@@ -41,25 +41,5 @@
  ### Flatpak
  services.flatpak.enable = true;
  xdg.portal.enable = true;
-    
- systemd.services.flatpak-repo = {
-   wantedBy = [ "multi-user.target" ];
-   path = [ pkgs.flatpak ];
-   script = ''
-   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-   '';
- };
-
- ### Exclude Xterm
- services.xserver.excludePackages = with pkgs; [
-   xterm
- ];
-
- ### Exclude some Gnome default packages
- environment.gnome.excludePackages = with pkgs; [
-   gnome.geary  ### Geary
-   gnome-tour   ### Gnome Tour
-   epiphany     ### Gnome Web
- ];
-
+ 
 }

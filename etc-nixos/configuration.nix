@@ -5,14 +5,15 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./modules/system-opts.nix
-      ./modules/app-opts.nix
-      ./modules/users.nix
-      ./modules/gnome.nix
-      ./modules/system-pkgs.nix
+  imports = 
+    [ ./hardware-configuration.nix ### Hardware configuration file (Include the results of the hardware scan.)
+      ./modules/system-opts.nix    ### System options
+      ./modules/app-opts.nix       ### Program with options
+      ./modules/users.nix          ### User settings
+      ./modules/gnome.nix          ### Related to Gnome
+      ./modules/system-pkgs.nix    ### System packages
+      ./modules/systemd.nix        ### Systemd services
+      ./modules/x11.nix            ### Related to x11 (Graphical server)
     ];
 
 ###----------------------------------------------------------------
@@ -57,19 +58,6 @@
     LC_PAPER = "fr_FR.UTF-8";
     LC_TELEPHONE = "fr_FR.UTF-8";
     LC_TIME = "fr_FR.UTF-8";
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "fr";
-    variant = "";
   };
 
   # Configure console keymap
