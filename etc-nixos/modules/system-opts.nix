@@ -41,5 +41,14 @@
  ### Flatpak
  services.flatpak.enable = true;
  xdg.portal.enable = true;
- 
+
+ ### tlp
+ services.power-profiles-daemon.enable = false;
+ services.tlp = {
+   enable = true;
+   settings = {
+     CPU_SCALING_GOVERNOR_ON_AC = "performance";
+     CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+   };
+ }; 
 }

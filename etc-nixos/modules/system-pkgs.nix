@@ -13,7 +13,6 @@
     nvd
     flatpak
     ntfs3g
-    tlp
     ptyxis
     git
     python3
