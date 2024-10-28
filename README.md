@@ -1,4 +1,4 @@
-# Hello :)
+# Nixos-configuration
 
 how to install this flake: 
 
