@@ -22,7 +22,7 @@
         system = "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
-           nixosConfEditor.default
+           (nixosConfEditor.default {})
         ];
       };
     };
