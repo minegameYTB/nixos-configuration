@@ -5,7 +5,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixosConfEditor.url = "github:snowfallorg/nixos-conf-editor";
 
     # use the following for unstable:
     # nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -22,7 +21,6 @@
         system = "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
-           (nixosConfEditor.default {})
         ];
       };
     };
