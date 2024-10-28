@@ -15,7 +15,6 @@
     ntfs3g
     ptyxis
     git
-    python3
     virt-viewer
     gnome.gnome-software
     gnome.gnome-tweaks
