@@ -1,3 +1,5 @@
+### (Flake created with https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users#org81dbd1d)
+
 {
   description = "A flake with my configuration (and soon a pkgs repository)";
 
