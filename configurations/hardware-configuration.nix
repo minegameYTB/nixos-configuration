@@ -32,13 +32,13 @@
   fileSystems."/mnt/DATA" =
     { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
       fsType = "btrfs";
-      options = [ "subvol=@data" ];
+      options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" ];
     };
 
   fileSystems."/mnt/DATA/Games" =
     { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
       fsType = "btrfs";
-      options = [ "subvol=@games" ];
+      options = [ "subvol=@games" "nofail" "noatime" ];
     };
 
   swapDevices = [ ];
