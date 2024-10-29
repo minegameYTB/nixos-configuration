@@ -12,7 +12,7 @@
    initialPassword = "nixos";
    shell = pkgs.fish;
    packages = with pkgs; [
-     thunderbird
+    #thunderbird
      fastfetch
      nmon
      adw-gtk3
