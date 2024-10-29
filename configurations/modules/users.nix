@@ -30,6 +30,7 @@
      bat
      bottles
      localsend
+     gitg
      gnome-extension-manager
    ];
  };
