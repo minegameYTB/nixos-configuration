@@ -30,7 +30,7 @@
      grub.device = "nodev";
      grub.efiSupport = true;
      grub.configurationLimit = 6;
-     grub.useOSProber = true;
+    #grub.useOSProber = true;
      efi.efiSysMountPoint = "/boot/efi";
   ### Systemd-boot
      #systemd-boot.enable = true;
