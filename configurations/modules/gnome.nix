@@ -10,6 +10,7 @@
     logo-menu
     just-perfection
     hide-activities-button
+    avatar
   ];
 
  ### Exclude some Gnome default packages
