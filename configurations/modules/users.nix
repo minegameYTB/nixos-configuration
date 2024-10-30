@@ -14,21 +14,16 @@
    packages = with pkgs; [
     #thunderbird
      fastfetch
-     nmon
      adw-gtk3
-     testdisk
-    #tree
      discord
      spotify
      vlc
      libreoffice-fresh
      prismlauncher
-     vscode-fhs
-     blender
+    #vscode-fhs
      rpi-imager
      lsd
      bat
-     bottles
      localsend
      gitg
      gnome-extension-manager
