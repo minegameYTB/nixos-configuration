@@ -18,7 +18,7 @@
     lib = nixpkgs.lib;
   in {
     nixosConfigurations = {
-      desktop = lib.nixosSystem {
+      hp = lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
