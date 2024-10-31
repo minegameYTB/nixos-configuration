@@ -12,6 +12,7 @@
       ./modules/users.nix          ### User settings
       ./modules/gnome.nix          ### Related to Gnome
       ./modules/system-pkgs.nix    ### System packages
+      ./modules/power-mgmt.nix     ### For laptop battery life
       ./modules/systemd.nix        ### Systemd services
       ./modules/x11.nix            ### Related to x11 (Graphical server)
       ./modules/vm-host.nix        ### To add qemu/kvm as an desktop hypervisor
