@@ -27,7 +27,7 @@
         ];
       };
     };
-    nixosConfiguration = {
+    nixosConfigurations = {
       hp-240 = lib.nixosSystem {
         system = system;
         modules = [
