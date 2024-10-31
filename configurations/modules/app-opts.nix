@@ -4,22 +4,6 @@
  ### Programs with options
  ### Firefox
  programs.firefox.enable = true;
-
- ### Fish
- programs.fish = {
-   enable = true;
-   shellAliases = {
-     ls = "lsd";
-     cat = "bat";
-     nix = "nix -v";
-     gs = "git status";
-     gc = "git commit";
-     gadd = "git add";
-     gpush = "git push";
-     gpull = "git pull";
-     ".." = "cd ..";
-   };
-  };
   
  ### Steam
  programs.steam = {
