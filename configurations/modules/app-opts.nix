@@ -6,8 +6,19 @@
  programs.firefox.enable = true;
 
  ### Fish
- programs.fish.enable = true; 
-
+ programs.fish = {
+   enable = true;
+   shellAliases = {
+     ls = "lsd";
+     cat = "bat";
+     nix = "nix -v";
+     gs = "git status";
+     gc = "git commit";
+     gadd = "git add";
+     ".." = "cd ..";
+   };
+  };
+  
  ### Steam
  programs.steam = {
    enable = true;
