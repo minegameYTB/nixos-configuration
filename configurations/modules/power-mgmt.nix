@@ -2,8 +2,8 @@
 
 {
  ### Scheduling cpu cycle
- services.system76.scheduler.settings.cfsProfiles.enable = true;
-
+ services.system76-scheduler.settings.cfsProfiles.enable = true;
+ 
  ### tlp services
  services.tlp = {
    enable = true;
