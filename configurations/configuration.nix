@@ -15,7 +15,7 @@
       ./modules/systemd.nix        ### Systemd services
       ./modules/x11.nix            ### Related to x11 (Graphical server)
 
-      ./modules/power-mgmt.nix     ### Related to power management 
+     #./modules/power-mgmt.nix     ### Related to power management 
                                    ### (for laptop, disable this if you don't need it)
 
       ./modules/vm-host.nix        ### To add qemu/kvm as an desktop hypervisor
