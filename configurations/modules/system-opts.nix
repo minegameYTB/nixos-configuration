@@ -19,7 +19,7 @@
 
  boot.kernel.sysctl = { "vm.swappiness" = 20; };
 
- boot.kernelPackages = pkgs.linuxPackages_xanmod;
+ boot.kernelPackages = pkgs.linuxPackages_xanmod_stable;
  
  ### Nix GC
  nix.settings.auto-optimise-store = true;
