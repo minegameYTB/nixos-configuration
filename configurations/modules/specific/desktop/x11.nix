@@ -18,5 +18,8 @@
  services.xserver.excludePackages = with pkgs; [
    xterm
  ];
+ 
+# Enable touchpad support (enabled default in most desktopManager).
+# services.xserver.libinput.enable = true;
 
 }

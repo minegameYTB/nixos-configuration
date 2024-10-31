@@ -12,20 +12,10 @@
       ./modules/common/system-pkgs.nix    ### System packages
       ./modules/common/systemd.nix        ### Systemd services
       ./modules/common/timezone.nix       ### Timezone
+      ./modules/common/security.nix       ### Security
     ];
 
 ###----------------------------------------------------------------
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
