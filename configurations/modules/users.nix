@@ -25,7 +25,7 @@
      lsd
      bat
      localsend
-     bottle
+     bottles
      gitg
      gnome-extension-manager
    ];
