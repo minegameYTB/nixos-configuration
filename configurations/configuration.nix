@@ -9,7 +9,7 @@
     [ ./modules/common/bootloader.nix     ### Bootloader configuration
       ./modules/common/system-opts.nix    ### System options
       ./modules/common/users.nix          ### User settings
-      ./modules/comon/system-pkgs.nix     ### System packages
+      ./modules/common/system-pkgs.nix     ### System packages
       ./modules/common/systemd.nix        ### Systemd services
     ];
 
