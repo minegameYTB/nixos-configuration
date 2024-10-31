@@ -2,7 +2,7 @@
 
 {
  ### Import nix expression for hp-240
- import = 
+ imports = 
    [ ../configurations/hardware-configuration/hp-240.nix          ### Hardware configuration file (Include the results of the hardware scan.)
      ../configurations/modules/app-opts/hp-240.nix                ### Programs with options
      ../configurations/modules/networking/hp-240.nix              ### Related to network
