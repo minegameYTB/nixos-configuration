@@ -16,12 +16,23 @@
   outputs = { self, nixpkgs, ... }: 
   let
     lib = nixpkgs.lib;
+    system = "x86_64-linux";
   in {
     nixosConfigurations = {
-      hp = lib.nixosSystem {
-        system = "x86_64-linux";
+      hp-probook = lib.nixosSystem {
+        system = system;
         modules = [
           ./configurations/configuration.nix
+          ./configurations/hp-probook-profile.nix
+        ];
+      };
+    };
+    nixosConfiguration = {
+      hp-240 = lib.nixosSystem {
+        system = system;
+        modules = [
+          ./configurations/configuration.nix
+          ./configurations/hp-240-profile.nix
         ];
       };
     };
