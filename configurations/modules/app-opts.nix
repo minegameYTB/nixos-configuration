@@ -15,6 +15,8 @@
      gs = "git status";
      gc = "git commit";
      gadd = "git add";
+     gup = "git push";
+     gdo = "git pull";
      ".." = "cd ..";
    };
   };
