@@ -1,4 +1,4 @@
-{ config, ... }
+{ config, ... }:
 
 {
  ### Import nix expression for hp-240
