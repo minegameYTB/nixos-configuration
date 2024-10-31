@@ -6,36 +6,15 @@
 
 {
   imports = 
-    [ ./hardware-configuration.nix ### Hardware configuration file (Include the results of the hardware scan.)
-      ./modules/system-opts.nix    ### System options
-      ./modules/app-opts.nix       ### Program with options
-      ./modules/users.nix          ### User settings
-      ./modules/gnome.nix          ### Related to Gnome
-      ./modules/system-pkgs.nix    ### System packages
-      ./modules/power-mgmt.nix     ### For laptop battery life
-      ./modules/systemd.nix        ### Systemd services
-      ./modules/x11.nix            ### Related to x11 (Graphical server)
-      ./modules/vm-host.nix        ### To add qemu/kvm as an desktop hypervisor
-     #./modules/vm-guest.nix       ### Optionnal (add support for qemu/kvm guest)
-      ./modules/networking.nix     ### Related to network
+    [ ./modules/common/bootloader.nix     ### Bootloader configuration
+      ./modules/common/system-opts.nix    ### System options
+      ./modules/common/users.nix          ### User settings
+      ./modules/comon/system-pkgs.nix     ### System packages
+      ./modules/common/systemd.nix        ### Systemd services
     ];
 
 ###----------------------------------------------------------------
   
-  # Bootloader
-   boot.loader = {
-     grub.enable = true;
-     grub.device = "nodev";
-     grub.efiSupport = true;
-     grub.configurationLimit = 6;
-    #grub.useOSProber = true;
-     efi.efiSysMountPoint = "/boot/efi";
-  ### Systemd-boot
-     #systemd-boot.enable = true;
-     efi.canTouchEfiVariables = true;
-     #systemd-boot.configurationLimit = 6;
-   };  
-
   # Set your time zone.
   time.timeZone = "Europe/Paris";
 
