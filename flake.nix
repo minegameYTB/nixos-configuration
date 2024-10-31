@@ -23,7 +23,7 @@
         system = system;
         modules = [
           ./configurations/configuration.nix
-          ./configurations/hp-probook-profile.nix
+          ./profiles/hp-probook-profile.nix
         ];
       };
     };
@@ -32,7 +32,7 @@
         system = system;
         modules = [
           ./configurations/configuration.nix
-          ./configurations/hp-240-profile.nix
+          ./profiles/hp-240-profile.nix
         ];
       };
     };
