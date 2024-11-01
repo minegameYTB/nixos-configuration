@@ -15,6 +15,8 @@
     ntfs3g
     ptyxis
     git
+    lsd
+    bat
     virt-viewer
     gnome.gnome-software
     gnome.gnome-tweaks
