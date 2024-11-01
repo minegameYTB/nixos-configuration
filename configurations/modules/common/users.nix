@@ -25,8 +25,6 @@
      prismlauncher
     #vscode-fhs
      rpi-imager
-     lsd
-     bat
      localsend
      bottles
      gitg
