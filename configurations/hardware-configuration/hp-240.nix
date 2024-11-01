@@ -8,37 +8,39 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "sd_mod" "sr_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "sd_mod" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/c1cc3350-03b6-441d-ba62-41dec621e3be";
-      fsType = "ext4";
+    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
+      fsType = "btrfs";
+      options = [ "subvol=@" "compress=zstd:10" ];
+    };
+
+  fileSystems."/nix" =
+    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
+      fsType = "btrfs";
+      options = [ "subvol=@nix" "compress=zstd:10" ];
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/4755943e-193e-49b2-9de9-44b85cc8aaa3";
-      fsType = "ext4";
+    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
+      fsType = "btrfs";
+      options = [ "subvol=@home" "compress=zstd:10" ];
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
+      fsType = "btrfs";
+      options = [ "subvol=@boot" "compress=zstd:10" ];
     };
 
   fileSystems."/boot/efi" =
-    { device = "/dev/disk/by-uuid/629E-7FC7";
+    { device = "/dev/disk/by-uuid/AF65-ACF0";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
-    };
-
-  fileSystems."/mnt/DATA" =
-    { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
-      fsType = "btrfs";
-      options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
-    };
-
-  fileSystems."/mnt/DATA/Games" =
-    { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
-      fsType = "btrfs";
-      options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
     };
 
   swapDevices = [ ];
@@ -48,8 +50,9 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.virbr0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
