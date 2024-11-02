@@ -45,7 +45,7 @@
  services.flatpak.enable = true;
  xdg.portal.enable = true;
  
-  ### Fish
+ ### Fish
  programs.fish = {
    enable = true;
    shellAliases = {
@@ -61,4 +61,10 @@
    };
   };
 
+ ### Nix index
+ programs.nix-index = {
+   enable = true;
+   enableFishIntegration = true;
+ };
+ 
 }
