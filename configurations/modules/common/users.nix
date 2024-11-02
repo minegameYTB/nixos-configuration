@@ -26,6 +26,7 @@
     #vscode-fhs
      rpi-imager
      localsend
+     lutris
      bottles
      gitg
      gnome-extension-manager
