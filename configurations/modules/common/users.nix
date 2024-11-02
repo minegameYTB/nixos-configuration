@@ -25,6 +25,8 @@
      prismlauncher
     #vscode-fhs
      rpi-imager
+     lsd
+     bat
      localsend
      lutris
      bottles
