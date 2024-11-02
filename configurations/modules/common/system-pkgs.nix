@@ -16,6 +16,8 @@
     ptyxis
     git
     virt-viewer
+    bat
+    lsd
     gnome.gnome-software
     gnome.gnome-tweaks
     gparted
