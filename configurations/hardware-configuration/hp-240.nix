@@ -8,33 +8,19 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
-      fsType = "btrfs";
-      options = [ "subvol=@" "compress=zstd:10" ];
-    };
-
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
-      fsType = "btrfs";
-      options = [ "subvol=@nix" "compress=zstd:10" ];
+    { device = "/dev/disk/by-uuid/afbf1afc-a7cd-4308-996d-8f2ff837a626";
+      fsType = "ext4";
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
-      fsType = "btrfs";
-      options = [ "subvol=@home" "compress=zstd:10" ];
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/7ac9fa7b-a250-49e3-bc9f-8796d2f40404";
-      fsType = "btrfs";
-      options = [ "subvol=@boot" "compress=zstd:10" ];
+    { device = "/dev/disk/by-uuid/f0d1dad1-fd3b-4f1f-8ee5-9b6dc1b0ca75";
+      fsType = "ext4";
     };
 
   fileSystems."/boot/efi" =
@@ -51,7 +37,6 @@
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
-  # networking.interfaces.virbr0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
