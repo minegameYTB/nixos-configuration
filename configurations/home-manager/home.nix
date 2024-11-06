@@ -23,9 +23,8 @@
     discord
     spotify
     vlc
-    libreoffice-fresh
+    libreoffice
     prismlauncher
-   #vscode-fhs
     rpi-imager
     localsend
     gitg
@@ -69,4 +68,11 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  ### Configure git
+  programs.git = {
+    enable = true;
+    userName  = "Minegame YTB";
+    userEmail = "53137994+minegameYTB@users.noreply.github.com";
+  };
 }
