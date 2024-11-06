@@ -5,7 +5,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # use the following for unstable:
     # nixpkgs.url = "nixpkgs/nixos-unstable";
 
@@ -13,7 +16,7 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = { self, nixpkgs, ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -24,6 +27,12 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./home-manager/home.nix;
+          }
         ];
       };
     };
