@@ -14,22 +14,6 @@
    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
    initialPassword = "nixos";
    shell = pkgs.fish;
-   packages = with pkgs; [
-    #thunderbird
-     fastfetch
-     adw-gtk3
-     discord
-     spotify
-     vlc
-     libreoffice-fresh
-     prismlauncher
-    #vscode-fhs
-     rpi-imager
-     localsend
-     lutris
-     gitg
-     gnome-extension-manager
-   ];
  };
 
 }

@@ -18,7 +18,18 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    
+    fastfetch
+    adw-gtk3
+    discord
+    spotify
+    vlc
+    libreoffice-fresh
+    prismlauncher
+   #vscode-fhs
+    rpi-imager
+    localsend
+    lutris
+    gitg
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
