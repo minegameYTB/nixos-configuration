@@ -42,6 +42,12 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
+           home-manager.nixosModules.home-manager
+           {
+             home-manager.useGlobalPkgs = true;
+             home-manager.useUserPackages = true;
+             home-manager.users.minegame = import ./configurations/home-manager/home.nix;
+           }
         ];
       };
     };
