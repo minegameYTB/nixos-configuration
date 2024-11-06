@@ -23,7 +23,7 @@
     discord
     spotify
     vlc
-    libreoffice
+    libreoffice-fresh
     prismlauncher
     rpi-imager
     localsend
