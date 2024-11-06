@@ -14,29 +14,29 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/c1cc3350-03b6-441d-ba62-41dec621e3be";
+    { device = "/dev/disk/by-label/nixos-root";
       fsType = "ext4";
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/4755943e-193e-49b2-9de9-44b85cc8aaa3";
+    { device = "/dev/disk/by-label/nixos-home";
       fsType = "ext4";
     };
 
   fileSystems."/boot/efi" =
-    { device = "/dev/disk/by-uuid/629E-7FC7";
+    { device = "/dev/disk/by-label/EFI";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
   fileSystems."/mnt/DATA" =
-    { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
+    { device = "/dev/disk/by-label/DATA";
       fsType = "btrfs";
       options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
     };
 
   fileSystems."/mnt/DATA/Games" =
-    { device = "/dev/disk/by-uuid/a4bdaf9b-15d0-4418-adec-b70572f00493";
+    { device = "/dev/disk/by-label/DATA";
       fsType = "btrfs";
       options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
     };
