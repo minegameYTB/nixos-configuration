@@ -28,7 +28,6 @@
    #vscode-fhs
     rpi-imager
     localsend
-    lutris
     gitg
   ];
 
