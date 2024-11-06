@@ -22,6 +22,7 @@
     gnome.gnome-tweaks
     gparted
     papirus-icon-theme
+    gnome-extension-manager
   ];
   
 }
