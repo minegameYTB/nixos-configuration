@@ -31,7 +31,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./home-manager/home.nix;
+            home-manager.users.minegame = import ./configurations/home-manager/home.nix;
           }
         ];
       };
