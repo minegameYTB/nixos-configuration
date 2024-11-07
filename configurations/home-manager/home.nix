@@ -29,6 +29,7 @@
     localsend
     gitg
     gnome-extension-manager
+    gpu-screen-recorder-gtk
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -75,4 +76,22 @@
     userName  = "Minegame YTB";
     userEmail = "53137994+minegameYTB@users.noreply.github.com";
   };
+  
+ ### htop
+ programs.htop = {
+   enable = true;
+   settings = {
+     show_merged_command = true;
+     show_cpu_frequency = true;
+     show_cpu_temperature  = true;
+   };
+ };
+ 
+ ### Fish Oh my posh theme
+ programs.oh-my-posh = {
+   enable = true;
+   enableFishIntegration = true;
+   useTheme = "atomic";
+ };
+
 }
