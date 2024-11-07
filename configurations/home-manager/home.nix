@@ -88,10 +88,10 @@
  };
  
  ### Fish Oh my posh theme
- programs.oh-my-posh = {
-   enable = true;
-   enableFishIntegration = true;
-   useTheme = "atomic";
- };
+#programs.oh-my-posh = {
+#  enable = true;
+#  enableFishIntegration = true;
+#  settings = builtins.fromJSON (builtins.unsafeDiscardStringContext (builtins.readFile "${pkgs.oh-my-posh}/share/oh-my-posh/themes/atomic.omp.json"));
+#};
 
 }
