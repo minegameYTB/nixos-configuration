@@ -14,7 +14,6 @@
     flatpak
     ntfs3g
     ptyxis
-    git
     virt-viewer
     bat
     lsd
