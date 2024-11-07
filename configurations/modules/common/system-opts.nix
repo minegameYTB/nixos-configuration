@@ -57,7 +57,6 @@
      gadd = "git add";
      gpush = "git push";
      gpull = "git pull";
-     ".." = "cd ..";
    };
   };
 
