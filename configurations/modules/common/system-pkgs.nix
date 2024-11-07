@@ -17,6 +17,7 @@
     virt-viewer
     bat
     lsd
+    ayu-theme-gtk
     gnome.gnome-software
     gnome.gnome-tweaks
     gparted
