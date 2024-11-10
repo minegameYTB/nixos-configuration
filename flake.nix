@@ -1,39 +1,11 @@
-### I used https://github.com/drupol/my-own-nixpkgs to create this monorepo
+### (Flake created with https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users#org81dbd1d)
+
 {
-  description = "monorepo for testing things";
+  description = "A flake with my configuration";
 
   inputs = {
-<<<<<<< HEAD
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
-    pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
-  };
-
-  outputs = inputs@{ self, nixpkgs, flake-parts, systems, ... }:
-    let
-      pkgs = import nixpkgs {};
-    in
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import systems;
-
-      imports = [
-        inputs.flake-parts.flakeModules.easyOverlay
-        inputs.pkgs-by-name-for-flake-parts.flakeModule
-        ./imports/overlay.nix
-        ./imports/formatter.nix
-        ./imports/pkgs-all.nix
-      ];
-    
-      nixosModules = {
-        "nix-monorepo" = { config, pkgs, ... }: {
-           option = {};
-           config = {};
-         };
-      };
-    };
-=======
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nix-monorepo.url = "github:minegameYTB/nix-monorepo";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -56,6 +28,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
+          nix-monorepo.nixosModules."nix-monorepo"
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -71,6 +44,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
+           nix-monorepo.nixosModules."nix-monorepo"
            home-manager.nixosModules.home-manager
            {
              home-manager.useGlobalPkgs = true;
@@ -81,5 +55,4 @@
       };
     };
   };
->>>>>>> parent of e44915f (flake.nix: Add custom monorepo from github)
 }
