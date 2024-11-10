@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nix-monorepo, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -23,6 +23,7 @@
     discord
     spotify
     vlc
+    sshrm
     onlyoffice-bin
    #libreoffice-fresh
     prismlauncher
