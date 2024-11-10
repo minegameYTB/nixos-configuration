@@ -68,4 +68,7 @@
  
  programs.command-not-found.enable = false; 
 
+ ### Fstrim
+ services.fstrim.enable = true;
+ 
 }
