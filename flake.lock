@@ -18,48 +18,6 @@
         "type": "github"
       }
     },
-    "home-manager": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1726989464,
-        "narHash": "sha256-Vl+WVTJwutXkimwGprnEtXc/s/s8sMuXzqXaspIGlwM=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "2f23fa308a7c067e52dfcc30a0758f47043ec176",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "ref": "release-24.05",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "nix-monorepo": {
-      "inputs": {
-        "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs",
-        "pkgs-by-name-for-flake-parts": "pkgs-by-name-for-flake-parts",
-        "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1731247867,
-        "narHash": "sha256-OrUtyAhLMVUGCifdUyLp1sZNcekm2+m1t3WhnfGku+A=",
-        "owner": "minegameYTB",
-        "repo": "nix-monorepo",
-        "rev": "00373f0cbf4ae861bf0a59c007a066abf88f87c0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "minegameYTB",
-        "repo": "nix-monorepo",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1730785428,
@@ -88,22 +46,6 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/cc2f28000298e1269cea6612cd06ec9979dd5d7f.tar.gz"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1730963269,
-        "narHash": "sha256-rz30HrFYCHiWEBCKHMffHbMdWJ35hEkcRVU0h7ms3x0=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "83fb6c028368e465cd19bb127b86f971a5e41ebc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-24.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "pkgs-by-name-for-flake-parts": {
       "locked": {
         "lastModified": 1727519927,
@@ -121,9 +63,10 @@
     },
     "root": {
       "inputs": {
-        "home-manager": "home-manager",
-        "nix-monorepo": "nix-monorepo",
-        "nixpkgs": "nixpkgs_2"
+        "flake-parts": "flake-parts",
+        "nixpkgs": "nixpkgs",
+        "pkgs-by-name-for-flake-parts": "pkgs-by-name-for-flake-parts",
+        "systems": "systems"
       }
     },
     "systems": {
