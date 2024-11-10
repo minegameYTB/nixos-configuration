@@ -17,7 +17,7 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, nix-monorepo, ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
