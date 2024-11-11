@@ -5,7 +5,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nix-monorepo.url = "github:minegameYTB/nix-monorepo";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +16,7 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nix-monorepo, ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -28,7 +27,6 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
-          nix-monorepo.nixosModules."nix-monorepo"
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -44,7 +42,6 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
-           nix-monorepo.nixosModules."nix-monorepo"
            home-manager.nixosModules.home-manager
            {
              home-manager.useGlobalPkgs = true;
