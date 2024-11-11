@@ -14,9 +14,10 @@
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
-   gnome.geary  ### Geary
-   gnome-tour   ### Gnome Tour
-   epiphany     ### Gnome Web
+   gnome.geary   ### Geary
+   gnome-tour    ### Gnome Tour
+   epiphany      ### Gnome Web
+   gnome-console ### Gnome console
  ];
 
 ###-------------------------------------------------------------------------

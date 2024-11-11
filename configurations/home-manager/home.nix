@@ -23,7 +23,6 @@
     discord
     spotify
     vlc
-    sshrm
     onlyoffice-bin
    #libreoffice-fresh
     prismlauncher
