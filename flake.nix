@@ -61,7 +61,7 @@
           }
         ];
       };
-      vm = lib.nixosSystem {
+      vm-no-gui = lib.nixosSystem {
         system = system;
         modules = [
           ./configurations/configuration.nix
