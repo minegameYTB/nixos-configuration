@@ -50,6 +50,34 @@
            }
         ];
       };
+    nixosConfiguration = {
+      vm-desktop = lib.nixosSystem {
+        system = system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-desktop-profile.nix
+           home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./configurations/home-manager/home.nix;
+          }
+        ];
+      };
+    nixosConfiguration = {
+      vm = lib.nixosSystem {
+        system = system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-no-gui-profile.nix
+           home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./configurations/home-manager/home.nix;
+          }
+        ];
+      };
     };
   };
 }
