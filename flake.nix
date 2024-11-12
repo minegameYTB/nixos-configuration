@@ -35,8 +35,6 @@
           }
         ];
       };
-    };
-    nixosConfigurations = {
       hp-240 = lib.nixosSystem {
         system = system;
         modules = [
@@ -50,7 +48,6 @@
            }
         ];
       };
-    nixosConfiguration = {
       vm-desktop = lib.nixosSystem {
         system = system;
         modules = [
@@ -64,7 +61,6 @@
           }
         ];
       };
-    nixosConfiguration = {
       vm = lib.nixosSystem {
         system = system;
         modules = [
