@@ -10,5 +10,6 @@
      ../configurations/modules/specific/desktop/x11.nix             ### Related to x11 Server (GUI server)
      ../configurations/modules/specific/vm/guest/qemu-kvm-guest.nix ### To use optimisation of qemu/kvm
      ../configurations/modules/specific/desktop/sound.nix           ### Sound server
+     ../configurations/modules/specific/desktop/autologin.nix       ### Permit autologin
    ];
 }
