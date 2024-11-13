@@ -52,6 +52,7 @@
      ls = "lsd";
      cat = "bat";
      nix = "nix -v";
+     wget = "wget2"
      gs = "git status";
      gc = "git commit";
      gadd = "git add";
