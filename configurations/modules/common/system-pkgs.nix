@@ -21,6 +21,7 @@
     ayu-theme-gtk
     gnome.gnome-software
     gnome.gnome-tweaks
+    nautilus-open-any-terminal
     gparted
     papirus-icon-theme
   ];
