@@ -71,5 +71,7 @@
 
  ### Fstrim
  services.fstrim.enable = true;
- 
+
+ ### Appimage binfmt registration
+ programs.appimage.binfmt = true; 
 }
