@@ -11,6 +11,7 @@
     wget2
     efibootmgr
     nvd
+    appimage-run
     flatpak
     ntfs3g
     ptyxis
