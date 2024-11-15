@@ -1,8 +1,8 @@
 { config, pkgs, ...  }:
 
 {
-  ### /tmp
-  boot.tmp.cleanOnBoot = true;
+ ### /tmp
+ boot.tmp.cleanOnBoot = true;
 
  ### Plymouth
  boot.plymouth = {
@@ -62,12 +62,16 @@
   };
 
  ### Nix index
- programs.nix-index = {
-   enable = true;
-   enableFishIntegration = true;
+ programs = {
+   nix-index = {
+     enable = true;
+     enableFishIntegration = true;
+   };
+   command-not-found = {
+     enable = false;
+   };
  };
  
- programs.command-not-found.enable = false; 
 
  ### Fstrim
  services.fstrim.enable = true;

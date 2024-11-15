@@ -25,5 +25,4 @@
     gparted
     papirus-icon-theme
   ];
-  
 }
