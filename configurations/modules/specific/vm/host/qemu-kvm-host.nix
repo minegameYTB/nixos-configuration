@@ -13,4 +13,6 @@
    };
  };
 
+ ### OVMF package
+ virtualisation.libvirtd.qemu.ovmf.packages = [ pkgs.OVMFFull.fd ];
 }
