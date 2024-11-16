@@ -65,7 +65,7 @@
   #  /etc/profiles/per-user/minegame/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "nano";
+    EDITOR = "micro";
   };
 
   # Let Home Manager install and manage itself.
