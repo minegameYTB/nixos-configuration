@@ -89,7 +89,7 @@
    };
  };
 
- program.fish.interactiveShellInit = ''
+ programs.fish.interactiveShellInit = ''
    set fish_greeting # Disable greeting
    export "MICRO_TRUECOLOR=1"
  ''; 
