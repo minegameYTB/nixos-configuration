@@ -9,6 +9,7 @@
    libvirtd = {
      enable = true;
      onShutdown = "shutdown";
+     onBoot = "ignore";
      qemu.swtpm.enable = true;
    };
  };
