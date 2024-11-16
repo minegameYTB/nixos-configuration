@@ -31,6 +31,7 @@
     gitg
     gnome-extension-manager
     gpu-screen-recorder-gtk
+	retroarchFull
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
