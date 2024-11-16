@@ -92,5 +92,5 @@
  program.fish.interactiveShellInit = ''
    set fish_greeting # Disable greeting
    export "MICRO_TRUECOLOR=1"
- '': 
+ ''; 
 }
