@@ -1,9 +1,6 @@
 { config, pkgs, ...  }:
 
 {
- ### /tmp
- boot.tmp.cleanOnBoot = true;
-
  ### Plymouth
  boot.plymouth = {
    enable = true;
