@@ -87,5 +87,9 @@
      show_cpu_temperature  = true;
    };
  };
- 
+
+ program.fish.interactiveShellInit = ''
+   set fish_greeting # Disable greeting
+   export "MICRO_TRUECOLOR=1"
+ '': 
 }
