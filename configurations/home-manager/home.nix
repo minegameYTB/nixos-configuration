@@ -72,12 +72,12 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  ### Configure git
-  programs.git = {
-    enable = true;
-    userName  = "Minegame YTB";
-    userEmail = "53137994+minegameYTB@users.noreply.github.com";
-  };
+ ### Configure git
+ programs.git = {
+   enable = true;
+   userName  = "Minegame YTB";
+   userEmail = "53137994+minegameYTB@users.noreply.github.com";
+ };
   
  ### htop
  programs.htop = {
@@ -89,5 +89,13 @@
    };
  };
 
- 
+ ### Fish
+ programs.fish = {
+    enable = true;
+    interactiveShellInit = ''
+       set fish_greeting # Disable greeting
+       export MICRO_TRUECOLOR=1
+       export NIXPKGS_ALLOW_UNFREE=1
+    ''; 
+ };
 }
