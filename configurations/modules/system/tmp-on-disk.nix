@@ -1,6 +1,6 @@
 { config, ... }:
 
 {
- ### /tmp on tmpfs
- boot.tmp.useTmpfs = true;
+ ### /tmp on disk
+ boot.tmp.cleanOnBoot = true;
 }
