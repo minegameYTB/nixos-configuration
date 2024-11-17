@@ -78,6 +78,11 @@
    userName  = "Minegame YTB";
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
  };
+
+ ### Micro
+ programs.micro.settings = {
+   colorscheme = solarized;
+ };
   
  ### htop
  programs.htop = {
