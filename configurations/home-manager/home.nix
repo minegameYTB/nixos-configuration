@@ -80,8 +80,11 @@
  };
 
  ### Micro
- programs.micro.settings = {
-   colorscheme = "solarized";
+ programs.micro = {
+   enable = true;
+   settings = {
+     colorscheme = "solarized";
+   };
  };
   
  ### htop
