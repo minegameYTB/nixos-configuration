@@ -47,7 +47,8 @@
    enable = true;
    interactiveShellInit = ''
       set fish_greeting # Disable greeting
-      export "MICRO_TRUECOLOR=1"
+      export MICRO_TRUECOLOR=1
+      export NIXPKGS_ALLOW_UNFREE=1
    ''; 
    shellAliases = {
      ls = "lsd";
