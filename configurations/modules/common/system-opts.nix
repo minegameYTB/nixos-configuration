@@ -45,6 +45,10 @@
  ### Fish
  programs.fish = {
    enable = true;
+   interactiveShellInit = ''
+      set fish_greeting # Disable greeting
+      export "MICRO_TRUECOLOR=1"
+   ''; 
    shellAliases = {
      ls = "lsd";
      cat = "bat";
