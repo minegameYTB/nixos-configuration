@@ -6,7 +6,7 @@
    grub.enable = true;
    grub.device = "nodev";
    grub.efiSupport = true;
-   grub.configurationLimit = 10;
+   grub.configurationLimit = 20;
    efi.efiSysMountPoint = "/boot/efi";
  };  
 }
