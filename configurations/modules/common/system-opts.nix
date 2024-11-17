@@ -19,17 +19,19 @@
 #boot.kernelPackages = pkgs.linuxPackages_xanmod_stable;
  
  ### Nix GC
- nix.settings.auto-optimise-store = true;
-
- nix.optimise = {
-   automatic = true;
-   dates = [ "weekly" ];
- };
-
- nix.gc = {
-   automatic = true;
-   dates = "weekly";
-   options = "--delete-older-than 7d";
+ nix = {
+   optimise = {
+     automatic = true;
+     dates = [ "weekly" ];
+   };
+   gc = {
+     automatic = true;
+     dates = "weekly";
+     options = "--delete-older-than 7d";
+   };
+   settings = {
+     auto-optimise-store = true;
+   };
  };
  
  ### Nix Experimental
