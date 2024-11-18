@@ -5,6 +5,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nix-custom-repo.url = "github:minegameYTB/nix-custom-repo";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,10 +17,11 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, nix-custom-repo,  ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
+    pkgs = import nixpkgs { inherit system; };
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
@@ -42,12 +44,12 @@
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
            home-manager.nixosModules.home-manager
-           {
-             home-manager.useGlobalPkgs = true;
-             home-manager.useUserPackages = true;
-             home-manager.users.minegame = import ./configurations/home-manager/home.nix;
-             home-manager.backupFileExtension = "bak";
-           }
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./configurations/home-manager/home.nix;
+            home-manager.backupFileExtension = "bak";
+          }
         ];
       };
       vm-desktop = lib.nixosSystem {
