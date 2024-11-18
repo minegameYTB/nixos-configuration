@@ -18,8 +18,9 @@
 
 #boot.kernelPackages = pkgs.linuxPackages_xanmod_stable;
  
- ### Nix GC
+ ### Nix Settings
  nix = {
+   channel.enable = false;
    optimise = {
      automatic = true;
      dates = [ "weekly" ];
