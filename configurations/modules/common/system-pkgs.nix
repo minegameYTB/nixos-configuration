@@ -15,8 +15,6 @@
     appimage-run
     flatpak
     ntfs3g
-    blackbox-terminal
-    nautilus-open-in-blackbox
     ptyxis
     git
     virt-viewer
