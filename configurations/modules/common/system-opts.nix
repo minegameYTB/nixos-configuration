@@ -52,6 +52,7 @@
      ls = "lsd";
      cat = "bat";
      nix = "nix -v";
+     nix-profile-upgrade = "nix flake update nix-custom-repo && nix profile upgrade '.*'"
      wget = "wget2";
      gs = "git status";
      gc = "git commit";
