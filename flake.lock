@@ -21,7 +21,41 @@
         "type": "github"
       }
     },
+    "nix-custom-repo": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1731962085,
+        "narHash": "sha256-NniLQE8bGqAcnmHxp9Ks0jW6oVC7IEFM4fFENm0llk4=",
+        "owner": "minegameYTB",
+        "repo": "nix-custom-repo",
+        "rev": "32ca1a2803042a5b5266126107663af6a9be99de",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minegameYTB",
+        "repo": "nix-custom-repo",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1731797254,
+        "narHash": "sha256-df3dJApLPhd11AlueuoN0Q4fHo/hagP75LlM5K1sz9g=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e8c38b73aeb218e27163376a2d617e61a2ad9b59",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1731797254,
         "narHash": "sha256-df3dJApLPhd11AlueuoN0Q4fHo/hagP75LlM5K1sz9g=",
@@ -40,7 +74,8 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nix-custom-repo": "nix-custom-repo",
+        "nixpkgs": "nixpkgs_2"
       }
     }
   },
