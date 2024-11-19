@@ -84,7 +84,7 @@
    settings = {
    	 logo = {
    	   padding = {
-   	     top = 2;
+   	     top = 1;
    	   };
    	 };
      modules = [
