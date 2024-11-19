@@ -20,9 +20,6 @@
    gnome-console ### Gnome console
  ];
 
- ### Qgnomeplatform
- qt.platformTheme = "gnome";
-
 ###-------------------------------------------------------------------------
 
  ### Dconf settings
