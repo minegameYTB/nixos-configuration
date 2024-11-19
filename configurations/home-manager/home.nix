@@ -30,7 +30,7 @@
     gitg
     gnome-extension-manager
     gpu-screen-recorder-gtk
-	retroarchFull
+    retroarchFull
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -107,7 +107,7 @@
        "battery"
        "poweradapter"
        "separator"
-   	   "colors"
+       "colors"
        "separator"
      ];
    };
