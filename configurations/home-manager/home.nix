@@ -18,7 +18,6 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    fastfetch
     adw-gtk3
     discord
     spotify
@@ -77,6 +76,41 @@
    enable = true;
    userName  = "Minegame YTB";
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
+ };
+
+ ### Fastfetch
+ programs.fastfetch = {
+   enable = true;
+   settings = {
+   	 logo = {
+   	   padding = {
+   	     top = 2;
+   	   };
+   	 };
+     modules = [
+       "separator"
+       "datetime"
+       "os"
+       "locale"
+       "shell"
+       "host"
+       "kernel"
+       "uptime"
+       "packages"
+       "display"
+       "de"
+       "wm"
+       "cpu"
+       "gpu"
+       "memory"
+       "swap"
+       "battery"
+       "poweradapter"
+       "separator"
+   	   "colors"
+       "separator"
+     ];
+   };
  };
 
  ### Micro
