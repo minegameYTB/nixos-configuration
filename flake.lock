@@ -26,11 +26,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1731962085,
-        "narHash": "sha256-NniLQE8bGqAcnmHxp9Ks0jW6oVC7IEFM4fFENm0llk4=",
+        "lastModified": 1731969296,
+        "narHash": "sha256-kb9zhuUsqzM0iR6FmO6H3NNARq87XtcIbuixXCfWmAI=",
         "owner": "minegameYTB",
         "repo": "nix-custom-repo",
-        "rev": "32ca1a2803042a5b5266126107663af6a9be99de",
+        "rev": "e1f4ac4e7848fe258a30a83341df7eea55eed1dc",
         "type": "github"
       },
       "original": {
@@ -41,16 +41,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1731797254,
-        "narHash": "sha256-df3dJApLPhd11AlueuoN0Q4fHo/hagP75LlM5K1sz9g=",
+        "lastModified": 1731676054,
+        "narHash": "sha256-OZiZ3m8SCMfh3B6bfGC/Bm4x3qc1m2SVEAlkV6iY7Yg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e8c38b73aeb218e27163376a2d617e61a2ad9b59",
+        "rev": "5e4fbfb6b3de1aa2872b76d49fafc942626e2add",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-24.05",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
