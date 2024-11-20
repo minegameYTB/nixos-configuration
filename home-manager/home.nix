@@ -118,6 +118,7 @@
    enable = true;
    settings = {
      colorscheme = "solarized";
+     mkparents = true;
    };
  };
   
