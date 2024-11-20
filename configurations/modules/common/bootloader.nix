@@ -15,10 +15,12 @@
           src = pkgs.fetchFromGitHub {
             owner = "AdisonCavani";
             repo = pname;
-            rev = "47f983185d0de4f2f38254df12bc791520666a6e"; ### rev/tag 3.1
+            rev = "v${version}"; ### rev/tag v3.1
             hash = "sha256-ZcoGbbOMDDwjLhsvs77C7G7vINQnprdfI37a9ccrmPs=";
           };
-          installPhase = "cp -r customize/nixos $out";
+          installPhase = ''
+            cp -r customize/nixos $out
+          '';
      };
    };
    efi.efiSysMountPoint = "/boot/efi";
