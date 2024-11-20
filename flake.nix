@@ -5,7 +5,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nix-custom-repo.url = "github:minegameYTB/nix-custom-repo";
+   #nix-custom-repo.url = "github:minegameYTB/nix-custom-repo";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +17,7 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nix-custom-repo,  ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager,  ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
