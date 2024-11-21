@@ -18,6 +18,7 @@
    gnome-tour    ### Gnome Tour
    epiphany      ### Gnome Web
    gnome-console ### Gnome console
+   gnome.yelp    ### Gnome help
  ];
 
 ###-------------------------------------------------------------------------
