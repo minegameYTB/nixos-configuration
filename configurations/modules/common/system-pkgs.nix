@@ -22,7 +22,6 @@
     lsd
     ayu-theme-gtk
     gparted
-    python3
     gnome.gnome-software
     gnome.gnome-tweaks
     papirus-icon-theme
