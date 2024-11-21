@@ -16,10 +16,20 @@
 
  boot.kernel.sysctl = { "vm.swappiness" = 20; };
 
-#boot.kernelPackages = pkgs.linuxPackages_xanmod_stable;
+ boot.kernelPackages = pkgs.linuxPackages_latest;
  
  ### Nix Settings
  nix = {
+   registry.nix-custom-repo.to = {
+     owner = "minegameYTB";
+     repo = "nix-custom-repo";
+     type = "github";
+   };
+   settings = {
+   	 warn-dirty = false;
+   	 auto-optimise-store = true;
+   	 experimental-features = [ "nix-command" "flakes" ]; 
+   };
    channel.enable = false;
    optimise = {
      automatic = true;
@@ -28,16 +38,10 @@
    gc = {
      automatic = true;
      dates = "weekly";
-     options = "--delete-older-than 7d";
-   };
-   settings = {
-     auto-optimise-store = true;
+     options = "--delete-older-than 14d";
    };
  };
  
- ### Nix Experimental
- nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
  ### Zram
  zramSwap.enable = true;
 
@@ -85,13 +89,6 @@
    offset = 0;
    mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
    magicOrExtension = ''\x7fELF....AI\x02'';
- };
-
- ### Flake registration
- nix.registry.nix-custom-repo.to = {
-   owner = "minegameYTB";
-   repo = "nix-custom-repo";
-   type = "github";
  };
 
 }
