@@ -27,6 +27,9 @@
    };
    settings = {
    	 warn-dirty = false;
+   	 trusted-users = [ "root" "minegame" ];
+   	 trusted-substituters = [ "https://hydra.nixos.org/" ];
+   	 trusted-public-keys = [ "hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs=" ];
    	 auto-optimise-store = true;
    	 experimental-features = [ "nix-command" "flakes" ]; 
    };

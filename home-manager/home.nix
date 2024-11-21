@@ -28,6 +28,7 @@
     rpi-imager
     localsend
     gitg
+    jnv
     gnome-extension-manager
     gpu-screen-recorder-gtk
     retroarchFull
