@@ -94,6 +94,4 @@
    magicOrExtension = ''\x7fELF....AI\x02'';
  };
  
- ### Copy the current configuration on /run/current-system
- system.copySystemConfiguration = true;
 }
