@@ -95,4 +95,5 @@
  };
  
  ### Copy the current configuration on /run/current-system
+ system.copySystemConfiguration = true;
 }
