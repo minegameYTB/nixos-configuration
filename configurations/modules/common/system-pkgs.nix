@@ -25,5 +25,6 @@
     gnome.gnome-software
     gnome.gnome-tweaks
     papirus-icon-theme
+    gpu-screen-recorder-gtk
   ];
 }
