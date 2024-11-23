@@ -35,11 +35,11 @@
      automatic = true;
      dates = [ "weekly" ];
    };
-   gc = {
-     automatic = true;
-     dates = "weekly";
-     options = "--delete-older-than 14d";
-   };
+  #gc = {
+    #automatic = true;
+    #dates = "weekly";
+    #options = "--delete-older-than 14d";
+  #};
  };
  
  ### Zram
@@ -90,5 +90,13 @@
    mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
    magicOrExtension = ''\x7fELF....AI\x02'';
  };
- 
+
+ ### nh tools
+ programs.nh = {
+  enable = true;
+  clean.enable = true;
+  clean.extraArgs = "--keep-since 7d --keep 3";
+  flake = "/home/minegame/nixos-configuration/";
+ };
+  
 }
