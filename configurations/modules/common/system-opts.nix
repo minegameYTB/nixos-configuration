@@ -35,11 +35,6 @@
      automatic = true;
      dates = [ "weekly" ];
    };
-  #gc = {
-    #automatic = true;
-    #dates = "weekly";
-    #options = "--delete-older-than 14d";
-  #};
  };
  
  ### Zram
@@ -94,9 +89,12 @@
  ### nh tools
  programs.nh = {
   enable = true;
-  clean.enable = true;
-  clean.extraArgs = "--keep-since 7d --keep 3";
   flake = "/home/minegame/nixos-configuration/";
+  clean = {
+    enable = true;
+    extraArgs = "--keep-since 7d --keep 3";
+    dates = "weekly";
+  };
  };
   
 }
