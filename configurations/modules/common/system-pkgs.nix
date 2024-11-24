@@ -20,6 +20,7 @@
     virt-viewer
     bat
     lsd
+    zellij
     ayu-theme-gtk
     gparted
     gnome-software
