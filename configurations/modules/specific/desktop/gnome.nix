@@ -14,11 +14,13 @@
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
-   gnome.geary   ### Geary
-   gnome-tour    ### Gnome Tour
-   epiphany      ### Gnome Web
-   gnome-console ### Gnome console
-   gnome.yelp    ### Gnome help
+   gnome.geary       ### Geary
+   gnome-tour        ### Gnome Tour
+   epiphany          ### Gnome Web
+   gnome-console     ### Gnome console
+   gnome.yelp        ### Gnome help
+   gnome.gnome-maps  ### Gnome maps
+   gnome-connections ### Gnome connections
  ];
 
 ###-------------------------------------------------------------------------
