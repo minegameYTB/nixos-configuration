@@ -32,36 +32,40 @@
      {
        settings = {
          "org/gnome/desktop/wm/preferences" = {
-          button-layout = ":minimize,maximize,close";
+            button-layout = ":minimize,maximize,close";
+         };
+         "org/gnome/desktop/datetime = {
+            automatic-timezone = true;
          };
          "org/gnome/mutter" = {
-          attach-modal-dialogs = true;
+            attach-modal-dialogs = true;
          };
          "org/gnome/desktop/interface" = {
-          clock-show-weekday = true;
-          clock-show-date = true;
-          color-scheme = "prefer-dark";
-          gtk-theme = "Adwaita-dark";
-          icon-theme = "Papirus-Dark";
-          monospace-font-name = "UbuntuMono Nerd Font 10";
-          show-battery-percentage = true;
+            clock-show-weekday = true;
+            clock-show-date = true;
+            color-scheme = "prefer-dark";
+            gtk-theme = "Adwaita-dark";
+            icon-theme = "Papirus-Dark";
+            monospace-font-name = "UbuntuMono Nerd Font 10";
+            show-battery-percentage = true;
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
-          dock-position = "LEFT";
-          transparency-mode = "DYNAMIC";
-          running-indicator-style = "DOTS";
-          running-indicator-dominant-color = true;
-          custom-background-color = true;
-          background-color  = "rgb(36,31,49)";
-          dash-max-icon-size = "30";
-          custom-theme-shrink = true;
-          click-action = "minimize-or-previews";  
+            dock-position = "LEFT";
+            transparency-mode = "DYNAMIC";
+            running-indicator-style = "DOTS";
+            running-indicator-dominant-color = true;
+            custom-background-color = true;
+            background-color  = "rgb(36,31,49)";
+            dash-max-icon-size = "30";
+            custom-theme-shrink = true;
+            click-action = "minimize-or-previews";  
          };
          "org/gnome/shell/extensions/Logo-menu" = {
             hide-forcequit = true;
             hide-softwarecentre = true;
             menu-button-icon-image = "23";
-            menu-button-terminal = "kgx";
+            menu-button-terminal = "ptyxis --new-window";
+            use-custom-icon = false;
             symbolic-icon = true;
          };
          "org/gnome/shell/extensions/just-perfection" = {
@@ -69,38 +73,33 @@
             window-demands-attention-focus = true;
          };
          "org/gnome/shell" = {
-           enabled-extensions = [
-             "appindicatorsupport@rgcjonas.gmail.com" 
-             "blur-my-shell@aunetx" 
-             "dash-to-dock@micxgx.gmail.com" 
-             "just-perfection-desktop@just-perfection" 
-             "Hide_Activities@shay.shayel.org" 
-             "logomenu@aryan_k"
-             "user-theme@gnome-shell-extensions.gcampax.github.com" 
-            "tiling-assistant@leleat-on-github"
-           ];
-          favorite-apps = [
-            "io.github.zen_browser.zen.desktop" 
-            "org.gnome.Calendar.desktop" 
-            "org.gnome.Nautilus.desktop" 
-            "org.gnome.Software.desktop" 
-            "org.gnome.Ptyxis.desktop" 
-            "virt-manager.desktop"
-            "org.prismlauncher.PrismLauncher.desktop"
-            "spotify.desktop" 
-            "discord.desktop" 
-            "steam.desktop"
-            "LocalSend.desktop"
-          ];
+            enabled-extensions = [
+              "appindicatorsupport@rgcjonas.gmail.com" 
+              "blur-my-shell@aunetx" 
+              "dash-to-dock@micxgx.gmail.com" 
+              "just-perfection-desktop@just-perfection" 
+              "Hide_Activities@shay.shayel.org" 
+              "logomenu@aryan_k"
+              "user-theme@gnome-shell-extensions.gcampax.github.com" 
+              "tiling-assistant@leleat-on-github"
+            ];
+            favorite-apps = [
+              "io.github.zen_browser.zen.desktop" 
+              "org.gnome.Calendar.desktop" 
+              "org.gnome.Nautilus.desktop" 
+              "org.gnome.Software.desktop" 
+              "org.gnome.Ptyxis.desktop" 
+              "virt-manager.desktop"
+              "org.prismlauncher.PrismLauncher.desktop"
+              "spotify.desktop" 
+              "discord.desktop" 
+              "steam.desktop"
+              "LocalSend.desktop"
+            ];
          };
          "org/gnome/Ptyxis" = {
-           audible-bell = false;
-           restore-session = false;
-           default-profile-uuid = "60b6639cc65c5a313600a657672c34f4";
-           profile-uuids =  ["60b6639cc65c5a313600a657672c34f4"];
-         };
-         "org/gnome/Ptyxis/Profiles/60b6639cc65c5a313600a657672c34f4" = {
-           palette = "Breath Darker";
+            audible-bell = false;
+            restore-session = false;
          };
          "org/gnome/nautilus/preferences" = {
            show-create-link = true;
