@@ -11,7 +11,6 @@
 	micro
     wget2
     efibootmgr
-    nvd
     appimage-run
     flatpak
     ntfs3g
@@ -20,7 +19,6 @@
     virt-viewer
     bat
     lsd
-    zellij    
     ayu-theme-gtk
     gparted
     gnome.gnome-software

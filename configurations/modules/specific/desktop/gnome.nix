@@ -10,6 +10,7 @@
     logo-menu
     just-perfection
     hide-activities-button
+    hibernate-status-button
   ];
 
  ### Exclude some Gnome default packages
