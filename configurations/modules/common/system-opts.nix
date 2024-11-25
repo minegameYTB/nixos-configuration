@@ -8,15 +8,15 @@
  };
 
  ### Kernel
- boot.kernelParams = [
-   "quiet"
-   "splash"
-   "boot.shell_on_fail"
- ];
-
- boot.kernel.sysctl = { "vm.swappiness" = 20; };
-
- boot.kernelPackages = pkgs.linuxPackages_latest;
+ boot = {
+   kernelParams = [
+     "quiet"
+     "splash"
+     "boot.shell_on_fail"
+   ];
+   kernel.sysctl = { "vm.swappiness" = 20; };
+   kernelPackages = pkgs.linuxPackages_latest;
+ };
  
  ### Nix Settings
  nix = {
