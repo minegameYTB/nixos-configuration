@@ -11,7 +11,6 @@
 	micro
     wget2
     efibootmgr
-    nvd
     appimage-run
     flatpak
     ntfs3g
@@ -20,11 +19,10 @@
     virt-viewer
     bat
     lsd
-    zellij
     ayu-theme-gtk
     gparted
-    gnome-software
-    gnome-tweaks
+    gnome.gnome-software
+    gnome.gnome-tweaks
     papirus-icon-theme
   ];
 }
