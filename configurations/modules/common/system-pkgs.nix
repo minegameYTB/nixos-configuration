@@ -26,8 +26,8 @@
    lsd
    ayu-theme-gtk
    gparted
-   gnome.gnome-software
-   gnome.gnome-tweaks
+   gnome-software
+   gnome-tweaks
    papirus-icon-theme
  ];
 }
