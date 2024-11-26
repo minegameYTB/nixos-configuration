@@ -15,6 +15,11 @@
   # release notes.
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
+  nixpkgs.overlays = [
+    (import ../configurations/modules/overlays/retroarch-custom.nix)
+    #(import ../overlays/package-name.nix)
+  ];
+  
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
@@ -30,7 +35,15 @@
     gitg
     jnv
     gnome-extension-manager
-    retroarchFull
+    ### Replace retroarchFull with custom override inplace
+    (retroarch.override {
+      cores = with libretro; [
+        genesis-plus-gx
+        snes9x
+        beetle-psx-hw
+        dolphin
+      ];
+    })
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
