@@ -30,7 +30,17 @@
     gitg
     jnv
     gnome-extension-manager
-    retroarchFull
+    
+    ### Replace retroarchFull with custom override inplace
+    (retroarch.override {
+      cores = with libretro; [
+        genesis-plus-gx
+        snes9x
+        beetle-psx-hw
+        dolphin
+      ];
+    })
+    ### End of override of retroarch
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
