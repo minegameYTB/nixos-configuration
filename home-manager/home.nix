@@ -16,7 +16,7 @@
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
   nixpkgs.overlays = [
-    (import ../configurations/modules/overlays/retroarch.nix)
+    (import ../configurations/modules/overlays/retroarch-custom.nix)
     #(import ../overlays/package-name.nix)
   ];
   
@@ -35,7 +35,7 @@
     gitg
     jnv
     gnome-extension-manager
-    retroarch
+    retroarch-custom
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
