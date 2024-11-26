@@ -20,7 +20,6 @@
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; };
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
