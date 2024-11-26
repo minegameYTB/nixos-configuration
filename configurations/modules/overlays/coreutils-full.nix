@@ -1,6 +1,6 @@
 self: super: {
-  coreutils-full = super.coreutils-full.overrideAttrs (oldAttrs: {
+  coreutils-full = super.coreutils-full.override {
     singleBinary = "no";
-  });
+  };
 }
 
