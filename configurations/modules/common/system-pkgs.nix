@@ -19,7 +19,6 @@
     virt-viewer
     bat
     lsd
-    powertop
     ayu-theme-gtk
     gparted
     gnome.gnome-software
