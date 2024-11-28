@@ -68,7 +68,7 @@
       };
   };
   ### For home-manager standalone
-  homeConfigurations."minegame" = home-manager.lib.homeManagerConfiguration {
+  homeConfigurations."minegame" = home-manager.lib.homeManagerConfiguration 
   {
     inherit pkgs;
     modules = [ ./home-manager/home.nix ];
