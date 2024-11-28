@@ -1,4 +1,4 @@
-	{ config, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -18,19 +18,23 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
+    ### Theme
     adw-gtk3
+    ### non-free apps
     discord
     spotify
+    ### Video
     vlc
+    ### Office
     onlyoffice-bin
-   #libreoffice-fresh
+    ### Games 
     prismlauncher
+    ### Utilities
     rpi-imager
     localsend
     gitg
     jnv
     gnome-extension-manager
-    nh
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
       cores = with libretro; [
