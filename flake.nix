@@ -21,10 +21,11 @@
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
+    pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
-        system = system;
+        inherit system;
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
@@ -38,7 +39,7 @@
         ];
       };
       hp-240 = lib.nixosSystem {
-        system = system;
+        inherit system;
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
@@ -52,7 +53,7 @@
         ];
       };
       vm-desktop = lib.nixosSystem {
-        system = system;
+        inherit system;
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-profile.nix
@@ -65,20 +66,12 @@
           }
         ];
       };
-      vm-no-gui = lib.nixosSystem {
-        system = system;
-        modules = [
-          ./configurations/configuration.nix
-          ./profiles/vm-no-gui-profile.nix
-           home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./home-manager/home.nix;
-            home-manager.backupFileExtension = "bak";
-          }
-        ];
-      };
-    };
   };
+  ### For home-manager standalone
+  homeConfigurations."minegame" = home-manager.lib.homeManagerConfiguration {
+  {
+    inherit pkgs;
+    modules = [ ./home-manager/home.nix ];
+  }
+ };
 }
