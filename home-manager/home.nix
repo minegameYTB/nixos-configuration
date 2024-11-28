@@ -30,7 +30,7 @@
     gitg
     jnv
     gnome-extension-manager
-    
+    nh
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
       cores = with libretro; [
