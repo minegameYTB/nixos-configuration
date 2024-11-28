@@ -18,7 +18,7 @@
    gnome.geary       ### Geary
    gnome-tour        ### Gnome Tour
    epiphany          ### Gnome Web
-   gnome-console     ### Gnome console
+  #gnome-console     ### Gnome console
    gnome.yelp        ### Gnome help
    gnome.gnome-maps  ### Gnome maps
    gnome-connections ### Gnome connections
