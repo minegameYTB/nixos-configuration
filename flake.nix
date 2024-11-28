@@ -5,7 +5,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-   #nix-custom-repo.url = "github:minegameYTB/nix-custom-repo";
+    # nix-custom-repo.url = "github:minegameYTB/nix-custom-repo";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +17,7 @@
     # nixpkgs.url = "nixpkgs/{BRANCH-NAME}";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager,  ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }:
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -43,7 +43,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
-           home-manager.nixosModules.home-manager
+          home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -57,7 +57,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-profile.nix
-           home-manager.nixosModules.home-manager
+          home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -66,12 +66,15 @@
           }
         ];
       };
+    };
+
+    homeConfigurations = {
+      minegame = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [ ./home-manager/home.nix ];
+        home-manager.backupFileExtension = "bak";
+      };
+    };
   };
-  ### For home-manager standalone
-  homeConfigurations."minegame" = home-manager.lib.homeManagerConfiguration 
-  {
-    inherit pkgs;
-    modules = [ ./home-manager/home.nix ];
-  }
- };
 }
+
