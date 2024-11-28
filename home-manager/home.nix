@@ -18,18 +18,18 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-  ### Theme
+    ### Theme
     adw-gtk3
-  ### non-free apps
+    ### non-free apps
     discord
     spotify
-  ### Video
+    ### Video
     vlc
-  ### Office
+    ### Office
     onlyoffice-bin
-  ### Games 
+    ### Games 
     prismlauncher
-  ### Utilities
+    ### Utilities
     rpi-imager
     localsend
     gitg
