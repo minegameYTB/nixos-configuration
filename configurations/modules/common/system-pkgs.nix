@@ -28,6 +28,7 @@
    gparted
    gnome-software
    gnome-tweaks
+   nvd
    papirus-icon-theme
  ];
 }
