@@ -20,6 +20,7 @@
  
  ### Nix Settings
  nix = {
+   channel.enable = false;
    registry.nix-custom-repo.to = {
      owner = "minegameYTB";
      repo = "nix-custom-repo";
@@ -30,7 +31,11 @@
    	 auto-optimise-store = true;
    	 experimental-features = [ "nix-command" "flakes" ]; 
    };
-   channel.enable = false;
+   gc = {
+     automatic = true;
+     dates = "weekly";
+     options = "--delete-older-than 7d";
+   };
    optimise = {
      automatic = true;
      dates = [ "weekly" ];
@@ -86,15 +91,4 @@
    magicOrExtension = ''\x7fELF....AI\x02'';
  };
 
- ### nh tools
- programs.nh = {
-  enable = true;
-  flake = "/home/minegame/nixos-configuration/";
-  clean = {
-    enable = true;
-    extraArgs = "--keep-since 7d --keep 3";
-    dates = "weekly";
-  };
- };
-  
 }
