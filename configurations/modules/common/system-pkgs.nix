@@ -29,6 +29,7 @@
    gnome-software
    gnome-tweaks
    nvd
+   steam-run
    papirus-icon-theme
  ];
 }
