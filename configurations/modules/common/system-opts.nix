@@ -56,6 +56,7 @@
      ls = "lsd";
      cat = "bat";
      nix = "nix -v";
+     nixos-rebuild = "nixos-rebuild -v";
      wget = "wget2";
      gs = "git status";
      gc = "git commit";
