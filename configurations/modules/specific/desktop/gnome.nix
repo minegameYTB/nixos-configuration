@@ -3,14 +3,14 @@
 {
  ### Gnome Extensions
   environment.systemPackages = with pkgs.gnomeExtensions; [
-    appindicator
-    tiling-assistant
-    dash-to-dock
-    blur-my-shell
-    logo-menu
-    just-perfection
-    hide-activities-button
-    hibernate-status-button
+   appindicator
+   tiling-assistant
+   dash-to-dock
+   blur-my-shell
+   logo-menu
+   just-perfection
+   hide-activities-button
+   hibernate-status-button
   ];
 
  ### Exclude some Gnome default packages
