@@ -27,6 +27,8 @@
     vlc
     ### Office
     onlyoffice-bin
+    ### Editor
+    vscode-fhs
     ### Games 
     prismlauncher
     ### Utilities
@@ -44,6 +46,15 @@
         dolphin
       ];
     })
+    ### On nixos 25.05, replace actual override by overrideAttrs for retroarch 
+    #(retroarch.overrideAttrs (oldAttrs: {
+    # cores = with libretro; [
+    #   libretro.genesis-plus-gx
+    #   libretro.snes9x
+    #   libretro.beetle-psx-hw
+    #   libretro.dolphin
+    # ];
+    #}))
     ### End of override of retroarch
   ];
 
@@ -79,7 +90,7 @@
   #  /etc/profiles/per-user/minegame/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "micro";
+    EDITOR = "code";
   };
 
   # Let Home Manager install and manage itself.
@@ -126,15 +137,6 @@
      ];
    };
  };
-
- ### Micro
- programs.micro = {
-   enable = true;
-   settings = {
-     colorscheme = "solarized";
-     mkparents = true;
-   };
- };
   
  ### htop
  programs.htop = {
@@ -143,16 +145,18 @@
      show_merged_command = true;
      show_cpu_frequency = true;
      show_cpu_temperature  = true;
+     show_thread_names = true;
+     highlight_base_name = true;
+     screen_tabs = true;
    };
  };
 
  ### Fish
  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-       set fish_greeting
-       export MICRO_TRUECOLOR=1
-       export NIXPKGS_ALLOW_UNFREE=1
-    ''; 
+   enable = true;
+   interactiveShellInit = ''
+      set fish_greeting
+      export NIXPKGS_ALLOW_UNFREE=1
+   ''; 
  };
 }
