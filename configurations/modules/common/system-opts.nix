@@ -63,7 +63,7 @@
      gadd = "git add";
      gpush = "git push";
      gpull = "git pull";
-     nix-profile-upgrade = "nix flake update nix-custom-repo && nix profile upgrade '.*'";
+     nix-profile-upgrade = "nix profile upgrade '.*'";
    };
   };
 
