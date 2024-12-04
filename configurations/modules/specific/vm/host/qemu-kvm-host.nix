@@ -17,6 +17,7 @@
        secureBoot = true;
        tpmSupport = true;
      }).fd];
+     kvmgt.enable = true;
    };
  };
 }
