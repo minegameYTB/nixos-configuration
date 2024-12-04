@@ -5,6 +5,7 @@
  programs.virt-manager.enable = true;
  
  virtualisation = {
+   kvmgt.enable = true;
    spiceUSBRedirection.enable = true;
    libvirtd = {
      enable = true;
@@ -17,7 +18,6 @@
        secureBoot = true;
        tpmSupport = true;
      }).fd];
-     kvmgt.enable = true;
    };
  };
 }
