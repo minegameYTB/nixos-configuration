@@ -16,8 +16,8 @@
       },
       "original": {
         "owner": "nix-community",
-        "ref": "release-24.11",
         "repo": "home-manager",
+        "rev": "62d536255879be574ebfe9b87c4ac194febf47c5",
         "type": "github"
       }
     },
@@ -32,8 +32,8 @@
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-24.11",
         "repo": "nixpkgs",
+        "rev": "b681065d0919f7eb5309a93cea2cfa84dec9aa88",
         "type": "github"
       }
     },
