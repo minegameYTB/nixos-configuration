@@ -6,4 +6,5 @@
    enable = true;
    enableExtensionPack = true;
  };
+ users.extraGroups.vboxusers.members = [ "minegame" ];
 }
