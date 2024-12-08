@@ -11,7 +11,6 @@
      ../configurations/modules/specific/desktop/gnome.nix         ### Related to GNOME DE
      ../configurations/modules/specific/desktop/x11.nix           ### Related to x11 Server (GUI server)
      ../configurations/modules/specific/vm/host/qemu-kvm-host.nix ### To add qemu/kvm as an desktop hypervisor
-     ../configurations/modules/specific/vm/host/virtualbox.nix    ### To add virtualbox
      ../configurations/modules/specific/desktop/sound.nix         ### Sound server
     #../configurations/modules/specific/desktop/printer.nix       ### CUPS server
    ];
