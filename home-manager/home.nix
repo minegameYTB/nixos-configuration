@@ -37,6 +37,7 @@
     gitg
     jnv
     gnome-extension-manager
+    bottles
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
       cores = with libretro; [
