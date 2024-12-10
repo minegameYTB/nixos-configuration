@@ -4,9 +4,9 @@
   description = "A flake with my configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/b681065d0919f7eb5309a93cea2cfa84dec9aa88"; ### Commit related to nixos-24.11 branch
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     home-manager = {
-      url = "github:nix-community/home-manager/62d536255879be574ebfe9b87c4ac194febf47c5"; ### Commit related to home-manager/release-24.11 branch
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
