@@ -9,13 +9,16 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: 
+  outputs = inputs@{ self, nixpkgs, home-manager, lanzaboote, ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
@@ -23,6 +26,20 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
+          lanzaboote.nixosModules.lanzaboote
+          ({ pkgs, lib, ... }: {
+            environment.systemPackages = with pkgs; [
+              sbctl
+            ];
+
+            boot = {
+              loader.systemd-boot.enable = lib.mkForce false;
+              lanzaboote = {
+                enable = true;
+                pkiBundle = "/etc/secureboot";
+              };
+            };
+          })
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
