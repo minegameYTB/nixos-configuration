@@ -13,39 +13,38 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "ext4";
-   };
+  fileSystems."/" =
+    { device = "/dev/disk/by-label/nixos-root";
+      fsType = "ext4";
+    };
 
-  fileSystems."/home" = { 
-    device = "/dev/disk/by-label/nixos-home";
-    fsType = "ext4";
-   };
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-label/EFI";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
 
-  fileSystems."/boot" = { 
-    device = "/dev/disk/by-label/EFI";
-    fsType = "vfat";
-    options = [ "fmask=0022" "dmask=0022" ];
-  };
+  fileSystems."/home" =
+    { device = "/dev/disk/by-label/nixos-home";
+      fsType = "ext4";
+    };
+    
+  fileSystems."/mnt/DATA" =
+    { device = "/dev/disk/by-label/DATA";
+      fsType = "btrfs";
+      options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+    };
 
-  fileSystems."/mnt/DATA" = { 
-    device = "/dev/disk/by-label/DATA";
-    fsType = "btrfs";
-    options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
-  };
+  fileSystems."/mnt/DATA/Games" =
+    { device = "/dev/disk/by-label/DATA";
+      fsType = "btrfs";
+      options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
+    };
 
-  fileSystems."/mnt/DATA/Games" = {
-    device = "/dev/disk/by-label/DATA";
-    fsType = "btrfs";
-    options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
-   };
 
-  swapDevices = [
-    { device = "/dev/disk/by-label/nixos-swap"; }
-  ];
-  
-  boot.resumeDevice = "/dev/disk/by-label/nixos-swap";
+  swapDevices =
+    [ { device = "/dev/disk/by-label/nixos-swap"; }
+    ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
