@@ -4,6 +4,7 @@
  ### Import nix expression for hp-240
  imports = 
    [ ../configurations/hardware-configuration/hp-240.nix          ### Hardware configuration file (Include the results of the hardware scan.)
+     ../configurations/modules/bootloader/grub2.nix               ### Grub 2 Bootloader
      ../configurations/modules/app-opts/hp-240.nix                ### Programs with options
      ../configurations/modules/networking/hp-240.nix              ### Related to network
      ../configurations/modules/system/tmp-on-disk.nix		  ### Use /tmp on disk

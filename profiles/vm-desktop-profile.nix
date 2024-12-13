@@ -4,6 +4,7 @@
  ### Import nix expression for vm-desktop
  imports = 
    [ ../configurations/hardware-configuration/vm-desktop.nix        ### Hardware configuration file (Include the results of the hardware scan.)
+     ../configurations/modules/bootloader/systemd-boot.nix          ### Systemd-boot Bootloader
      ../configurations/modules/app-opts/vm-desktop.nix              ### Programs with options
      ../configurations/modules/networking/vm-desktop.nix            ### Related to network
      ../configurations/modules/system/tmp-on-disk.nix		    ### Use /tmp on disk
