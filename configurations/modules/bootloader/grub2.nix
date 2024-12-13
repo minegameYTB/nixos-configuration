@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
- # Bootloader
+ ### Grub 2
  boot.loader = {
    grub = {
      enable = true;
