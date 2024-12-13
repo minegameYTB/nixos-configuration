@@ -35,7 +35,6 @@
     rpi-imager
     localsend
     gitg
-    jnv
     gnome-extension-manager
     bottles
     ### Replace retroarchFull with custom override inplace
