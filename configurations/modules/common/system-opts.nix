@@ -81,7 +81,10 @@
 
  ### Fstrim
  services.fstrim.enable = true;
-
+ 
+ ### Fwupd
+ services.fwupd.enable = true;
+ 
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
    wrapInterpreterInShell = false;
