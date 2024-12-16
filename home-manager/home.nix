@@ -37,6 +37,7 @@
     gitg
     gnome-extension-manager
     bottles
+    bitwarden-desktop
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
       cores = with libretro; [
