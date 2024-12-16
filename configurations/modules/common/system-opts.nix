@@ -1,14 +1,13 @@
 { config, pkgs, ...  }:
 
 {
- ### Plymouth
- boot.plymouth = {
-   enable = true;
-   theme = "bgrt";
- };
-
- ### Kernel
+ ### Boot config
  boot = {
+   plymouth = {
+     enable = true;
+     theme = "bgrt";
+   };
+   initrd.systemd.enable = true;
    kernelParams = [
      "quiet"
      "splash"
