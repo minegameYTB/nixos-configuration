@@ -13,6 +13,11 @@
    ];
  };
 
+ ### GameMode
+ programs.gamemode = {
+   enable = true;
+ };
+
  ### gnu nano
  programs.nano.nanorc = ''
    set autoindent
