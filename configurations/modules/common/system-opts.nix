@@ -57,9 +57,9 @@
      cat = "bat";
      "cat.ori" = "/run/booted-system/sw/bin/cat";
      "ls.ori" = "/run/booted-system/sw/bin/ls";
+     ff = "fastfetch";
      nix = "nix -v";
      wget = "wget2";
-     gs = "git status";
      gc = "git commit";
      gadd = "git add";
      gpush = "git push";
