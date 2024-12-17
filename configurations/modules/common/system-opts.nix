@@ -56,6 +56,7 @@
      ls = "lsd";
      cat = "bat";
      "cat.ori" = "/run/booted-system/sw/bin/cat";
+     "ls.ori" = "/run/booted-system/sw/bin/ls";
      nix = "nix -v";
      wget = "wget2";
      gs = "git status";
