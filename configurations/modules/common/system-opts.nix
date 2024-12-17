@@ -55,6 +55,7 @@
    shellAliases = {
      ls = "lsd";
      cat = "bat";
+     "cat.ori" = "/run/booted-system/sw/bin/cat";
      nix = "nix -v";
      wget = "wget2";
      gs = "git status";
