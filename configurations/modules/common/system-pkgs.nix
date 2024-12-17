@@ -6,6 +6,7 @@
 
  nixpkgs.overlays = [
    (import ../overlays/coreutils-full.nix) ### Overlays for coreutils-full (just compile tools for users and not runtime deps for software)
+   (import ../overlays/gnome-control-center.nix) ### remove libwacom support
   #(import ../overlays/package-name.nix)
  ];
 
