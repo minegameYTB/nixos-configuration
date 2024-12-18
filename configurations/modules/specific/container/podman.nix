@@ -4,5 +4,5 @@
  ### Podman
  virtualisation.podman.enable = true;
 
- environment.systemPackages = with pkgs; [ toolbox ];
+ environment.systemPackages = with pkgs; [ distrobox ];
 }
