@@ -46,7 +46,10 @@
  system.activationScripts.report-changes = ''
    PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.nvd pkgs.nix ]}
    echo ""
-   echo "Running nvd diff to show changes"
+   echo "===================================="
+   echo "| Running nvd diff to show changes |"
+   echo "===================================="
+   echo ""
    nvd diff $(ls -dv /nix/var/nix/profiles/system-*-link|tail -2)
    echo ""
  '';
