@@ -15,5 +15,6 @@
      ../configurations/modules/specific/desktop/sound.nix         ### Sound server
     #../configurations/modules/specific/desktop/printer.nix       ### CUPS server
      ../configurations/modules/specific/desktop/autologin.nix     ### Permit autologin
+     ../configurations/modules/specific/container/podman.nix      ### Enable podman and add toolbox as a system deps
    ];
 }
