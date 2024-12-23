@@ -1,0 +1,24 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash --pure
+#! nix-shell -p nix git jq cacert
+#! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
+
+### Update flake 
+nix flake update --flake .
+
+### See if flake.lock change after the previous command
+if [[ -n $(git status --porcelain) ]]; then
+
+  ### Get hash commit
+  NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock)
+  echo "New revision"
+  git add flake.lock
+  git commit -m "[nixpkgs/${NIXPKGS_COMMIT} flake.lock: update to the new rev]"
+
+  ### Push changes
+  git push origin flake
+
+  echo "Change commited to the repo"
+else
+  echo "No changes detected"
+if
