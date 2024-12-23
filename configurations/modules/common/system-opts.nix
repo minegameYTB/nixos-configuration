@@ -10,7 +10,6 @@
    initrd.systemd.enable = true;
    kernelParams = [
      "quiet"
-     "splash"
      "boot.shell_on_fail"
    ];
    kernel.sysctl = { "vm.swappiness" = 20; };
