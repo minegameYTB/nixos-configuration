@@ -28,4 +28,4 @@ if [[ -n $(git status --porcelain) ]]; then
   echo "Change commited to the repo"
 else
   echo "No changes detected"
-if
+fi
