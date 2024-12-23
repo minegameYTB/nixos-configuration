@@ -19,6 +19,7 @@ if [[ -n $(git status --porcelain) ]]; then
   ### Get hash commit
   NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock)
   echo "New revision"
+  echo ""
   git add flake.lock
   git commit -m "[nixpkgs/${NIXPKGS_COMMIT} flake.lock: update to the new rev]"
 
