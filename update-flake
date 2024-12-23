@@ -3,6 +3,9 @@
 #! nix-shell -p nix git jq cacert
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
 
+### Update repo
+git pull
+
 ### Update flake 
 nix flake update --flake .
 
