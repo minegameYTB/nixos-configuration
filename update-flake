@@ -21,7 +21,7 @@ if [[ -n $(git status --porcelain) ]]; then
   echo "New revision"
   echo ""
   git add flake.lock
-  git commit -m "[nixpkgs/${NIXPKGS_COMMIT} flake.lock: update to the new rev]"
+  git commit -m "[nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev]"
 
   ### Push changes
   git push origin flake
