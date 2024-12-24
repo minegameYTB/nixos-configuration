@@ -26,6 +26,7 @@
    bat
    lsd
    ayu-theme-gtk
+   gearlever
    gparted
    gnome-software
    gnome-tweaks
