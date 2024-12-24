@@ -3,6 +3,7 @@ self: super: {
     extraPkgs = pkgs: with super; [ 
       gnome-console
       ptyxis
+      adwaita-icon-theme
     ]; 
   };
 }
