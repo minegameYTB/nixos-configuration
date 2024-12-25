@@ -77,6 +77,9 @@
      gpull = "git pull";
      nix-profile-upgrade = "nix profile upgrade --all";
    };
+   interactiveShellInit = ''
+      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
+   '';
   };
 
  ### Nix index
