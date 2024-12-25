@@ -160,6 +160,7 @@
    interactiveShellInit = ''
       set fish_greeting
       export NIXPKGS_ALLOW_UNFREE=1
+      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
    ''; 
  };
 }
