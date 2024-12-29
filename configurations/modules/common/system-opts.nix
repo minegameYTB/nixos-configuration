@@ -44,11 +44,9 @@
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
    PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.nvd pkgs.nix ]}
-   echo ""
-   echo "===================================="
-   echo "| Running nvd diff to show changes |"
-   echo "===================================="
-   echo ""
+   echo -e "\n===================================="
+   echo      "| Running nvd diff to show changes |"
+   echo -e   "====================================\n"
    nvd diff $(ls -dv /nix/var/nix/profiles/system-*-link|tail -2)
    echo ""
  '';
@@ -99,6 +97,9 @@
  
  ### Fwupd
  services.fwupd.enable = true;
+
+ ### Apparmor
+ security.apparmor.enable = true;
  
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
