@@ -32,9 +32,9 @@
     ### Games 
     prismlauncher
     ### Utilities
+    jq
     rpi-imager
     localsend
-    gitg
     gnome-extension-manager
     bottles
     bitwarden-desktop
@@ -93,7 +93,7 @@
   #  /etc/profiles/per-user/minegame/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "code";
+    EDITOR = "nano";
   };
 
   # Let Home Manager install and manage itself.
@@ -160,6 +160,7 @@
    interactiveShellInit = ''
       set fish_greeting
       export NIXPKGS_ALLOW_UNFREE=1
+      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
    ''; 
  };
 }
