@@ -4,7 +4,7 @@
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
 
 ### Update repo
-echo -e "\nUpdate local repository"
+echo -e "\nUpdate local repository\n"
 git pull
 
 ### Update flake 
