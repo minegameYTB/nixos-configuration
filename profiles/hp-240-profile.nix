@@ -8,6 +8,7 @@
      ../configurations/modules/app-opts/hp-240.nix                ### Programs with options
      ../configurations/modules/networking/hp-240.nix              ### Related to network
      ../configurations/modules/system/tmp-on-disk.nix		  ### Use /tmp on disk
+     ../configurations/modules/specific/games/steam-run-only.nix  ### Only use steam-run
     #../configurations/modules/specific/laptop/power-mgmt.nix     ### For laptop battery life
      ../configurations/modules/specific/desktop/gnome.nix         ### Related to GNOME DE
      ../configurations/modules/specific/desktop/x11.nix           ### Related to x11 Server (GUI server)
