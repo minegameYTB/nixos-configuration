@@ -13,33 +13,21 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-label/nixos-root";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos-root";
+    fsType = "ext4";
+  };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-label/nixos-home";
-      fsType = "ext4";
-    };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-label/nixos-home";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot/efi" =
-    { device = "/dev/disk/by-label/EFI";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
-
-  fileSystems."/mnt/DATA" =
-    { device = "/dev/disk/by-label/DATA";
-      fsType = "btrfs";
-      options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
-    };
-
-  fileSystems."/mnt/DATA/Games" =
-    { device = "/dev/disk/by-label/DATA";
-      fsType = "btrfs";
-      options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
-    };
+  fileSystems."/boot/efi" = {
+    device = "/dev/disk/by-label/EFI";
+    fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
+  };
 
   swapDevices = [
     { device = "/dev/disk/by-label/nixos-swap"; }
