@@ -94,6 +94,9 @@
  ### Fwupd
  services.fwupd.enable = true;
 
+ ### Envfs
+ services.envfs.enable = true;
+
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
    wrapInterpreterInShell = false;
