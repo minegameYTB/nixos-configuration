@@ -43,7 +43,7 @@
  
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
-   PATH="${pkgs.coreutils}/bin:${pkgs.nix}/bin:${pkgs.nvd}/bin"
+   PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.nvd pkgs.nix ]}
    echo -e "\n===================================="
    echo      "| Running nvd diff to show changes |"
    echo -e   "====================================\n"
