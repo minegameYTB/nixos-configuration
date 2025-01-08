@@ -20,17 +20,23 @@
   home.packages = with pkgs; [
     ### Theme
     adw-gtk3
+    
     ### non-free apps
     discord
     spotify
+    
     ### Video
     vlc
+    
     ### Office
     onlyoffice-bin
+    
     ### Editor
     vscode-fhs
+    
     ### Games 
     prismlauncher
+    
     ### Utilities
     jq
     rpi-imager
@@ -38,6 +44,7 @@
     gnome-extension-manager
     bottles
     bitwarden-desktop
+    
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
       cores = with libretro; [
@@ -47,6 +54,7 @@
         dolphin
       ];
     })
+
     ### On nixos 25.05, replace actual override by overrideAttrs for retroarch 
     #(retroarch.overrideAttrs (oldAttrs: {
     # cores = with libretro; [
