@@ -97,6 +97,9 @@
  ### Envfs
  services.envfs.enable = true;
 
+ ### nix-ld
+ programs.nix-ld.enable = true;
+
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
    wrapInterpreterInShell = false;
