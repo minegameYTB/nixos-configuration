@@ -43,11 +43,10 @@
  
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
-   PATH="${pkgs.bash}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin:${pkgs.nvd}/bin"
+   PATH="${pkgs.coreutils}/bin:${pkgs.nix}/bin:${pkgs.nvd}/bin"
    echo -e "\n===================================="
    echo      "| Running nvd diff to show changes |"
    echo -e   "====================================\n"
-   #nvd diff $(ls -dv /nix/var/nix/profiles/system-*-link|tail -2)
    nvd diff /run/current-system $systemConfig
    echo ""
  '';
