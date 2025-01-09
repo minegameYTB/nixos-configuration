@@ -80,7 +80,7 @@
             "tiling-assistant@leleat-on-github"
            ];
           favorite-apps = [
-            "io.github.zen_browser.zen.desktop" 
+            "zen_browser.desktop" 
             "org.gnome.Calendar.desktop" 
             "org.gnome.Nautilus.desktop" 
             "org.gnome.Software.desktop" 
