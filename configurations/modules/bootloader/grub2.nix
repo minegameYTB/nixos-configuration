@@ -8,6 +8,7 @@
      device = "nodev";
      efiSupport = true;
      configurationLimit = 9;
+     useOSProber = true;
      ### Create a 'in-config' derivation to package on the fly the theme (based on bootloader conf of Plasmaa0 for the theme part (github.com/Plasmaa0/NixOS-config))
      theme = pkgs.stdenv.mkDerivation rec {
           pname = "distro-grub-themes";
