@@ -39,6 +39,7 @@
     
     ### Utilities
     jq
+    fx
     rpi-imager
     localsend
     gnome-extension-manager
