@@ -29,6 +29,18 @@
     options = [ "fmask=0022" "dmask=0022" ];
   };
 
+  fileSystems."/mnt/DATA" =
+    { device = "/dev/disk/by-label/DATA";
+      fsType = "btrfs";
+      options = [ "subvol=@data" "compress=zstd:10" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+    };
+
+  fileSystems."/mnt/Games" =
+    { device = "/dev/disk/by-label/DATA";
+      fsType = "btrfs";
+      options = [ "subvol=@games" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+    };
+
   swapDevices = [
     { device = "/dev/disk/by-label/nixos-swap"; }
   ];
