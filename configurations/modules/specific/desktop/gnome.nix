@@ -32,36 +32,30 @@
      {
        settings = {
          "org/gnome/desktop/wm/preferences" = {
-            button-layout = ":minimize,maximize,close";
-            theme = "adw-gtk3";
-            focus-mode = "click";
-            visual-bell = false;
+          button-layout = ":minimize,maximize,close";
          };
-         "org/gnome/desktop/peripherals/keyboard" = {
-            numlock-state = true;
-          };
          "org/gnome/mutter" = {
-            attach-modal-dialogs = true;
+          attach-modal-dialogs = true;
          };
          "org/gnome/desktop/interface" = {
-            clock-show-weekday = true;
-            clock-show-date = true;
-            color-scheme = "prefer-dark";
-            gtk-theme = "adw-gtk3";
-            icon-theme = "Papirus-Dark";
-            monospace-font-name = "UbuntuMono Nerd Font 10";
-            show-battery-percentage = true;
+          clock-show-weekday = true;
+          clock-show-date = true;
+          color-scheme = "prefer-dark";
+          gtk-theme = "Adwaita-dark";
+          icon-theme = "Papirus-Dark";
+          monospace-font-name = "UbuntuMono Nerd Font 10";
+          show-battery-percentage = true;
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
-            dock-position = "LEFT";
-            transparency-mode = "DYNAMIC";
-            running-indicator-style = "DOTS";
-            running-indicator-dominant-color = true;
-            custom-background-color = true;
-            background-color  = "rgb(36,31,49)";
-            dash-max-icon-size = "30";
-            custom-theme-shrink = true;
-            click-action = "minimize-or-previews";  
+          dock-position = "LEFT";
+          transparency-mode = "DYNAMIC";
+          running-indicator-style = "DOTS";
+          running-indicator-dominant-color = true;
+          custom-background-color = true;
+          background-color  = "rgb(36,31,49)";
+          dash-max-icon-size = "30";
+          custom-theme-shrink = true;
+          click-action = "minimize-or-previews";  
          };
          "org/gnome/shell/extensions/Logo-menu" = {
             hide-forcequit = true;
@@ -83,7 +77,7 @@
              "Hide_Activities@shay.shayel.org" 
              "logomenu@aryan_k"
              "user-theme@gnome-shell-extensions.gcampax.github.com" 
-             "tiling-assistant@leleat-on-github"
+            "tiling-assistant@leleat-on-github"
            ];
           favorite-apps = [
             "zen_browser.desktop" 
