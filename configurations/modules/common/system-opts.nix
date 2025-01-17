@@ -15,6 +15,9 @@
    kernel.sysctl = { "vm.swappiness" = 20; };
    kernelPackages = pkgs.linuxPackages_latest;
  };
+
+ ### Disable IPv6
+ networking.enableIPv6 = false;
  
  ### Nix Settings
  nix = {
