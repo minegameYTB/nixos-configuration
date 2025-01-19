@@ -41,7 +41,6 @@
           clock-show-weekday = true;
           clock-show-date = true;
           color-scheme = "prefer-dark";
-          gtk-theme = "Adwaita-dark";
           icon-theme = "Papirus-Dark";
           monospace-font-name = "UbuntuMono Nerd Font 10";
           show-battery-percentage = true;
