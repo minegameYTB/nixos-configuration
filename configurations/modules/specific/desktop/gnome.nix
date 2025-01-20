@@ -41,7 +41,7 @@
           clock-show-weekday = true;
           clock-show-date = true;
           color-scheme = "prefer-dark";
-          icon-theme = "Papirus-Dark";
+          icon-theme = "Papirus";
           monospace-font-name = "UbuntuMono Nerd Font 10";
           show-battery-percentage = true;
          };
@@ -52,7 +52,7 @@
           running-indicator-dominant-color = true;
           custom-background-color = true;
           background-color  = "rgb(36,31,49)";
-          dash-max-icon-size = "30";
+          dash-max-icon-size = "26";
           custom-theme-shrink = true;
           click-action = "minimize-or-previews";  
          };
