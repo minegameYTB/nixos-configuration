@@ -45,6 +45,7 @@
     gnome-extension-manager
     bottles
     bitwarden-desktop
+    (import ../pkgs/sshrm) ### sshrm
     
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
