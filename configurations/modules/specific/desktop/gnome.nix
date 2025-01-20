@@ -40,7 +40,6 @@
          "org/gnome/desktop/interface" = {
           clock-show-weekday = true;
           clock-show-date = true;
-          color-scheme = "prefer-dark";
           icon-theme = "Papirus";
           monospace-font-name = "UbuntuMono Nerd Font 10";
           show-battery-percentage = true;
@@ -52,7 +51,6 @@
           running-indicator-dominant-color = true;
           custom-background-color = true;
           background-color  = "rgb(36,31,49)";
-          dash-max-icon-size = "26";
           custom-theme-shrink = true;
           click-action = "minimize-or-previews";  
          };
@@ -92,21 +90,9 @@
             "LocalSend.desktop"
           ];
          };
-         "org/gnome/Ptyxis" = {
-           audible-bell = false;
-           restore-session = false;
-           default-profile-uuid = "60b6639cc65c5a313600a657672c34f4";
-           profile-uuids =  ["60b6639cc65c5a313600a657672c34f4"];
-         };
-         "org/gnome/Ptyxis/Profiles/60b6639cc65c5a313600a657672c34f4" = {
-           palette = "Breath Darker";
-         };
          "org/gnome/nautilus/preferences" = {
            show-create-link = true;
            show-delete-permanently = true;
-         };
-         "org/gnome/TextEditor" = {
-           restore-session = false;
          };
        };
      }
