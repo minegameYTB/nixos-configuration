@@ -45,7 +45,7 @@
     gnome-extension-manager
     bottles
     bitwarden-desktop
-    (import ../pkgs/sshrm { inherit (pkgs) lib stdenv openssh makeWrapper fetchFromGithub }) ### sshrm
+    (pkgs.callPackage ../pkgs/sshrm {}) ### sshrm
     
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
