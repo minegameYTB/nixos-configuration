@@ -107,7 +107,7 @@
  qt = {
    enable = true;
    platformTheme = "gnome";
-   style = "adwaita";
+   style = "adwaita-dark";
  };
 
  ### binfmt registration
