@@ -5,6 +5,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    stylix.url = "github:danth/stylix/release-24.11";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +16,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, lanzaboote, ... }: 
+  outputs = inputs@{ self, nixpkgs, stylix, home-manager, lanzaboote, ... }: 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -26,12 +27,14 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
+          stylix.nixosModules.stylix
+          
          #lanzaboote.nixosModules.lanzaboote
          #({ pkgs, lib, ... }: {
          #  environment.systemPackages = with pkgs; [
          #    sbctl
          #  ];
-
+         #
          #  boot = {
          #    loader.systemd-boot.enable = lib.mkForce false;
          #    lanzaboote = {
@@ -40,6 +43,7 @@
          #    };
          #  };
          #})
+         
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
