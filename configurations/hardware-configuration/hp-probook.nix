@@ -32,13 +32,13 @@
   fileSystems."/mnt/DATA" =
     { device = "/dev/disk/by-label/DATA";
       fsType = "btrfs";
-      options = [ "subvol=@data" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+      options = [ "subvol=@data" "compress=zstd:10" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
     };
 
-  fileSystems."/mnt/DATA/Games" =
+  fileSystems."/mnt/Games" =
     { device = "/dev/disk/by-label/DATA";
       fsType = "btrfs";
-      options = [ "subvol=@games" "nofail" "noatime" "nodev" "nosuid" ];
+      options = [ "subvol=@games" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
     };
 
 
