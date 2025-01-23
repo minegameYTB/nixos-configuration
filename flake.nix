@@ -26,20 +26,22 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
-          lanzaboote.nixosModules.lanzaboote
-          ({ pkgs, lib, ... }: {
-            environment.systemPackages = with pkgs; [
-              sbctl
-            ];
-
-            boot = {
-              loader.systemd-boot.enable = lib.mkForce false;
-              lanzaboote = {
-                enable = true;
-                pkiBundle = "/etc/secureboot";
-              };
-            };
-          })
+          
+         #lanzaboote.nixosModules.lanzaboote
+         #({ pkgs, lib, ... }: {
+         #  environment.systemPackages = with pkgs; [
+         #    sbctl
+         #  ];
+         #
+         #  boot = {
+         #    loader.systemd-boot.enable = lib.mkForce false;
+         #    lanzaboote = {
+         #      enable = true;
+         #      pkiBundle = "/etc/secureboot";
+         #    };
+         #  };
+         #})
+         
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
