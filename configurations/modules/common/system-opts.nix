@@ -109,6 +109,13 @@
    '';
  };
  
+ ### Qt
+ qt = {
+   enable = true;
+   platformTheme = "gnome";
+   style = "adwaita";
+ };
+
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
    wrapInterpreterInShell = false;
