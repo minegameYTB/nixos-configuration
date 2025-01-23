@@ -97,6 +97,17 @@
  
  ### Fwupd
  services.fwupd.enable = true;
+
+ ### Nix-ld
+ programs.nix-ld.enable = true;
+
+ ### EnvFS
+ services.envfs = {
+   enable = true;
+   extraFallbackPathCommands = ''
+     ln -s ${pkgs.bash}/bin/bash $out/bash
+   '';
+ };
  
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
