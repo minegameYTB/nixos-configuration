@@ -15,9 +15,6 @@
    kernel.sysctl = { "vm.swappiness" = 20; };
    kernelPackages = pkgs.linuxPackages_latest;
  };
-
- ### Disable IPv6
- networking.enableIPv6 = false;
  
  ### Nix Settings
  nix = {
@@ -47,10 +44,12 @@
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
    PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.nvd pkgs.nix ]}
-   echo -e "\n===================================="
-   echo      "| Running nvd diff to show changes |"
-   echo -e   "====================================\n"
-   nvd diff /run/current-system $systemConfig
+   echo ""
+   echo "===================================="
+   echo "| Running nvd diff to show changes |"
+   echo "===================================="
+   echo ""
+   nvd diff $(ls -dv /nix/var/nix/profiles/system-*-link|tail -2)
    echo ""
  '';
 
@@ -78,8 +77,11 @@
      gpull = "git pull";
      nix-profile-upgrade = "nix profile upgrade --all";
    };
- };
- 
+   interactiveShellInit = ''
+      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
+   '';
+  };
+
  ### Nix index
  programs = {
    nix-index = {
@@ -91,25 +93,13 @@
    };
  };
  
+
  ### Fstrim
  services.fstrim.enable = true;
  
  ### Fwupd
  services.fwupd.enable = true;
-
- ### Envfs
- services.envfs.enable = true;
-
- ### nix-ld
- programs.nix-ld.enable = true;
  
- ### Qt
- qt = {
-   enable = true;
-   platformTheme = "gnome";
-   style = "adwaita-dark";
- };
-
  ### binfmt registration
  boot.binfmt.registrations.appimage = {
    wrapInterpreterInShell = false;

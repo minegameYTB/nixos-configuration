@@ -9,7 +9,7 @@
    [ ./modules/common/system-opts.nix    ### System options
      ./modules/common/users.nix          ### User settings
      ./modules/common/system-pkgs.nix    ### System packages
-     ./modules/common/systemd.nix        ### Systemd services
+    #./modules/common/systemd.nix        ### Systemd services
      ./modules/common/timezone.nix       ### Timezone
      ./modules/common/security.nix       ### Security
    ];
