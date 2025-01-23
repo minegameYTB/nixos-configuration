@@ -20,6 +20,7 @@
   home.packages = with pkgs; [
     ### Theme
     adw-gtk3
+    catppuccin-cursors.mochaDark
     
     ### non-free apps
     discord
