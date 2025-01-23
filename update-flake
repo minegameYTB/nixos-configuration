@@ -4,26 +4,29 @@
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
 
 ### Update repo
-echo -e "\nUpdate local repository\n"
+echo "Update repository"
 git pull
+echo ""
 
 ### Update flake 
-echo -e "\nUpdate repo flake\n"
+echo "Update repo flake"
 nix flake update --flake .
+echo ""
 
 ### See if flake.lock change after the previous command
 if [[ -n $(git status --porcelain) ]]; then
 
   ### Get hash commit
   NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
-  echo -e "New revision\n"
+  echo "New revision"
+  echo ""
   git add flake.lock
   git commit -m "[nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev]"
 
   ### Push changes
   git push origin flake
 
-  echo -e "\nChange commited to the repo"
+  echo "Change commited to the repo"
 else
   echo "No changes detected"
 fi

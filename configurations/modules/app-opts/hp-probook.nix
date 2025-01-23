@@ -2,17 +2,29 @@
 
 {
  ### Programs with options
- programs = {
-   firefox.enable = true;
-   gamemode = {
-     enable = true;
-   };
-   nano.nanorc = ''
-     set autoindent
-     set linenumbers
-   '';
-  };
+ ### Firefox
+ programs.firefox.enable = true;
+  
+ ### Steam
+ programs.steam = {
+   enable = true;
+   extraCompatPackages = [
+     pkgs.proton-ge-bin
+   ];
+ };
 
+ ### GameMode
+ programs.gamemode = {
+   enable = true;
+ };
+
+ ### gnu nano
+ programs.nano.nanorc = ''
+   set autoindent
+   set linenumbers 
+ '';
+
+ ### NerdFonts
  fonts.packages = with pkgs; [
    (nerdfonts.override { fonts = [ "UbuntuMono" ]; })
  ];

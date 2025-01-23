@@ -40,7 +40,9 @@
          "org/gnome/desktop/interface" = {
           clock-show-weekday = true;
           clock-show-date = true;
-          icon-theme = "Papirus";
+          color-scheme = "prefer-dark";
+          gtk-theme = "Adwaita-dark";
+          icon-theme = "Papirus-Dark";
           monospace-font-name = "UbuntuMono Nerd Font 10";
           show-battery-percentage = true;
          };
@@ -51,6 +53,7 @@
           running-indicator-dominant-color = true;
           custom-background-color = true;
           background-color  = "rgb(36,31,49)";
+          dash-max-icon-size = "30";
           custom-theme-shrink = true;
           click-action = "minimize-or-previews";  
          };
@@ -77,7 +80,7 @@
             "tiling-assistant@leleat-on-github"
            ];
           favorite-apps = [
-            "zen_browser.desktop" 
+            "io.github.zen_browser.zen.desktop" 
             "org.gnome.Calendar.desktop" 
             "org.gnome.Nautilus.desktop" 
             "org.gnome.Software.desktop" 
@@ -90,9 +93,21 @@
             "LocalSend.desktop"
           ];
          };
+         "org/gnome/Ptyxis" = {
+           audible-bell = false;
+           restore-session = false;
+           default-profile-uuid = "60b6639cc65c5a313600a657672c34f4";
+           profile-uuids =  ["60b6639cc65c5a313600a657672c34f4"];
+         };
+         "org/gnome/Ptyxis/Profiles/60b6639cc65c5a313600a657672c34f4" = {
+           palette = "Breath Darker";
+         };
          "org/gnome/nautilus/preferences" = {
            show-create-link = true;
            show-delete-permanently = true;
+         };
+         "org/gnome/TextEditor" = {
+           restore-session = false;
          };
        };
      }

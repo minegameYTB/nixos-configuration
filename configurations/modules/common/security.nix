@@ -8,7 +8,4 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-  
- ### Apparmor
- security.apparmor.enable = true;
 }
