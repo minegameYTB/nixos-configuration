@@ -16,7 +16,7 @@
      "boot.shell_on_fail"
    ];
    kernel.sysctl = { "vm.swappiness" = 20; };
-   kernelPackages = pkgs.linuxPackages_latest;
+   kernelPackages = pkgs.linuxPackages_6_12;
  };
  
  ### Nix Settings
