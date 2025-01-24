@@ -76,6 +76,13 @@
           }
         ];
       };
+      vm-no-gui = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-no-gui-profile.nix
+        ];
+      };
     };
   };
 }
