@@ -32,7 +32,6 @@ check_rev_change(){
 }
 
 main(){
-  ### Variable
   update_repo
   update_flake
   check_rev_change
