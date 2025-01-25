@@ -100,6 +100,9 @@
 
  ### Nix-ld
  programs.nix-ld.enable = true;
+ 
+ ### GVFS
+ services.gvfs.enable = true;
 
  ### EnvFS
  services.envfs = {
