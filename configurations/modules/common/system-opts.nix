@@ -7,9 +7,12 @@
      enable = true;
      theme = "bgrt";
    };
-   binfmt.emulatedSystems = [
-     "aarch64-linux"
-   ];
+   binfmt = {
+    preferStaticEmulators = true;
+     emulatedSystems = [
+       "aarch64-linux"
+     ];
+   };
    initrd.systemd.enable = true;
    kernelParams = [
      "quiet"
