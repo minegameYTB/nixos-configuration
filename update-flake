@@ -3,27 +3,40 @@
 #! nix-shell -p nix git jq cacert openssh
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
 
-### Update repo
-echo -e "\nUpdate local repository\n"
-git pull
+update_repo(){
+  echo -e "\nUpdate local repository\n"
+  git pull
+}
 
-### Update flake 
-echo -e "\nUpdate repo flake\n"
-nix flake update --flake .
+update_flake(){ 
+  echo -e "\nUpdate repo flake\n"
+  nix flake update --flake .
+}
 
-### See if flake.lock change after the previous command
-if [[ -n $(git status --porcelain) ]]; then
+check_rev_change(){
+  if [[ -n $(git status --porcelain) ]]; then
 
-  ### Get hash commit
-  NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
-  echo -e "New revision\n"
-  git add flake.lock
-  git commit -m "[nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev]"
+    ### Get hash commit
+    NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
+    echo -e "New revision\n"
+    git add flake.lock
+    git commit -m "[nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev]"
 
-  ### Push changes
-  git push origin flake
+    ### Push changes
+    git push origin flake
 
-  echo -e "\nChange commited to the repo"
-else
-  echo "No changes detected"
-fi
+    echo -e "\nChange commited to the repo"
+  else
+    echo "No changes detected"
+  fi
+}
+
+main(){
+  ### Variable
+  update_repo
+  update_flake
+  check_rev_change
+}
+
+### Execute the main function
+main
