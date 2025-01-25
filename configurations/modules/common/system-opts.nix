@@ -76,11 +76,8 @@
      gadd = "git add";
      gpush = "git push";
      gpull = "git pull";
-     nix-profile-upgrade = "nix profile upgrade --all";
+    #nix-profile-upgrade = "nix profile upgrade --all";
    };
-   interactiveShellInit = ''
-      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
-   '';
   };
 
  ### Nix index
@@ -108,7 +105,7 @@
  services.envfs = {
    enable = true;
    extraFallbackPathCommands = ''
-     ln -s ${pkgs.bash}/bin/bash $out/bash
+     ln -s ${pkgs.bashInteractive}/bin/bash $out/bash
    '';
  };
  
@@ -120,13 +117,15 @@
  };
 
  ### binfmt registration
- boot.binfmt.registrations.appimage = {
-   wrapInterpreterInShell = false;
-   interpreter = "${pkgs.appimage-run}/bin/appimage-run";
-   recognitionType = "magic";
-   offset = 0;
-   mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
-   magicOrExtension = ''\x7fELF....AI\x02'';
+ boot.binfmt.registrations = {
+   appimage = {
+     wrapInterpreterInShell = false;
+     interpreter = "${pkgs.appimage-run}/bin/appimage-run";
+     recognitionType = "magic";
+     offset = 0;
+     mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
+     magicOrExtension = ''\x7fELF....AI\x02'';
+   };
  };
 
 }
