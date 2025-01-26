@@ -13,7 +13,7 @@
        "aarch64-linux"
      ];
    };
-   initrd.systemd.enable = true;
+  #initrd.systemd.enable = true;
    kernelParams = [
      "quiet"
      "boot.shell_on_fail"
