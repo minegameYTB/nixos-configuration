@@ -81,6 +81,9 @@
      gpull = "git pull";
     #nix-profile-upgrade = "nix profile upgrade --all";
    };
+   interactiveShellInit = ''
+     export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
+   '';
   };
 
  ### Nix index
