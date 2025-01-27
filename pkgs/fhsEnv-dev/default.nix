@@ -22,7 +22,7 @@ let
       cpio
       perl
       python3
-      ncurses
+      ncurses5.dev
       which
       file
       findutils
