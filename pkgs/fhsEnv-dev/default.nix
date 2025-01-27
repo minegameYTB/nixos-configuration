@@ -44,6 +44,9 @@ let
       libmpc
       mpfr
       gmp
+      
+      ### Library and headers
+      libxcrypt
     ];
     runScript = "bash";
   };
