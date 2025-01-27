@@ -34,5 +34,6 @@
    gnome-tweaks
    nvd
    papirus-icon-theme
+   (pkgs.callPackage ../../../pkgs/fhsEnv-dev {}) ### fhsEnv-dev (for dev environment require fhs to be used)
  ];
 }
