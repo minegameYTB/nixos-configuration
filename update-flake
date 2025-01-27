@@ -20,7 +20,7 @@ check_rev_change(){
     NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
     echo -e "New revision\n"
     git add flake.lock
-    git commit -m "[nixos-${NIXOS_VERSION} - nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev]"
+    git commit -m "[nixos-${NIXOS_VERSION} - nixpkgs/${NIXPKGS_COMMIT}] flake.lock: update to the new rev"
 
     ### Push changes
     git push origin flake
