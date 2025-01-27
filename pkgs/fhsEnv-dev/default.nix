@@ -45,7 +45,7 @@ let
       mpfr
       gmp
     ];
-    runScript = "fish";
+    runScript = "bash";
   };
 in
 pkgs.runCommand "fhsEnv-shell" {} ''
