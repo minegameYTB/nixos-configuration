@@ -50,7 +50,5 @@ let
 in
 pkgs.runCommand "fhsEnv-shell" {} ''
   mkdir -p $out/bin
-  echo "#!/bin/sh" > $out/bin/fhsEnv-shell
-  echo "exec ${fhsEnv}/bin/fhsEnv-dev" >> $out/bin/fhsEnv-shell
-  chmod +x $out/bin/fhsEnv-shell
+  ln -s ${fhsEnv}/bin/fhsEnv-dev $out/bin/fhsEnv-shell
 ''
