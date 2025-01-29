@@ -15,10 +15,10 @@
    };
    libvirtd.qemu = {
      ovmf = {
-       packages = [(pkgs.OVMF.override {
-         secureBoot = true;
-         tpmSupport = true;
-       }).fd];
+      #packages = [(pkgs.OVMF.override {
+      #  secureBoot = true;
+      #  tpmSupport = true;
+      #}).fd];
      };
      package = pkgs.qemu_kvm;
    };
