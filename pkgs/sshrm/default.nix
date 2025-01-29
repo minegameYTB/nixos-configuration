@@ -12,6 +12,7 @@
     sha256 = "sha256-Sm9RAK6UdvL0yHfE12gIjoLfy3pZBqgRtfm20X1FWm0=";
   };
 
+  outputs = [ "out" "doc" ];
   buildInputs = [ openssh makeWrapper ];
 
   installPhase = ''
@@ -23,9 +24,9 @@
       --prefix PATH : ${lib.makeBinPath [openssh]}
 
     ### Add license file accessible on the right directory
-    mkdir -p $out/share/doc/sshrm
-    cp LICENSE $out/share/doc/sshrm/LICENSE
-    cp README.md $out/share/doc/sshrm/README.md
+    mkdir -p $doc/share/doc/sshrm
+    cp LICENSE $doc/share/doc/sshrm/LICENSE
+    cp README.md $doc/share/doc/sshrm/README.md
   '';
 
   #meta = with stdenv.lib; {

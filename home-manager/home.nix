@@ -49,7 +49,8 @@
     resources
     
     ### External packages
-    (pkgs.callPackage ../pkgs/sshrm {}) ### sshrm
+    (pkgs.callPackage ../pkgs/sshrm {})     ### sshrm $out output
+    (pkgs.callPackage ../pkgs/sshrm {}).doc ### sshrm $doc output
     
     ### Replace retroarchFull with custom override inplace
     (retroarch.override {
