@@ -20,7 +20,6 @@
    nix-search-cli
    efibootmgr
    appimage-run
-   flatpak
    ntfs3g
    ptyxis
    git
@@ -30,7 +29,6 @@
    ayu-theme-gtk
    gearlever
    gparted
-   gnome-software
    gnome-tweaks
    nvd
    papirus-icon-theme
