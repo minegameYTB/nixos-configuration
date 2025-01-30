@@ -19,7 +19,7 @@ stdenvNoCC.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    cp ${rmBin} $out/bin/rm
+    ln -s ${rmBin} $out/bin/rm
   '';
 
   ### Disable metadata
