@@ -13,5 +13,6 @@
      ../configurations/modules/specific/vm/guest/qemu-kvm-guest.nix ### To use optimisation of qemu/kvm
      ../configurations/modules/specific/desktop/sound.nix           ### Sound server
     #../configurations/modules/specific/desktop/autologin.nix       ### Permit autologin
+     ../configurations/modules/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
    ];
 }
