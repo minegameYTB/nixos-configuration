@@ -4,11 +4,8 @@ let
   fhsEnv = pkgs.buildFHSEnv {
     name = "fhsEnv";
     targetPkgs = pkgs: with pkgs; [
-      ### Base pkgs
-      bash
-      coreutils
-
-      ### Other pkgs
+    
+      ### Build Dependency
       gcc
       gnumake
       patch
@@ -22,7 +19,6 @@ let
       cpio
       perl
       python3
-      ncurses5.dev
       which
       file
       findutils
@@ -30,7 +26,6 @@ let
       openssl
       bc
       unzip
-      libtool
       pkg-config
       flex
       bison
@@ -40,13 +35,15 @@ let
       patchutils
       swig
       gperf
-      libelf
-      libmpc
       mpfr
       gmp
       
       ### Library and headers
       libxcrypt
+      libtool
+      libmpc
+      libelf
+      ncurses5.dev
     ];
     runScript = "bash";
   };
