@@ -2,7 +2,7 @@
 
 let
   fhsEnv = pkgs.buildFHSEnv {
-    name = "fhsEnv-dev";
+    name = "fhsEnv";
     targetPkgs = pkgs: with pkgs; [
       ### Base pkgs
       bash
