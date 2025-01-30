@@ -14,13 +14,13 @@ stdenvNoCC.mkDerivation {
   dontConfigure = true;
   dontPatchElf = true;
 
+  ### Use only coreutils from local nix-store (defined on the header)
+  nativeBuildInputs = [ coreutils ];
+
   installPhase = ''
     mkdir -p $out/bin
     cp ${rmBin} $out/bin/rm
   '';
-
-  ### Use only coreutils from local nix-store (defined on the header)
-  nativeBuildInputs = [ coreutils ];
 
   ### Disable metadata
  #meta = {
