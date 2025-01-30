@@ -12,6 +12,7 @@ stdenvNoCC.mkDerivation {
   dontUnpack = true;
   dontBuild = true;
   dontConfigure = true;
+  dontPatchElf = true;
 
   installPhase = ''
     mkdir -p $out/bin
