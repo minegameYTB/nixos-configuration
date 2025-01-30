@@ -59,10 +59,6 @@
 
  ### Zram
  zramSwap.enable = true;
-
- ### Flatpak
- services.flatpak.enable = true;
- xdg.portal.enable = true;
  
  ### Fish
  programs.fish = {
