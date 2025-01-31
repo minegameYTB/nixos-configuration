@@ -36,6 +36,8 @@
          };
          "org/gnome/mutter" = {
             attach-modal-dialogs = true;
+            dynamic-workspaces = true;
+            edge-tiling = true;
          };
          "org/gnome/desktop/interface" = {
             clock-show-weekday = true;
