@@ -106,6 +106,9 @@
  ### GVFS
  services.gvfs.enable = true;
 
+ ### Udev
+ services.udev.packages = [ pkgs.gnome-settings-daemon ];
+
  ### EnvFS
  services.envfs = {
    enable = true;
