@@ -83,7 +83,7 @@
     # ".screenrc".source = dotfiles/screenrc;
     ".themes".source = ./dotfiles/themes;
     ".icons".source = ./dotfiles/icons;
-    ".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
+   #".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
 
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''
