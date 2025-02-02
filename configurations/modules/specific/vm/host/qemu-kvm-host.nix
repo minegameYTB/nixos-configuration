@@ -14,13 +14,13 @@
      qemu.swtpm.enable = true;
    };
    libvirtd.qemu = {
-     ovmf = {
+     package = pkgs.qemu_kvm;
+    #ovmf = {
       #packages = [(pkgs.OVMF.override {
       #  secureBoot = true;
       #  tpmSupport = true;
       #}).fd];
-     };
-     package = pkgs.qemu_kvm;
+     #};
    };
  };
 }
