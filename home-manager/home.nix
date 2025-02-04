@@ -37,7 +37,7 @@
     
     ### Games 
     prismlauncher
-    
+        
     ### Utilities
     jq
     fx
@@ -45,21 +45,20 @@
     gnome-extension-manager
     bottles
     bitwarden-desktop
-    resources
     
     ### External packages
     (pkgs.callPackage ../pkgs/sshrm {})     ### sshrm $out output
     (pkgs.callPackage ../pkgs/sshrm {}).doc ### sshrm $doc output
     
     ### Replace retroarchFull with custom override inplace
-    (retroarch.override {
-      cores = with libretro; [
-        genesis-plus-gx
-        snes9x
-        beetle-psx-hw
-        dolphin
-      ];
-    })
+   #(retroarch.override {
+   #  cores = with libretro; [
+   #    genesis-plus-gx
+   #    snes9x
+   #    beetle-psx-hw
+   #    dolphin
+   #  ];
+   #})
 
     ### On nixos 25.05, replace actual override by overrideAttrs for retroarch 
     #(retroarch.overrideAttrs (oldAttrs: {
