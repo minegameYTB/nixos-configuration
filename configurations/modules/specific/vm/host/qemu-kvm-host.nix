@@ -15,6 +15,7 @@
    };
    libvirtd.qemu = {
      package = pkgs.qemu_kvm;
+     omvf.packages = [ pkgs.OVMFFull.fd];
     #ovmf = {
       #packages = [(pkgs.OVMF.override {
       #  secureBoot = true;
