@@ -42,7 +42,6 @@
     jq
     fx
     rpi-imager
-    localsend
     gnome-extension-manager
     bottles
     bitwarden-desktop
