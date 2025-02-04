@@ -69,7 +69,7 @@
      "cat.ori" = "/run/booted-system/sw/bin/cat";
      "ls.ori" = "/run/booted-system/sw/bin/ls";
      ff = "fastfetch";
-     nix = "nix -v";
+     nix = "nix -vL";
      wget = "wget2";
      gc = "git commit";
      gadd = "git add";

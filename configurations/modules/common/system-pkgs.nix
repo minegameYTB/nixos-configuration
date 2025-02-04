@@ -14,24 +14,37 @@
  # List packages installed in system profile. To search, run:
  # $ nix search wget
  environment.systemPackages = with pkgs; [
-  #vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+   ### CLI
    wget2
    jq
    nix-search-cli
    efibootmgr
    appimage-run
    ntfs3g
-   ptyxis
    git
-   virt-viewer
    bat
    lsd
-   ayu-theme-gtk
-   gearlever
-   gparted
-   gnome-tweaks
    nvd
+
+   ### Utilities
+   gparted
+   gearlever   
+   virt-viewer
+
+   ### Other
+   ptyxis
+   gnome-tweaks
+
+   ### Themes
    papirus-icon-theme
+   ayu-theme-gtk
+
+   ### External packages
    (pkgs.callPackage ../../../pkgs/fhsEnv-dev {}) ### fhsEnv-dev (for dev environment require fhs to be used)
+
+   ### Wrapper script
+   (pkgs.writeShellScriptBin "nixos-rebuild" ''
+      exec ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
+   '')
  ];
 }
