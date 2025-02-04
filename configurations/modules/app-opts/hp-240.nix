@@ -12,6 +12,9 @@
      pkgs.proton-ge-bin
    ];
  };
+ 
+ ### Localsend
+ programs.localsend.enable = true;
   
  ### gnu nano
  programs.nano.nanorc = ''

@@ -13,6 +13,9 @@
    ];
  };
 
+ ### Localsend
+ programs.localsend.enable = true;
+
  ### GameMode
  programs.gamemode = {
    enable = true;
