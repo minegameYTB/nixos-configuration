@@ -41,6 +41,7 @@
     ### Utilities
     jq
     fx
+    screen
     rpi-imager
     gnome-extension-manager
     bottles
@@ -81,6 +82,7 @@
     # ".screenrc".source = dotfiles/screenrc;
     ".themes".source = ./dotfiles/themes;
     ".icons".source = ./dotfiles/icons;
+    ".screen".source = ./dotfiles/screenrc;
    #".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
 
     # # You can also set the file content immediately.
