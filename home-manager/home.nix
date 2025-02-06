@@ -82,8 +82,8 @@
     # ".screenrc".source = dotfiles/screenrc;
     ".themes".source = ./dotfiles/themes;
     ".icons".source = ./dotfiles/icons;
-    ".config/fish/fishline".source = ./dotfiles/fish/fishline;
-    ".config/fish/functions/fish_prompt.fish".source = ./dotfiles/fish/fish_prompt.fish;
+  # ".config/fish/fishline".source = ./dotfiles/fish/fishline;
+  # ".config/fish/functions/fish_prompt.fish".source = ./dotfiles/fish/fish_prompt.fish;
     ".screen".source = ./dotfiles/screenrc;
    #".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
 
@@ -177,9 +177,11 @@
    enable = true;
    interactiveShellInit = ''
       ### Setup fishline
-      set FLINE_PATH ~/.config/fish/fishline
-      source $FLINE_PATH/init.fish
+     #set FLINE_PATH ~/.config/fish/fishline
+     #source $FLINE_PATH/init.fish
    
+      ${pkgs.any-nix-shell}/bin/any-nix-shell fish --info-right | source
+  
       ### Setup env (user side)
       set fish_greeting
       export NIXPKGS_ALLOW_UNFREE=1
