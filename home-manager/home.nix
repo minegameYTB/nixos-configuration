@@ -82,6 +82,8 @@
     # ".screenrc".source = dotfiles/screenrc;
     ".themes".source = ./dotfiles/themes;
     ".icons".source = ./dotfiles/icons;
+    ".config/fish/fishline".source = ./dotfiles/fish/fishline;
+    ".config/fish/functions/fish_prompt.fish".source = ./dotfiles/fish/fish_prompt.fish;
     ".screen".source = ./dotfiles/screenrc;
    #".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
 
@@ -174,6 +176,11 @@
  programs.fish = {
    enable = true;
    interactiveShellInit = ''
+      ### Setup fishline
+      set FLINE_PATH ${config.home.homeDirectory}/.config/fish/fishline
+      source $FLINE_PATH/init.fish
+   
+      ### Setup env (user side)
       set fish_greeting
       export NIXPKGS_ALLOW_UNFREE=1
       export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
