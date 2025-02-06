@@ -92,7 +92,7 @@
    interactiveShellInit = ''
     #export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
      export NIXPKGS_ALLOW_UNFREE=1
-     export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
+     export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' /home/minegame/nixos-configuration/flake.lock|cut -c1-8)
    '';
   };
 
