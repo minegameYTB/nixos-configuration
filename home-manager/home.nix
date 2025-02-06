@@ -172,4 +172,16 @@
    };
  };
 
+  ### Zsh
+ programs.zsh = {
+   enable = true;
+   syntaxHighlighting = {
+     enable = true;
+   };
+   autosuggestion = {
+     enable = true;
+     strategy = [ "match_prev_cmd" ];
+   };
+ };
+
 }
