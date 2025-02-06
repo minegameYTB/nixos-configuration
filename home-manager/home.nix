@@ -177,7 +177,7 @@
    enable = true;
    interactiveShellInit = ''
       ### Setup fishline
-      set FLINE_PATH ${config.home.homeDirectory}/.config/fish/fishline
+      set FLINE_PATH ~/.config/fish/fishline
       source $FLINE_PATH/init.fish
    
       ### Setup env (user side)
