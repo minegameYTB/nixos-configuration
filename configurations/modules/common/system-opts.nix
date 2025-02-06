@@ -64,6 +64,13 @@
  programs.zsh = {
    enable = true;
    enableBashCompletion = true;
+   syntaxHighlighting = {
+     enable = true;
+   };
+   autosuggestions = {
+     enable = true;
+     strategy = [ "match_prev_cmd" ];
+   };
    ohMyZsh = {
      enable = true;
      theme = "agnoster";
