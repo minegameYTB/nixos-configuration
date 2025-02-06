@@ -172,20 +172,14 @@
    };
  };
 
- ### Fish
- programs.fish = {
+ ### Zsh
+ programs.zsh = {
    enable = true;
-   interactiveShellInit = ''
-      ### Setup fishline
-     #set FLINE_PATH ~/.config/fish/fishline
-     #source $FLINE_PATH/init.fish
-   
-      ${pkgs.any-nix-shell}/bin/any-nix-shell fish --info-right | source
-  
-      ### Setup env (user side)
-      set fish_greeting
-      export NIXPKGS_ALLOW_UNFREE=1
-      export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
-   ''; 
+   syntaxHighlighting = {
+     enable = true;
+   };
+   oh-my-zsh = {
+     enable = true;
+   };
  };
 }
