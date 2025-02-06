@@ -19,12 +19,10 @@
    jq
    nix-search-cli
    efibootmgr
-   appimage-run
    ntfs3g
    git
    bat
    lsd
-   nvd
 
    ### Utilities
    gparted

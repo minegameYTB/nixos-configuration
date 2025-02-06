@@ -2,7 +2,7 @@
 
 {
  ### Fish root
- users.users.root.shell = pkgs.fish;
+ users.users.root.shell = pkgs.zsh;
  
  # Define a user account. Don't forget to set a password with ‘passwd’.
  users.users.minegame = {
@@ -10,7 +10,7 @@
    isNormalUser = true;
    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
    initialPassword = "nixos";
-   shell = pkgs.fish;
+   shell = pkgs.zsh;
  };
 
 }

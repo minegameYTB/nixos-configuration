@@ -49,7 +49,7 @@
  
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
-   PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.nvd pkgs.nix ]}
+   PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
    echo -e "\n===================================="
    echo      "| Running nvd diff to show changes |"
    echo -e   "====================================\n"
@@ -60,9 +60,14 @@
  ### Zram
  zramSwap.enable = true;
  
- ### Fish
- programs.fish = {
+ ### Zsh
+ programs.zsh = {
    enable = true;
+   enableBashCompletion = true;
+   ohMyZsh = {
+     enable = true;
+     theme = "agnoster";
+   };
    shellAliases = {
      ls = "lsd";
      cat = "bat";
@@ -79,6 +84,8 @@
    };
    interactiveShellInit = ''
      export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
+     export NIXPKGS_ALLOW_UNFREE=1
+     export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
    '';
   };
 
@@ -86,7 +93,7 @@
  programs = {
    nix-index = {
      enable = true;
-     enableFishIntegration = true;
+     enableZshIntegration = true;
    };
    command-not-found = {
      enable = false;
@@ -114,6 +121,8 @@
    enable = true;
    extraFallbackPathCommands = ''
      ln -s ${pkgs.bashInteractive}/bin/bash $out/bash
+     ln -s ${pkgs.python3}/bin/python3 $out/python
+     ln -s ${pkgs.python3}/bin/python3 $out/python3
    '';
  };
  
