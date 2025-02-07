@@ -68,8 +68,6 @@
      enable = true;
      highlighters = [
        "main"
-       "pattern"
-       "cursor"
      ];
      styles = {
        "comment" = "fg=red,bold";
