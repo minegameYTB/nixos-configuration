@@ -33,7 +33,6 @@
     onlyoffice-bin
     
     ### Editor
-    vscode-fhs
     
     ### Games 
     prismlauncher
@@ -82,10 +81,7 @@
     # ".screenrc".source = dotfiles/screenrc;
     ".themes".source = ./dotfiles/themes;
     ".icons".source = ./dotfiles/icons;
-  # ".config/fish/fishline".source = ./dotfiles/fish/fishline;
-  # ".config/fish/functions/fish_prompt.fish".source = ./dotfiles/fish/fish_prompt.fish;
     ".screenrc".source = ./dotfiles/screenrc;
-   #".local/share/backgrounds/gnome".source = ./dotfiles/gnome;
 
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''
