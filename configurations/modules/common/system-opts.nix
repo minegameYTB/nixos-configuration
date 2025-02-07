@@ -66,6 +66,15 @@
    enableBashCompletion = true;
    syntaxHighlighting = {
      enable = true;
+     highlighters = [
+       "main"
+       "pattern"
+       "cursor"
+     ];
+     styles = {
+       "comment" = "fg=red,bold";
+       "unknown-token" = "fg=red";
+     };
    };
    autosuggestions = {
      enable = true;
