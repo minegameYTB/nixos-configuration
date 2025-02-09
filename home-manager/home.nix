@@ -45,6 +45,7 @@
     gnome-extension-manager
     bottles
     bitwarden-desktop
+    gh
     
     ### External packages
     (pkgs.callPackage ../pkgs/sshrm {})     ### sshrm $out output
