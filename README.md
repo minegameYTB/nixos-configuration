@@ -21,6 +21,7 @@ How to install this flake with nixos-install ?
 
 this flake as a structure with mutiple directory
 
+```
 * nixos-configuration root 
 |
  \_ configurations (all configuration that discribe settings for NixOS)
@@ -36,3 +37,4 @@ this flake as a structure with mutiple directory
  \_ mksymlink (a simple script shell which will create a symlink into the root of home directory)
 |
  \_ update-flake (a shell script that will update the flake.lock file and create a git commit automatically)
+```
