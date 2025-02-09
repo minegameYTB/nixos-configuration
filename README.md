@@ -28,7 +28,7 @@ this flake as a structure with mutiple directory
 |
  \_ home-manager (related to home-manager settings (to add package to user level))
 |
- \_ pkgs (deprecated soon (when remote repo will be available))
+ \_ pkgs (local nix expression for local packages)
 |
  \_ profiles (a set of local expression to be used for a host (e.g: hp-probook will have "hp-probook" hostname while hp-240 will have "UTILISA-0SK6G4E" hostname))
 |
