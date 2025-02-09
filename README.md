@@ -11,10 +11,10 @@ How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
 ```bash
 ### With the flake on local
-># nixos-install --flake .#<host>
+#> nixos-install --flake .#<host>
 
 ### Distant flake
-># nixos-install --flake github:minegameYTB/nixos-configuration#<host>
+#> nixos-install --flake github:minegameYTB/nixos-configuration#<host>
 ```
 
 # flake structure
