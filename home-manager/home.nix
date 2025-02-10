@@ -1,5 +1,10 @@
 { config, pkgs, ... }:
 
+
+ let
+   ### Add external packages
+   sshrm = pkgs.callPackage ../pkgs/sshrm {};
+ in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -48,8 +53,7 @@
     gh
     
     ### External packages
-    (pkgs.callPackage ../pkgs/sshrm {})     ### sshrm $out output
-   #(pkgs.callPackage ../pkgs/sshrm {}).doc ### sshrm $doc output
+    sshrm
     
     ### Replace retroarchFull with custom override inplace
    #(retroarch.override {
