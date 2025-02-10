@@ -1,6 +1,16 @@
 { config, pkgs, ...  }:
 
-{      
+      
+ let
+   ### Add external package
+   fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
+   
+   ### Wrapper script
+   nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
+      exec ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
+   '';
+ in
+{
  # Allow unfree packages
  nixpkgs.config.allowUnfree = true;
 
@@ -38,11 +48,9 @@
    ayu-theme-gtk
 
    ### External packages
-   (pkgs.callPackage ../../../pkgs/fhsEnv-dev {}) ### fhsEnv-dev (for dev environment require fhs to be used)
+   fhsEnv-dev
 
    ### Wrapper script
-   (pkgs.writeShellScriptBin "nixos-rebuild" ''
-      exec ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
-   '')
+   nixos-rebuild
  ];
 }
