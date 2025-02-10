@@ -2,7 +2,7 @@
 
       
  let
-   ### Add external package
+   ### Add external packages
    fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
    
    ### Wrapper script
