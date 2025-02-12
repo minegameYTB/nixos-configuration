@@ -28,7 +28,7 @@
    catppuccin-cursors.mochaDark
    
    ### non-free apps
-   discord
+   vencord
    spotify
    
    ### Video
