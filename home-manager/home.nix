@@ -28,7 +28,7 @@
    catppuccin-cursors.mochaDark
    
    ### non-free apps
-   vencord
+   vesktop
    spotify
    
    ### Video
