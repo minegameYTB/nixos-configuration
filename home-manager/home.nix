@@ -183,6 +183,10 @@
      enable = true;
      strategy = [ "match_prev_cmd" ];
    };
+   initExtra = ''
+     export NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' $HOME/nixos-configuration/flake.lock|cut -c1-8)
+    #${pkgs.any-nix-shell}/bin/any-nix-shell zsh --info-right | source /dev/stdin
+  '';
  };
 
 }
