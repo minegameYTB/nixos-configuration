@@ -31,6 +31,9 @@
    vesktop
    spotify
    
+   ### Audio
+   amberol
+
    ### Video
    vlc
     
