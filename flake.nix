@@ -63,11 +63,11 @@
           }
         ];
       };
-      vm-desktop = lib.nixosSystem {
+      vm-desktop-efi = lib.nixosSystem {
         inherit system;
         modules = [
           ./configurations/configuration.nix
-          ./profiles/vm-desktop-profile.nix
+          ./profiles/vm-desktop-efi-profile.nix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -76,11 +76,51 @@
           }
         ];
       };
-      vm-no-gui = lib.nixosSystem {
+      vm-desktop-bios = lib.nixosSystem {
         inherit system;
         modules = [
           ./configurations/configuration.nix
-          ./profiles/vm-no-gui-profile.nix
+          ./profiles/vm-desktop-bios-novio-profile.nix
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./home-manager/home.nix;
+            home-manager.backupFileExtension = "bak";
+          }
+        ];
+      };
+      vm-desktop-bios-virtio = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-desktop-bios-vio-profile.nix
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.minegame = import ./home-manager/home.nix;
+            home-manager.backupFileExtension = "bak";
+          }
+        ];
+      };
+      vm-no-gui-efi = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-no-gui-efi-profile.nix
+        ];
+      };
+      vm-no-gui-bios = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-no-gui-bios-novio-profile.nix
+        ];
+      };
+      vm-no-gui-bios-virtio = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configurations/configuration.nix
+          ./profiles/vm-no-gui-bios-vio-profile.nix
         ];
       };
     };
