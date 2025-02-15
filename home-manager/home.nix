@@ -1,7 +1,8 @@
 { config, pkgs, ... }:
+
 let
   ### Add external packages
-  sshrm = pkgs.callPackage ../pkgs/sshrm {};
+ #sshrm = pkgs.callPackage ../pkgs/sshrm {};
 in
 {
   imports = [
@@ -41,9 +42,6 @@ in
     gnome-extension-manager
     bottles
     bitwarden-desktop
-
-    ### External packages
-    sshrm
   ];
 
   home.file = {
