@@ -1,6 +1,9 @@
 { config, pkgs, ...  }:
 
 {
+ ### Import plymouth.nix expression
+ imports = [ ./plymouth.nix ];
+ 
  ### Gnome Extensions
   environment.systemPackages = with pkgs.gnomeExtensions; [
    appindicator
