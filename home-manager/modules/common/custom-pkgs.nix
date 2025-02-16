@@ -1,5 +1,10 @@
 { config, pkgs, ... }:
 
+ let
+   ### Add external packages
+   sshrm = pkgs.callPackage ../../../pkgs/sshrm {};
+   fhsEnv-shell = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
+ in
 {
  # Home Manager needs a bit of information about you and the paths it should
  # manage.
@@ -9,12 +14,9 @@
  };
 
  home.packages = with pkgs; [
-        
-   ### Utilities
-   jq
-   fx
-   screen
-   gh
+   ### Custom packages
+   sshrm
+   fhsEnv-shell
  ];
 
 }

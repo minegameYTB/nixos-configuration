@@ -9,12 +9,14 @@
  };
 
  home.packages = with pkgs; [
-        
-   ### Utilities
-   jq
-   fx
-   screen
-   gh
+   ### Theme
+   adw-gtk3
+   catppuccin-cursors.mochaDark
  ];
 
+ ### Import conf file for cli software
+ home.file = {
+   ".screenrc".source = ../../dotfiles/screenrc;
+ };
+ 
 }
