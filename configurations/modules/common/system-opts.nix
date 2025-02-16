@@ -3,10 +3,6 @@
 {
  ### Boot config
  boot = {
-   plymouth = {
-     enable = true;
-     theme = "bgrt";
-   };
    binfmt = {
     preferStaticEmulators = true;
      emulatedSystems = [
