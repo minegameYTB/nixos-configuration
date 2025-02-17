@@ -8,5 +8,6 @@
      ../../configurations/modules/networking/vm-no-gui.nix             ### Related to network
      ../../configurations/modules/system/tmp-on-disk.nix               ### Use /tmp on disk
      ../../configurations/modules/specific/vm/guest/qemu-kvm-guest.nix ### To use optimisation of qemu/kvm
+     ../../configurations/modules/specific/vm/guest/openssh.nix        ### Enable openssh service
    ];
 }
