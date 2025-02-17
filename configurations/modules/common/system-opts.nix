@@ -9,7 +9,10 @@
        "aarch64-linux"
      ];
    };
-   initrd.systemd.enable = true;
+   initrd.systemd = {
+     enable = true;
+     emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
+   };
    kernelParams = [
      "quiet"
      "boot.shell_on_fail"
