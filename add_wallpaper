@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
-# nix-shell -i bash
-# nix-shell --pure -p unzip
-# nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
+#! nix-shell -i bash
+#! nix-shell --pure -p unzip
+#! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
 
 curl -s https://wallpapers.manishk.dev/install.sh | bash -s $1
