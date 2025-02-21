@@ -2,3 +2,4 @@
 etc-nixos/change-username
 result
 *.qcow2
+*.fd
