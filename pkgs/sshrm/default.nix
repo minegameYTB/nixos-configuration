@@ -25,7 +25,6 @@ in
     ### Make sshrm available
     mkdir -p $out/bin $doc/share/doc/${pname}
     cp ${pname} $out/bin/${pname}
-    #chmod +x $out/bin/${pname}
 
     ### Add license file accessible on the doc directory
     cp LICENSE $doc/share/doc/${pname}/LICENSE
