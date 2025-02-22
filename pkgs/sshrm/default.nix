@@ -13,7 +13,7 @@
   };
 
   outputs = [ "out" "doc" ];
-  outputsToInstall = [ "out" "doc" ];
+  outputsToInstall = outputs;
   buildInputs = [ openssh makeWrapper ];
 
   installPhase = ''
