@@ -1,4 +1,9 @@
-{ lib, stdenvNoCC, openssh, makeWrapper, fetchFromGitHub }:
+{ lib, stdenvNoCC, openssh, makeWrapper, fetchFromGitHub, callPackage }:
+
+let
+  ### Import sshUtilsOnly derivation
+  sshUtilsOnly = callPackage ./deps/sshUtilsOnly.nix {};
+in
 
  stdenvNoCC.mkDerivation rec {
    repoName = "sshrm";
@@ -14,7 +19,7 @@
 
   outputs = [ "out" "doc" ];
   outputsToInstall = outputs;
-  buildInputs = [ openssh makeWrapper ];
+  buildInputs = [ sshUtilsOnly makeWrapper ];
 
   installPhase = ''
     ### Make sshrm available
@@ -22,12 +27,14 @@
     cp ${pname} $out/bin/${pname}
     #chmod +x $out/bin/${pname}
 
-    ### Add runtime path to sshrm tool
-    wrapProgram $out/bin/${pname} \
-      --prefix PATH : ${lib.makeBinPath [openssh]}
-
     ### Add license file accessible on the doc directory
     cp LICENSE $doc/share/doc/${pname}/LICENSE
     cp README.md $doc/share/doc/${pname}/README.md
+  '';
+  
+  postFixup = ''
+    ### Add runtime path to sshrm tool
+    wrapProgram $out/bin/${pname} \
+      --prefix PATH : ${lib.makeBinPath [ sshUtilsOnly ]}
   '';
  }
