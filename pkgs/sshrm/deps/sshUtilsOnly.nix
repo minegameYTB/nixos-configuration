@@ -1,11 +1,5 @@
 { stdenvNoCC, openssh }:
 
-let
-  ### Use only ssh explicit binary on this app
-  sshOnly = "${openssh}/bin/ssh";
-  sshKeygenOnly = "${openssh}/bin/ssh-keygen";
-in
-
 stdenvNoCC.mkDerivation {
   pname = "ssh-only";
   version = openssh.version;
@@ -20,7 +14,7 @@ stdenvNoCC.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    ln -s ${sshOnly} $out/bin/ssh
-    ln -s ${sshKeygenOnly} $out/bin/ssh-keygen
+    ln -s ${openssh}/bin/ssh $out/bin/ssh
+    ln -s ${openssh}/bin/ssh-keygen $out/bin/ssh-keygen
   '';
 }
