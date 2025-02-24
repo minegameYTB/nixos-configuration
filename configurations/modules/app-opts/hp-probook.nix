@@ -16,10 +16,8 @@
  ### Localsend
  programs.localsend.enable = true;
 
- ### GameMode
- programs.gamemode = {
-   enable = true;
- };
+ ### Tmux
+ programs.tmux.enable = true;
 
  ### gnu nano
  programs.nano.nanorc = ''
