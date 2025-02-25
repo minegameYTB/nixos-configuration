@@ -61,7 +61,6 @@
          "org/gnome/shell/extensions/blur-my-shell/application" = {
            whitelist = [
              "com.mitchellh.ghostty"
-             "zen"
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
@@ -102,7 +101,7 @@
              "org.gnome.Calendar.desktop" 
              "org.gnome.Nautilus.desktop" 
              "org.gnome.Software.desktop" 
-             "org.gnome.Ptyxis.desktop" 
+             "com.mitchellh.ghostty.desktop" 
              "virt-manager.desktop"
              "org.prismlauncher.PrismLauncher.desktop"
              "spotify.desktop" 
