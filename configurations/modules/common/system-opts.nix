@@ -93,7 +93,7 @@
      gadd = "git add";
      gpush = "git push";
      gpull = "git pull";
-    #nix-profile-upgrade = "nix profile upgrade --all";
+     ssh = "TERM=xterm-256color ssh"; ### Use xterm-256color on runtime command
    };
    interactiveShellInit = ''
     #export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
