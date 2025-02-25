@@ -1,8 +1,8 @@
 { config, pkgs, ...  }:
 
 {
- ### Fish root
- users.users.root.shell = pkgs.zsh;
+ ### Shell replacement
+ users.defaultUserShell = pkgs.zsh;
  
  # Define a user account. Don't forget to set a password with ‘passwd’.
  users.users.minegame = {
@@ -10,7 +10,6 @@
    isNormalUser = true;
    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
    initialPassword = "nixos";
-   shell = pkgs.zsh;
  };
 
 }
