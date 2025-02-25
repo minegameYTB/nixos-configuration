@@ -44,10 +44,6 @@
 
 theme = "Molokai"
 background-opacity = 0.7
-font-family = "UbuntuMono Nerd Font"
-font-family-bold = "UbuntuMono Nerd Font Bold"
-font-family-italic = "UbuntuMono Nerd Font Italic"
-font-family-bold-italic = "UbuntuMono Nerd Font Bold Italic"
 font-size = 10
 
 
