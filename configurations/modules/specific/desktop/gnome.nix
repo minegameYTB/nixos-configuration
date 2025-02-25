@@ -48,7 +48,6 @@
             color-scheme = "prefer-dark";
             gtk-theme = "Adwaita-dark";
             icon-theme = "Papirus-Dark";
-            monospace-font-name = "UbuntuMono Nerd Font 10";
             show-battery-percentage = true;
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
@@ -93,19 +92,10 @@
              "virt-manager.desktop"
              "org.prismlauncher.PrismLauncher.desktop"
              "spotify.desktop" 
-             "discord.desktop" 
+             "vesktop.desktop" 
              "steam.desktop"
              "LocalSend.desktop"
            ];
-         };
-         "org/gnome/Ptyxis" = {
-           audible-bell = false;
-           restore-session = false;
-           default-profile-uuid = "60b6639cc65c5a313600a657672c34f4";
-           profile-uuids =  ["60b6639cc65c5a313600a657672c34f4"];
-         };
-         "org/gnome/Ptyxis/Profiles/60b6639cc65c5a313600a657672c34f4" = {
-           palette = "Breath Darker";
          };
          "org/gnome/nautilus/preferences" = {
            show-create-link = true;
