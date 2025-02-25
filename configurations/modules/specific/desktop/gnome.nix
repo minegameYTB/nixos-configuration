@@ -24,7 +24,15 @@
    yelp              ### Gnome help
    gnome-maps        ### Gnome maps
    gnome-connections ### Gnome connections
+   gnome-console     ### Gnome console (default term)
  ];
+
+
+ ### Nautilus settings
+ programs.nautilus-open-any-terminal = {
+   enable = true;
+   terminal = "ghostty";
+ };
 
 ###-------------------------------------------------------------------------
 
@@ -53,6 +61,7 @@
          "org/gnome/shell/extensions/blur-my-shell/application" = {
            whitelist = [
              "com.mitchellh.ghostty"
+             "zen"
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
