@@ -7,7 +7,7 @@
    
    ### Wrapper script
    nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
-      exec ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
+     exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
    '';
  in
 {
