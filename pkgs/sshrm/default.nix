@@ -34,6 +34,7 @@ in
   postFixup = ''
     ### Add runtime path to sshrm tool
     wrapProgram $out/bin/${pname} \
-      --set PATH ${lib.makeBinPath [ sshUtilsOnly ]}
+      --set PATH ${lib.makeBinPath [ sshUtilsOnly ]} \
+      --set TERM xterm-256color
   '';
  }
