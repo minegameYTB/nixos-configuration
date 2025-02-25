@@ -40,7 +40,7 @@
    virt-viewer
 
    ### Other
-   ptyxis
+   ghostty
    gnome-tweaks
 
    ### Themes
