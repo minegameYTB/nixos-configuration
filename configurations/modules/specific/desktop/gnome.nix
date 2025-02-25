@@ -53,7 +53,6 @@
          "org/gnome/shell/extensions/blur-my-shell/application" = {
            whitelist = [
              "com.mitchellh.ghostty"
-             "zen"
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
