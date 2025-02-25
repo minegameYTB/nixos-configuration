@@ -50,6 +50,12 @@
             icon-theme = "Papirus-Dark";
             show-battery-percentage = true;
          };
+         "org/gnome/shell/extensions/blur-my-shell/application" = {
+           whitelist = [
+             "com.mitchellh.ghostty"
+             "zen"
+           ];
+         };
          "org/gnome/shell/extensions/dash-to-dock" = {
             dock-position = "LEFT";
             transparency-mode = "DYNAMIC";
