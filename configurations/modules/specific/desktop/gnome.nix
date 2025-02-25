@@ -24,7 +24,15 @@
    yelp              ### Gnome help
    gnome-maps        ### Gnome maps
    gnome-connections ### Gnome connections
+   gnome-console     ### Gnome console (default term)
  ];
+
+
+ ### Nautilus settings
+ programs.nautilus-open-any-terminal = {
+   enable = true;
+   terminal = "ghostty";
+ };
 
 ###-------------------------------------------------------------------------
 
@@ -48,8 +56,13 @@
             color-scheme = "prefer-dark";
             gtk-theme = "Adwaita-dark";
             icon-theme = "Papirus-Dark";
-            monospace-font-name = "UbuntuMono Nerd Font 10";
             show-battery-percentage = true;
+         };
+         "org/gnome/shell/extensions/blur-my-shell/application" = {
+           whitelist = [
+             "com.mitchellh.ghostty"
+             "zen"
+           ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
             dock-position = "LEFT";
@@ -93,19 +106,10 @@
              "virt-manager.desktop"
              "org.prismlauncher.PrismLauncher.desktop"
              "spotify.desktop" 
-             "discord.desktop" 
+             "vesktop.desktop" 
              "steam.desktop"
              "LocalSend.desktop"
            ];
-         };
-         "org/gnome/Ptyxis" = {
-           audible-bell = false;
-           restore-session = false;
-           default-profile-uuid = "60b6639cc65c5a313600a657672c34f4";
-           profile-uuids =  ["60b6639cc65c5a313600a657672c34f4"];
-         };
-         "org/gnome/Ptyxis/Profiles/60b6639cc65c5a313600a657672c34f4" = {
-           palette = "Breath Darker";
          };
          "org/gnome/nautilus/preferences" = {
            show-create-link = true;
