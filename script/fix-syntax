@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 
-find . -type f -name "*.nix" \
-  -exec deadnix -eq {} \;
+find . -type f -name "*.nix" -exec deadnix -eq {} \;
 
 find . -type f -name "*.nix" -exec nixfmt -s {} \;
-statix check .
+
+find . -type f -name "*.nix" -exec statix check . {} \;
+
+find . -type f -name "*.nix" -exec statix fix . {} \;
