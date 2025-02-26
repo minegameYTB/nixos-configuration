@@ -15,6 +15,9 @@
    fx
    screen
    gh
+
+   ### External packages
+  #nur.repos.mic92.hello-nur ### test nur if it's work (yes)
  ];
 
 }

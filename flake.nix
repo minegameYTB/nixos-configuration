@@ -5,17 +5,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nur.url = "github:nix-community/nur";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.1";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, lanzaboote, ... }: 
+  outputs = { self, nixpkgs, home-manager, nur, ... }@inputs:
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -23,35 +20,24 @@
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
         inherit system;
+        ### Use NUR as a settings
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
-          
-         #lanzaboote.nixosModules.lanzaboote
-         #({ pkgs, lib, ... }: {
-         #  environment.systemPackages = with pkgs; [
-         #    sbctl
-         #  ];
-         #
-         #  boot = {
-         #    loader.systemd-boot.enable = lib.mkForce false;
-         #    lanzaboote = {
-         #      enable = true;
-         #      pkiBundle = "/etc/secureboot";
-         #    };
-         #  };
-         #})
-         
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
           }
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       hp-240 = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
@@ -61,10 +47,13 @@
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
           }
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-desktop-efi = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
@@ -74,10 +63,13 @@
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
           }
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-desktop-bios = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
@@ -87,10 +79,13 @@
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
           }
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-desktop-bios-virtio = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
@@ -100,27 +95,37 @@
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
           }
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-no-gui-efi = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-no-gui-bios = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
+      
       vm-no-gui-bios-virtio = lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit nur; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
     };
