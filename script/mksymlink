@@ -3,5 +3,4 @@
 ### Run ln command to create symlink from Documents/GitHub/nixos-configuration to ~/nixos-configuration
 ### I use absolute path and ~ for home directory
 echo "Creating symlink of this configuration to ~/nixos-configuration"
-ln -sv $(pwd) ~/nixos-configuration
-
+ln -sv $(pwd)/ ~/nixos-configuration
