@@ -22,9 +22,11 @@
    gnome-tour           ### Gnome Tour
    epiphany             ### Gnome Web
    yelp                 ### Gnome help
+   totem                ### Gnome Totem (video)
    gnome-maps           ### Gnome maps
    gnome-connections    ### Gnome connections
    gnome-console        ### Gnome console (default term)
+   gnome-music          ### Gnome Music
    gnome-system-monitor ### Gnome system monitor
  ];
 
