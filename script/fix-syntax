@@ -4,6 +4,6 @@ find . -type f -name "*.nix" -exec deadnix -eq {} \;
 
 find . -type f -name "*.nix" -exec nixfmt -s {} \;
 
-find . -type f -name "*.nix" -exec statix check . {} \;
+find . -type f -name "*.nix" -exec statix check {} \;
 
-find . -type f -name "*.nix" -exec statix fix . {} \;
+find . -type f -name "*.nix" -exec statix fix {} \;
