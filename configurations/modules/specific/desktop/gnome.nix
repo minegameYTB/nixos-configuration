@@ -58,7 +58,9 @@
             icon-theme = "Papirus-Dark";
             show-battery-percentage = true;
          };
-         "org/gnome/shell/extensions/blur-my-shell/application" = {
+         "org/gnome/shell/extensions/blur-my-shell/applications" = {
+           blur = true;
+           brightness = "0.8";
            whitelist = [
              "com.mitchellh.ghostty"
            ];
