@@ -1,7 +1,4 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i bash --pure
-#! nix-shell -p nix git jq cacert openssh gnupg
-#! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/1807c2b91223227ad5599d7067a61665c52d1295.tar.gz
+#! /usr/bin/env bash
 
 update_repo(){
   echo -e "\nUpdate local repository\n"
