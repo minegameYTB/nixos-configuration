@@ -41,6 +41,7 @@
 
    ### Other
    ghostty
+   mission-center
    gnome-tweaks
 
    ### Themes
