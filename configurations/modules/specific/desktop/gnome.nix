@@ -62,6 +62,7 @@
          "org/gnome/shell/extensions/blur-my-shell/applications" = {
            blur = true;
            brightness = "0.8";
+           dynamic-opacity = false;
            whitelist = [
              "com.mitchellh.ghostty"
            ];
