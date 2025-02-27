@@ -58,7 +58,23 @@
 
  ### Zram
  zramSwap.enable = true;
- 
+
+ ### Shell environment
+ environment.shellAliases = {
+   ls = "lsd";
+   cat = "bat";
+   "cat.ori" = "/run/booted-system/sw/bin/cat";
+   "ls.ori" = "/run/booted-system/sw/bin/ls";
+   ff = "fastfetch";
+   nix = "nix -vL";
+   wget = "wget2";
+   gc = "git commit";
+   gadd = "git add";
+   gpush = "git push";
+   gpull = "git pull";
+   ssh = "TERM=xterm-256color ssh"; ### Use xterm-256color on runtime command
+ };
+
  ### Zsh
  programs.zsh = {
    enable = true;
@@ -80,20 +96,6 @@
    ohMyZsh = {
      enable = true;
      theme = "agnoster";
-   };
-   shellAliases = {
-     ls = "lsd";
-     cat = "bat";
-     "cat.ori" = "/run/booted-system/sw/bin/cat";
-     "ls.ori" = "/run/booted-system/sw/bin/ls";
-     ff = "fastfetch";
-     nix = "nix -vL";
-     wget = "wget2";
-     gc = "git commit";
-     gadd = "git add";
-     gpush = "git push";
-     gpull = "git pull";
-     ssh = "TERM=xterm-256color ssh"; ### Use xterm-256color on runtime command
    };
    interactiveShellInit = ''
     #export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
