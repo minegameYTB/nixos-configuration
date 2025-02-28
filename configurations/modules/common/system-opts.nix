@@ -114,6 +114,11 @@
    };
  };
  
+ ### Neovim
+ programs.neovim = {
+   enable = true;
+   viAlias = true;
+ };
 
  ### Fstrim
  services.fstrim.enable = true;
