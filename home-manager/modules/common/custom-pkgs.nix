@@ -2,8 +2,8 @@
 
  let
    ### Add external packages
-   sshrm = pkgs.callPackage ../../../pkgs/sshrm {};
-   fhsEnv-shell = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
+  #sshrm = pkgs.callPackage ../../../pkgs/sshrm {};
+  #fhsEnv-shell = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
  in
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -15,8 +15,8 @@
 
  home.packages = with pkgs; [
    ### Custom packages
-   sshrm
-   fhsEnv-shell
+   ### Add sshrm as a package from my repo (nurpkgs-repo) through NUR
+   nur.repos.minegameYTB.sshrm
  ];
 
 }
