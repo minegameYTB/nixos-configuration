@@ -1,4 +1,4 @@
-{ config, pkgs, ...  }:
+{ config, pkgs, ... }:
 
       
  let
@@ -7,7 +7,7 @@
    
    ### Wrapper script
    nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
-     exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
+     exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@" && exec zsh
    '';
  in
 {
@@ -38,6 +38,7 @@
    gparted
    gearlever   
    virt-viewer
+   ripgrep
 
    ### Other
    ghostty
@@ -48,8 +49,9 @@
    papirus-icon-theme
    ayu-theme-gtk
 
-   ### External packages
-   #fhsEnv-dev
+   ### For neovim/nvchad
+   # gcc 
+   # zig
 
    ### Wrapper script
    nixos-rebuild
