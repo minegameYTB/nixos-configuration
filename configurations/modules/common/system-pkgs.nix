@@ -3,7 +3,7 @@
       
  let
    ### Add external packages
-   fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
+  #fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
    
    ### Wrapper script
    nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
@@ -49,7 +49,7 @@
    ayu-theme-gtk
 
    ### External packages
-   fhsEnv-dev
+   #fhsEnv-dev
 
    ### Wrapper script
    nixos-rebuild
