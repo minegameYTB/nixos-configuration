@@ -17,7 +17,8 @@
    gh
 
    ### External packages
-  #nur.repos.mic92.hello-nur ### test nur if it's work (yes)
+   ### Add sshrm as a package from my repo (nurpkgs-repo) through NUR
+   nur.repos.minegameYTB.sshrm
  ];
 
 }
