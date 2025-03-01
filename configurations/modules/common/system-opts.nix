@@ -114,10 +114,9 @@
    };
  };
  
- ### Neovim
- programs.neovim = {
+ ### vim
+ programs.vim = {
    enable = true;
-   viAlias = true;
  };
 
  ### Fstrim
