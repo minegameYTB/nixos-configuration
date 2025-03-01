@@ -49,10 +49,6 @@
    papirus-icon-theme
    ayu-theme-gtk
 
-   ### For neovim/nvchad
-   # gcc 
-   # zig
-
    ### Wrapper script
    nixos-rebuild
  ];
