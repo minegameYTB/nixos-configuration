@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-23-11, ... }:
+{ config, pkgs, pkgsExtra, ... }:
 
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -35,7 +35,7 @@
      bitwarden-desktop
   ])
  ++
-  (with pkgs-23-11; [
+  (with pkgsExtra.pkgs-23-11; [
     citra
   ]);
 

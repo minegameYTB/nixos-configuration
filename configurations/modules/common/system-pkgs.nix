@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, ... }:
+{ config, pkgs, pkgsExtra, ... }:
 
       
  let
@@ -54,7 +54,7 @@
      nixos-rebuild
    ])
  ++
-   (with pkgs-unstable; [
+   (with pkgsExtra.pkgs-unstable; [
    ### Use this part to install package from nixpkgs-unstable
  #    ventoy
    ]);

@@ -19,16 +19,20 @@
     ### System variable
     lib = nixpkgs.lib;
     pkgs = nixpkgs.legacyPackages.${system};
-    pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
-    pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     system = "x86_64-linux";
+    
+    ### Other sources
+    pkgsExtra = {
+      pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
+      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+    };
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
         inherit system;
         ### Use NUR as a settings
         specialArgs = { 
-          inherit nur pkgs-unstable pkgs-23-11;
+          inherit nur pkgsExtra;
         };
         modules = [
           ./configurations/configuration.nix
@@ -39,14 +43,14 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
         ];
       };
       
       hp-240 = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
@@ -55,7 +59,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
@@ -63,7 +67,7 @@
       
       vm-desktop-efi = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
@@ -72,7 +76,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
@@ -80,7 +84,7 @@
       
       vm-desktop-bios = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
@@ -89,7 +93,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
@@ -97,7 +101,7 @@
       
       vm-desktop-bios-virtio = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
@@ -106,7 +110,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
@@ -114,7 +118,7 @@
       
       vm-no-gui-efi = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
@@ -124,7 +128,7 @@
       
       vm-no-gui-bios = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
@@ -134,7 +138,7 @@
       
       vm-no-gui-bios-virtio = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgs-unstable pkgs-23-11; };
+        specialArgs = { inherit nur pkgsExtra; };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
