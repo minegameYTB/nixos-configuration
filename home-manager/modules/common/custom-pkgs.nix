@@ -14,10 +14,9 @@
  };
 
  home.packages = with pkgs; [
-   ### Custom packages
-   ### Add custom-pkgs from my repo (nurpkgs-repo) through NUR
-   nur.repos.minegameYTB.sshrm
-   nur.repos.minegameYTB.fhsEnv-dev
- ];
-
+    ### Custom packages
+    ### Add custom-pkgs from my repo (nurpkgs-repo) through NUR
+    nur.repos.minegameYTB.sshrm
+    nur.repos.minegameYTB.fhsEnv-dev
+  ];
 }
