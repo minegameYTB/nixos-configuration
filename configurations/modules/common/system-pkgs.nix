@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, ... }:
 
       
  let
@@ -23,33 +23,39 @@
 
  # List packages installed in system profile. To search, run:
  # $ nix search wget
- environment.systemPackages = with pkgs; [
-   ### CLI
-   wget2
-   jq
-   nix-search-cli
-   efibootmgr
-   ntfs3g
-   git
-   bat
-   lsd
+ environment.systemPackages = 
+   (with pkgs; [
+     ### CLI
+     wget2
+     jq
+     nix-search-cli
+     efibootmgr
+     ntfs3g
+     git
+     bat
+     lsd
 
-   ### Utilities
-   gparted
-   gearlever   
-   virt-viewer
-   ripgrep
+     ### Utilities
+     gparted
+     gearlever   
+     virt-viewer
+     ripgrep
 
-   ### Other
-   ghostty
-   mission-center
-   gnome-tweaks
+     ### Other
+     ghostty
+     mission-center
+     gnome-tweaks
 
-   ### Themes
-   papirus-icon-theme
-   ayu-theme-gtk
+     ### Themes
+     papirus-icon-theme
+     ayu-theme-gtk
 
-   ### Wrapper script
-   nixos-rebuild
- ];
+     ### Wrapper script
+     nixos-rebuild
+   ])
+ ++
+   (with pkgs-unstable; [
+   ### Use this part to install package from nixpkgs-unstable
+ #    ventoy
+   ]);
 }

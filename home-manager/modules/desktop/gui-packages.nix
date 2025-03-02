@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-23-11, ... }:
 
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -8,30 +8,35 @@
    homeDirectory = "/home/minegame";
  };
 
- home.packages = with pkgs; [
-    ### non-free apps
-    vesktop
-    spotify
+ home.packages = 
+   (with pkgs; [
+     ### non-free apps
+     vesktop
+     spotify
 
-    ### Audio
-    amberol
+     ### Audio
+     amberol
 
-    ### Video
-    vlc
+     ### Video
+     vlc
 
-    ### Office
-    onlyoffice-bin
+     ### Office
+     onlyoffice-bin
 
-    ### Editor
+     ### Editor
 
-    ### Games 
-    prismlauncher
+     ### Games 
+     prismlauncher
 
-    ### Utilities
-    rpi-imager
-    gnome-extension-manager
-    bottles
-    bitwarden-desktop
- ];
+     ### Utilities
+     rpi-imager
+     gnome-extension-manager
+     bottles
+     bitwarden-desktop
+  ])
+ ++
+  (with pkgs-23-11; [
+    citra
+  ]);
 
 }
