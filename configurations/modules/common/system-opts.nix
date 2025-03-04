@@ -104,6 +104,12 @@
    '';
   };
 
+ ### Tmux
+ programs.tmux = {
+   enable = true;
+   terminal = "screen-256color";
+ };
+
  ### Nix index
  programs = {
    nix-index = {

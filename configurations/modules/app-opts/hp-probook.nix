@@ -16,12 +16,6 @@
  ### Localsend
  programs.localsend.enable = true;
 
- ### Tmux
- programs.tmux = {
-   enable = true;
-   terminal = "screen-256color";
- };
-
  ### gnu nano
  programs.nano.nanorc = ''
    set autoindent
