@@ -20,39 +20,39 @@
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
  };
 
- programs.fastfetch = {
-   enable = true;
-   settings = {
-     logo = {
-       padding = {
-        top = 1;
-       };
-     };
-     modules = [
-       "separator"
-       "datetime"
-       "os"
-       "locale"
-       "shell"
-       "host"
-       "kernel"
-       "uptime"
-       "packages"
-       "display"
-       "de"
-       "wm"
-       "cpu"
-       "gpu"
-       "memory"
-       "swap"
-       "battery"
-       "poweradapter"
-       "separator"
-       "colors"
-       "separator"
-     ];
-   };
- };
+#programs.fastfetch = {
+#  enable = true;
+#  settings = {
+#    logo = {
+#      padding = {
+#       top = 1;
+#      };
+#    };
+#    modules = [
+#      "separator"
+#      "datetime"
+#      "os"
+#      "locale"
+#      "shell"
+#      "host"
+#      "kernel"
+#      "uptime"
+#      "packages"
+#      "display"
+#      "de"
+#      "wm"
+#      "cpu"
+#      "gpu"
+#      "memory"
+#      "swap"
+#      "battery"
+#      "poweradapter"
+#      "separator"
+#      "colors"
+#      "separator"
+#    ];
+#  };
+#};
   
  programs.htop = {
    enable = true;
