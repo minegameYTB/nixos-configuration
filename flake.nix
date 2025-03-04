@@ -4,23 +4,25 @@
   description = "A flake with my configuration";
 
   inputs = {
+    ### Main repo
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     
     ### Other repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nur = {
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-23-11, zen-browser, home-manager, nur, ... }@inputs:
+    ### Other nixpkgs repos
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
+  };
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-23-11, home-manager, zen-browser, nur, ... }@inputs:
   let
     ### System variable
     lib = nixpkgs.lib;
@@ -57,8 +59,12 @@
       
       hp-240 = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = { 
+          inherit nur pkgsExtra;
+          inherit (inputs) zen-browser;
+        };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
           home-manager.nixosModules.home-manager {
@@ -74,8 +80,12 @@
       
       vm-desktop-efi = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = {
+          inherit nur pkgsExtra;
+          inherit (inputs) zen-browser;
+        };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
           home-manager.nixosModules.home-manager {
@@ -91,8 +101,12 @@
       
       vm-desktop-bios = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = { 
+          inherit nur pkgsExtra;
+          inherit (inputs) zen-browser;
+        };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
           home-manager.nixosModules.home-manager {
@@ -102,13 +116,15 @@
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
       vm-desktop-bios-virtio = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = {
+          inherit nur pkgsExtra;
+          inherit (inputs) zen-browser;
+        };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
@@ -125,7 +141,9 @@
       
       vm-no-gui-efi = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = { 
+          inherit nur pkgsExtra;
+        };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
@@ -135,7 +153,9 @@
       
       vm-no-gui-bios = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = { 
+          inherit nur pkgsExtra;
+        };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
