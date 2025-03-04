@@ -1,4 +1,4 @@
-{ config, pkgs, pkgsExtra, ... }:
+{ inputs, config, pkgs, pkgsExtra, zen-browser, ... }:
 
       
  let
@@ -25,6 +25,10 @@
  # $ nix search wget
  environment.systemPackages = 
    (with pkgs; [
+     ### Zen-browser (import sources with "inputs" prefix)
+    #inputs.zen-browser.packages."${system}".default
+     zen-browser.packages."${system}".default
+
      ### CLI
      wget2
      jq
