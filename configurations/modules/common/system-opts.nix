@@ -65,6 +65,7 @@
    cat = "bat";
    "cat.ori" = "/run/booted-system/sw/bin/cat";
    "ls.ori" = "/run/booted-system/sw/bin/ls";
+   which = "/run/current-system/sw/bin/which";
    ff = "fastfetch";
    nix = "nix -vL";
    wget = "wget2";
