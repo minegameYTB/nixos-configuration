@@ -17,7 +17,7 @@
  ### Import conf file for cli software
  home.file = {
    ".screenrc".source = ../../dotfiles/screenrc;
-   ".config/fastfetch/config.jsonc".source = ../../dotfiles/fastfetch/config.jsonc;
+   ".config/fastfetch".source = ../../dotfiles/fastfetch;
  };
  
 }
