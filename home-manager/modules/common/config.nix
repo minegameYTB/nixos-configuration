@@ -20,8 +20,8 @@
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
  };
 
-#programs.fastfetch = {
-#  enable = true;
+ programs.fastfetch = {
+   enable = true;
 #  settings = {
 #    logo = {
 #      padding = {
@@ -52,7 +52,7 @@
 #      "separator"
 #    ];
 #  };
-#};
+ };
   
  programs.htop = {
    enable = true;
