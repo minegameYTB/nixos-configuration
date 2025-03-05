@@ -109,6 +109,9 @@
  programs.tmux = {
    enable = true;
    terminal = "screen-256color";
+   plugins = with pkgs; [
+     tmuxPlugins.tokyo-night-tmux
+   ];
  };
 
  ### Nix index
