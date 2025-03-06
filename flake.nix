@@ -124,7 +124,7 @@
       vm-desktop-bios-virtio = lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
           inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
@@ -157,7 +157,7 @@
       vm-no-gui-bios = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
         };
         modules = [
           ./configurations/configuration.nix
@@ -168,7 +168,9 @@
       
       vm-no-gui-bios-virtio = lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit nur pkgsExtra; };
+        specialArgs = { 
+          inherit nur pkgsExtra; 
+        };
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
