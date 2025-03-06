@@ -15,11 +15,6 @@
    dhall-json
    screen
    gh
-
-   ### External packages
-   ### Add sshrm as a package from my repo (nurpkgs-repo) through NUR
-   nur.repos.minegameYTB.sshrm
-   nur.repos.minegameYTB.fhsEnv-dev
  ];
 
 }
