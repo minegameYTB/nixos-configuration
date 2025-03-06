@@ -40,7 +40,8 @@
         inherit system;
         ### Use NUR as a settings, zen-browser flake is import as "inputs"
         specialArgs = { 
-          inherit nur pkgsExtra inputs;
+          inherit pkgsExtra inputs;
+          inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
         modules = [
@@ -60,7 +61,8 @@
       hp-240 = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
+          inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
         modules = [
@@ -74,14 +76,14 @@
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
       vm-desktop-efi = lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
+          inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
         modules = [
@@ -95,14 +97,14 @@
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
       vm-desktop-bios = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
+          inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
         modules = [
@@ -123,9 +125,11 @@
         inherit system;
         specialArgs = {
           inherit nur pkgsExtra;
+          inherit (inputs) nur;
           inherit (inputs) zen-browser;
         };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
           home-manager.nixosModules.home-manager {
@@ -135,14 +139,13 @@
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
           }
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
       vm-no-gui-efi = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit nur pkgsExtra;
+          inherit pkgsExtra;
         };
         modules = [
           ./configurations/configuration.nix
