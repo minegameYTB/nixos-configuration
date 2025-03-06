@@ -12,7 +12,7 @@
         
    ### Utilities
    jq
-   fx
+   dhall-json
    screen
    gh
 
