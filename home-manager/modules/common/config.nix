@@ -8,9 +8,9 @@
    homeDirectory = "/home/minegame";
  };
 
- home.sessionVariables = {
-   EDITOR = "nvim";
- };
+#home.sessionVariables = {
+#  EDITOR = "nvim";
+#};
 
  programs.home-manager.enable = true;
 
