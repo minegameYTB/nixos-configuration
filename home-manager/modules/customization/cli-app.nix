@@ -20,4 +20,22 @@
    ".config/fastfetch/config.jsonc".source = ../../dotfiles/fastfetch/config.jsonc;
  };
  
+ programs.neovim = {
+   enable = true;
+   viAlias = true;
+   plugins = with pkgs.vimPlugins; [
+     tokyonight-nvim
+     lualine-nvim
+   ];
+   extraLuaConfig = ''
+     vim.cmd('colorscheme tokyonight-night')
+    
+     require('lualine').setup {
+       options = {
+         theme = 'tokyonight'
+       }
+     }
+   '';
+ };
+
 }
