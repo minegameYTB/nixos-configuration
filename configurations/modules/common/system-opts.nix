@@ -126,9 +126,20 @@
    };
  };
  
- ### vim
- programs.vim = {
+ ### Neovim
+ programs.neovim = {
    enable = true;
+   viAlias = true;
+   configure = {
+     customRC = ''
+       colorscheme tokyonight-night
+     '';
+     packages.myVimPackage = with pkgs.vimPlugins; {
+       start = [
+         tokyonight-nvim
+       ];
+     };
+   };
  };
 
  ### Fstrim
