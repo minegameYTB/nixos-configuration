@@ -9,7 +9,7 @@
  };
 
  home.sessionVariables = {
-   EDITOR = "nano";
+   EDITOR = "nvim";
  };
 
  programs.home-manager.enable = true;
