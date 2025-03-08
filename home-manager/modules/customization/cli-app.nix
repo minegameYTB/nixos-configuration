@@ -25,6 +25,7 @@
    viAlias = true;
    withPython3 = false;
    withRuby = false;
+   defaultEditor = true;
    plugins = with pkgs.vimPlugins; [
      tokyonight-nvim
      lualine-nvim
