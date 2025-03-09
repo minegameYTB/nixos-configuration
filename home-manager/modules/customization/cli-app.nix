@@ -23,8 +23,10 @@
  programs.neovim = {
    enable = true;
    viAlias = true;
-   withPython3 = false;
-   withRuby = false;
+   extraPackages = with pkgs; [
+     xclip 
+     wl-clipboard
+   ];
    defaultEditor = true;
    plugins = with pkgs.vimPlugins; [
      tokyonight-nvim
