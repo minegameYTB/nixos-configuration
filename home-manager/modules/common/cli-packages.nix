@@ -14,7 +14,6 @@
    jq
    dhall-json
    screen
-   gh
  ];
 
 }

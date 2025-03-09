@@ -20,6 +20,13 @@
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
  };
 
+ programs.gh = {
+   enable = true;
+   settings = {
+     git_protocol = "https";
+   };
+ };
+
  programs.fastfetch = {
    enable = true;
 #  settings = {

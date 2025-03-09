@@ -16,7 +16,7 @@
 
  ### Install theme on home directory
  home.file = {
-   ".themes".source = ../../dotfiles/themes;
+   #".themes".source = ../../dotfiles/themes;
    ".icons".source =  ../../dotfiles/icons;
  };
  
