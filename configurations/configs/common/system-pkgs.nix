@@ -35,21 +35,6 @@
      bat
      lsd
 
-     ### Utilities
-     gparted
-     gearlever   
-     virt-viewer
-     ripgrep
-
-     ### Other
-     ghostty
-     mission-center
-     gnome-tweaks
-
-     ### Themes
-     papirus-icon-theme
-     ayu-theme-gtk
-
      ### Wrapper script
      nixos-rebuild
    ])

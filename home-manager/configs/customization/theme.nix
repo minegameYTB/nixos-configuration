@@ -11,6 +11,8 @@
  home.packages = with pkgs; [
    ### Theme
    adw-gtk3
+   papirus-icon-theme
+   ayu-theme-gtk
    catppuccin-cursors.mochaDark
    nur.repos.minegameYTB.theme.marble-shell
  ];
