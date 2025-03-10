@@ -13,5 +13,8 @@
      ../../configurations/configs/specific/desktop/sound.nix               ### Sound server
     #../../configurations/configs/specific/desktop/autologin.nix           ### Permit autologin
      ../../configurations/configs/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
+     
+     ### GUI package
+     ../configurations/configs/common/system-pkgs-gui.nix
    ];
 }
