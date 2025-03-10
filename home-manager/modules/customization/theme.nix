@@ -12,7 +12,7 @@
    ### Theme
    adw-gtk3
    catppuccin-cursors.mochaDark
-   nur.repos.minegameYTB.marble-shell
+   nur.repos.minegameYTB.theme.marble-shell
  ];
 
  ### Install theme on home directory
