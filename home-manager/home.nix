@@ -7,8 +7,9 @@ in
 {
  
  imports = [
-   ./modules/common/cli-packages.nix
-   ./modules/common/config.nix
+   ./configs/common/cli-packages.nix
+   ../home-manager/configs/common/custom-pkgs.nix
+   ./configs/common/config.nix
  ];
 
  home.username = "minegame";
