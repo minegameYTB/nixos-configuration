@@ -18,6 +18,5 @@
     ### Add custom-pkgs from my repo (nurpkgs-repo) through NUR
     nur.repos.minegameYTB.sshrm
     nur.repos.minegameYTB.fhsEnv-dev
-    nur.repos.minegameYTB.theme.marble-shell-filled
   ];
 }
