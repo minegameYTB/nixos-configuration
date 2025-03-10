@@ -12,6 +12,7 @@
    ### Theme
    adw-gtk3
    catppuccin-cursors.mochaDark
+   nur.repos.minegame.marble-shell
  ];
 
  ### Install theme on home directory
