@@ -1,4 +1,4 @@
-{ config, pkgs, pkgsExtra, ... }:
+{ config, pkgs, pkgsExtra, zen-browser, ... }:
 
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -10,6 +10,10 @@
 
  home.packages = 
    (with pkgs; [
+     ### Zen browser flake (import as a inputs (and as zen-browser))
+     #inputs.zen-browser.packages."${system}".default
+     zen-browser.packages."${system}".default
+     
      ### non-free apps
      vesktop
      spotify

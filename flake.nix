@@ -42,7 +42,6 @@
         specialArgs = { 
           inherit pkgsExtra inputs;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser;
         };
         modules = [
           ./configurations/configuration.nix
@@ -53,7 +52,10 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
+            home-manager.extraSpecialArgs = { 
+              inherit nur pkgsExtra; 
+              inherit (inputs) zen-browser;
+            };
           }
         ];
       };
@@ -63,7 +65,6 @@
         specialArgs = { 
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -74,7 +75,10 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
+            home-manager.extraSpecialArgs = { 
+              inherit nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
           }
         ];
       };
@@ -84,7 +88,6 @@
         specialArgs = {
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -95,7 +98,10 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
+            home-manager.extraSpecialArgs = { 
+              inherit nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
           }
         ];
       };
@@ -105,7 +111,6 @@
         specialArgs = { 
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -116,7 +121,10 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
+            home-manager.extraSpecialArgs = { 
+              inherit nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
           }
         ];
       };
@@ -126,7 +134,6 @@
         specialArgs = {
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -137,7 +144,10 @@
             home-manager.useUserPackages = true;
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { inherit nur pkgsExtra; };
+            home-manager.extraSpecialArgs = { 
+              inherit nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
           }
         ];
       };
@@ -145,24 +155,24 @@
       vm-no-gui-efi = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit pkgsExtra;
+          inherit nur pkgsExtra;
         };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
       vm-no-gui-bios = lib.nixosSystem {
         inherit system;
         specialArgs = { 
-          inherit pkgsExtra;
+          inherit nur pkgsExtra;
         };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
       
@@ -172,9 +182,9 @@
           inherit nur pkgsExtra; 
         };
         modules = [
+          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         ];
       };
     };
