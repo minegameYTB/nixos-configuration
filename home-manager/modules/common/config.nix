@@ -18,6 +18,16 @@
    enable = true;
    userName  = "Minegame YTB";
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
+   ignores = [
+     "*.swp"
+     "*~"
+   ];
+   extraConfig = {
+     credential = {
+       ### Use gh from profile
+       helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
+     };
+   };
  };
 
  programs.gh = {
