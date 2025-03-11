@@ -25,6 +25,8 @@
    ### Backgrounds
    ".local/share/backgrounds/2024-12-19-01-38-51-20240828_115530.jpg".source = ../../dotfiles/backgrounds/2024-12-19-01-38-51-20240828_115530.jpg;
    ".local/share/backgrounds/moon-fall.png".source = ../../dotfiles/backgrounds/moon-fall.png;
+   ".local/share/backgrounds/Cherish.png".source = ../../dotfiles/backgrounds/moon-fall.png;
+   ".local/share/backgrounds/Archcraft-macchiato.png".source = ../../dotfiles/backgrounds/moon-fall.png;
  };
  
 }
