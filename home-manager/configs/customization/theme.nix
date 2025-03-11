@@ -21,4 +21,5 @@
  home.file = {
    #".themes".source = ../../dotfiles/config-file/themes;
    ".icons".source =  ../../dotfiles/config-file/icons;
+ };
 }
