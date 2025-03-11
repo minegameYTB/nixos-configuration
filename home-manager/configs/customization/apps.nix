@@ -11,7 +11,7 @@
  ### Install theme on home directory
  home.file = {
    ### Ghostty
-   ".config/ghostty/config".source = ../../dotfiles/ghostty/config;
+   ".config/ghostty/config".source = ../../dotfiles/config-file/ghostty/config;
  };
  
 }

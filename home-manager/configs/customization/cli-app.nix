@@ -16,8 +16,8 @@
 
  ### Import conf file for cli software
  home.file = {
-   ".screenrc".source = ../../dotfiles/screenrc;
-   ".config/fastfetch/config.jsonc".source = ../../dotfiles/fastfetch/config.jsonc;
+   ".screenrc".source = ../../dotfiles/config-file/screen/screenrc;
+   ".config/fastfetch/config.jsonc".source = ../../dotfiles/config-file/fastfetch/config.jsonc;
  };
  
  programs.neovim = {
