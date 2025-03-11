@@ -6,6 +6,7 @@
      gparted
      gearlever   
      virt-viewer
+     pika-backup
 
      ### Other
      ghostty
