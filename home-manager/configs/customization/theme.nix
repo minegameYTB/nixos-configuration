@@ -23,7 +23,7 @@
    ".icons".source =  ../../dotfiles/config-file/icons;
    
    ### Backgrounds
-   ".local/share/backgrounds".source = ../../dotfiles/backgrounds/;
+   ".local/share/backgrounds".source = ../../dotfiles/backgrounds;
  };
  
 }
