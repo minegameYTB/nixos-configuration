@@ -7,7 +7,7 @@
  fileSystems."/mnt/NAS" = { 
    device = "192.168.1.5:/hdd-data";
    fsType = "nfs";
-   options = [ "nofail" "noauto" "nfsvers=4.2" "x-systemd.idle-timeout=600" ];
+   options = [ "nofail" "noauto" "nfsvers=4.2" "x-gvfs-show" "x-systemd.idle-timeout=600" ];
  };
  boot.supportedFilesystems = [ "nfs" ];
 }
