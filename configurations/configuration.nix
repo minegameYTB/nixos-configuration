@@ -11,9 +11,6 @@
      ./configs/common/system-pkgs.nix    ### System packages
      ./configs/common/timezone.nix       ### Timezone
      ./configs/common/security.nix       ### Security
-     
-     ### Add nfs mount
-     ./hardware-configuration/common/nfs-mount.nix
    ];
 
 ###----------------------------------------------------------------
