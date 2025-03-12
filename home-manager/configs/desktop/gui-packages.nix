@@ -15,7 +15,7 @@
      zen-browser.packages."${system}".default
      
      ### non-free apps
-     vesktop
+     discord 
      spotify
 
      ### Audio
