@@ -111,12 +111,43 @@
              "virt-manager.desktop"
              "org.prismlauncher.PrismLauncher.desktop"
              "spotify.desktop" 
-             "vesktop.desktop" 
+             "discord.desktop" 
              "steam.desktop"
              "LocalSend.desktop"
            ];
          };
-         "org/gnome/nautilus/preferences" = {
+	 ### Declare custom keybind (and their numbers)
+         "org/gnome/settings-daemon/plugins/media-keys" = {
+           custom-keybindings = [
+             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/" 
+	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/" 
+	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
+	   ];
+	 };
+	 ### Add custom keybind
+	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+           binding = "<Control><Alt>t";
+	   command = "ghostty";
+	   name = "Terminal";
+	 };
+	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+           binding = "<Shift><Control>Escape";
+           command = "missioncenter";
+           name = "Gestionnaire de tâche";
+         };
+         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+           binding = "<Super>e";
+           command = "nautilus -w";
+           name = "Gestionnaire de fichier";
+         };
+	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+           binding = "<Super>i";
+           command = "gnome-control-center";
+           name = "Paramètres";
+         };
+	 ### End of custom keybind
+	 "org/gnome/nautilus/preferences" = {
            show-create-link = true;
            show-delete-permanently = true;
          };
