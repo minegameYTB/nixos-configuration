@@ -64,6 +64,7 @@
  environment.shellAliases = {
    ls = "lsd";
    cat = "bat";
+   df = "df -x tmpfs"
    "cat.ori" = "/run/booted-system/sw/bin/cat";
    "ls.ori" = "/run/booted-system/sw/bin/ls";
    which = "/run/current-system/sw/bin/which";
