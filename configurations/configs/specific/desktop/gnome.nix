@@ -92,7 +92,7 @@
             theme = true;
             window-demands-attention-focus = true;
          };
-	 "/org/gnome/shell/extensions/user-theme" = {
+	 "org/gnome/shell/extensions/user-theme" = {
            name = "Marble-red-dark-filled";
 	 };
          "org/gnome/shell" = {
