@@ -78,7 +78,8 @@
             background-color  = "rgb(36,31,49)";
             dash-max-icon-size = "30";
             custom-theme-shrink = true;
-            click-action = "minimize-or-previews";  
+            click-action = "minimize-or-previews";
+	    intellihide-mode = "ALL_WINDOWS";
          };
          "org/gnome/shell/extensions/Logo-menu" = {
             hide-forcequit = true;
@@ -91,6 +92,9 @@
             theme = true;
             window-demands-attention-focus = true;
          };
+	 "/org/gnome/shell/extensions/user-theme" = {
+           name = "Marble-red-dark-filled";
+	 };
          "org/gnome/shell" = {
            enabled-extensions = [
              "appindicatorsupport@rgcjonas.gmail.com" 
