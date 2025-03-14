@@ -36,6 +36,12 @@
     };
 
 
+  fileSystems."/mnt/Backup" =
+    { device = "/dev/disk/by-label/DATA";
+      fsType = "btrfs";
+      options = [ "subvol=@backup" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+    };
+ 
  #swapDevices =
  #  [ { device = "/dev/disk/by-label/nixos-swap"; }
  #  ];
