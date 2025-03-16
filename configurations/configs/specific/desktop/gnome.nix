@@ -1,4 +1,4 @@
-{ config, pkgs, ...  }:
+{ lib, config, pkgs, ...  }:
 
 {
  ### Import plymouth.nix expression
@@ -84,13 +84,15 @@
          "org/gnome/shell/extensions/Logo-menu" = {
             hide-forcequit = true;
             hide-softwarecentre = true;
-            menu-button-icon-image = "23";
-            menu-button-terminal = "kgx";
+            menu-button-icon-image = lib.gvariant.mkInt32 23;
+            menu-button-terminal = "ghostty";
             symbolic-icon = true;
          };
          "org/gnome/shell/extensions/just-perfection" = {
             theme = true;
             window-demands-attention-focus = true;
+            workspace-peek = false;
+	    startup-status = lib.gvariant.mkInt32 0;
          };
 	 "org/gnome/shell/extensions/user-theme" = {
            name = "Marble-red-dark-filled";
