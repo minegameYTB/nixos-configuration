@@ -14,7 +14,7 @@
      ../configurations/configs/specific/vm/host/qemu-kvm-host.nix       ### To add qemu/kvm as an desktop hypervisor
      ../configurations/configs/specific/desktop/sound.nix               ### Sound server
     #../configurations/configs/specific/desktop/printer.nix             ### CUPS server
-    #../configurations/configs/specific/container/podman.nix            ### Enable podman and add distrobox as a system deps
+     ../configurations/configs/specific/container/podman.nix            ### Enable podman and add distrobox as a system deps
      ../configurations/configs/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
      ../configurations/configs/system/services/flatpak.nix              ### Add flatpak support
      
