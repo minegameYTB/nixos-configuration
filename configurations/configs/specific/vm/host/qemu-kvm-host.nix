@@ -1,9 +1,13 @@
 { config, pkgs, ... }:
 
 {
- ### Virtualisation
+ ### Virt-manager
  programs.virt-manager.enable = true;
- 
+
+ ### KSM ram optimisation
+ hardware.ksm.enable = true;
+
+ ### Virtualisation settings
  virtualisation = {
    kvmgt.enable = true;
    spiceUSBRedirection.enable = true;
