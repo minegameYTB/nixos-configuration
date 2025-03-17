@@ -29,12 +29,10 @@
      wl-clipboard
    ];
    plugins = with pkgs.vimPlugins; [
+     ### Install plugins to use with this configuration
      tokyonight-nvim
      lualine-nvim
    ];
-   extraConfig = ''
-     set backspace=indent,eol,start
-   '';
    extraLuaConfig = ''
      vim.cmd('colorscheme tokyonight-night')
     
