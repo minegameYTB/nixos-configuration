@@ -23,15 +23,18 @@
  programs.neovim = {
    enable = true;
    viAlias = true;
+   defaultEditor = true;
    extraPackages = with pkgs; [
      xclip 
      wl-clipboard
    ];
-   defaultEditor = true;
    plugins = with pkgs.vimPlugins; [
      tokyonight-nvim
      lualine-nvim
    ];
+   extraConfig = ''
+     set backspace=indent,eol,start
+   '';
    extraLuaConfig = ''
      vim.cmd('colorscheme tokyonight-night')
     

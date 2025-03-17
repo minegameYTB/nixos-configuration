@@ -17,10 +17,13 @@
  programs.localsend.enable = true;
   
  ### gnu nano
- programs.nano.nanorc = ''
-   set autoindent
-   set linenumbers 
- '';
+ programs.nano = {
+   enable = false;
+   nanorc = ''
+     set autoindent
+     set linenumbers 
+   '';
+ };
 
  ### NerdFonts
  fonts.packages = with pkgs; [
