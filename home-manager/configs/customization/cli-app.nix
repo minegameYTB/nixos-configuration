@@ -34,10 +34,16 @@
      ### Install plugins to use with this configuration
      tokyonight-nvim
      lualine-nvim
+     nvim-treesitter
+     nvim-treesitter.withAllGrammars
    ];
    extraLuaConfig = ''
+     vim.cmd("set expandtab")
+     vim.cmd("set tabstop=2")
+     vim.cmd("set softtabstop=2")
+     vim.cmd("set shiftwidth=2")
      vim.cmd('colorscheme tokyonight-night')
-    
+
      require('lualine').setup {
        options = {
          theme = 'tokyonight'
