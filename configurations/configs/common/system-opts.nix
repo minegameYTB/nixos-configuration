@@ -131,6 +131,8 @@
  programs.neovim = {
    enable = true;
    viAlias = true;
+   withPython3 = false;
+   withRuby = false;
    configure = {
      customRC = ''
        colorscheme tokyonight-night
