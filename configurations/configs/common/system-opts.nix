@@ -75,7 +75,9 @@
    gadd = "git add";
    gpush = "git push";
    gpull = "git pull";
-   ssh = "TERM=xterm-256color ssh"; ### Use xterm-256color on runtime command
+   
+   ### Use xterm-256color on runtime command
+   ssh = "TERM=xterm-256color ssh";  
  };
 
  ### Zsh
@@ -165,7 +167,7 @@
    enable = true;
    extraFallbackPathCommands = ''
      ln -s ${pkgs.bashInteractive}/bin/bash $out/bash
-     ln -s ${pkgs.python3}/bin/python3 $out/python
+     ln -s ${pkgs.python3}/bin/python  $out/python
      ln -s ${pkgs.python3}/bin/python3 $out/python3
    '';
  };
