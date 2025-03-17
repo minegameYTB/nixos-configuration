@@ -17,10 +17,14 @@
  programs.localsend.enable = true;
 
  ### gnu nano
- programs.nano.nanorc = ''
-   set autoindent
-   set linenumbers 
- '';
+ programs.nano = {
+   ### Disable nano to use neovim instead (move this settings to a another file to use this settings...)
+   enable = false;
+   nanorc = ''
+     set autoindent
+     set linenumbers 
+   '';
+ };
 
  ### NerdFonts
  fonts.packages = with pkgs; [
