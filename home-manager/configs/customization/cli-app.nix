@@ -23,6 +23,8 @@
  programs.neovim = {
    enable = true;
    viAlias = true;
+   withPython3 = false;
+   withRuby = false;
    defaultEditor = true;
    extraPackages = with pkgs; [
      xclip 
