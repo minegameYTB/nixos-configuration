@@ -7,7 +7,7 @@
    
    ### Wrapper script
    nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
-     exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@" && exec zsh
+     exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
    '';
  in
 {
@@ -34,6 +34,7 @@
      git
      bat
      lsd
+     ripgrep
 
      ### Wrapper script
      nixos-rebuild
