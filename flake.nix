@@ -42,7 +42,7 @@
         specialArgs = { 
           inherit pkgsExtra inputs;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser
+          inherit (inputs) zen-browser;
         };
         modules = [
           ./configurations/configuration.nix
@@ -66,7 +66,7 @@
         specialArgs = { 
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser
+          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -90,7 +90,7 @@
         specialArgs = {
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser
+          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -114,7 +114,7 @@
         specialArgs = { 
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser
+          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
@@ -138,7 +138,7 @@
         specialArgs = {
           inherit pkgsExtra;
           inherit (inputs) nur;
-          inherit (inputs) zen-browser
+          inherit (inputs) zen-browser;
         };
         modules = [
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
