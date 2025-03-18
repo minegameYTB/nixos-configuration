@@ -1,28 +1,24 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 update_repo(){
   echo -e "\nUpdate local repository\n"
   git pull
 }
 
-update_flake(){ 
+update_flake(){
   echo -e "\nUpdate repo flake\n"
   nix flake update --flake .
 }
 
 check_rev_change(){
   if [[ -n $(git status --porcelain) ]]; then
-
-    ### Get version and hash commit
-   #NIXPKGS_COMMIT=$(jq -r '.nodes."nixpkgs".locked.rev' flake.lock|cut -c1-8)
-    NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
+    ### Initialize variable to get version and hash commit
+    NIXPKGS_VERSION=$(nix eval --raw "github:NixOS/nixpkgs/$(cat flake.lock | jq -r '.nodes.nixpkgs.locked.rev')#lib.version")
     echo -e "New revision\n"
     git add flake.lock
     git commit -m "[nixpkgs/${NIXPKGS_VERSION}] flake.lock: update to the new rev"
-
     ### Push changes
     git push origin flake
-
     echo -e "\nChange commited to the repo"
   else
     echo "No changes detected"
