@@ -12,7 +12,6 @@
    (with pkgs; [
      ### non-free apps
      discord 
-     spotify
 
      ### Audio
      amberol
