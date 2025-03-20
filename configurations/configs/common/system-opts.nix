@@ -65,7 +65,7 @@
    ls = "lsd";
    cat = "bat";
    df = "df -x tmpfs";
-   w-df = "watch df -hx tmpfs"
+   w-df = "watch df -hx tmpfs";
    "cat.ori" = "/run/booted-system/sw/bin/cat";
    "ls.ori" = "/run/booted-system/sw/bin/ls";
    which = "/run/current-system/sw/bin/which";
