@@ -34,21 +34,28 @@
      ### Install plugins to use with this configuration
      tokyonight-nvim
      lualine-nvim
+     bufferline-nvim
      nvim-treesitter
      nvim-treesitter.withAllGrammars
    ];
    extraLuaConfig = ''
+     -- Nvim config
      vim.cmd("set expandtab")
      vim.cmd("set tabstop=2")
      vim.cmd("set softtabstop=2")
      vim.cmd("set shiftwidth=2")
      vim.cmd('colorscheme tokyonight-night')
 
+     -- Lualine
      require('lualine').setup {
        options = {
          theme = 'tokyonight'
        }
      }
+   
+     -- BufferLine config
+     vim.opt.termguicolors = true
+     require("bufferline").setup{}
    '';
  };
 
