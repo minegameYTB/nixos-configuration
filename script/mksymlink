@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
 
-### Run ln command to create symlink from Documents/GitHub/nixos-configuration to ~/nixos-configuration
-### I use absolute path and ~ for home directory
-echo "Creating symlink of this configuration to ~/nixos-configuration"
-ln -sv $(pwd)/ ~/nixos-configuration
+### Use "." as a relative path 
+TARGET_DIR="."
+
+### Use realpath to have relative path to create symlink
+RELATIVE_PATH=$(realpath --relative-to="$HOME" "$TARGET_DIR")
+
+ln -sv "$RELATIVE_PATH" "$HOME/$(basename $TARGET_DIR)"
+
+echo "Symlink created: $HOME/$(basename $TARGET_DIR) -> $RELATIVE_PATH"
+
