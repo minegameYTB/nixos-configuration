@@ -23,8 +23,7 @@
 
  # List packages installed in system profile. To search, run:
  # $ nix search wget
- environment.systemPackages = 
-   (with pkgs; [
+ environment.systemPackages = with pkgs; [
      ### CLI
      wget2
      jq
@@ -38,7 +37,7 @@
 
      ### Wrapper script
      nixos-rebuild
-   ])
+   ]
  ++
    (with pkgsExtra.pkgs-unstable; [
    ### Use this part to install package from nixpkgs-unstable
