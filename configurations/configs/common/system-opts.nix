@@ -4,7 +4,7 @@
  ### Boot config
  boot = {
    binfmt = {
-    preferStaticEmulators = true;
+     preferStaticEmulators = true;
      emulatedSystems = [
        "aarch64-linux"
      ];
@@ -17,18 +17,21 @@
      "quiet"
      "boot.shell_on_fail"
    ];
-   kernel.sysctl = { "vm.swappiness" = 20; };
+   kernel.sysctl = { 
+     "vm.swappiness" = 20;
+   };
    kernelPackages = pkgs.linuxPackages_6_12;
  };
  
  ### Nix Settings
  nix = {
+   ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
    channel.enable = false;
-   registry.nix-custom-repo.to = {
-     owner = "minegameYTB";
-     repo = "nix-custom-repo";
-     type = "github";
-   };
+  #registry.nix-custom-repo.to = {
+  #  owner = "minegameYTB";
+  #  repo = "nix-custom-repo";
+  #  type = "github";
+  #};
    settings = {
      warn-dirty = false;
      auto-optimise-store = true;
