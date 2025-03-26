@@ -76,6 +76,7 @@
    gadd = "git add";
    gpush = "git push";
    gpull = "git pull";
+   nixos-rebuild = "nixos-rebuild-debug";
    
    ### Use xterm-256color on runtime command
    ssh = "TERM=xterm-256color ssh";

@@ -6,7 +6,7 @@
   #fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
    
    ### Wrapper script
-   nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
+   nixos-rebuild-debug = pkgs.writeShellScriptBin "nixos-rebuild-debug" ''
      exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
    '';
  in
@@ -36,7 +36,7 @@
      ripgrep
 
      ### Wrapper script
-     nixos-rebuild
+     nixos-rebuild-debug
    ]
  ++
    (with pkgsExtra.pkgs-unstable; [
