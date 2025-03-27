@@ -37,7 +37,7 @@
      auto-optimise-store = true;
      experimental-features = [ "nix-command" "flakes" ];
      trusted-users = [ "minegame" ]; 
-     max-jobs = 1;
+     max-jobs = 2;
    };
    gc = {
      automatic = true;
