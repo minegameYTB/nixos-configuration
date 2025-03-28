@@ -1,5 +1,5 @@
 NIX_FLAGS=--extra-experimental-features "nix-command flakes"
-SCRIPT_DIR="$(shell pwd)/script"
+SCRIPT_DIR=$(shell pwd)/script
 
 .DEFAULT_GOAL := help
 
