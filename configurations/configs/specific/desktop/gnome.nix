@@ -6,14 +6,15 @@
  
  ### Gnome Extensions
   environment.systemPackages = with pkgs.gnomeExtensions; [
-   appindicator
-   tiling-assistant
-   dash-to-dock
-   blur-my-shell
-   logo-menu
-   just-perfection
-   hide-activities-button
-   hibernate-status-button
+    appindicator
+    tiling-assistant
+    dash-to-dock
+    blur-my-shell
+    logo-menu
+    just-perfection
+    hide-activities-button
+    hibernate-status-button
+    clipboard-history
   ];
 
  ### Exclude some Gnome default packages
@@ -46,20 +47,20 @@
      {
        settings = {
          "org/gnome/desktop/wm/preferences" = {
-            button-layout = ":minimize,maximize,close";
+           button-layout = ":minimize,maximize,close";
          };
          "org/gnome/mutter" = {
-            attach-modal-dialogs = true;
-            dynamic-workspaces = true;
-            edge-tiling = true;
+           attach-modal-dialogs = true;
+           dynamic-workspaces = true;
+           edge-tiling = true;
          };
          "org/gnome/desktop/interface" = {
-            clock-show-weekday = true;
-            clock-show-date = true;
-            color-scheme = "prefer-dark";
-            gtk-theme = "Adwaita-dark";
-            icon-theme = "Papirus-Dark";
-            show-battery-percentage = true;
+           clock-show-weekday = true;
+           clock-show-date = true;
+           color-scheme = "prefer-dark";
+           gtk-theme = "Adwaita-dark";
+           icon-theme = "Papirus-Dark";
+           show-battery-percentage = true;
          };
          "org/gnome/shell/extensions/blur-my-shell/applications" = {
            blur = true;
@@ -70,33 +71,33 @@
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
-            dock-position = "LEFT";
-            transparency-mode = "DYNAMIC";
-            running-indicator-style = "DOTS";
-            running-indicator-dominant-color = true;
-            custom-background-color = true;
-            background-color  = "rgb(36,31,49)";
-            dash-max-icon-size = "30";
-            custom-theme-shrink = true;
-            click-action = "minimize-or-previews";
-	    intellihide-mode = "ALL_WINDOWS";
+           dock-position = "LEFT";
+           transparency-mode = "DYNAMIC";
+           running-indicator-style = "DOTS";
+           running-indicator-dominant-color = true;
+           custom-background-color = true;
+           background-color  = "rgb(36,31,49)";
+           dash-max-icon-size = "30";
+           custom-theme-shrink = true;
+           click-action = "minimize-or-previews";
+	         intellihide-mode = "ALL_WINDOWS";
          };
          "org/gnome/shell/extensions/Logo-menu" = {
-            hide-forcequit = true;
-            hide-softwarecentre = true;
-            menu-button-icon-image = lib.gvariant.mkInt32 23;
-            menu-button-terminal = "ghostty";
-            symbolic-icon = true;
+           hide-forcequit = true;
+           hide-softwarecentre = true;
+           menu-button-icon-image = lib.gvariant.mkInt32 23;
+           menu-button-terminal = "ghostty";
+           symbolic-icon = true;
          };
          "org/gnome/shell/extensions/just-perfection" = {
-            theme = true;
-            window-demands-attention-focus = true;
-            workspace-peek = false;
-	    startup-status = lib.gvariant.mkInt32 0;
+           theme = true;
+           window-demands-attention-focus = true;
+           workspace-peek = false;
+	         startup-status = lib.gvariant.mkInt32 0;
          };
-	 "org/gnome/shell/extensions/user-theme" = {
+	       "org/gnome/shell/extensions/user-theme" = {
            name = "Marble-red-dark-filled";
-	 };
+	       };
          "org/gnome/shell" = {
            enabled-extensions = [
              "appindicatorsupport@rgcjonas.gmail.com" 
@@ -107,6 +108,7 @@
              "logomenu@aryan_k"
              "user-theme@gnome-shell-extensions.gcampax.github.com" 
              "tiling-assistant@leleat-on-github"
+             "clipboard-history@alexsaveau.dev"
            ];
            favorite-apps = [
              "io.github.zen_browser.zen.desktop" 
