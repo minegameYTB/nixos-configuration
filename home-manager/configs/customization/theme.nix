@@ -19,7 +19,8 @@
 
  ### Install theme on home directory
  home.file = {
-   #".themes".source = ../../dotfiles/config-file/themes;
-   ".icons".source =  ../../dotfiles/config-file/icons;
+   ".themes".source = ../../dotfiles/config-file/themes;
+   ".config/gtk-4.0".source = ../../dotfiles/config-file/themes/Nightfox-Dark-Carbon/gtk-4.0;
+  #".icons".source =  ../../dotfiles/config-file/icons;
  };
 }
