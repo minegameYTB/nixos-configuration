@@ -17,10 +17,15 @@
    nur.repos.minegameYTB.theme.marble-shell
  ];
 
+ ### Set directly the nightfox theme as a gtk4 theme
+ xdg.configFile = {
+   "gtk-4.0".source = ../../dotfiles/config-file/themes/Nightfox-Dark-Carbon/gtk-4.0;
+ };
+
  ### Install theme on home directory
  home.file = {
-   ".themes".source = ../../dotfiles/config-file/themes;
-   ".config/gtk-4.0".source = ../../dotfiles/config-file/themes/Nightfox-Dark-Carbon/gtk-4.0;
+  ".themes".source = ../../dotfiles/config-file/themes;
+  #".config/gtk-4.0".source = ../../dotfiles/config-file/themes/Nightfox-Dark-Carbon/gtk-4.0;
   #".icons".source =  ../../dotfiles/config-file/icons;
  };
 }
