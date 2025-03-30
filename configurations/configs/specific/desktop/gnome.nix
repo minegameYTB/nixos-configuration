@@ -1,21 +1,37 @@
 { lib, config, pkgs, ...  }:
 
 {
- ### Import plymouth.nix expression
- imports = [ ./plymouth.nix ];
+ ### Import x11 related expression
+ imports = [ ./x11.nix ];
+ 
+ # Enable the GNOME Desktop Environment.
+ services.xserver.displayManager.gdm.enable = true;
+ services.xserver.desktopManager.gnome.enable = true;
+ 
+ ### Gnome pinentry gpg
+ programs.gnupg.agent = {
+   pinentryPackage = lib.mkDefault pkgs.pinentry-gnome3;
+ };
+  
+ ### Qt
+ qt = {
+   enable = true;
+   platformTheme = "gnome";
+   style = "adwaita-dark";
+ };
  
  ### Gnome Extensions
-  environment.systemPackages = with pkgs.gnomeExtensions; [
-    appindicator
-    tiling-assistant
-    dash-to-dock
-    blur-my-shell
-    logo-menu
-    just-perfection
-    hide-activities-button
-    hibernate-status-button
-    clipboard-history
-  ];
+ environment.systemPackages = with pkgs.gnomeExtensions; [
+   appindicator
+   tiling-assistant
+   dash-to-dock
+   blur-my-shell
+   logo-menu
+   just-perfection
+   hide-activities-button
+   hibernate-status-button
+   clipboard-history
+ ];
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
@@ -30,7 +46,6 @@
    gnome-music          ### Gnome Music
    gnome-system-monitor ### Gnome system monitor
  ];
-
 
  ### Nautilus settings
  programs.nautilus-open-any-terminal = {
