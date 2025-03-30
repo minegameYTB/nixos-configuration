@@ -58,7 +58,7 @@
            clock-show-weekday = true;
            clock-show-date = true;
            color-scheme = "prefer-dark";
-           gtk-theme = "Tokyonight-Dark";
+           #gtk-theme = "Tokyonight-Dark";
            icon-theme = "Papirus-Dark";
            show-battery-percentage = true;
          };
