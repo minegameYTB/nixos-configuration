@@ -178,13 +178,6 @@
      ln -s ${pkgs.python3}/bin/python3 $out/python3
    '';
  };
- 
- ### Qt
- qt = {
-   enable = true;
-   platformTheme = "gnome";
-   style = "adwaita-dark";
- };
 
  ### binfmt registration
  boot.binfmt.registrations = {
