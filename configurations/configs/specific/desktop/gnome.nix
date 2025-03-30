@@ -58,7 +58,7 @@
            clock-show-weekday = true;
            clock-show-date = true;
            color-scheme = "prefer-dark";
-           gtk-theme = "Adwaita-dark";
+           gtk-theme = "Nightfox-Dark-Carbon";
            icon-theme = "Papirus-Dark";
            show-battery-percentage = true;
          };
@@ -123,22 +123,22 @@
              "LocalSend.desktop"
            ];
          };
-	 ### Declare custom keybind (and their numbers)
+	       ### Declare custom keybind (and their numbers)
          "org/gnome/settings-daemon/plugins/media-keys" = {
            custom-keybindings = [
              "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/" 
-	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/" 
-	     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
-	   ];
-	 };
-	 ### Add custom keybind
-	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/" 
+	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/" 
+	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
+	         ];
+	       };
+	       ### Add custom keybind
+	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
            binding = "<Control><Alt>t";
-	   command = "ghostty";
-	   name = "Terminal";
-	 };
-	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+	         command = "ghostty";
+	         name = "Terminal";
+	       };
+	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
            binding = "<Shift><Control>Escape";
            command = "missioncenter";
            name = "Gestionnaire de tâche";
@@ -148,13 +148,13 @@
            command = "nautilus -w";
            name = "Gestionnaire de fichier";
          };
-	 "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
            binding = "<Super>i";
            command = "gnome-control-center";
            name = "Paramètres";
          };
-	 ### End of custom keybind
-	 "org/gnome/nautilus/preferences" = {
+	       ### End of custom keybind
+	       "org/gnome/nautilus/preferences" = {
            show-create-link = true;
            show-delete-permanently = true;
          };
