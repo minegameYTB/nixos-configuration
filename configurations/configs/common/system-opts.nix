@@ -73,7 +73,7 @@
    "ls.ori" = "/run/booted-system/sw/bin/ls";
    which = "/run/current-system/sw/bin/which";
    ff = "fastfetch";
-   nix = "nix -vL";
+   nix = "nix -vL --refresh";
    wget = "wget2";
    gc = "git commit";
    gadd = "git add";
