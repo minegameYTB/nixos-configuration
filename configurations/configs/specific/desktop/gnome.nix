@@ -126,7 +126,7 @@
              "clipboard-history@alexsaveau.dev"
            ];
            favorite-apps = [
-             "io.github.zen_browser.zen.desktop" 
+             "zen-beta.desktop"
              "org.gnome.Calendar.desktop" 
              "org.gnome.Nautilus.desktop" 
              "org.gnome.Software.desktop" 
