@@ -14,6 +14,15 @@
 
  programs.home-manager.enable = true;
 
+ ### Nix option
+ nix = {
+   gc = {
+     automatic = true;
+     frequency = "weekly";
+     options = "--delete-older-than 7d";
+   };
+ };
+
  programs.git = {
    enable = true;
    userName  = "Minegame YTB";
