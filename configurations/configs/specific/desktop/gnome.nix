@@ -73,7 +73,7 @@
            clock-show-weekday = true;
            clock-show-date = true;
            color-scheme = "prefer-dark";
-           #gtk-theme = "Tokyonight-Dark";
+           gtk-theme = "adw-gtk3-dark";
            icon-theme = "Papirus-Dark";
            show-battery-percentage = true;
          };
@@ -92,7 +92,7 @@
            running-indicator-dominant-color = true;
            custom-background-color = true;
            background-color  = "rgb(36,31,49)";
-           dash-max-icon-size = "30";
+           dash-max-icon-size = lib.gvariant.mkInt32 30;
            custom-theme-shrink = true;
            click-action = "minimize-or-previews";
 	         intellihide-mode = "ALL_WINDOWS";
