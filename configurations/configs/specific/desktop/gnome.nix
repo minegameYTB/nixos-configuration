@@ -83,6 +83,7 @@
            dynamic-opacity = false;
            whitelist = [
              "com.mitchellh.ghostty"
+             "org.gnome.TextEditor"
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
