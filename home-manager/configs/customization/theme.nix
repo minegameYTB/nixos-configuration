@@ -14,7 +14,7 @@
    papirus-icon-theme
    ayu-theme-gtk
    catppuccin-cursors.mochaDark
-   nur.repos.minegameYTB.theme.marble-shell
+   nur.repos.minegameYTB.theme.marble-shell-filled
  ];
 
  ### Set directly the nightfox theme as a gtk4 theme
