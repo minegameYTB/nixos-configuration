@@ -84,6 +84,7 @@
            whitelist = [
              "com.mitchellh.ghostty"
              "org.gnome.TextEditor"
+             "zen-beta"
            ];
          };
          "org/gnome/shell/extensions/dash-to-dock" = {
