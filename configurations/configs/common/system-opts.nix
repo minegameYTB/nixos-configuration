@@ -50,8 +50,12 @@
    };
  };
 
- ### Disable nixos-option command
- system.tools.nixos-option.enable = false;
+ ### Disable some nixos other command
+ system.tools = {
+   nixos-option.enable = false;
+   nixos-build-vms.enable = false;
+   nixos-install.enable = false;
+ };
 
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
