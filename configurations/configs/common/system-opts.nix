@@ -49,7 +49,10 @@
      dates = [ "weekly" ];
    };
  };
- 
+
+ ### Disable nixos-option command
+ system.tools.nixos-option.enable = false;
+
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
    PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
