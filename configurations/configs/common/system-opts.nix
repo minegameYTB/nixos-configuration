@@ -81,7 +81,6 @@
    which = "/run/current-system/sw/bin/which";
    ff = "fastfetch";
    nix = "nix -v --refresh";
-   wget = "wget2";
    gc = "git commit";
    gadd = "git add";
    gpush = "git push";

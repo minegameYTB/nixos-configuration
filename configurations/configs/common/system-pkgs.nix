@@ -25,7 +25,7 @@
  # $ nix search wget
  environment.systemPackages = with pkgs; [
      ### CLI
-     wget2
+     wget
      jq
      nix-search-cli
      efibootmgr
