@@ -20,7 +20,7 @@
    kernel.sysctl = { 
      "vm.swappiness" = 20;
    };
-   kernelPackages = pkgs.linuxPackages_latest;
+   kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
  };
  
  ### Nix Settings
