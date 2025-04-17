@@ -17,12 +17,13 @@
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
- 
+    stylix.url = "github:danth/stylix/release-24.11";
+
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-23-11, home-manager, zen-browser, nur, ... }@inputs:
+  outputs = { self, nixpkgs, stylix, nixpkgs-unstable, nixpkgs-23-11, home-manager, zen-browser, nur, ... }@inputs:
   let
     ### System variable
     lib = nixpkgs.lib;
@@ -48,6 +49,7 @@
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -72,6 +74,7 @@
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -96,6 +99,7 @@
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -120,6 +124,7 @@
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -144,6 +149,7 @@
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
