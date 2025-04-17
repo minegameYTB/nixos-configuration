@@ -27,10 +27,11 @@
    dash-to-dock
    blur-my-shell
    logo-menu
-   just-perfection
    hide-activities-button
    hibernate-status-button
    clipboard-history
+  ### Disabled bcause stylix is incompatible with just-perfection
+  #just-perfection
  ];
 
  ### Exclude some Gnome default packages
@@ -106,12 +107,12 @@
            menu-button-terminal = "ghostty";
            symbolic-icon = true;
          };
-         "org/gnome/shell/extensions/just-perfection" = {
-           theme = true;
-           window-demands-attention-focus = true;
-           workspace-peek = false;
-	         startup-status = lib.gvariant.mkInt32 0;
-         };
+        #"org/gnome/shell/extensions/just-perfection" = {
+        #  theme = true;
+        #  window-demands-attention-focus = true;
+        #  workspace-peek = false;
+	      #  startup-status = lib.gvariant.mkInt32 0;
+        #};
 	       "org/gnome/shell/extensions/user-theme" = {
            name = "Marble-red-dark-filled";
 	       };
