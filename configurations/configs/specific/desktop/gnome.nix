@@ -14,11 +14,11 @@
  };
   
  ### Qt
- qt = {
-   enable = true;
-   platformTheme = "gnome";
-   style = "adwaita-dark";
- };
+ #qt = {
+ #  enable = true;
+ #  platformTheme = "gnome";
+ #  style = "adwaita-dark";
+ #};
  
  ### Gnome Extensions
  environment.systemPackages = with pkgs.gnomeExtensions; [
