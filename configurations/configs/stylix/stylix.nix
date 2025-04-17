@@ -5,7 +5,7 @@
  stylix = {
    enable = true;
    ### Accept fetchurl derivation (see stylix doc)
-   image = ./wallpaper/Cherish.png;
+   image = ./wallpaper/catppuccin-wallpapers/landscapes/tropic_island_morning.jpg;
   #image = pkgs.fetchurl {
   #  url = "";
   #  sha256 = "";
