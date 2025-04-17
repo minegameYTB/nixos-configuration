@@ -15,6 +15,7 @@
 
      ### Audio
      amberol
+     spotify
 
      ### Video
      vlc
