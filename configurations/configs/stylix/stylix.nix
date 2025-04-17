@@ -16,11 +16,15 @@
      sansSerif = {
        ### Use pkgsExtra.pkgs-unstable to get adwaita-fonts (even if i use nixpkgs stable by default)
        package = pkgsExtra.pkgs-unstable.adwaita-fonts;
-       name = "Adwaita";
+       name = "Adwaita Sans";
      };
      serif = {
        package = pkgsExtra.pkgs-unstable.adwaita-fonts;
-       name = "Adwaita";
+       name = "Adwaita Sans";
+     };
+     monospace = {
+       package = pkgsExtra.pkgs-unstable.adwaita-fonts;
+       name = "Adwaita Mono";
      };
    };
   #base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
