@@ -35,5 +35,11 @@
      name = "catppuccin-mocha-dark-cursors";
      size = 24;
    };
+   targets = {
+     plymouth = {
+       enable = true;
+       logoAnimated = false;
+     };
+   };
  };
 }
