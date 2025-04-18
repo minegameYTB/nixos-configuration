@@ -67,6 +67,7 @@
          };
          "org/gnome/mutter" = {
            attach-modal-dialogs = true;
+           center-new-windows = true;
            dynamic-workspaces = true;
            edge-tiling = true;
          };
