@@ -30,7 +30,8 @@
    hide-activities-button
    hibernate-status-button
    clipboard-history
-  
+   no-overview
+
   ### Disabled bcause stylix is incompatible with just-perfection
   #just-perfection
  ];
@@ -66,12 +67,14 @@
          "org/gnome/desktop/wm/preferences" = {
            button-layout = ":minimize,maximize,close";
          };
+
          "org/gnome/mutter" = {
            attach-modal-dialogs = true;
            center-new-windows = true;
            dynamic-workspaces = true;
            edge-tiling = true;
          };
+
          "org/gnome/desktop/interface" = {
            clock-show-weekday = true;
            clock-show-date = true;
@@ -80,9 +83,11 @@
            icon-theme = "Papirus-Dark";
            show-battery-percentage = true;
          };
+
          "org/gnome/shell/extensions/blur-my-shell" = {
            hacks-level = lib.gvariant.mkInt32 2;
-          };
+         };
+
          "org/gnome/shell/extensions/blur-my-shell/applications" = {
            blur = true;
            brightness = "0.8";
@@ -93,18 +98,20 @@
              "zen-beta"
            ];
          };
+
          "org/gnome/shell/extensions/dash-to-dock" = {
            dock-position = "LEFT";
            transparency-mode = "DYNAMIC";
            running-indicator-style = "DOTS";
            running-indicator-dominant-color = true;
            custom-background-color = true;
-           background-color  = "rgb(36,31,49)";
+           background-color = "rgb(36,31,49)";
            dash-max-icon-size = lib.gvariant.mkInt32 30;
            custom-theme-shrink = true;
            click-action = "minimize-or-previews";
-	         intellihide-mode = "ALL_WINDOWS";
+           intellihide-mode = "ALL_WINDOWS";
          };
+
          "org/gnome/shell/extensions/Logo-menu" = {
            hide-forcequit = true;
            hide-softwarecentre = true;
@@ -112,15 +119,18 @@
            menu-button-terminal = "ghostty";
            symbolic-icon = true;
          };
-        #"org/gnome/shell/extensions/just-perfection" = {
-        #  theme = true;
-        #  window-demands-attention-focus = true;
-        #  workspace-peek = false;
-	      #  startup-status = lib.gvariant.mkInt32 0;
-        #};
-	       "org/gnome/shell/extensions/user-theme" = {
+
+        # "org/gnome/shell/extensions/just-perfection" = {
+        #   theme = true;
+        #   window-demands-attention-focus = true;
+        #   workspace-peek = false;
+        #   startup-status = lib.gvariant.mkInt32 0;
+        # };
+
+         "org/gnome/shell/extensions/user-theme" = {
            name = "Marble-red-dark-filled";
-	       };
+         };
+
          "org/gnome/shell" = {
            enabled-extensions = [
              "appindicatorsupport@rgcjonas.gmail.com" 
@@ -146,41 +156,124 @@
              "LocalSend.desktop"
            ];
          };
-	       ### Declare custom keybind (and their numbers)
+
+         ### Custom keybinds
          "org/gnome/settings-daemon/plugins/media-keys" = {
            custom-keybindings = [
              "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/" 
-	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/" 
-	           "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
-	         ];
-	       };
-	       ### Add custom keybind
-	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/" 
+             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/" 
+             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
+           ];
+         };
+
+         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
            binding = "<Control><Alt>t";
-	         command = "ghostty";
-	         name = "Terminal";
-	       };
-	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+           command = "ghostty";
+           name = "Terminal";
+         };
+
+         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
            binding = "<Shift><Control>Escape";
            command = "missioncenter";
            name = "Gestionnaire de tâche";
          };
+
          "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
            binding = "<Super>e";
            command = "nautilus -w";
            name = "Gestionnaire de fichier";
          };
-	       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+
+         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
            binding = "<Super>i";
            command = "gnome-control-center";
            name = "Paramètres";
          };
-	       ### End of custom keybind
-	       "org/gnome/nautilus/preferences" = {
+
+         ### App Folders configuration
+         "org/gnome/desktop/app-folders" = {
+           folder-children = [
+             "accessories"
+             "chrome-apps"
+             "games"
+             "graphics"
+             "internet"
+             "office"
+             "programming"
+             "science"
+             "sound---video"
+             "system-tools"
+             "universal-access"
+             "wine"
+           ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/accessories" = {
+           name = "Accessories";
+           categories = [ "Utility" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/chrome-apps" = {
+           name = "Chrome Apps";
+           categories = [ "chrome-apps" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/games" = {
+           name = "Games";
+           categories = [ "Game" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/graphics" = {
+           name = "Graphics";
+           categories = [ "Graphics" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/internet" = {
+           name = "Internet";
+           categories = [ "Network" "WebBrowser" "Email" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/office" = {
+           name = "Office";
+           categories = [ "Office" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/programming" = {
+           name = "Programming";
+           categories = [ "Development" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/science" = {
+           name = "Science";
+           categories = [ "Science" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/sound---video" = {
+           name = "Sound & Video";
+           categories = [ "AudioVideo" "Audio" "Video" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/system-tools" = {
+           name = "System Tools";
+           categories = [ "System" "Settings" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/universal-access" = {
+           name = "Universal Access";
+           categories = [ "Accessibility" ];
+         };
+
+         "org/gnome/desktop/app-folders/folders/wine" = {
+           name = "Wine";
+           categories = [ "Wine" "X-Wine" "Wine-Programs-Accessories" ];
+         };
+
+         "org/gnome/nautilus/preferences" = {
            show-create-link = true;
            show-delete-permanently = true;
          };
+
          "org/gnome/TextEditor" = {
            restore-session = false;
          };
