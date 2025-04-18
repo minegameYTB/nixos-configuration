@@ -30,6 +30,7 @@
    hide-activities-button
    hibernate-status-button
    clipboard-history
+  
   ### Disabled bcause stylix is incompatible with just-perfection
   #just-perfection
  ];
@@ -79,6 +80,9 @@
            icon-theme = "Papirus-Dark";
            show-battery-percentage = true;
          };
+         "org/gnome/shell/extensions/blur-my-shell" = {
+           hacks-level = lib.gvariant.mkInt32 2;
+          };
          "org/gnome/shell/extensions/blur-my-shell/applications" = {
            blur = true;
            brightness = "0.8";
