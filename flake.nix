@@ -17,10 +17,7 @@
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix = {
-      url = "github:danth/stylix/release-24.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    stylix.url = "github:danth/stylix/release-24.11";
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
