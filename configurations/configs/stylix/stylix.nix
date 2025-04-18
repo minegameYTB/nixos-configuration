@@ -26,6 +26,7 @@
        package = pkgsExtra.pkgs-unstable.adwaita-fonts;
        name = "Adwaita Mono";
      };
+     sizes.applications = 11;
    };
   #base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
    cursor = {
