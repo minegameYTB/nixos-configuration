@@ -64,6 +64,11 @@
    profiles.user.databases = [
      {
        settings = {
+         ### Numlock
+         "org/gnome/desktop/peripherals/keyboard" = {
+                numlock-state = true;
+         };
+
          "org/gnome/desktop/wm/preferences" = {
            button-layout = ":minimize,maximize,close";
          };
