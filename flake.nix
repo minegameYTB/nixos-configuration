@@ -18,6 +18,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix.url = "github:danth/stylix/release-24.11";
+    catppuccin-wallpapers = {
+      url = "github:zhichaoh/catppuccin-wallpapers";
+      flake = false;
+    };
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
