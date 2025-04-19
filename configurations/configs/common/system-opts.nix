@@ -176,16 +176,6 @@
  ### Udev
  services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
- ### EnvFS
- services.envfs = {
-   enable = true;
-   extraFallbackPathCommands = ''
-     ln -s ${pkgs.bashInteractive}/bin/bash $out/bash
-     ln -s ${pkgs.python3}/bin/python  $out/python
-     ln -s ${pkgs.python3}/bin/python3 $out/python3
-   '';
- };
-
  ### binfmt registration
  boot.binfmt.registrations = {
    appimage = {
