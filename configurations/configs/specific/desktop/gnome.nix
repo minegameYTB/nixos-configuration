@@ -287,7 +287,7 @@
 
          "org/gnome/TextEditor" = {
            restore-session = false;
-           custom-font = "Monospace 11";
+           custom-font = "Monospace 10";
            use-system-font = false;
          };
        };
