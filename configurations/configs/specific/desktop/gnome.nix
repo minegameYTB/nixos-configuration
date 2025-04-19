@@ -56,6 +56,10 @@
    terminal = "ghostty";
  };
 
+ ### Disable some services 
+ systemd.services."getty@tty1".enable = false;
+ systemd.services."autovt@tty1".enable = false;
+
 ###-------------------------------------------------------------------------
 
  ### Dconf settings
