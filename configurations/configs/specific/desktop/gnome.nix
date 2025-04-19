@@ -158,6 +158,7 @@
              "virt-manager.desktop"
              "org.prismlauncher.PrismLauncher.desktop"
              "discord.desktop" 
+             "spotify.desktop"
              "steam.desktop"
              "LocalSend.desktop"
            ];
@@ -282,6 +283,7 @@
 
          "org/gnome/TextEditor" = {
            restore-session = false;
+           custom-font = "Monospace 11";
          };
        };
      }
