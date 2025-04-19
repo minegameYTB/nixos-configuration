@@ -147,6 +147,7 @@
              "user-theme@gnome-shell-extensions.gcampax.github.com" 
              "tiling-assistant@leleat-on-github"
              "clipboard-history@alexsaveau.dev"
+             "no-overview@fthx"
            ];
            favorite-apps = [
              "zen-beta.desktop"
