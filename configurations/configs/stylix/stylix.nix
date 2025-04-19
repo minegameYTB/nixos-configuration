@@ -1,12 +1,12 @@
 ### Import pkgsExtra sets bcause it contain pkgs-unstable expression (installing fonts from nixpkgs unstable (at this time btw))
-{ config, pkgs, pkgsExtra, ... }:
+{ config, pkgs, pkgsExtra, inputs, ... }:
 
 {
  ### Stylix config
  stylix = {
    enable = true;
    ### Accept fetchurl derivation (see stylix doc)
-   image = ./wallpaper/tropic_island_morning.jpg;
+   image = "${inputs.catppuccin-wallpapers}/landscapes/tropic_island_morning.jpg";
   #image = pkgs.fetchurl {
   #  url = "";
   #  sha256 = "";
