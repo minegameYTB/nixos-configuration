@@ -14,6 +14,4 @@
    ".config/ghostty/config".source = ../../dotfiles/config-file/ghostty/config;
  };
 
- ### Stylix conf
- stylix.targets.ghostty.enable = true; 
 }
