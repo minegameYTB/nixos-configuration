@@ -12,8 +12,11 @@
    ### Theme
    adw-gtk3
    papirus-icon-theme
+   
    ### This theme provide adwaita-dark theme (old theme)
    ayu-theme-gtk
+   
+   ### From my nurpkgs repo
    nur.repos.minegameYTB.theme.marble-shell-filled
  ];
 
