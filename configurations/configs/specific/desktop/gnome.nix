@@ -164,7 +164,7 @@
                "com.mitchellh.ghostty.desktop"
                "virt-manager.desktop"
                "org.prismlauncher.PrismLauncher.desktop"
-               "discord.desktop"
+               "vesktop.desktop"
                "spotify.desktop"
                "steam.desktop"
                "LocalSend.desktop"
