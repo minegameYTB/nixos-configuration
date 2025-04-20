@@ -31,6 +31,7 @@
    hibernate-status-button
    clipboard-history
    no-overview
+   quick-settings-audio-panel
 
   ### Disabled bcause stylix is incompatible with just-perfection
   #just-perfection
@@ -159,6 +160,7 @@
                "tiling-assistant@leleat-on-github"
                "clipboard-history@alexsaveau.dev"
                "no-overview@fthx"
+               "quick-settings-audio-panel@rayzeq.github.io"
              ];
              favorite-apps = [
                "zen-beta.desktop"
