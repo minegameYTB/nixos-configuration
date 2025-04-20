@@ -83,6 +83,22 @@
         "type": "github"
       }
     },
+    "dotfiles-minegameYTB": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1745172929,
+        "narHash": "sha256-B/Y6LQq+Xv52mL0ZZkTkE6JEb0J5F1wxywwndwWag7M=",
+        "owner": "minegameYTB",
+        "repo": "dotfiles",
+        "rev": "52dd0eb84295c1df987fdff9cd13cab8ffc1a5ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minegameYTB",
+        "repo": "dotfiles",
+        "type": "github"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -407,6 +423,7 @@
     "root": {
       "inputs": {
         "catppuccin-wallpapers": "catppuccin-wallpapers",
+        "dotfiles-minegameYTB": "dotfiles-minegameYTB",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "nixpkgs-23-11": "nixpkgs-23-11",
