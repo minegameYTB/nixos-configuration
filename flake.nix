@@ -139,7 +139,7 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
+            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
@@ -164,7 +164,7 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
+            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
