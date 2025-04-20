@@ -67,7 +67,7 @@
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
-              inherit nur pkgsExtra; 
+              inherit inputs nur pkgsExtra; 
               inherit (inputs) zen-browser;
             };
           }
@@ -92,7 +92,7 @@
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
-              inherit nur pkgsExtra;
+              inherit inputs nur pkgsExtra;
               inherit (inputs) zen-browser;
             };
           }
@@ -117,7 +117,7 @@
             home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
-              inherit nur pkgsExtra;
+              inherit inputs nur pkgsExtra;
               inherit (inputs) zen-browser;
             };
           }
@@ -142,7 +142,7 @@
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
-              inherit nur pkgsExtra;
+              inherit inputs nur pkgsExtra;
               inherit (inputs) zen-browser;
             };
           }
@@ -167,7 +167,7 @@
             home-manager.users.minegame = import ./hm-profiles/server-profile.nix;
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
-              inherit nur pkgsExtra;
+              inherit inputs nur pkgsExtra;
               inherit (inputs) zen-browser;
             };
           }
