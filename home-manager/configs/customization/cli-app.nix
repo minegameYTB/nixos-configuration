@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -16,13 +16,17 @@
 
  ### Import conf file for cli software
  home.file = {
-   ".screenrc".source = ../../dotfiles/config-file/screen/screenrc;
-   ".config/fastfetch/config.jsonc".source = ../../dotfiles/config-file/fastfetch/config.jsonc;
+   ".screenrc".source = "${inputs.dotfiles-minegameYTB}/configs/screen/screenrc";
  };
  
+ xdg.configFile = {
+   "fastfetch/config.jsonc".source = "${inputs.dotfiles-minegameYTB}/configs/fastfetch/config.jsonc";
+ };
+
  programs.neovim = {
    enable = true;
    viAlias = true;
+   vimAlias = true;
    withPython3 = false;
    withRuby = false;
    defaultEditor = true;

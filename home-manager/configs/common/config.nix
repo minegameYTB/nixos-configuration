@@ -8,10 +8,6 @@
    homeDirectory = "/home/minegame";
  };
 
-#home.sessionVariables = {
-#  EDITOR = "nvim";
-#};
-
  programs.home-manager.enable = true;
 
  ### Nix option
@@ -36,6 +32,7 @@
        ### Use gh from profile
        helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
      };
+     init.defaultBranch = "main";
    };
  };
 
