@@ -70,6 +70,11 @@
  ### Zram
  zramSwap.enable = true;
 
+ ### Common env variable
+ environment.variables = {
+   EDITOR = "nvim";
+ };
+
  ### Shell environment
  environment.shellAliases = {
    ls = "lsd";
