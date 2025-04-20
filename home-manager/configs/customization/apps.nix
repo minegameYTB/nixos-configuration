@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
  # Home Manager needs a bit of information about you and the paths it should
@@ -9,9 +9,9 @@
  };
 
  ### Install theme on home directory
- home.file = {
+ xdg.configFile = {
    ### Ghostty
-   ".config/ghostty/config".source = ../../dotfiles/config-file/ghostty/config;
+   "ghostty/config".source = "${inputs.dotfiles-minegameYTB}/configs/ghostty/config";
  };
 
 }
