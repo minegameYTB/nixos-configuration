@@ -23,9 +23,7 @@
      ### Office
      onlyoffice-bin
 
-     ### Editor
-
-     ### Games 
+     ### Games
      prismlauncher
 
      ### Utilities
@@ -33,9 +31,13 @@
      gnome-extension-manager
      bottles
      bitwarden-desktop
+
+     ### Emulator
+     melonDS
   ])
  ++
   (with pkgsExtra.pkgs-23-11; [
+    ### Emulator
     citra
   ]);
 
