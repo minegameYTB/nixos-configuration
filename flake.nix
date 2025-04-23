@@ -5,8 +5,10 @@
 
   inputs = {
     ### Main repo
-    ### To test a PR on a flake : github:username/repo?ref=pull/<PR number>/head
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    
+    ### To test a PR on a flake : 
+    ### github:username/repo?ref=pull/<PR number>/head
     
     ### Other repos
     home-manager = {
