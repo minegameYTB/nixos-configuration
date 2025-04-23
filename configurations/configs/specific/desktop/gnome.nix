@@ -88,6 +88,10 @@
              edge-tiling = true;
            };
 
+           "org/gnome/desktop/datetime" = {
+             automatic-timezone = true;
+           };
+
            "org/gnome/desktop/interface" = {
              clock-show-weekday = true;
              clock-show-date = true;
@@ -95,10 +99,6 @@
              gtk-theme = "adw-gtk3-dark";
              icon-theme = "Papirus-Dark";
              show-battery-percentage = true;
-           };
-
-           "org/gnome/desktop/default-applications/terminal" = {
-             exec = "ghostty";
            };
 
            "org/gnome/shell/extensions/blur-my-shell" = {
