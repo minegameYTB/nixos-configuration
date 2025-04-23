@@ -11,6 +11,7 @@
      ./configs/common/system-pkgs.nix    ### System packages
      ./configs/common/timezone.nix       ### Timezone
      ./configs/common/security.nix       ### Security
+     ./configs/common/fonts.nix          ### Fonts
    ];
 
 ###----------------------------------------------------------------
