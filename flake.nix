@@ -5,11 +5,11 @@
 
   inputs = {
     ### Main repo
-    nixpkgs.url = "github:NixOS/nixpkgs/gnome";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     
     ### Other repos
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
@@ -17,7 +17,7 @@
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix.url = "github:danth/stylix";
+    stylix.url = "github:danth/stylix/release-24.11";
     
     ### Rice/customization
     catppuccin-wallpapers = {
