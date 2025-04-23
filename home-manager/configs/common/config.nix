@@ -33,6 +33,7 @@
        helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
      };
      init.defaultBranch = "main";
+     push.autoSetupRemote = true;
    };
  };
 
