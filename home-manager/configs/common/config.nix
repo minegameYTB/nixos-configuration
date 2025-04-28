@@ -141,5 +141,10 @@
      export NIXPKGS_COMMIT=$(curl -s https://raw.githubusercontent.com/minegameYTB/nixos-configuration/flake/flake.lock | jq -r '.nodes."nixpkgs".locked.rev' | cut -c1-8)
    '';
  };
- 
+
+ ### Fonts
+ home.packages = with pkgs; [
+   ### Replace this by "nerd-fonts.jetbrains-mono" on home-manager/nixos-25.05
+   (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+ ];
 }
