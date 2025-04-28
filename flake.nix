@@ -70,9 +70,10 @@
           { 
             nixpkgs.overlays = [ nur.overlays.default ]; 
          
-            ### create backup for original file (alias in-flake configuration)
+            ### Specific aliases for home-manager standalone
             home.shellAliases = {
               home-manager = "home-manager -b bak";
+              ls = "ls --color=auto";
             };
           })
         (import ./hm-profiles/desktop-profile.nix { inherit username; })
