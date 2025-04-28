@@ -110,6 +110,11 @@
    ];
  };
 
+ ### bash
+ programs.bash = {
+   enable = true;
+ };
+
  ### zsh
  programs.zsh = {
    enable = true;
