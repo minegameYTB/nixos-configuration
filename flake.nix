@@ -46,6 +46,7 @@
     ### Home manager variable
     users = [ "minegame" ];
     
+    ### Create a function named "mkHome" and add the sub function named username (username: ...)
     mkHome = username: home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { 
         inherit system;
@@ -57,7 +58,8 @@
         ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
         (import ./hm-profiles/desktop-profile.nix { inherit username; })
       ];
-      extraSpecialArgs = { 
+      extraSpecialArgs = {
+        ### Export "inputs" "nur" "inputs.zen-browser" and "pkgsExtra" to home-manager configuration
         inherit inputs nur pkgsExtra;
         inherit (inputs) zen-browser;
       };
@@ -249,6 +251,6 @@
       };
     };
     ### Use dynamic attribute to use home-manager standalone (need testing)
-    homeConfigurations = nixpkgs.lib.genAttrs users mkHome;
+    homeConfigurations = lib.genAttrs users mkHome;
   };
 }
