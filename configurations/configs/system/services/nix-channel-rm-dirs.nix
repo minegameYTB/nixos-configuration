@@ -16,7 +16,7 @@ in
      User = "root";
    };
    script = ''
-     rm -rf /root/.nix-defexpr/channels /nix/var/nix/profiles/per-user/root/channels
+     rm -rf /root/.nix-defexpr/channels /nix/var/nix/profiles/per-user/root/channels*
    '';
  };
 }
