@@ -45,6 +45,23 @@
     
     ### Home manager variable
     users = [ "minegame" ];
+    
+    mkHome = username: home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs { 
+        inherit system;
+        
+        ### Allow non free software to home-manager standalone conf
+        config = { allowUnfree = true; };
+      };
+      modules = [
+        ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
+        (import ./hm-profiles/desktop-profile.nix { inherit username; })
+      ];
+      extraSpecialArgs = { 
+        inherit inputs nur pkgsExtra;
+        inherit (inputs) zen-browser;
+      };
+    };
 
     ### Other sources
     pkgsExtra = {
@@ -231,5 +248,7 @@
         ];
       };
     };
+    ### Use dynamic attribute to use home-manager standalone (need testing)
+    homeConfigurations = nixpkgs.lib.genAttrs users mkHome;
   };
 }
