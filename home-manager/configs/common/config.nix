@@ -34,7 +34,6 @@
  ### Aliases
  home.shellAliases = {
    ff = "fastfetch";
-   ls = "ls --color=auto";
    nix = "nix -v --refresh";
    gc = "git commit";
    gadd = "git add";
