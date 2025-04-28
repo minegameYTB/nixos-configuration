@@ -144,7 +144,9 @@
 
  ### Fonts
  home.packages = with pkgs; [
-   ### Replace this by "nerd-fonts.jetbrains-mono" on home-manager/nixos-25.05
+ 
+ ### Replace actual syntax on 25.05 by:
+ # nerd-fonts.jetbrains-mono
    (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
  ];
 }
