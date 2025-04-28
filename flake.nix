@@ -55,7 +55,15 @@
         config = { allowUnfree = true; };
       };
       modules = [
-        ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
+        ({ config, pkgs, ... }: 
+          { 
+           nixpkgs.overlays = [ nur.overlays.default ]; 
+         
+           ### create backup for original file (alias in-flake configuration)
+           home.shellAliases = {
+             home-manager = "home-manager -b bak"
+           };
+          })
         (import ./hm-profiles/desktop-profile.nix { inherit username; })
       ];
       extraSpecialArgs = {
