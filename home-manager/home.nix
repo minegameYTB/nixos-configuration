@@ -12,8 +12,5 @@ in
    ./configs/common/config.nix
  ];
 
- home.username = "minegame";
- home.homeDirectory = "/home/minegame";
-
  home.stateVersion = "24.05"; # Please read the comment before changing.
 }

@@ -1,6 +1,10 @@
-{ ... }:
+{ username, ... }:
 
 {
+ ### Use the username dynamic attribute (from flake.nix)
+ home.username = username;
+ home.homeDirectory = "/home/${username}";
+
  ### Import nix expression for desktop
  imports = 
    [ ../home-manager/home.nix                                   ### Common configuration

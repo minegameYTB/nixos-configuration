@@ -43,6 +43,9 @@
     pkgs = nixpkgs.legacyPackages.${system};
     system = "x86_64-linux";
     
+    ### Home manager variable
+    users = [ "minegame" ];
+
     ### Other sources
     pkgsExtra = {
       pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
@@ -67,7 +70,9 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/desktop-profile.nix { inherit username; }
+            );
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra; 
@@ -186,6 +191,19 @@
           ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            ### Import users as a function (using "{ inherit username } (with "(username: ...):")")
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/server-profile.nix { inherit username; }
+            );
+            home-manager.backupFileExtension = "bak";
+            home-manager.extraSpecialArgs = {
+              inherit inputs nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
+          }
         ];
       };
       
