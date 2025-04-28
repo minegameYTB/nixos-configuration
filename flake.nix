@@ -36,7 +36,18 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
-  outputs = { self, nixpkgs, stylix, nixpkgs-unstable, nixpkgs-23-11, home-manager, zen-browser, nur, ... }@inputs:
+  outputs = { 
+    self, 
+    nixpkgs, 
+    stylix, 
+    nixpkgs-unstable, 
+    nixpkgs-23-11, 
+    home-manager, 
+    zen-browser, 
+    nur, 
+    ...
+  }@inputs:
+  
   let
     ### System variable
     lib = nixpkgs.lib;
