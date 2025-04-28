@@ -31,6 +31,19 @@
    };
  };
 
+ ### Aliases
+ home.shellAliases = {
+   ff = "fastfetch";
+   nix = "nix -v --refresh";
+   gc = "git commit";
+   gadd = "git add";
+   gpush = "git push";
+   gpull = "git pull";
+
+   ### This alias is just inspired from macOS "open" command
+   open = "xdg-open";
+ };
+
  ### GH
  programs.gh = {
    enable = true;
