@@ -17,8 +17,5 @@
    ../configurations/configs/specific/container/podman.nix            ### Enable podman and add toolbox as a system deps
    ../configurations/configs/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
    ../configurations/configs/system/services/flatpak.nix              ### Add flatpak support
-     
-   ### GUI package
-   ../configurations/configs/common/system-pkgs-gui.nix
  ];
 }
