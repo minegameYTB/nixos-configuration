@@ -1,43 +1,59 @@
-{ inputs, config, pkgs, pkgsExtra, ... }:
+{ inputs, config, pkgs, pkgsExtra, zen-browser, ... }:
 
-      
- let
-   ### Add external packages
+let
+  ### Add external packages
   #fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
-   
-   ### Wrapper script
+  
+  ### Wrapper script
   #nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
   #  exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
   #'';
- in
+in
 {
- nixpkgs.overlays = [
-  #(import ../overlays/coreutils-full.nix) ### Overlays for coreutils-full (just compile tools for users and not runtime deps for software)
-  #(import ../overlays/appimage-run.nix) ### Overlays to add some tools on appimage-run rootfs
-  #(import ../overlays/gnome-control-center.nix) ### remove libwacom support (don't work as espect...)
-  #(import ../overlays/package-name.nix)
- ];
+  nixpkgs.overlays = [
+    #(import ../overlays/coreutils-full.nix)
+    #(import ../overlays/appimage-run.nix)
+    #(import ../overlays/gnome-control-center.nix)
+    #(import ../overlays/package-name.nix)
+  ];
 
- # List packages installed in system profile. To search, run:
- # $ nix search wget
- environment.systemPackages = with pkgs; [
-     ### CLI
-     wget
-     jq
-     nix-search-cli
-     efibootmgr
-     ntfs3g
-     git
-     bat
-     lsd
-     ripgrep
-
-     ### Wrapper script
-     #nixos-rebuild
-   ]
- ++
-   (with pkgsExtra.pkgs-unstable; [
-   ### Use this part to install package from nixpkgs-unstable
- #    ventoy
-   ]);
+  environment.systemPackages = 
+    (with pkgs; [
+      ### CLI
+      wget
+      jq
+      nix-search-cli
+      efibootmgr
+      ntfs3g
+      git
+      bat
+      lsd
+      ripgrep
+      #nixos-rebuild
+    ])
+    ++
+    (with pkgsExtra.pkgs-unstable; [
+      ### Extra packages always installed (from pkgsExtra)
+      #ventoy
+    ])
+    ++
+    (pkgs.lib.optionals config.services.xserver.enable (
+      (with pkgs; [
+        ### GUI Packages (only if X11 is enabled)
+        zen-browser.packages."${pkgs.system}".default
+        gparted
+        gearlever
+        virt-viewer
+        pika-backup
+        ghostty
+        mission-center
+        gnome-tweaks
+      ])
+      ++
+      (with pkgsExtra.pkgs-unstable; [
+        ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
+        #bottles
+      ])
+    ));
 }
+
