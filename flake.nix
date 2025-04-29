@@ -53,7 +53,18 @@
     lib = nixpkgs.lib;
     pkgs = nixpkgs.legacyPackages.${system};
     system = "x86_64-linux";
-    
+   
+    ### Nur overlay variable
+    nurOverlay = ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; });
+
+    ### specialArgs as a variable
+    ### Use NUR as a settings, zen-browser flake is import as "inputs"
+    specialArgs = {
+      inherit pkgsExtra inputs;
+      inherit (inputs) nur;
+      inherit (inputs) zen-browser;
+    };
+
     ### Home manager variable
     users = [ "minegame" ];
     
@@ -99,17 +110,12 @@
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
-        inherit system;
-        ### Use NUR as a settings, zen-browser flake is import as "inputs"
-        specialArgs = { 
-          inherit pkgsExtra inputs;
-          inherit (inputs) nur;
-          inherit (inputs) zen-browser;
-        };
+        inherit specialArgs system;
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
+          ### Nur overlay
+          nurOverlay
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -127,16 +133,12 @@
       };
       
       hp-240 = lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit pkgsExtra;
-          inherit (inputs) nur;
-          inherit (inputs) zen-browser;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
+          ### Nur overlay
+          nurOverlay
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -152,16 +154,12 @@
       };
       
       vm-desktop-efi = lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit pkgsExtra;
-          inherit (inputs) nur;
-          inherit (inputs) zen-browser;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
+          ### Nur overlay
+          nurOverlay
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -177,16 +175,12 @@
       };
       
       vm-desktop-bios = lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit pkgsExtra;
-          inherit (inputs) nur;
-          inherit (inputs) zen-browser;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
+          ### Nur overlay
+          nurOverlay
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -202,16 +196,12 @@
       };
       
       vm-desktop-bios-virtio = lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit pkgsExtra;
-          inherit (inputs) nur;
-          inherit (inputs) zen-browser;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
+          ### Nur overlay
+          nurOverlay
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -227,14 +217,12 @@
       };
       
       vm-no-gui-efi = lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit nur pkgsExtra;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
+          ### Nur overlay
+          nurOverlay
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -252,26 +240,22 @@
       };
       
       vm-no-gui-bios = lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit nur pkgsExtra;
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
+          ### Nur overlay
+          nurOverlay
         ];
       };
       
       vm-no-gui-bios-virtio = lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit nur pkgsExtra; 
-        };
+        inherit specialArgs system;
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; })
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
+          ### Nur overlay
+          nurOverlay
         ];
       };
     };
