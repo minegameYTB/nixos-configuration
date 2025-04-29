@@ -17,6 +17,6 @@
    #../configurations/configs/specific/container/podman.nix           ### Enable podman and add distrobox as a system deps
    ../configurations/configs/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
    ../configurations/configs/system/services/flatpak.nix              ### Add flatpak support
-   ../configurations/configs/stylix/stylix.nix                         ### Stylix conf
+   ../configurations/configs/stylix/stylix.nix                        ### Stylix conf
  ];
 }
