@@ -3,6 +3,14 @@
 {
  programs.home-manager.enable = true;
 
+ ### stylix
+ stylix = {
+   enable = true;
+   targets = {
+     tmux.enable = false;
+   };
+ };
+
  ### Nix option
  nix = {
    gc = {

@@ -76,7 +76,12 @@
               ls = "ls --color=auto";
             };
           })
+        
+        ### import desktop profile with a setting (username)
         (import ./hm-profiles/desktop-profile.nix { inherit username; })
+        
+        ### add stylix module
+        stylix.homeManagerModules.stylix
       ];
       extraSpecialArgs = {
         ### Export "inputs" "nur" "inputs.zen-browser" and "pkgsExtra" to home-manager configuration
