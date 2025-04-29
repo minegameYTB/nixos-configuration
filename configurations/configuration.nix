@@ -6,12 +6,11 @@
 
 {
  imports = [ 
-   ./configs/common/system-opts.nix    ### System options
+   ./configs/common/system-opts        ### System options
    ./configs/common/users.nix          ### User settings
    ./configs/common/system-pkgs.nix    ### System packages
    ./configs/common/timezone.nix       ### Timezone
    ./configs/common/security.nix       ### Security
-   ./configs/common/fonts.nix          ### Fonts
  ];
    
  # Allow unfree packages
