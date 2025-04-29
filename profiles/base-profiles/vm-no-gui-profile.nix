@@ -9,6 +9,5 @@
    ../../configurations/configs/system/tmp-on-disk.nix               ### Use /tmp on disk
    ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix ### To use optimisation of qemu/kvm
    ../../configurations/configs/specific/vm/guest/openssh.nix        ### Enable openssh service
-   ../../configurations/configs/stylix/stylix.nix                    ### Stylix conf
  ];
 }
