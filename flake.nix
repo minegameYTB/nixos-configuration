@@ -120,6 +120,7 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            ### Import users as a function (using "{ inherit username } (with "(username: ...):")")
             home-manager.users = lib.genAttrs users (username:
               import ./hm-profiles/desktop-profile.nix { inherit username; }
             );
@@ -143,7 +144,9 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/desktop-profile.nix { inherit username; }
+            );
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
@@ -164,7 +167,9 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/desktop-profile.nix { inherit username; }
+            );
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
@@ -185,7 +190,9 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/desktop-profile.nix { inherit username; }
+            );
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
@@ -206,7 +213,9 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.minegame = import ./hm-profiles/desktop-profile.nix;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/desktop-profile.nix { inherit username; }
+            );
             home-manager.backupFileExtension = "bak";
             home-manager.extraSpecialArgs = { 
               inherit inputs nur pkgsExtra;
@@ -226,7 +235,6 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            ### Import users as a function (using "{ inherit username } (with "(username: ...):")")
             home-manager.users = lib.genAttrs users (username:
               import ./hm-profiles/server-profile.nix { inherit username; }
             );
@@ -246,6 +254,18 @@
           ./profiles/vm-no-gui-bios-novio-profile.nix
           ### Nur overlay
           nurOverlay
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/server-profile.nix { inherit username; }
+            );
+            home-manager.backupFileExtension = "bak";
+            home-manager.extraSpecialArgs = {
+              inherit inputs nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
+          }
         ];
       };
       
@@ -256,6 +276,18 @@
           ./profiles/vm-no-gui-bios-vio-profile.nix
           ### Nur overlay
           nurOverlay
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users = lib.genAttrs users (username:
+              import ./hm-profiles/server-profile.nix { inherit username; }
+            );
+            home-manager.backupFileExtension = "bak";
+            home-manager.extraSpecialArgs = {
+              inherit inputs nur pkgsExtra;
+              inherit (inputs) zen-browser;
+            };
+          }
         ];
       };
     };
