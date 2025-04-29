@@ -112,7 +112,6 @@
              whitelist = [
                "com.mitchellh.ghostty"
                "org.gnome.TextEditor"
-               "zen-beta"
              ];
            };
 
