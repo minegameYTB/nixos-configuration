@@ -11,7 +11,7 @@
  home.packages = 
    (with pkgs; [
      ### non-free apps
-     vesktop 
+     discord 
 
      ### Audio
      amberol

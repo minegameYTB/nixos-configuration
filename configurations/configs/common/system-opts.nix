@@ -20,7 +20,7 @@
    kernel.sysctl = { 
      "vm.swappiness" = 20;
    };
-   kernelPackages = pkgs.linuxKernel.kernels.linux_zen;
+   kernelPackages = pkgs.linuxKernel.packages.linux_zen;
  };
  
  ### Nix Settings
