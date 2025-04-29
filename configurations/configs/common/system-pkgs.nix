@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, pkgsExtra, zen-browser, ... }:
+{ lib, inputs, config, pkgs, pkgsExtra, zen-browser, ... }:
 
 let
   ### Add external packages
@@ -37,7 +37,7 @@ in
       #ventoy
     ])
     ++
-    (pkgs.lib.optionals config.services.xserver.enable (
+    (lib.optionals config.services.xserver.enable (
       (with pkgs; [
         ### GUI Packages (only if X11 is enabled)
         zen-browser.packages."${pkgs.system}".default
