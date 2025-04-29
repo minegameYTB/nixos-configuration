@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 {
  ### Grub 2
@@ -6,7 +6,7 @@
    enable = true;
    configurationLimit = 9;
    ### Create a 'in-config' derivation to package on the fly the theme (based on bootloader conf of Plasmaa0 for the theme part (github.com/Plasmaa0/NixOS-config))
-   theme = pkgs.stdenv.mkDerivation rec {
+   theme = lib.mkDefault (pkgs.stdenv.mkDerivation rec {
      pname = "distro-grub-themes";
      version = "3.1";
      
@@ -19,6 +19,6 @@
      installPhase = ''
        cp -r customize/nixos $out
      '';
-   };
+   });
  };  
 }
