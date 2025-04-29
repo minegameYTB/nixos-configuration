@@ -11,7 +11,8 @@
    ../../configurations/configs/specific/desktop/x11.nix                 ### Related to x11 Server (GUI server)
    ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix     ### To use optimisation of qemu/kvm
    ../../configurations/configs/specific/desktop/sound.nix               ### Sound server
-   #../../configurations/configs/specific/desktop/autologin.nix           ### Permit autologin
+   #../../configurations/configs/specific/desktop/autologin.nix          ### Permit autologin
    ../../configurations/configs/system/services/nix-channel-rm-dirs.nix  ### Related to remove nix-channel folder (unused on my case)
+   ../../configurations/configs/stylix/stylix.nix                        ### Stylix conf
  ];
 }
