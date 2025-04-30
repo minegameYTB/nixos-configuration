@@ -57,5 +57,8 @@
 
  xdg.portal.enable = true;
  
- environment.systemPackages = with pkgs; [ flatpak ];
+ environment.systemPackages = with pkgs; [ 
+   flatpak
+   #gnome-software
+ ];
 }
