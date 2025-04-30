@@ -49,6 +49,7 @@
    gnome-console        ### Gnome console (default term)
    gnome-music          ### Gnome Music
    gnome-system-monitor ### Gnome system monitor
+   gnome-software       ### Gnome software
  ];
 
  ### Nautilus settings

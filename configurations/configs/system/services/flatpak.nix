@@ -59,6 +59,5 @@
  
  environment.systemPackages = with pkgs; [ 
    flatpak
-   #gnome-software
  ];
 }
