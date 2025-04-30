@@ -21,7 +21,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix.url = "github:danth/stylix/release-24.11";
-    
+    nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
+
     ### Rice/customization
     catppuccin-wallpapers = {
       url = "github:zhichaoh/catppuccin-wallpapers";
@@ -37,14 +38,15 @@
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
   outputs = { 
-    self, 
-    nixpkgs, 
-    stylix, 
-    nixpkgs-unstable, 
-    nixpkgs-23-11, 
-    home-manager, 
-    zen-browser, 
-    nur, 
+    self,
+    nixpkgs,
+    stylix,
+    nixpkgs-unstable,
+    nixpkgs-23-11,
+    home-manager,
+    zen-browser,
+    nur,
+    nix-flatpak,
     ...
   }@inputs:
   
@@ -117,6 +119,7 @@
           ### Nur overlay
           nurOverlay
           stylix.nixosModules.stylix
+          nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -141,6 +144,7 @@
           ### Nur overlay
           nurOverlay
           stylix.nixosModules.stylix
+          nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -164,6 +168,7 @@
           ### Nur overlay
           nurOverlay
           stylix.nixosModules.stylix
+          nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -187,6 +192,7 @@
           ### Nur overlay
           nurOverlay
           stylix.nixosModules.stylix
+          nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -210,6 +216,7 @@
           ### Nur overlay
           nurOverlay
           stylix.nixosModules.stylix
+          nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
