@@ -165,7 +165,7 @@
                "zen-beta.desktop"
                "org.gnome.Calendar.desktop"
                "org.gnome.Nautilus.desktop"
-               "org.gnome.Software.desktop"
+               #"org.gnome.Software.desktop"
                "com.mitchellh.ghostty.desktop"
                "virt-manager.desktop"
                "org.prismlauncher.PrismLauncher.desktop"
