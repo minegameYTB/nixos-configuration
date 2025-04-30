@@ -29,4 +29,15 @@
      #};
    };
  };
+
+ ### Nix specific
+ virtualisation.vmVariant = {
+    # following configuration is added only when building VM with build-vm
+    virtualisation = {
+      memorySize = 1024; # Use 1024MiB memory.
+      cores = 2;
+      graphics = true; # Boot the vm in a window.
+      diskSize = 15000; # Virtual machine disk size in MB.
+    };
+  };
 }
