@@ -40,7 +40,6 @@ in
     (lib.optionals config.services.xserver.enable (
       (with pkgs; [
         ### GUI Packages (only if X11 is enabled)
-        zen-browser.packages."${pkgs.system}".default
         gparted
         gearlever
         virt-viewer
