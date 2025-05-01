@@ -1,44 +1,35 @@
 { config, pkgs, pkgsExtra, zen-browser, ... }:
 
+let
+  isX86_64 = pkgs.stdenv.hostPlatform.isx86_64;
+  isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
+in
 {
- # Home Manager needs a bit of information about you and the paths it should
- # manage.
- home = {
-   username = "minegame";
-   homeDirectory = "/home/minegame";
- };
-
- home.packages = 
+ home.packages =
+   ### Packages common to all architectures
    (with pkgs; [
-     ### non-free apps
-     discord 
-
-     ### Audio
-     amberol
-     spotify
-
-     ### Video
      vlc
-
-     ### Office
-     onlyoffice-bin
-
-     ### Games
+     amberol
+     bitwarden-desktop
+     melonDS
+   ])
+   ### Packages specific to x86_64-linux
+   ++ pkgs.lib.optionals isX86_64 (with pkgs; [
+     discord
+     spotify
+     onlyoffice-desktopeditors
      prismlauncher
-
-     ### Utilities
      rpi-imager
      gnome-extension-manager
      bottles
-     bitwarden-desktop
-
-     ### Emulator
      melonDS
-  ])
- ++
-  (with pkgsExtra.pkgs-23-11; [
-    ### Emulator
-    citra
-  ]);
-
+   ])
+   ### Packages specific to aarch64-linux
+   ++ pkgs.lib.optionals isAarch64 (with pkgs; [
+     legcord
+   ])
+   ### Packages from nixpkgs-23-11 for x86_64-linux only
+   ++ pkgs.lib.optionals isX86_64 (with pkgsExtra.pkgs-23-11; [
+     citra
+   ]);
 }
