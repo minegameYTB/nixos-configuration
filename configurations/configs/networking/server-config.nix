@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 
 {
- networking.hostName = "UTILISA-0SK6G4E"; # Define your hostname.
  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
  # Configure network proxy if necessary

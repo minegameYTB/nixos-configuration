@@ -5,7 +5,7 @@
  imports = [ 
    ../../configurations/hardware-configuration/vm.nix                    ### Hardware configuration file (Include the results of the hardware scan.)
    ../../configurations/configs/app-opts/vm-desktop.nix                  ### Programs with options
-   ../../configurations/configs/networking/vm-desktop.nix                ### Related to network
+   ../../configurations/configs/networking/desktop-config.nix             ### Related to network
    ../../configurations/configs/system/tmp-on-disk.nix                   ### Use /tmp on disk
    ../../configurations/configs/specific/desktop/gnome.nix               ### Related to GNOME DE
    ../../configurations/configs/specific/desktop/x11.nix                 ### Related to x11 Server (GUI server)
