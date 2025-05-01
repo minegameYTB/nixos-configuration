@@ -8,8 +8,8 @@
 
  ### Shell environment
  environment.shellAliases = {
-   ls = "lsd";
-   cat = "bat";
+   ls = "${pkgs.lsd}/bin/lsd";
+   cat = "${pkgs.bat}/bin/bat";
    df = "df -x tmpfs";
    w-df = "watch df -hx tmpfs";
    "cat.ori" = "/run/booted-system/sw/bin/cat";
