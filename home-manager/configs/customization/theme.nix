@@ -5,7 +5,10 @@
    ### Theme
    adw-gtk3
    papirus-icon-theme
-   
+  
+   ### Cursor
+   catppuccin-cursors.mochaDark
+
    ### This theme provide adwaita-dark theme (old theme)
    ayu-theme-gtk
    
