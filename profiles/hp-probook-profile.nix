@@ -6,7 +6,7 @@
    ../configurations/hardware-configuration/hp-probook.nix            ### Hardware configuration file (Include the results of the hardware scan.)
    ../configurations/configs/bootloader/systemd-boot.nix              ### Systemd-boot Bootloader
    ../configurations/configs/app-opts/hp-probook.nix                  ### Programs with options
-   ../configurations/configs/networking/hp-probook.nix                ### Related to network
+   ../configurations/configs/networking/desktop-config.nix            ### Related to network
    ../configurations/configs/system/tmp-on-disk.nix                   ### Use /tmp on disk
    ../configurations/configs/specific/laptop/power-mgmt.nix           ### For laptop battery life
    ../configurations/configs/specific/desktop/gnome.nix               ### Related to Gnome DE

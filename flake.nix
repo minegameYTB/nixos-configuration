@@ -122,6 +122,11 @@
           nurOverlay
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
+                    
+          ### Hostname conf
+          { networking.hostName = "HP-probook"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -150,6 +155,11 @@
           nurOverlay
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
+                    
+          ### Hostname conf
+          { networking.hostName = "UTILISA-0SK6G4E"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -177,6 +187,11 @@
           nurOverlay
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-desktop"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -204,6 +219,11 @@
           nurOverlay
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-desktop-bios"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -231,6 +251,11 @@
           nurOverlay
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -256,6 +281,11 @@
           ./profiles/vm-no-gui-efi-profile.nix
           ### Nur overlay
           nurOverlay
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-srv"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -276,6 +306,11 @@
           ./profiles/vm-no-gui-bios-novio-profile.nix
           ### Nur overlay
           nurOverlay
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-srv-bios"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -296,6 +331,11 @@
           ./profiles/vm-no-gui-bios-vio-profile.nix
           ### Nur overlay
           nurOverlay
+                    
+          ### Hostname conf
+          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+
+          ### Home-manager module conf
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
