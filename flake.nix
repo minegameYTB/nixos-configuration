@@ -51,18 +51,23 @@
   }@inputs:
   
   let
-    ### System variable
+    ### System variables
     lib = nixpkgs.lib;
-    pkgs = nixpkgs.legacyPackages.${system};
-    system = "x86_64-linux";
-   
+    systems = [ "x86_64-linux" "aarch64-linux" ];
+    
     ### Nur overlay variable
     nurOverlay = ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; });
 
-    ### specialArgs as a variable
-    ### Use NUR as a settings, zen-browser flake is import as "inputs"
-    specialArgs = {
-      inherit pkgsExtra inputs;
+    ### Other sources as a function of system
+    pkgsExtra = system: {
+      pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
+      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+    };
+
+    ### specialArgs as a function of system
+    specialArgs = system: {
+      inherit inputs;
+      pkgsExtra = pkgsExtra system;
       inherit (inputs) nur;
       inherit (inputs) zen-browser;
     };
@@ -70,8 +75,8 @@
     ### Home manager variable
     users = [ "minegame" ];
     
-    ### Create a function named "mkHome" and add the sub function named username (username: ...)
-    mkHome = username: home-manager.lib.homeManagerConfiguration {
+    ### Create a function named "mkHome" that takes system and username
+    mkHome = system: username: home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { 
         inherit system;
         
@@ -99,21 +104,17 @@
       ];
       extraSpecialArgs = {
         ### Export "inputs" "nur" "inputs.zen-browser" and "pkgsExtra" to home-manager configuration
-        inherit inputs nur pkgsExtra;
+        inherit inputs nur;
+        pkgsExtra = pkgsExtra system;
         inherit (inputs) zen-browser;
       };
-    };
-
-    ### Other sources
-    pkgsExtra = {
-      pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     };
 
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
@@ -124,7 +125,7 @@
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            ### Import users as a function (using "{ inherit username } (with "(username: ...):")")
+            ### Import users as a function
             home-manager.users = lib.genAttrs users (username:
               import ./hm-profiles/desktop-profile-wrapped.nix {
                 inherit username;
@@ -134,16 +135,14 @@
               }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { 
-              inherit inputs nur pkgsExtra; 
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       hp-240 = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
@@ -163,16 +162,14 @@
               }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { 
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-desktop-efi = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
@@ -192,16 +189,14 @@
               }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { 
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-desktop-bios = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
@@ -221,16 +216,14 @@
               }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { 
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-desktop-bios-virtio = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
@@ -250,16 +243,14 @@
               }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = { 
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-no-gui-efi = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
@@ -272,16 +263,14 @@
               import ./hm-profiles/server-profile.nix { inherit username; }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = {
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-no-gui-bios = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
@@ -294,16 +283,14 @@
               import ./hm-profiles/server-profile.nix { inherit username; }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = {
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
       
       vm-no-gui-bios-virtio = lib.nixosSystem {
-        inherit specialArgs system;
+        system = "x86_64-linux";
+        specialArgs = specialArgs "x86_64-linux";
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
@@ -316,15 +303,23 @@
               import ./hm-profiles/server-profile.nix { inherit username; }
             );
             home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = {
-              inherit inputs nur pkgsExtra;
-              inherit (inputs) zen-browser;
-            };
+            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
           }
         ];
       };
     };
-    ### Use dynamic attribute to use home-manager standalone (need testing)
-    homeConfigurations = lib.genAttrs users mkHome;
+    
+    ### Multi-architecture home-manager configurations
+    homeConfigurations = lib.listToAttrs (
+      lib.concatMap (username:
+        lib.concatMap (system:
+          [{
+            name = "${username}@${system}";
+            value = mkHome system username;
+          }]
+        ) systems
+      ) users
+    );
   };
 }
+
