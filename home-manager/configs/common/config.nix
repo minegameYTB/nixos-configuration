@@ -33,6 +33,10 @@
 
  ### Aliases
  home.shellAliases = {
+   ls = "${pkgs.lsd}/bin/lsd";
+   cat = "${pkgs.bat}/bin/bat";
+   ls.ori = "/bin/ls";
+   cat.ori = "/bin/cat";
    ff = "fastfetch";
    nix = "nix -v --refresh";
    gc = "git commit";
