@@ -12,6 +12,7 @@ in
      amberol
      bitwarden-desktop
      melonDS
+     pika-backup
      zen-browser.packages."${pkgs.system}".default
    ])
    ### Packages specific to x86_64-linux

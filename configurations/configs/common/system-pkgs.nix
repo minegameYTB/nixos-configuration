@@ -43,7 +43,6 @@ in
         gparted
         gearlever
         virt-viewer
-        pika-backup
         ghostty
         mission-center
         gnome-tweaks
