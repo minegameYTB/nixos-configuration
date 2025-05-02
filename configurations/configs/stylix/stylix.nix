@@ -6,7 +6,7 @@
  stylix = {
    enable = true;
    ### Accept fetchurl derivation (see stylix doc)
-   image = "${inputs.catppuccin-wallpapers}/landscapes/tropic_island_morning.jpg";
+   image = "${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
   #image = pkgs.fetchurl {
   #  url = "";
   #  sha256 = "";
