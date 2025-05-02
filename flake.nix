@@ -91,7 +91,7 @@
             ### Specific aliases for home-manager standalone
             home.shellAliases = {
               home-manager = "home-manager -b bak";
-              #ls = "ls --color=auto";
+              ls = "ls --color=auto";
             };
           }
         )
