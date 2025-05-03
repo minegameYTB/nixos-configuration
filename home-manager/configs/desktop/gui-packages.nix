@@ -6,16 +6,19 @@ let
 in
 {
  home.packages =
-   ### Packages common to all architectures
+   ### All arch
    (with pkgs; [
      vlc
      amberol
      bitwarden-desktop
-     melonDS
      pika-backup
-     zen-browser.packages."${pkgs.system}".default
+     zen-browser.packages."${system}".default
    ])
-   ### Packages specific to x86_64-linux
+   ### All arch (pkgs from unstable branch)
+   ++ (with pkgsExtra.pkgs-unstable; [
+    melonDS
+   ])
+   ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
      spotify
@@ -24,14 +27,21 @@ in
      rpi-imager
      gnome-extension-manager
      bottles
-     melonDS
    ])
-   ### Packages specific to aarch64-linux
+   ### Packages specific to aarch64-linux (main pkgs branch)
    ++ lib.optionals isAarch64 (with pkgs; [
      legcord
    ])
    ### Packages from nixpkgs-23-11 for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-23-11; [
      citra
+   ])
+   ### Packages from pkgs-unstable for x86_64-linux only
+   ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
+     ### unstable pkgs here
+   ])
+   ### Packages frtom pkgs-unstable for aarch64-linux 
+   ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
+     ### unstable pkgs here
    ]);
 }
