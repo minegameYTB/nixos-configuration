@@ -13,10 +13,6 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ];
 
-  ### Zfs conf
-  boot.supportedFilesystems = [ "zfs" ];
-  networking.hostId = "3ac1fad2";
-
   fileSystems."/" =
     { device = "/dev/disk/by-label/nixos-root";
       fsType = "ext4";
