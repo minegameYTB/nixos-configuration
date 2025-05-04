@@ -2,8 +2,8 @@
   disko.devices = {
     disk = {
       main = {
+        device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
         type = "disk";
-        device = "/dev/loop0"; # Remplace par le vrai chemin de ton disque
         content = {
           type = "gpt";
           partitions = {
@@ -15,42 +15,28 @@
                 format = "vfat";
                 mountpoint = "/boot";
                 mountOptions = [ "umask=0077" ];
+                ### Add label
+                extraArgs = [ "-n" "EFI" ];
               };
             };
-            zfs = {
+            root = {
+              size = "220G";
+              content = {
+                type = "filesystem";
+                format = "ext4";
+                mountpoint = "/";
+                extraArgs = [ "-L" "nixos-root" ];
+              };
+            };
+            home = {
               size = "100%";
               content = {
-                type = "zfs";
-                pool = "zroot";
+                type = "filesystem";
+                format = "ext4";
+                mountpoint = "/home";
+                extraArgs = [ "-L" "nixos-home" ];
               };
             };
-          };
-        };
-      };
-    };
-    zpool = {
-      zroot = {
-        type = "zpool";
-        options.cachefile = "none";
-        rootFsOptions = {
-          compression = "zstd";
-        };
-        mountpoint = "/";
-        datasets = {
-          root = {
-            type = "zfs_fs";
-            mountpoint = "/";
-            options.mountpoint = "legacy";
-          };
-          home = {
-            type = "zfs_fs";
-            mountpoint = "/home";
-            options.mountpoint = "legacy";
-          };
-          nix = {
-            type = "zfs_fs";
-            mountpoint = "/nix";
-            options.mountpoint = "legacy";
           };
         };
       };
