@@ -21,21 +21,29 @@
  #};
  
  ### Gnome Extensions
- environment.systemPackages = with pkgs.gnomeExtensions; [
-   appindicator
-   tiling-assistant
-   dash-to-dock
-   blur-my-shell
-   logo-menu
-   hide-activities-button
-   hibernate-status-button
-   clipboard-history
-   no-overview
-   quick-settings-audio-panel
+ environment.systemPackages = 
+   (with pkgs; [
+     virt-viewer
+     mission-center
+     gnome-tweaks
+     gnome-extension-manager
+   ]) 
+   ++
+   (with pkgs.gnomeExtensions; [
+     appindicator
+     tiling-assistant
+     dash-to-dock
+     blur-my-shell
+     logo-menu
+     hide-activities-button
+     hibernate-status-button
+     clipboard-history
+     no-overview
+     quick-settings-audio-panel
 
-  ### Disabled bcause stylix is incompatible with just-perfection
-  #just-perfection
- ];
+    ### Disabled bcause stylix is incompatible with just-perfection
+    #just-perfection
+ ]);
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
