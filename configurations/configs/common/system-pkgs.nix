@@ -42,10 +42,7 @@ in
         ### GUI Packages (only if X11 is enabled)
         gparted
         gearlever
-        virt-viewer
         ghostty
-        mission-center
-        gnome-tweaks
       ])
       ++
       (with pkgsExtra.pkgs-unstable; [
