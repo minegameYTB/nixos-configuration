@@ -3,7 +3,7 @@
     disk = {
       main = {
         ### use temporary loop0 for test
-        device = "/dev/loop0"
+        device = "/dev/loop0";
         #device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
         type = "disk";
         content = {
