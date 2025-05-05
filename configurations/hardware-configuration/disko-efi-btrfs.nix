@@ -2,7 +2,11 @@
   disko.devices = {
     disk = {
       main = {
+        ### Main disk of hp-probook (change this bfor installing on another computer)
+        ### (uncomment to use another disk device)
         device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
+        ### For sda for example
+        #device = "/dev/sda";
         type = "disk";
         content = {
           type = "gpt";
