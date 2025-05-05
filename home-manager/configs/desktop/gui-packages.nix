@@ -26,7 +26,6 @@ in
      onlyoffice-desktopeditors
      prismlauncher
      rpi-imager
-     gnome-extension-manager
      bottles
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
