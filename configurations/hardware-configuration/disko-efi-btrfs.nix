@@ -2,9 +2,7 @@
   disko.devices = {
     disk = {
       main = {
-        ### use loop0 to test
-        device = "/dev/loop0";
-        # device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
+        device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
         type = "disk";
         content = {
           type = "gpt";
