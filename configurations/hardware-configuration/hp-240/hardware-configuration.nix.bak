@@ -13,23 +13,15 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ];
 
-  fileSystems."/" = { 
+  fileSystems."/" = {
     device = "/dev/disk/by-label/nixos-root";
-    fsType = "btrfs";
-    options = [ "subvol=@" "compress=zstd:10" "noatime" ];
+    fsType = "ext4";
   };
 
-  fileSystems."/home" = { 
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "btrfs";
-    options = [ "subvol=@home" "compress=zstd:10" "noatime" ];
-  };
-
-  fileSystems."/nix" = { 
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "btrfs";
-    options = [ "subvol=@nix" "compress=zstd:10" "noatime" ];
-  };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-label/nixos-home";
+    fsType = "ext4";
+   };
 
   swapDevices = [ ];
 
