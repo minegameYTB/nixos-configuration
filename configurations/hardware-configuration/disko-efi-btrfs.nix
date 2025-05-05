@@ -2,9 +2,9 @@
   disko.devices = {
     disk = {
       main = {
-        ### use temporary loop0 for test
+        ### use loop0 to test
         device = "/dev/loop0";
-        #device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
+        # device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
         type = "disk";
         content = {
           type = "gpt";
@@ -23,15 +23,14 @@
             root = {
               size = "100%";
               content = {
-                type = "filesystem";
-                format = "btrfs";
+                type = "btrfs";
                 extraArgs = [ "-L" "nixos-root" ];
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
-                    mountOptions = [ 
+                    mountOptions = [
                       "compress=zstd:10"
-                      "noatime" 
+                      "noatime"
                     ];
                   };
                   "@home" = {
@@ -44,7 +43,7 @@
                   "@nix" = {
                     mountpoint = "/nix";
                     mountOptions = [
-                      "compress=zstd:10" 
+                      "compress=zstd:10"
                       "noatime"
                     ];
                   };
