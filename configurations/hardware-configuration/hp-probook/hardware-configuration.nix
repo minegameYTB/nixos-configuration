@@ -8,43 +8,48 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "sd_mod" "sr_mod" "rtsx_pci_sdmmc" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usb_storage" "sd_mod" "sr_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-label/nixos-root";
-      fsType = "ext4";
-    };
+  fileSystems."/" = { 
+    device = "/dev/disk/by-label/nixos-root";
+    fsType = "btrfs";
+    options = [ "subvol=@" "compress=zstd:10" "noatime" ];
+  };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-label/nixos-home";
-      fsType = "ext4";
-    };
-    
-  fileSystems."/mnt/DATA" =
-    { device = "/dev/disk/by-label/DATA";
-      fsType = "btrfs";
-      options = [ "subvol=@data" "compress=zstd:10" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
-    };
+  fileSystems."/home" = { 
+    device = "/dev/disk/by-label/nixos-root";
+    fsType = "btrfs";
+    options = [ "subvol=@home" "compress=zstd:10" "noatime" ];
+  };
 
-  fileSystems."/mnt/Games" =
-    { device = "/dev/disk/by-label/DATA";
-      fsType = "btrfs";
-      options = [ "subvol=@games" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
-    };
+  fileSystems."/nix" = { 
+    device = "/dev/disk/by-label/nixos-root";
+    fsType = "btrfs";
+    options = [ "subvol=@nix" "compress=zstd:10" "noatime" ];
+  };
 
+  fileSystems."/mnt/DATA" = { 
+    device = "/dev/disk/by-label/DATA";
+    fsType = "btrfs";
+    options = [ "subvol=@data" "compress=zstd:10" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+  };
 
-  fileSystems."/mnt/Backup" =
-    { device = "/dev/disk/by-label/DATA";
-      fsType = "btrfs";
-      options = [ "subvol=@backup" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
-    };
- 
- #swapDevices =
- #  [ { device = "/dev/disk/by-label/nixos-swap"; }
- #  ];
+  fileSystems."/mnt/Games" = { 
+    device = "/dev/disk/by-label/DATA";
+    fsType = "btrfs";
+    options = [ "subvol=@games" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+  };
+
+  fileSystems."/mnt/Backup" = {
+    device = "/dev/disk/by-label/DATA";
+    fsType = "btrfs";
+    options = [ "subvol=@backup" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+  };
+  
+  swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
