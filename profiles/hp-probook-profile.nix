@@ -3,7 +3,7 @@
 {
  ### Import nix expression for hp-probook
  imports = [ 
-   ../configurations/hardware-configuration/hp-probook.nix            ### Hardware configuration file (Include the results of the hardware scan.)
+   ../configurations/hardware-configuration/hp-probook/hardware-configuration.nix            ### Hardware configuration file (Include the results of the hardware scan.)
    ../configurations/configs/bootloader/systemd-boot.nix              ### Systemd-boot Bootloader
    ../configurations/configs/app-opts/hp-probook.nix                  ### Programs with options
    ../configurations/configs/networking/desktop-config.nix            ### Related to network

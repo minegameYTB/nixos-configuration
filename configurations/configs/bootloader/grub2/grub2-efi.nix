@@ -1,9 +1,12 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
-{
- ### Import grub2 common settings expression
- imports = [ ../grub2.nix ];
- 
+{ 
+ ### Add efi specific mountpoint
+ fileSystems."/boot/efi" = {
+   device = "/dev/disk/by-label/EFI";
+   fsType = "vfat";
+   options = [ "fmask=0022" "dmask=0022" ];
+ };
 
  boot.loader = {
    grub = {

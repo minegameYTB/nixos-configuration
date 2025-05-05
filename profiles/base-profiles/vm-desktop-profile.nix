@@ -3,7 +3,7 @@
 {
  ### Import nix expression for vm-desktop
  imports = [ 
-   ../../configurations/hardware-configuration/vm.nix                    ### Hardware configuration file (Include the results of the hardware scan.)
+   ../../configurations/hardware-configuration/vm/hardware-configuration.nix                    ### Hardware configuration file (Include the results of the hardware scan.)
    ../../configurations/configs/app-opts/vm-desktop.nix                  ### Programs with options
    ../../configurations/configs/networking/desktop-config.nix             ### Related to network
    ../../configurations/configs/system/tmp-on-disk.nix                   ### Use /tmp on disk
