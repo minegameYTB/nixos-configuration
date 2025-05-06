@@ -26,8 +26,6 @@ in
       efibootmgr
       ntfs3g
       git
-      bat
-      lsd
       ripgrep
       #nixos-rebuild
     ])
