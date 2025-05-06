@@ -70,6 +70,12 @@
  systemd.services."getty@tty1".enable = false;
  systemd.services."autovt@tty1".enable = false;
 
+ ### xdg mime (fix neovim association)
+ xdg.mime.defaultApplications = {
+   "text/plain" = "org.gnome.TextEditor.desktop";
+   "application/x-shellscript" = "org.gnome.TextEditor.desktop";
+ };
+
  ### Dconf settings
  programs.dconf = {
    enable = true;
