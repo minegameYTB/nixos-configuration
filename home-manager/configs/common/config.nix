@@ -141,6 +141,9 @@
  #    export NIXPKGS_COMMIT=$(curl -s https://raw.githubusercontent.com/minegameYTB/nixos-configuration/flake/flake.lock | jq -r '.nodes."nixpkgs".locked.rev' | cut -c1-8)
  #  '';
  #};
+ 
+ ### Prevent zsh to show question for .zshrc
+ home.file.".zshrc".text = "### this file is here to prevent zsh to show question regarding this file.";
 
  ### Fonts
  home.packages = with pkgs; [
