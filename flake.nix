@@ -90,8 +90,19 @@
          
             ### Specific aliases for home-manager standalone
             home.shellAliases = {
+              ### Override nix.conf settings on nix standalone configuration
+              nix = "nix --refresh -v --cores 2";
+
+              ### home-manager alias
               home-manager = "home-manager -b bak";
-              ls = "ls --color=auto";
+
+              ### ls and cat aliases
+              ls = "${pkgs.lsd}/bin/lsd";
+              cat = "${pkgs.bat}/bin/bat";
+
+              ### expose legacy ls and cat as an alias
+              "ls.ori" = "${pkgs.coreutils}/bin/ls";
+              "cat.ori" = "${pkgs.coreutils}/bin/cat";
             };
           }
         )
