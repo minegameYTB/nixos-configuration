@@ -3,7 +3,7 @@
 { 
  ### Add efi specific mountpoint
  fileSystems."/boot/efi" = {
-   device = "/dev/disk/by-label/EFI";
+   label = "EFI";
    fsType = "vfat";
    options = [ "fmask=0022" "dmask=0022" ];
  };
