@@ -145,11 +145,4 @@
  ### Prevent zsh to show question for .zshrc
  home.file.".zshrc".text = "### this file is here to prevent zsh to show question regarding this file.";
 
- ### Fonts
- home.packages = with pkgs; [
- 
- ### Replace actual syntax on 25.05 by:
- # nerd-fonts.jetbrains-mono
-   (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
- ];
 }
