@@ -17,19 +17,19 @@
    #device = "/dev/disk/by-label/nixos-root";
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@" "compress=zstd:5" "noatime" ];
  };
 
  fileSystems."/home" = { 
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@home" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@home" "compress=zstd:5" "noatime" ];
  };
 
  fileSystems."/nix" = { 
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@nix" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@nix" "compress=zstd:5" "noatime" ];
  };
 
  swapDevices = [ ];

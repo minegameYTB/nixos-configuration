@@ -31,21 +31,21 @@
                   "@" = {
                     mountpoint = "/";
                     mountOptions = [
-                      "compress=zstd:10"
+                      "compress=zstd:5"
                       "noatime"
                     ];
                   };
                   "@home" = {
                     mountpoint = "/home";
                     mountOptions = [
-                      "compress=zstd:10"
+                      "compress=zstd:5"
                       "noatime"
                     ];
                   };
                   "@nix" = {
                     mountpoint = "/nix";
                     mountOptions = [
-                      "compress=zstd:10"
+                      "compress=zstd:5"
                       "noatime"
                     ];
                   };
