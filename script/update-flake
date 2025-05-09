@@ -18,7 +18,8 @@ check_rev_change(){
     git add flake.lock
     git commit -m "[nixpkgs/${NIXPKGS_VERSION}] flake.lock: update to the new rev"
     ### Push changes
-    git push origin flake
+    git push
+    #git push origin flake
     echo -e "\nChange commited to the repo"
   else
     echo "No changes detected"
