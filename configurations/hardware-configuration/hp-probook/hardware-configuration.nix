@@ -17,37 +17,37 @@
    #device = "/dev/disk/by-label/nixos-root";
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@" "compress=zstd:5" "noatime" ];
  };
 
  fileSystems."/home" = { 
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@home" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@home" "compress=zstd:5" "noatime" ];
  };
 
  fileSystems."/nix" = { 
    label = "nixos-root";
    fsType = "btrfs";
-   options = [ "subvol=@nix" "compress=zstd:10" "noatime" ];
+   options = [ "subvol=@nix" "compress=zstd:5" "noatime" ];
  };
 
  fileSystems."/mnt/DATA" = { 
    label = "DATA";
    fsType = "btrfs";
-   options = [ "subvol=@data" "compress=zstd:10" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+   options = [ "subvol=@data" "compress=zstd:5" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
  };
 
  fileSystems."/mnt/Games" = { 
    label = "DATA";
    fsType = "btrfs";
-   options = [ "subvol=@games" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+   options = [ "subvol=@games" "compress=zstd:5" "nofail" "noatime" "nodev" "nosuid" ];
  };
 
  fileSystems."/mnt/Backup" = {
    label = "DATA";
    fsType = "btrfs";
-   options = [ "subvol=@backup" "compress=zstd:10" "nofail" "noatime" "nodev" "nosuid" ];
+   options = [ "subvol=@backup" "compress=zstd:5" "nofail" "noatime" "nodev" "nosuid" ];
  };
   
  swapDevices = [ ];
