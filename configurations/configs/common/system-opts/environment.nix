@@ -12,7 +12,7 @@
    cat = "${pkgs.bat}/bin/bat";
    df = "df -x tmpfs";
    w-df = "watch df -hx tmpfs";
-   "cat.ori" = "${pkgs.coreutils-full}bin/cat";
+   "cat.ori" = "${pkgs.coreutils-full}/bin/cat";
    "ls.ori" = "${pkgs.coreutils-full}/bin/ls";
    which = "/run/current-system/sw/bin/which";
    ff = "fastfetch";
