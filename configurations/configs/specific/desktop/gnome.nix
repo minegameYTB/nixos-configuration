@@ -40,6 +40,7 @@
      clipboard-history
      no-overview
      quick-settings-audio-panel
+     grand-theft-focus
 
     ### Disabled bcause stylix is incompatible with just-perfection
     #just-perfection
@@ -175,6 +176,7 @@
                "clipboard-history@alexsaveau.dev"
                "no-overview@fthx"
                "quick-settings-audio-panel@rayzeq.github.io"
+               "grand-theft-focus@zalckos.github.com"
              ];
              favorite-apps = [
                "zen-beta.desktop"
