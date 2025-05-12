@@ -5,8 +5,12 @@
  ### Stylix config
  stylix = {
    enable = true;
-   ### Accept fetchurl derivation (see stylix doc)
-   image = "${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
+   image = "${inputs.dotfiles-minegameYTB}/wallpapers/Joinville.jpg";
+   
+   ### Catppucin wallpaper
+   #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
+  
+  ### Accept fetchurl derivation (see stylix doc)
   #image = pkgs.fetchurl {
   #  url = "";
   #  sha256 = "";
