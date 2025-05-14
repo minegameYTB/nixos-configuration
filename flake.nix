@@ -131,8 +131,6 @@
           ./profiles/hp-probook-profile.nix
           ### Nur overlay
           nurOverlay
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
                     
           ### Hostname conf
           { networking.hostName = "HP-probook"; }
@@ -164,8 +162,6 @@
           ./profiles/hp-240-profile.nix
           ### Nur overlay
           nurOverlay
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
                     
           ### Hostname conf
           { networking.hostName = "UTILISA-0SK6G4E"; }
@@ -196,8 +192,6 @@
           ./profiles/vm-desktop-efi-profile.nix
           ### Nur overlay
           nurOverlay
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
                     
           ### Hostname conf
           { networking.hostName = "nixos-pve-desktop"; }
@@ -228,8 +222,6 @@
           ./profiles/vm-desktop-bios-novio-profile.nix
           ### Nur overlay
           nurOverlay
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
                     
           ### Hostname conf
           { networking.hostName = "nixos-pve-desktop-bios"; }
@@ -260,8 +252,6 @@
           ./profiles/vm-desktop-bios-vio-profile.nix
           ### Nur overlay
           nurOverlay
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
                     
           ### Hostname conf
           { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
