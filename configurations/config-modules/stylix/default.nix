@@ -1,8 +1,10 @@
-### Import pkgsExtra sets bcause it contain pkgs-unstable expression (installing fonts from nixpkgs unstable (at this time btw))
 { config, pkgs, pkgsExtra, inputs, ... }:
 
 {
- ### Stylix config
+ ### Import stylix modules like a expression
+ imports = [ inputs.stylix.nixosModules.stylix ];
+
+  ### Stylix config
  stylix = {
    enable = true;
    image = "${inputs.dotfiles-minegameYTB}/wallpapers/Leafs.png";
