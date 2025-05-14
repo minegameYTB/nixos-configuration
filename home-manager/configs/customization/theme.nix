@@ -4,7 +4,7 @@
  home.packages = with pkgs; [
    ### Theme
    adw-gtk3
-   papirus-icon-theme
+   (papirus-icon-theme.override { color = "green";})
   
    ### Cursor
    catppuccin-cursors.mochaDark
