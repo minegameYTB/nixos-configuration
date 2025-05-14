@@ -2,7 +2,7 @@
   disko.devices = {
     disk = {
       sda = {
-        device = "/dev/sda";
+        device = "/dev/vda";
         type = "disk";
         content = {
           type = "table";
@@ -18,6 +18,7 @@
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
+                extraArgs = [ "-L" "nixos-root" ];
               };
             }
           ];
