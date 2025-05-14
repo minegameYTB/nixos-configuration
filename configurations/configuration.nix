@@ -5,7 +5,8 @@
 { config, pkgs, ... }:
 
 {
- imports = [ 
+ imports = [
+   ### Core component (common to all configurations (desktop and server))
    ./configs/common/system-opts        ### System options
    ./configs/common/users.nix          ### User settings
    ./configs/common/system-pkgs.nix    ### System packages
