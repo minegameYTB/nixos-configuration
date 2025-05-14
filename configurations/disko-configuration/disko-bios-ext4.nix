@@ -1,37 +1,28 @@
 {
   disko.devices = {
     disk = {
-      main = {
-        device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
+      sda = {
+        device = "/dev/sda";
         type = "disk";
         content = {
-          type = "gpt";
-          partitions = {
-            ESP = {
-              size = "512M";
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
-                ### Add label
-                extraArgs = [ "-n" "EFI" ];
-              };
-            };
-            root = {
-              size = "100%";
+          type = "table";
+          format = "msdos";
+          partitions = [
+            {
+              name = "root";
+              part-type = "primary";
+              start = "1M";
+              end = "100%";
+              bootable = true;
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
-                extraArgs = [ "-L" "nixos-root" ];
               };
-            };
-          };
+            }
+          ];
         };
       };
     };
   };
 }
-
