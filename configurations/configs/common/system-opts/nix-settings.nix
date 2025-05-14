@@ -15,6 +15,13 @@
      auto-optimise-store = true;
      experimental-features = [ "nix-command" "flakes" ];
      max-jobs = 2;
+     trusted-users = [ "@wheel" ];
+     trusted-substituters = [
+       "https://hydra.nixos.org/"
+     ];
+     trusted-public-keys = [
+       "hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
+     ];
    };
    gc = {
      automatic = true;
