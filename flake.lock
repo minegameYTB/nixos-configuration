@@ -420,11 +420,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1747469876,
-        "narHash": "sha256-UXsEg6uVP9wnnYW4izqhJXapqWTLnTSSDryUthlYnfM=",
+        "lastModified": 1747520323,
+        "narHash": "sha256-t8nZCXzu00TFsfHKZxLdnwbDqwjwjACfcaAHEbf0qw0=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "8ad37799ad1e8cd37dc1dbc267e1f6ecb559808b",
+        "rev": "03604df4b795fd234013489ddbd8e5c413e20b73",
         "type": "github"
       },
       "original": {
@@ -495,11 +495,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1747441332,
-        "narHash": "sha256-On+cwR/dMW9s+YWsYifIaRs18nNyK5HVFJav6HsRrU8=",
+        "lastModified": 1747516727,
+        "narHash": "sha256-k3H8hzLjAHZjdirCcIwK9r/BDM77T1z+xK71D7Jo2ng=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "101d23dfacbb2704c40639ae9b6ac1d41de7143a",
+        "rev": "3c172cbbc6a657039c6eb0c2eec83c27c69342e2",
         "type": "github"
       },
       "original": {
@@ -654,11 +654,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1747451268,
-        "narHash": "sha256-Fj9KW6jRJXQVmLk39baB7KNUANhzcifpNPDLoToi+A4=",
+        "lastModified": 1747498955,
+        "narHash": "sha256-5oCFCO/ELjAPL2a2DIrum/3+xMYcTxfKPvVi7EVEEAM=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "8f523c1a9d6935d34f76513a1b654e9c42e0343c",
+        "rev": "79c8bd69580ce3698ba05830c6acacc7e3ebd8f1",
         "type": "github"
       },
       "original": {
