@@ -10,7 +10,7 @@ in
    (with pkgs; [
      vlc
      amberol
-     bitwarden-desktop
+     #bitwarden-desktop
      pika-backup
      melonDS
      zen-browser.packages."${system}".default
