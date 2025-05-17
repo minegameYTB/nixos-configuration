@@ -5,14 +5,14 @@
 
   inputs = {
     ### Main repo
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     
     ### To test a PR on a flake : 
     ### github:username/repo?ref=pull/<PR number>/head
     
     ### Other repos
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
@@ -20,7 +20,7 @@
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix.url = "github:danth/stylix/release-24.11";
+    stylix.url = "github:danth/stylix";
     nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
 
     ### Rice/customization

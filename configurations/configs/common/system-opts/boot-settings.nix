@@ -3,12 +3,12 @@
 {
  ### Boot config
  boot = {
-   binfmt = {
-     preferStaticEmulators = true;
-     emulatedSystems = [
-       "aarch64-linux"
-     ];
-   };
+   #binfmt = {
+   #  preferStaticEmulators = true;
+   #  emulatedSystems = [
+   #    "aarch64-linux"
+   #  ];
+   #};
    initrd.systemd = {
      enable = true;
      emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
