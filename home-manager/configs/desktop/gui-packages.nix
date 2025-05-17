@@ -10,14 +10,14 @@ in
    (with pkgs; [
      vlc
      amberol
-     bitwarden-desktop
      pika-backup
      melonDS
      zen-browser.packages."${system}".default
    ])
    ### All arch (pkgs from unstable branch)
    ++ (with pkgsExtra.pkgs-unstable; [
-   #melonDS
+     bitwarden-desktop
+     #melonDS
    ])
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
