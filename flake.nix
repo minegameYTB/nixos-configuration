@@ -5,7 +5,7 @@
 
   inputs = {
     ### Main repo
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     
     ### To test a PR on a flake : 
     ### github:username/repo?ref=pull/<PR number>/head
