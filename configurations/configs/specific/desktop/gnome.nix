@@ -31,6 +31,7 @@
    ++
    (with pkgs.gnomeExtensions; [
      appindicator
+     user-themes
      tiling-assistant
      dash-to-dock
      blur-my-shell
