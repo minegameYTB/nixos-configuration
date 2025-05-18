@@ -12,7 +12,7 @@
     
     ### Other repos
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
@@ -129,6 +129,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-probook-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -160,6 +161,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/hp-240-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -190,6 +192,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-efi-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -220,6 +223,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-novio-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -250,6 +254,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-desktop-bios-vio-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -280,6 +285,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-efi-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -305,6 +311,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-novio-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -330,6 +337,7 @@
         modules = [
           ./configurations/configuration.nix
           ./profiles/vm-no-gui-bios-vio-profile.nix
+          
           ### Nur overlay
           nurOverlay
                     
@@ -363,4 +371,3 @@
     );
   };
 }
-
