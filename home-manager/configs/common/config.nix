@@ -40,8 +40,8 @@
  };
 
  ### Fastfetch
- programs.fastfetch = {
-   enable = true;
+# programs.fastfetch = {
+#   enable = true;
 #  settings = {
 #    logo = {
 #      padding = {
@@ -72,7 +72,7 @@
 #      "separator"
 #    ];
 #  };
- };
+# };
   
  ### Htop
  programs.htop = {
