@@ -86,11 +86,11 @@
     "dotfiles-minegameYTB": {
       "flake": false,
       "locked": {
-        "lastModified": 1747834611,
-        "narHash": "sha256-i2Oi2aS/Guq0pv3/I7vDqgpzp/OfIIYaMh1sFCZLcOA=",
+        "lastModified": 1747856924,
+        "narHash": "sha256-vc9IQ9ocBuBY8rZ9ACGLXfx+pT7JSxLp5qyUwAdFShk=",
         "owner": "minegameYTB",
         "repo": "dotfiles",
-        "rev": "711e238eb0781b4f946b64fcc91bc220410ee4e3",
+        "rev": "05d273c22745f1c246feda7702b354bd6d7361b3",
         "type": "github"
       },
       "original": {
@@ -423,11 +423,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1747842582,
-        "narHash": "sha256-EVdImsBL2vi16WEAfGxnYmrYkiGVB9i5AmpkNG8tTyY=",
+        "lastModified": 1747856695,
+        "narHash": "sha256-b/wxeIl00EyMKX/ymycy1ntxI79hhZODR7d8wzEVPAA=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "af5f52ec5253c325f6c0ee359febacacbaa08895",
+        "rev": "fc5c6285ef1afc79ed18c14960af4a6a427733b0",
         "type": "github"
       },
       "original": {
@@ -575,11 +575,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1747826223,
-        "narHash": "sha256-6UmRXJYEA5EBwTBBVoo5eomW9vPRdddeNMqzAIlrwQ0=",
+        "lastModified": 1747852083,
+        "narHash": "sha256-AitWK0alpojxNu3pFiLDbT5DVQWZXV3i8BlWkfQPET0=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "76a162a24feb27ee242f1d1df72f71970abb52af",
+        "rev": "8a9ca8f89923eeda6c1a9ce164a1c0eb6f712420",
         "type": "github"
       },
       "original": {
