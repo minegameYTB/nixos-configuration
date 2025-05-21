@@ -40,17 +40,6 @@
    ];
  };
 
- ### Nix index
- programs = {
-   nix-index = {
-     enable = true;
-     enableZshIntegration = true;
-   };
-   command-not-found = {
-     enable = false;
-   };
- };
-
  ### Neovim
  programs.neovim = {
    enable = true;
