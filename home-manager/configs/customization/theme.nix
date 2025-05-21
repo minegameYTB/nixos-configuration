@@ -4,9 +4,11 @@
  home.packages = with pkgs; [
    ### Theme
    adw-gtk3
+   ### need to move papirus-icon-theme to global config -> specific -> desktop -> gnome.nix
    (papirus-icon-theme.override { color = "green";})
-  
+   
    ### Cursor
+   ### same for cursor (move this to stylix configuration too)
    catppuccin-cursors.mochaDark
 
    ### This theme provide adwaita-dark theme (old theme)
@@ -15,11 +17,6 @@
    ### From my nurpkgs repo
    nur.repos.minegameYTB.theme.marble-shell-filled
  ];
-
- ### Set directly the nightfox theme as a gtk4 theme
- #xdg.configFile = {
- #  "gtk-4.0".source = ../../dotfiles/config-file/themes/Tokyonight-Dark/gtk-4.0;
- #};
 
  ### Install theme on home directory
  home.file = {
