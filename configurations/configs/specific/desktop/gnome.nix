@@ -23,13 +23,25 @@
  ### Gnome Extensions
  environment.systemPackages = 
    (with pkgs; [
+     ### Other gnome related packages
      virt-viewer
      mission-center
      gnome-tweaks
      gnome-extension-manager
+
+     ### Themes
+     ### Override papirus-icon-theme to set folder green
+     (papirus-icon-theme.override { color = "green";})
+
+     ### Gtk theme
+     adw-gtk3
+     
+     ### From my nurpkgs repo
+     nur.repos.minegameYTB.theme.marble-shell-filled
    ]) 
    ++
    (with pkgs.gnomeExtensions; [
+     ### Extensions
      appindicator
      user-themes
      tiling-assistant

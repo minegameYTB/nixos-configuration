@@ -1,22 +1,15 @@
 { config, pkgs, ... }:
 
 {
- home.packages = with pkgs; [
-   ### Theme
-   adw-gtk3
-   ### need to move papirus-icon-theme to global config -> specific -> desktop -> gnome.nix
-   (papirus-icon-theme.override { color = "green";})
-   
-   ### Cursor
-   ### same for cursor (move this to stylix configuration too)
-   catppuccin-cursors.mochaDark
-
-   ### This theme provide adwaita-dark theme (old theme)
-   ayu-theme-gtk
-   
-   ### From my nurpkgs repo
-   nur.repos.minegameYTB.theme.marble-shell-filled
- ];
+ ### Unused for the moment
+ #home.packages = with pkgs; [
+ #  ### Theme
+ #  adw-gtk3
+ #  
+ #  ### Cursor
+ #  ### same for cursor (move this to stylix configuration too)
+ #  catppuccin-cursors.mochaDark
+ #];
 
  ### Install theme on home directory
  home.file = {

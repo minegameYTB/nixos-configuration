@@ -25,10 +25,14 @@
    w-df = "${pkgs.procps}/bin/watch ${pkgs.duf}/bin/duf -hide special";
    ff = "${pkgs.fastfetch}/bin/fastfetch";
    nix = "nix -v --refresh";
-   gc = "git commit";
+   
+   ### Git aliases
    gadd = "git add";
    gpush = "git push";
    gpull = "git pull";
+   gc = "git commit";
+   gsw = "git switch";
+   gbr = "git branch";
 
    ### Use xterm-256color on runtime command
    ssh = "TERM=xterm-256color ssh";
