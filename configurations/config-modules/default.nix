@@ -3,5 +3,6 @@
  imports = [
    ./stylix
    ./nix-flatpak
+   ./nix-index-db
  ];
 }
