@@ -18,7 +18,7 @@
    "ls.ori" = "${pkgs.coreutils}/bin/ls";
    "df.ori" = "${pkgs.coreutils}/bin/df";
    
-   ### Prevent to use internal which config in zsh (show aliases which path)
+   ### Prevent to use internal which config in zsh (shows aliases which path)
    which = "${pkgs.which}/bin/which";
    
    ### Other aliases
