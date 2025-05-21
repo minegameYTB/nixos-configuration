@@ -1,12 +1,6 @@
 { config, pkgs, inputs, ... }:
 
 {
- home.packages = with pkgs; [
-   ### Theme
-   adw-gtk3
-   catppuccin-cursors.mochaDark
- ];
-
  ### Import conf file for cli software
  home.file = {
    ".screenrc".source = "${inputs.dotfiles-minegameYTB}/configs/screen/screenrc";

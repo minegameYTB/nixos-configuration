@@ -1,8 +1,8 @@
 { lib, config, pkgs, pkgsExtra, zen-browser, ... }:
 
 let
-  isX86_64 = pkgs.stdenv.hostPlatform.isx86_64;
-  isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
+  isX86_64 = pkgs.stdenvNoCC.hostPlatform.isx86_64;
+  isAarch64 = pkgs.stdenvNoCC.hostPlatform.isAarch64;
 in
 {
  home.packages =
