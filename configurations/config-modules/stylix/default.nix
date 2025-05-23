@@ -12,11 +12,11 @@
    ### Catppucin wallpaper
    #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
   
-   ### Accept fetchurl derivation (see stylix doc)
-   #image = pkgs.fetchurl {
-   #  url = "";
-   #  sha256 = "";
-   #};
+  ### Accept fetchurl derivation (see stylix doc)
+  #image = pkgs.fetchurl {
+  #  url = "";
+  #  sha256 = "";
+  #};
    polarity = "dark";
    fonts = {
      sansSerif = {
@@ -45,10 +45,6 @@
      plymouth = {
        enable = true;
        logoAnimated = false;
-     };
-     qt = {
-       enable = true;
-       platform = "gnome";
      };
    };
  };
