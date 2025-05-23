@@ -4,6 +4,8 @@
  ### Import nix expression for hp-probook
  imports = [ 
    ### Core
+   ### Include btrfs mountpoints expr
+   ../configurations/hardware-configuration/btrfs
    ../configurations/hardware-configuration/hp-probook/hardware-configuration.nix
    ../configurations/configs/bootloader/systemd-boot.nix
    ../configurations/configs/networking/desktop-config.nix
