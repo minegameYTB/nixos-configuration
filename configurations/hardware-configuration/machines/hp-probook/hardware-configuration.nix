@@ -4,16 +4,18 @@
 { config, lib, pkgs, ... }:
 
 {
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "sd_mod" "sr_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+ boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "sd_mod" "sr_mod" "rtsx_pci_sdmmc" ];
+ boot.initrd.kernelModules = [ ];
+ boot.kernelModules = [ "kvm-intel" ];
+ boot.extraModulePackages = [ ];
+  
+ ### Root/home mount point located to ../filesystem/btrfs
   
  ### Specific mount point
  fileSystems."/mnt/DATA" = { 
-   label = "DATA";
-   fsType = "btrfs";
-   options = [ "subvol=@data" "compress=zstd:5" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
+  label = "DATA";
+  fsType = "btrfs";
+  options = [ "subvol=@data" "compress=zstd:5" "nofail" "noatime" "x-gvfs-show" "nodev" "nosuid" ];
  };
 
  fileSystems."/mnt/Games" = { 
