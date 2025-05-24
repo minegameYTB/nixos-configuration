@@ -7,7 +7,7 @@
     ### Main repo
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     
-    ### To test a PR on a flake : 
+    ### To test a PR on a flake :
     ### github:username/repo?ref=pull/<PR number>/head
     
     ### Other repos
@@ -41,6 +41,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
+  
   outputs = { 
     self,
     nixpkgs,
@@ -58,17 +59,18 @@
     ### System variables
     lib = nixpkgs.lib;
     systems = [ "x86_64-linux" "aarch64-linux" ];
-    
+    users = [ "minegame" ];
+
     ### Nur overlay variable
     nurOverlay = ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; });
 
-    ### Other sources as a function of system
+    ### Other sources (pkgs set)
     pkgsExtra = system: {
       pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
       pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     };
 
-    ### specialArgs as a function of system
+    ### specialArgs
     specialArgs = system: {
       inherit inputs;
       pkgsExtra = pkgsExtra system;
@@ -76,46 +78,69 @@
       inherit (inputs) zen-browser;
     };
 
-    ### Home manager variable
-    users = [ "minegame" ];
-    
+    ### Home-manager desktop config module (not a function call)
+    homeManagerDesktopConfig = { config, pkgs, ... }: {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      
+      ### Import users as a function
+      home-manager.users = lib.genAttrs users (username:
+        import ./hm-profiles/desktop-profile-wrapped.nix {
+          inherit username;
+          extraModules = [
+            ./home-manager/configs/specific/nixos/stylix.nix
+          ];
+        }
+      );
+      home-manager.backupFileExtension = "bak";
+      home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
+    };
+
+    ### Home-manager server config module (not a function call)
+    homeManagerServerConfig = { config, pkgs, ... }: {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.users = lib.genAttrs users (username:
+        import ./hm-profiles/server-profile.nix { inherit username; }
+      );
+      home-manager.backupFileExtension = "bak";
+      home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
+    };
+
     ### Create a function named "mkHome" that takes system and username
     mkHome = system: username: home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { 
         inherit system;
-        
-        ### Allow non free software to home-manager standalone conf
+        ### Allow non-free software in standalone home-manager conf
         config = { allowUnfree = true; };
       };
       modules = [
         ({ config, pkgs, ... }: 
           { 
             nixpkgs.overlays = [ nur.overlays.default ]; 
-         
             ### Specific aliases for home-manager standalone
             home.shellAliases = {
+            
               ### Override nix.conf settings on nix standalone configuration
               nix = "nix --refresh -v --cores 2";
-
+              
               ### home-manager alias
               home-manager = "home-manager -b bak";
-
+              
               ### ls and cat aliases
               ls = "${pkgs.lsd}/bin/lsd";
               cat = "${pkgs.bat}/bin/bat";
-
+              
               ### expose legacy ls and cat as an alias
               "ls.ori" = "${pkgs.coreutils}/bin/ls";
               "cat.ori" = "${pkgs.coreutils}/bin/cat";
             };
           }
         )
-        
         ### import desktop profile with a setting (username)
         (import ./hm-profiles/desktop-profile.nix { inherit username; })
-        
         ### add stylix module
-        stylix.homeManagerModules.stylix
+        stylix.homeModules.stylix
       ];
       extraSpecialArgs = {
         ### Export "inputs" "nur" "inputs.zen-browser" and "pkgsExtra" to home-manager configuration
@@ -136,29 +161,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "HP-probook"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            ### Import users as a function
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/desktop-profile-wrapped.nix {
-                inherit username;
-                extraModules = [
-                  ./home-manager/configs/specific/nixos/stylix.nix
-                ];
-              }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerDesktopConfig
         ];
       };
-      
       hp-240 = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -168,28 +179,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "UTILISA-0SK6G4E"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/desktop-profile-wrapped.nix { 
-                inherit username;
-                extraModules = [
-                  ./home-manager/configs/specific/nixos/stylix.nix
-                ];
-              }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerDesktopConfig
         ];
       };
-      
       vm-desktop-efi = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -199,28 +197,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-desktop"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/desktop-profile-wrapped.nix {
-                inherit username;
-                extraModules = [
-                  ./home-manager/configs/specific/nixos/stylix.nix
-                ];
-              }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerDesktopConfig
         ];
       };
-      
       vm-desktop-bios = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -230,28 +215,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-desktop-bios"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/desktop-profile-wrapped.nix {
-                inherit username;
-                extraModules = [
-                  ./home-manager/configs/specific/nixos/stylix.nix
-                ];
-              }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerDesktopConfig
         ];
       };
-      
       vm-desktop-bios-virtio = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -261,28 +233,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/desktop-profile-wrapped.nix {
-                inherit username;
-                extraModules = [
-                  ./home-manager/configs/specific/nixos/stylix.nix
-                ];
-              }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerDesktopConfig
         ];
       };
-      
       vm-no-gui-efi = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -292,23 +251,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-srv"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/server-profile.nix { inherit username; }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerServerConfig
         ];
       };
-      
       vm-no-gui-bios = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -318,23 +269,15 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-srv-bios"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/server-profile.nix { inherit username; }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerServerConfig
         ];
       };
-      
       vm-no-gui-bios-virtio = lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
@@ -344,24 +287,17 @@
           
           ### Nur overlay
           nurOverlay
-                    
-          ### Hostname conf
+          
+          ### Hostname config
           { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
-
-          ### Home-manager module conf
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = lib.genAttrs users (username:
-              import ./hm-profiles/server-profile.nix { inherit username; }
-            );
-            home-manager.backupFileExtension = "bak";
-            home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
-          }
+          
+          ### Home-manager module
+          home-manager.nixosModules.home-manager
+          homeManagerServerConfig
         ];
       };
     };
-    
+
     ### Multi-architecture home-manager configurations
     homeConfigurations = lib.listToAttrs (
       lib.concatMap (username:
