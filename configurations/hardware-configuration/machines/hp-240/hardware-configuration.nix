@@ -12,6 +12,10 @@
  boot.initrd.kernelModules = [ ];
  boot.kernelModules = [ "kvm-intel" ];
  boot.extraModulePackages = with config.boot.kernelPackages; [ ];
+ 
+ ### Root/home mount point located to ../filesystem/btrfs
+ 
+ ### Specific mountpoint
 
  swapDevices = [ ];
 }
