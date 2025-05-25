@@ -38,8 +38,9 @@
     };
 
     ### Other nixpkgs repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
   
   outputs = { 
@@ -47,6 +48,7 @@
     nixpkgs,
     stylix,
     nixpkgs-unstable,
+    nixpkgs-24-11,
     nixpkgs-23-11,
     home-manager,
     zen-browser,
@@ -67,6 +69,7 @@
     ### Other sources (pkgs set)
     pkgsExtra = system: {
       pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
+      pkgs-24-11 = nixpkgs-24-11.legacyPackages.${system};
       pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     };
 
