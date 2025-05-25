@@ -16,9 +16,4 @@
  ### Root/home mount point located to ../filesystem/btrfs
  
  ### Specific mountpoint
-
- swapDevices = [{
-   device = "/var/lib/swapfile";
-   size = 8*1024;
- }];
 }
