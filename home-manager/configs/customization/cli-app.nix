@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, pkgsExtra, inputs, ... }:
 
 {
  ### Import conf file for cli software
@@ -12,6 +12,7 @@
 
  programs.neovim = {
    enable = true;
+   package = pkgsExtra.pkgs-24-11.neovim-unwrapped;
    viAlias = true;
    vimAlias = true;
    withPython3 = false;
@@ -28,7 +29,7 @@
      lualine-nvim
      bufferline-nvim
      mini-indentscope
-    #nvim-treesitter.withAllGrammars
+     #nvim-treesitter.withAllGrammars
    ];
    extraLuaConfig = ''
      -- Nvim config
