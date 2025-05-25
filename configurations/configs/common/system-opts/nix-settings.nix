@@ -34,10 +34,15 @@
    };
  };
 
- ### Disable some nixos other command
- system.tools = {
-   nixos-option.enable = false;
-   nixos-build-vms.enable = false;
-   nixos-install.enable = false;
+ system = {
+   ### Enable nixos-rebuild-ng to replace nixos-rebuild legacy
+   rebuild.enableNg = true;
+
+   ### Disable some nixos other command
+   tools = {
+     nixos-option.enable = false;
+     nixos-build-vms.enable = false;
+     nixos-install.enable = false;
+   };
  };
 }

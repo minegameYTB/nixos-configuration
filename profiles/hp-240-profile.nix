@@ -3,11 +3,13 @@
 {
  ### Import nix expression for hp-240
  imports = [ 
-   ### Core 
-   ../configurations/hardware-configuration/hp-240/hardware-configuration.nix
-    ../configurations/configs/bootloader/systemd-boot.nix
-    ../configurations/configs/networking/desktop-config.nix
-    ../configurations/configs/system/tmp-on-disk.nix
+   ### Core
+   ### Include btrfs mountpoints expr
+   ../configurations/hardware-configuration/filesystem/btrfs
+   ../configurations/hardware-configuration/machines/hp-240/hardware-configuration.nix
+   ../configurations/configs/bootloader/systemd-boot.nix
+   ../configurations/configs/networking/desktop-config.nix
+   ../configurations/configs/system/tmp-on-disk.nix
    #../configurations/configs/bootloader/grub2/grub2-efi.nix
    #../configurations/configs/specific/laptop/power-mgmt.nix
    

@@ -1,25 +1,15 @@
 { config, pkgs, ... }:
 
 {
- home.packages = with pkgs; [
-   ### Theme
-   adw-gtk3
-   (papirus-icon-theme.override { color = "green";})
-  
-   ### Cursor
-   catppuccin-cursors.mochaDark
-
-   ### This theme provide adwaita-dark theme (old theme)
-   ayu-theme-gtk
-   
-   ### From my nurpkgs repo
-   nur.repos.minegameYTB.theme.marble-shell-filled
- ];
-
- ### Set directly the nightfox theme as a gtk4 theme
- #xdg.configFile = {
- #  "gtk-4.0".source = ../../dotfiles/config-file/themes/Tokyonight-Dark/gtk-4.0;
- #};
+ ### Unused for the moment
+ #home.packages = with pkgs; [
+ #  ### Theme
+ #  adw-gtk3
+ #  
+ #  ### Cursor
+ #  ### same for cursor (move this to stylix configuration too)
+ #  catppuccin-cursors.mochaDark
+ #];
 
  ### Install theme on home directory
  home.file = {

@@ -4,7 +4,7 @@
  ### Import nix expression for vm-no-gui
  imports = [
    ### Core
-   ../../configurations/hardware-configuration/vm/hardware-configuration.nix
+   ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
    ../../configurations/configs/networking/server-config.nix
    ../../configurations/configs/system/tmp-on-disk.nix
    

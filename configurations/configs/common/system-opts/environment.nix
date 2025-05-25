@@ -8,19 +8,31 @@
 
  ### Shell environment
  environment.shellAliases = {
+   ### Core utilities remplacement
    ls = "${pkgs.lsd}/bin/lsd";
    cat = "${pkgs.bat}/bin/bat";
-   df = "df -x tmpfs";
-   w-df = "watch df -hx tmpfs";
-   "cat.ori" = "${pkgs.coreutils-full}/bin/cat";
-   "ls.ori" = "${pkgs.coreutils-full}/bin/ls";
-   which = "/run/current-system/sw/bin/which";
-   ff = "fastfetch";
+   df = "${pkgs.duf}/bin/duf -hide special";
+
+   ### Original core utilities tools
+   "cat.ori" = "${pkgs.coreutils}/bin/cat";
+   "ls.ori" = "${pkgs.coreutils}/bin/ls";
+   "df.ori" = "${pkgs.coreutils}/bin/df";
+   
+   ### Prevent to use internal which config in zsh (shows aliases which path)
+   which = "${pkgs.which}/bin/which";
+   
+   ### Other aliases
+   w-df = "${pkgs.procps}/bin/watch ${pkgs.duf}/bin/duf -hide special";
+   ff = "${pkgs.fastfetch}/bin/fastfetch";
    nix = "nix -v --refresh";
-   gc = "git commit";
+   
+   ### Git aliases
    gadd = "git add";
    gpush = "git push";
    gpull = "git pull";
+   gc = "git commit";
+   gsw = "git switch";
+   gbr = "git branch";
 
    ### Use xterm-256color on runtime command
    ssh = "TERM=xterm-256color ssh";

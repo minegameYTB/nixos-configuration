@@ -27,7 +27,7 @@
        helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
      };
      init.defaultBranch = "main";
-     push.autoSetupRemote = true;
+     #push.autoSetupRemote = true;
    };
  };
 
@@ -40,8 +40,8 @@
  };
 
  ### Fastfetch
- programs.fastfetch = {
-   enable = true;
+# programs.fastfetch = {
+#   enable = true;
 #  settings = {
 #    logo = {
 #      padding = {
@@ -72,7 +72,7 @@
 #      "separator"
 #    ];
 #  };
- };
+# };
   
  ### Htop
  programs.htop = {
