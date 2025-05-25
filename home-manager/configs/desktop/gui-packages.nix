@@ -26,7 +26,6 @@ in
      onlyoffice-desktopeditors
      prismlauncher
      rpi-imager
-     bottles
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
    ++ lib.optionals isAarch64 (with pkgs; [
