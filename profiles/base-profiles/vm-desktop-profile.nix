@@ -23,7 +23,8 @@
    
    ### Other
    ../../configurations/configs/app-opts/vm-desktop.nix
-   
+   ../../configurations/hardware-configuration/specific/swap.nix
+
    ### NixOS configuration module (distant flake)
    ### import default.nix from this directory ↓
    ../../configurations/config-modules

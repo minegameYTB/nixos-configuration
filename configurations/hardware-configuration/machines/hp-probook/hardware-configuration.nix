@@ -29,6 +29,4 @@
    fsType = "btrfs";
    options = [ "subvol=@backup" "compress=zstd:5" "nofail" "noatime" "nodev" "nosuid" ];
  };
-  
- swapDevices = [ ];
 }

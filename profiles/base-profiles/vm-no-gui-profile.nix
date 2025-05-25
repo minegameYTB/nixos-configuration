@@ -16,5 +16,6 @@
    
    ### Other
    ../../configurations/configs/app-opts/vm-no-gui.nix
+   ../../configurations/hardware-configuration/specific/swap.nix
  ];
 }
