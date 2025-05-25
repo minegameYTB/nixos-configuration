@@ -19,6 +19,7 @@
    packages = [
     "io.github.shiftey.Desktop"
     "io.mrarm.mcpelauncher"
+    "com.usebottles.bottles"
    ];
    uninstallUnmanaged = true;
    update = {
