@@ -4,7 +4,7 @@
  ### Import stylix modules like a expression
  imports = [ inputs.stylix.nixosModules.stylix ];
 
-  ### Stylix config
+ ### Stylix config
  stylix = {
    enable = true;
    image = "${inputs.dotfiles-minegameYTB}/wallpapers/Leafs.png";
@@ -12,11 +12,11 @@
    ### Catppucin wallpaper
    #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
   
-  ### Accept fetchurl derivation (see stylix doc)
-  #image = pkgs.fetchurl {
-  #  url = "";
-  #  sha256 = "";
-  #};
+   ### Accept fetchurl derivation (see stylix doc)
+   #image = pkgs.fetchurl {
+   #  url = "";
+   #  sha256 = "";
+   #};
    polarity = "dark";
    fonts = {
      sansSerif = {
