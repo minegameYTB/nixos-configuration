@@ -33,6 +33,7 @@
    gc = "git commit";
    gsw = "git switch";
    gbr = "git branch";
+   gft = "git fetch";
 
    ### Use xterm-256color on runtime command
    ssh = "TERM=xterm-256color ssh";
