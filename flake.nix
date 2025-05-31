@@ -41,6 +41,13 @@
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+  
+    ### Utilities
+    ### Import blocklist as non flake to import list directly on /etc/hosts (abstraction layer with nix)
+    blocklist = {
+      url = "github:StevenBlack/hosts";
+      flake = false;
+    };
   };
   
   outputs = { 

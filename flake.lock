@@ -67,6 +67,22 @@
         "type": "github"
       }
     },
+    "blocklist": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1748393754,
+        "narHash": "sha256-KS+bKVQk0S7pCiz1ftHPr/bTgCU+4Lv9YvUVLXAbuJU=",
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "rev": "4f663aa0f0b247f3a455577b096e121e2976215d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "type": "github"
+      }
+    },
     "catppuccin-wallpapers": {
       "flake": false,
       "locked": {
@@ -499,6 +515,7 @@
     },
     "root": {
       "inputs": {
+        "blocklist": "blocklist",
         "catppuccin-wallpapers": "catppuccin-wallpapers",
         "dotfiles-minegameYTB": "dotfiles-minegameYTB",
         "home-manager": "home-manager",
