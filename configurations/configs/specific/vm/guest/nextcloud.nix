@@ -2,7 +2,7 @@
 
 {
  ### Nextcloud
- environment.etc."nextcloud-admin-pass".text = "PWD";
+ environment.etc."nextcloud-admin-pass".text = "nixos";
  services.nextcloud = {
    enable = true;
    package = pkgs.nextcloud31;
