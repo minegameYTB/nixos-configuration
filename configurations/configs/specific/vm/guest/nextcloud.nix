@@ -1,4 +1,4 @@
-{ lib, config, pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
  ### Nextcloud
@@ -12,5 +12,5 @@
  };
  
  ### Allow http/s firewall ports
- networking.firewall.allowedTCPPorts = lib.mkDefault [ 80 443 ];
+ networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
