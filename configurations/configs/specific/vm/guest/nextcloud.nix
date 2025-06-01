@@ -7,7 +7,6 @@
    enable = true;
    package = pkgs.nextcloud31;
    hostName = "localhost";
-   https = true;
    settings = {
      trusted_domains = [
        "localhost"
