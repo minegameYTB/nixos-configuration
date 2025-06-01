@@ -268,6 +268,13 @@
           ### Home-manager module
           home-manager.nixosModules.home-manager
           homeManagerServerConfig
+
+          ### Add wrapper expression module
+          (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
+            extraModules = [
+              ./configurations/configs/specific/vm/guest/nextcloud.nix
+            ];
+          })
         ];
       };
       vm-no-gui-bios = lib.nixosSystem {
