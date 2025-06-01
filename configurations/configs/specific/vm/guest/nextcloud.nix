@@ -21,6 +21,12 @@
  services.postgresql = {
    enable = true;
    ensureDatabases = [ "nextcloud" ];
+   ### Temporary passwd (sops-nix needed later)
+   initialScript = pkgs.writeText "nextcloud-init.sql" ''
+     CREATE ROLE nextcloud WITH LOGIN PASSWORD 'motdepasse';
+     CREATE DATABASE nextcloud WITH OWNER nextcloud;
+     GRANT ALL PRIVILEGES ON DATABASE nextcloud TO nextcloud;
+   '';
    ensureUsers = [
      {
        name = "nextcloud";
