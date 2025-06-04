@@ -27,7 +27,7 @@
    ../configurations/configs/specific/vm/host/qemu-kvm-host.nix
 
    ### Games specific
-   ../configuration/configs/specific/desktop/games
+   ../configurations/configs/specific/desktop/games
 
    ### Other
    ../configurations/configs/app-opts/hp-probook.nix
