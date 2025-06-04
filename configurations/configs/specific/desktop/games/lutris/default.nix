@@ -7,5 +7,5 @@
    (lutris.override {
      extraPackages = [ wineWowPackages.staging ];
    })
- ]
+ ];
 }
