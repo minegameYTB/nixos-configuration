@@ -25,6 +25,7 @@
 
    ### Vm specific option
    #../configurations/configs/specific/vm/host/qemu-kvm-host.nix
+    ../configurations/configs/specific/vm/guest/openssh.nix
 
    ### Other
    ../configurations/configs/app-opts/hp-240.nix
