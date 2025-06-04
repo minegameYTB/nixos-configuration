@@ -6,6 +6,6 @@
  environment.systemPackages = with pkgsExtra.pkgs-unstable; [
    (lutris.override {
      extraPackages = [ wineWowPackages.staging ];
-   });
+   })
  ]
 }
