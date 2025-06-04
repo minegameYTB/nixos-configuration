@@ -1,11 +1,11 @@
-### Provide pkgsExtra (define in flake (in specialArgs)) attribute to use pkgs-unstable for lutris
+### Call pkgsExtra to use latest lutris and wineStaging
 { config, pkgsExtra, ... }:
 
 {
  ### Add lutris (define override to add wineStaging in the environment of lutris)
  environment.systemPackages = with pkgsExtra.pkgs-unstable; [
    (lutris.override {
-     extraPkgs = [ wineWowPackages.staging ];
+     extraPkgs = pkgs: [ wineWowPackages.base ];
    })
  ];
 }

@@ -66,7 +66,25 @@
   
   let
     ### System variables
+    ### nixpkgs config
+    nixpkgsConfig = {
+      allowUnfree = true;
+    };
+
+    ### Add function for pkgs
+    mkPkgs = (nixpkgsSource: system:
+      import nixpkgsSource {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      }
+    );
+    
+    ### Extend lib (with nixpkgs release)
     lib = nixpkgs.lib;
+    libUnstable = nixpkgs-unstable.lib;
+
     systems = [ "x86_64-linux" "aarch64-linux" ];
     users = [ "minegame" ];
 
@@ -75,9 +93,20 @@
 
     ### Other sources (pkgs set)
     pkgsExtra = system: {
-      pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
-      pkgs-24-11 = nixpkgs-24-11.legacyPackages.${system};
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+      pkgs-23-11 = import nixpkgs-23-11 {
+        inherit system;
+        config = nixpkgsConfig;
+      };
+      
+      pkgs-24-11 = import nixpkgs-24-11 {
+        inherit system;
+        config = nixpkgsConfig;
+      };
+      
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config = nixpkgsConfig;
+      };
     };
 
     ### specialArgs
@@ -163,6 +192,7 @@
   in {
     nixosConfigurations = {
       hp-probook = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -181,6 +211,7 @@
         ];
       };
       hp-240 = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -199,6 +230,7 @@
         ];
       };
       vm-desktop-efi = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -217,6 +249,7 @@
         ];
       };
       vm-desktop-bios = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -235,6 +268,7 @@
         ];
       };
       vm-desktop-bios-virtio = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -253,6 +287,7 @@
         ];
       };
       vm-no-gui-efi = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -278,6 +313,7 @@
         ];
       };
       vm-no-gui-bios = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
@@ -296,6 +332,7 @@
         ];
       };
       vm-no-gui-bios-virtio = lib.nixosSystem {
+        pkgs = mkPkgs nixpkgs "x86_64-linux";
         system = "x86_64-linux";
         specialArgs = specialArgs "x86_64-linux";
         modules = [
