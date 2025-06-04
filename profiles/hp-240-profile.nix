@@ -25,7 +25,6 @@
 
    ### Vm specific option
    #../configurations/configs/specific/vm/host/qemu-kvm-host.nix
-    ../configurations/configs/specific/vm/guest/openssh.nix
 
    ### Games specific
    ../configurations/configs/specific/desktop/games/steam/steam-run-free.nix
