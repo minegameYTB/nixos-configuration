@@ -5,7 +5,7 @@
  imports = [
    ./steam
    ./lutris
-   ./heroic
+   #./heroic
    ./prismlauncher
  ];
 }
