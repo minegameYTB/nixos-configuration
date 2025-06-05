@@ -31,7 +31,6 @@
    ../configurations/configs/specific/desktop/games/steam/steam-run-free.nix
 
    ### Other
-   ../configurations/configs/app-opts/hp-240.nix
    ../configurations/hardware-configuration/specific/swap.nix
 
    ### NixOS configuration module (distant flake)

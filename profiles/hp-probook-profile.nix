@@ -30,7 +30,6 @@
    ../configurations/configs/specific/desktop/games
 
    ### Other
-   ../configurations/configs/app-opts/hp-probook.nix
    #../configurations/configs/specific/container/podman.nix
 
    ### NixOS configuration module (distant flake)
