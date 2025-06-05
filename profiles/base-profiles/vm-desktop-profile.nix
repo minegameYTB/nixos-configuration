@@ -6,7 +6,6 @@
    ### Core
    ../../configurations/hardware-configuration/filesystem/btrfs
    ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
-   ../../configurations/configs/app-opts/vm-desktop.nix
    ../../configurations/configs/networking/desktop-config.nix
    ../../configurations/configs/system/tmp-on-disk.nix
    
