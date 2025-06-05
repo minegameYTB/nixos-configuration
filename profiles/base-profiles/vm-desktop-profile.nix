@@ -23,7 +23,6 @@
    ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
    
    ### Other
-   ../../configurations/configs/app-opts/vm-desktop.nix
    ../../configurations/hardware-configuration/specific/swap.nix
 
    ### NixOS configuration module (distant flake)
