@@ -2,7 +2,7 @@
 
 {
  ### Import x11 related expression
- imports = [ ./x11.nix ];
+ imports = [ ../x11.nix ];
  
  ### enable kde plasma
  services.displayManager.sddm.enable = true;
