@@ -17,9 +17,9 @@
    
    ### Server specific
    ../../configurations/configs/specific/vm/guest/openssh.nix
-   
+   ../../configurations/configs/specific/vm/guest/tailscale.nix
+
    ### Other
-   ../../configurations/configs/app-opts/vm-no-gui.nix
    ../../configurations/hardware-configuration/specific/swap.nix
  ];
 }
