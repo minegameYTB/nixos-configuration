@@ -15,19 +15,22 @@
    #../configurations/configs/specific/laptop/power-mgmt.nix
    
    ### X11 and desktop environment
-   ../configurations/configs/specific/desktop/gnome.nix
+   ../configurations/configs/specific/desktop/environment/gnome.nix
    ../configurations/configs/specific/desktop/sound.nix
    #../configurations/configs/specific/desktop/printer.nix
-   #../configurations/configs/specific/desktop/autologin.nix
+   ../configurations/configs/specific/desktop/autologin.nix
    
    ### Services
    ../configurations/configs/system/services/nix-channel-rm-dirs.nix
 
    ### Vm specific option
    #../configurations/configs/specific/vm/host/qemu-kvm-host.nix
+   ../configurations/configs/specific/vm/guest/openssh.nix
+
+   ### Games specific
+   ../configurations/configs/specific/desktop/games/steam/steam-run-free.nix
 
    ### Other
-   ../configurations/configs/app-opts/hp-240.nix
    ../configurations/hardware-configuration/specific/swap.nix
 
    ### NixOS configuration module (distant flake)
