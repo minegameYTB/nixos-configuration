@@ -2,7 +2,7 @@
 
 {
  ### Import x11 related expression
- imports = [ ./x11.nix ];
+ imports = [ ../x11.nix ];
  
  # Enable the GNOME Desktop Environment.
  services.xserver.displayManager.gdm.enable = true;

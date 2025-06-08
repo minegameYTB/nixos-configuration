@@ -15,7 +15,7 @@
 
  
    ### X11 and desktop environment
-   ../configurations/configs/specific/desktop/gnome.nix
+   ../configurations/configs/specific/desktop/environment/gnome.nix
    #../configurations/configs/specific/desktop/plasma.nix
    ../configurations/configs/specific/desktop/sound.nix
    #../configurations/configs/specific/desktop/printer.nix
@@ -26,8 +26,10 @@
    ### Vm specific option
    ../configurations/configs/specific/vm/host/qemu-kvm-host.nix
 
+   ### Games specific
+   ../configurations/configs/specific/desktop/games
+
    ### Other
-   ../configurations/configs/app-opts/hp-probook.nix
    #../configurations/configs/specific/container/podman.nix
 
    ### NixOS configuration module (distant flake)

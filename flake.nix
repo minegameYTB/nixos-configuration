@@ -66,6 +66,10 @@
   
   let
     ### System variables
+    ### nixpkgs config
+    nixpkgsConfig = {
+      allowUnfree = true;
+    };
     lib = nixpkgs.lib;
     systems = [ "x86_64-linux" "aarch64-linux" ];
     users = [ "minegame" ];
@@ -75,9 +79,20 @@
 
     ### Other sources (pkgs set)
     pkgsExtra = system: {
-      pkgs-23-11 = nixpkgs-23-11.legacyPackages.${system};
-      pkgs-24-11 = nixpkgs-24-11.legacyPackages.${system};
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+      pkgs-23-11 = import nixpkgs-23-11 {
+        inherit system;
+        config = nixpkgsConfig;
+      };
+      
+      pkgs-24-11 = import nixpkgs-24-11 {
+        inherit system;
+        config = nixpkgsConfig;
+      };
+      
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config = nixpkgsConfig;
+      };
     };
 
     ### specialArgs
@@ -268,6 +283,13 @@
           ### Home-manager module
           home-manager.nixosModules.home-manager
           homeManagerServerConfig
+
+          ### Add wrapper expression module
+          (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
+            extraModules = [
+              ./configurations/configs/specific/vm/guest/nextcloud.nix
+            ];
+          })
         ];
       };
       vm-no-gui-bios = lib.nixosSystem {

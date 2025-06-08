@@ -41,4 +41,14 @@
    ### This alias is just inspired from macOS "open" command
    open = "xdg-open";
  };
+ 
+  ### gnu nano
+ programs.nano = {
+   ### Disable nano to use neovim instead (move this settings to a another file to use this settings...)
+   enable = false;
+   nanorc = ''
+     set autoindent
+     set linenumbers 
+   '';
+ };
 }

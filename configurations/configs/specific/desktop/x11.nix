@@ -17,6 +17,12 @@
  services.xserver.excludePackages = with pkgs; [
    xterm
  ];
+ 
+ ### Firefox
+ programs.firefox.enable = true;
+
+ ### Localsend
+ programs.localsend.enable = true;
 
  ### Controller
  services.udev.extraRules = ''
