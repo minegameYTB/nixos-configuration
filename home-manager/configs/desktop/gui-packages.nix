@@ -13,6 +13,10 @@ in
      pika-backup
      melonDS
      zen-browser.packages."${system}".default
+
+     ### Libreoffice (and langpack)
+     libreoffice-fresh
+     hunspellDicts.fr-any
    ])
    ### All arch (pkgs from unstable branch)
    ++ (with pkgsExtra.pkgs-unstable; [
@@ -23,7 +27,7 @@ in
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
      spotify
-     onlyoffice-desktopeditors
+     #onlyoffice-desktopeditors
      prismlauncher
      rpi-imager
    ])
@@ -39,7 +43,7 @@ in
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
    ])
-   ### Packages frtom pkgs-unstable for aarch64-linux 
+   ### Packages from pkgs-unstable for aarch64-linux 
    ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
    ]);
