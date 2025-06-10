@@ -28,6 +28,7 @@
      mission-center
      gnome-tweaks
      gnome-extension-manager
+     showtime
 
      ### Themes
      ### Override papirus-icon-theme to set folder green
