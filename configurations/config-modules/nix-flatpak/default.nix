@@ -17,7 +17,7 @@
      ### Other flatpakref repo here
    ];
    packages = [
-     "io.github.shiftey.Desktop"
+     #"io.github.shiftey.Desktop"
      "io.mrarm.mcpelauncher"
      #"com.usebottles.bottles"
    ];
