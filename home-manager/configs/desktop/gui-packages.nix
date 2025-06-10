@@ -12,6 +12,7 @@ in
      amberol
      pika-backup
      melonDS
+     github-desktop
      zen-browser.packages."${system}".default
 
      ### Libreoffice (and langpack)
