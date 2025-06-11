@@ -24,13 +24,16 @@ in
      bitwarden-desktop
      #melonDS
    ])
+   ### Packages from pkgs-24.11 (all arch)
+   ++ (with pkgsExtra.pkgs-24-11; [
+     rpi-imager
+   ])
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
      spotify
      #onlyoffice-desktopeditors
      prismlauncher
-     rpi-imager
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
    ++ lib.optionals isAarch64 (with pkgs; [
