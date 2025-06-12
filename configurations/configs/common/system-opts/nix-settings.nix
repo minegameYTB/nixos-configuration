@@ -36,7 +36,7 @@
 
  system = {
    ### Enable nixos-rebuild-ng to replace nixos-rebuild legacy
-   rebuild.enableNg = true;
+   rebuild.enableNg = config.system.tools.nixos-rebuild.enable;
 
    ### Disable some nixos other command
    tools = {
