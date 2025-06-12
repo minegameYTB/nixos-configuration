@@ -35,7 +35,7 @@
  };
 
  system = {
-   ### Enable nixos-rebuild-ng to replace nixos-rebuild legacy
+   ### Enable nixos-rebuild-ng to replace nixos-rebuild legacy (take "config.system.tools.nixos-rebuild.enable" value to use value defind in this option as true)
    rebuild.enableNg = config.system.tools.nixos-rebuild.enable;
 
    ### Disable some nixos other command
