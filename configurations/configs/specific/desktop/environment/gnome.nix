@@ -69,7 +69,7 @@
    totem                ### Gnome Totem (video)
    gnome-maps           ### Gnome maps
    gnome-connections    ### Gnome connections
-   gnome-console        ### Gnome console (default term)
+   #gnome-console        ### Gnome console (default term)
    gnome-music          ### Gnome Music
    gnome-system-monitor ### Gnome system monitor
    gnome-software       ### Gnome software
