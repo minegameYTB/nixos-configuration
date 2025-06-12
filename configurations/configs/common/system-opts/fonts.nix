@@ -6,6 +6,5 @@
  #  (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
  #];
  
- ### Replace actual syntax on 25.05 by:
- #fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
+ fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
 }
