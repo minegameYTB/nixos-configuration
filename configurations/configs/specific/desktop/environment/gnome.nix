@@ -32,7 +32,7 @@
 
      ### Themes
      ### Override papirus-icon-theme to set folder green
-     (papirus-icon-theme.override { color = "green";})
+     (papirus-icon-theme.override { color = "red";})
 
      ### Gtk theme
      adw-gtk3
