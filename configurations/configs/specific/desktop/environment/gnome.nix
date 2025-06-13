@@ -327,7 +327,7 @@
 
            "org/gnome/TextEditor" = {
              restore-session = false;
-             custom-font = "Monospace 10";
+             custom-font = "Adwaita Mono 10";
              use-system-font = false;
            };
          };
