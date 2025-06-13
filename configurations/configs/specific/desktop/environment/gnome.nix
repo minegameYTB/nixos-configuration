@@ -62,7 +62,7 @@
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
-   geary                ### Geary
+   #geary                ### Geary
    gnome-tour           ### Gnome Tour
    epiphany             ### Gnome Web
    yelp                 ### Gnome help
