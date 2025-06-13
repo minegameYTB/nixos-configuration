@@ -7,7 +7,7 @@
  ### Stylix config
  stylix = {
    enable = true;
-   image = "${inputs.dotfiles-minegameYTB}/wallpapers/Leafs.png";
+   image = "${inputs.catppuccin-wallpapers}/misc/lonely-fish.png";
    
    ### Catppucin wallpaper
    #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
