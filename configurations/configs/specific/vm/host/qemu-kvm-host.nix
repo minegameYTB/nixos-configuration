@@ -4,6 +4,9 @@
  ### Virt-manager
  programs.virt-manager.enable = true;
 
+ ### Vm specific package
+ environment.systemPackages = with pkgs; [ libguestfs ];
+
  ### KSM ram optimisation
  hardware.ksm.enable = true;
 
