@@ -10,6 +10,11 @@
     ### To test a PR on a flake :
     ### github:username/repo?ref=pull/<PR number>/head
     
+    ### Other nixpkgs repos
+    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     ### Other repos
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -37,11 +42,6 @@
       flake = false;
     };
 
-    ### Other nixpkgs repos
-    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
-    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-  
     ### Utilities
     ### Import blocklist as non flake to import list directly on /etc/hosts (abstraction layer with nix)
     blocklist = {
@@ -104,32 +104,38 @@
     };
 
     ### Home-manager desktop config module (not a function call)
-    homeManagerDesktopConfig = { config, pkgs, ... }: {
+    homeManagerDesktopConfig = system: { config, pkgs, ... }: {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       
-      ### Import users as a function
+      ### propagates the usernames given in the “users” array into the “username:” variable (then passed into the imported expr)
       home-manager.users = lib.genAttrs users (username:
-        import ./hm-profiles/desktop-profile-wrapped.nix {
-          inherit username;
-          extraModules = [
-            ./home-manager/configs/specific/nixos/stylix.nix
-          ];
-        }
-      );
+      import ./hm-profiles/desktop-profile-wrapped.nix {
+        inherit username;
+        extraModules = [
+          ./home-manager/configs/specific/nixos/stylix.nix
+        ];
+        ### propagates the type of architecture given in the modules on the configurations in the system variable of this function
+        inherit system;
+      });
       home-manager.backupFileExtension = "bak";
-      home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
+      home-manager.extraSpecialArgs = specialArgs system;
     };
 
     ### Home-manager server config module (not a function call)
-    homeManagerServerConfig = { config, pkgs, ... }: {
+    homeManagerServerConfig = system: { config, pkgs, ... }: {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      ### propagates the usernames given in the “users” array into the “username:” variable (then passed into the imported expr)
       home-manager.users = lib.genAttrs users (username:
-        import ./hm-profiles/server-profile.nix { inherit username; }
-      );
+      import ./hm-profiles/server-profile.nix {
+        inherit username;
+        
+        ### propagates the type of architecture given in the modules on the configurations in the system variable of this function
+        inherit system;
+      });
       home-manager.backupFileExtension = "bak";
-      home-manager.extraSpecialArgs = specialArgs "x86_64-linux";
+      home-manager.extraSpecialArgs = specialArgs system;
     };
 
     ### Create a function named "mkHome" that takes system and username
@@ -192,7 +198,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerDesktopConfig
+          (homeManagerDesktopConfig "x86_64-linux")
         ];
       };
       hp-240 = lib.nixosSystem {
@@ -210,7 +216,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerDesktopConfig
+          (homeManagerDesktopConfig "x86_64-linux")
         ];
       };
       vm-desktop-efi = lib.nixosSystem {
@@ -228,7 +234,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerDesktopConfig
+          (homeManagerDesktopConfig "x86_64-linux")
         ];
       };
       vm-desktop-bios = lib.nixosSystem {
@@ -246,7 +252,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerDesktopConfig
+          (homeManagerDesktopConfig "x86_64-linux")
         ];
       };
       vm-desktop-bios-virtio = lib.nixosSystem {
@@ -264,7 +270,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerDesktopConfig
+          (homeManagerDesktopConfig "x86_64-linux")
         ];
       };
       vm-no-gui-efi = lib.nixosSystem {
@@ -282,7 +288,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerServerConfig
+          (homeManagerServerConfig "x86_64-linux")
 
           ### Add wrapper expression module
           (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
@@ -307,7 +313,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerServerConfig
+          (homeManagerServerConfig "x86_64-linux")
         ];
       };
       vm-no-gui-bios-virtio = lib.nixosSystem {
@@ -325,7 +331,7 @@
           
           ### Home-manager module
           home-manager.nixosModules.home-manager
-          homeManagerServerConfig
+          (homeManagerServerConfig "x86_64-linux")
         ];
       };
     };
