@@ -1,9 +1,8 @@
 { config, pkgs, inputs, ... }:
 
 {
- ### Install theme on home directory
  xdg.configFile = {
-   ### Ghostty
+   ### Install ghostty conf from my dotfiles (see flake.nix for the uri)
    "ghostty/config".source = "${inputs.dotfiles-minegameYTB}/configs/ghostty/config";
  };
  
