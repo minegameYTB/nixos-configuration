@@ -11,6 +11,7 @@
    
    ### X11 and desktop environment
    ../../configurations/configs/specific/desktop/environment/gnome.nix
+   #../../configurations/configs/specific/desktop/environment/plasma.nix
    ../../configurations/configs/specific/desktop/sound.nix
    ../../configurations/configs/specific/desktop/autologin.nix
    #../../configurations/configs/specific/desktop/printer.nix
