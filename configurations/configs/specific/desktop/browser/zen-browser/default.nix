@@ -15,18 +15,6 @@
    zen-browser.packages."${system}".default
  ];
 
- ### Prevent infinite recursion (script make folder who make folder... ect)
- systemd.user.services.create-firejail-zen-dir = {
-   enable = true;
-   description = "Create Firejail private zen directory";
-   serviceConfig = {
-     PATH = "${pkgs.coreutils}/bin";
-     Type = "oneshot";
-     ExecStart = "${pkgs.coreutils}/bin/mkdir -p %h/private/zen";
-   };
-   wantedBy = [ "graphical.target" ];
- };
-
  ### Firejail configuration for zen browser (enabled on ../default.nix)
  programs.firejail.wrappedBinaries = {
    zen = {
@@ -35,7 +23,8 @@
      extraArgs = [
        "--disable-mnt"
        "--private-tmp"
-       "--private=~/private/zen"
+       "--private-dev"
+       "--keep-dev-shm"
      ];
    };
    ### Add zen-beta (could be removed when zen quit beta)
