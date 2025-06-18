@@ -20,13 +20,13 @@
    firefox = {
      ### Refer binary with lib.getExe (see https://nixos.org/manual/nixpkgs/stable/#function-library-lib.meta.getExe-prime)
      executable = "${lib.getExe pkgs.firefox}";
-     #profile = "${pkgs.firejail}/etc/firejail/firefox.profile";
-     extraArgs = [
-       "--disable-mnt"
-       "--private-tmp"
-       "--private-dev"
-       "--keep-dev-shm"
-     ];
+     profile = "${pkgs.firejail}/etc/firejail/firefox.profile";
+     #extraArgs = [
+     #  "--disable-mnt"
+     #  "--private-tmp"
+     #  "--private-dev"
+     #  "--keep-dev-shm"
+     #];
    };
  };
 }
