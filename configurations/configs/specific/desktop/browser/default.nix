@@ -6,7 +6,4 @@
    ./firefox
    ./zen-browser
  ];
-
- ### Enable Firejail (common config)
- programs.firejail.enable = true;
 }

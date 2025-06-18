@@ -17,6 +17,9 @@
  # Allow unfree packages
  nixpkgs.config.allowUnfree = true;
 
+ ### Enable Firejail (common config)
+ programs.firejail.enable = true;
+
 ###----------------------------------------------------------------
 
  # This value determines the NixOS release from which the default
