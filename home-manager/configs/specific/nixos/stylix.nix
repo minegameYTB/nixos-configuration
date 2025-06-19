@@ -7,8 +7,8 @@
      tmux.enable = false;
      ### Remove warning for qtct
      qt = {
-       enable = true;
-       platform = "qtct";
+       enable = false;
+       #platform = "qtct";
      };
    };
  };
