@@ -1,4 +1,4 @@
-{ lib, inputs, config, pkgs, pkgsExtra, zen-browser, ... }:
+{ lib, inputs, config, pkgs, pkgsExtra, ... }:
 
 let
   ### Add external packages
@@ -10,44 +10,43 @@ let
   #'';
 in
 {
-  nixpkgs.overlays = [
-    #(import ../overlays/coreutils-full.nix)
-    #(import ../overlays/appimage-run.nix)
-    #(import ../overlays/gnome-control-center.nix)
-    #(import ../overlays/package-name.nix)
-  ];
+ nixpkgs.overlays = [
+   #(import ../overlays/coreutils-full.nix)
+   #(import ../overlays/appimage-run.nix)
+   #(import ../overlays/gnome-control-center.nix)
+   #(import ../overlays/package-name.nix)
+ ];
 
-  environment.systemPackages = 
-    (with pkgs; [
-      ### CLI
-      wget
-      jq
-      nix-search-cli
-      efibootmgr
-      ntfs3g
-      git
-      ripgrep
-      nvd
-      #nixos-rebuild
-    ])
-    ++
-    (with pkgsExtra.pkgs-unstable; [
-      ### Extra packages always installed (from pkgsExtra)
-      #ventoy
-    ])
-    ++
-    (lib.optionals config.services.xserver.enable (
-      (with pkgs; [
-        ### GUI Packages (only if X11 is enabled)
-        gparted
-        gearlever
-        ghostty
-      ])
-      ++
-      (with pkgsExtra.pkgs-unstable; [
-        ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
-        #bottles
-      ])
-    ));
+ environment.systemPackages = 
+   (with pkgs; [
+     ### CLI
+     wget
+     jq
+     nix-search-cli
+     efibootmgr
+     ntfs3g
+     git
+     ripgrep
+     nvd
+     #nixos-rebuild
+   ])
+   ++
+   (with pkgsExtra.pkgs-unstable; [
+     ### Extra packages always installed (from pkgsExtra)
+     #ventoy
+   ])
+   ++
+   (lib.optionals config.services.xserver.enable (
+     (with pkgs; [
+       ### GUI Packages (only if X11 is enabled)
+       gparted
+       gearlever
+       ghostty
+     ])
+     ++
+     (with pkgsExtra.pkgs-unstable; [
+       ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
+       #bottles
+     ])
+ ));
 }
-

@@ -97,8 +97,12 @@
 
     ### specialArgs
     specialArgs = system: {
-      inherit inputs;
+      ### Add pkgsExtra with system variable in it
       pkgsExtra = pkgsExtra system;
+      
+      ### Import all variable to configuration
+      inherit system;
+      inherit inputs;
       inherit (inputs) nur;
       inherit (inputs) zen-browser;
     };
