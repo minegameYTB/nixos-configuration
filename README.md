@@ -24,7 +24,7 @@ this flake as a structure with mutiple directory
 ```
 * nixos-configuration root 
 |
- \_ configurations (all configuration that discribe settings for NixOS)
+ \_ configurations (all configuration that describe settings for NixOS)
 |
  \_ home-manager (related to home-manager settings (to add package to user level))
 |
