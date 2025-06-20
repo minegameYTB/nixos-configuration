@@ -15,6 +15,7 @@
    ../../configurations/configs/specific/desktop/sound.nix
    ../../configurations/configs/specific/desktop/autologin.nix
    #../../configurations/configs/specific/desktop/printer.nix
+   ../configurations/configs/specific/desktop/browser
    
    ### Services
    ../../configurations/configs/system/services/nix-channel-rm-dirs.nix
