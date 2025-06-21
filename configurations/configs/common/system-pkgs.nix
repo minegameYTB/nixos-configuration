@@ -41,7 +41,7 @@ in
        ### GUI Packages (only if X11 is enabled)
        gparted
        gearlever
-       ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
+       ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
      ])
      ++
      (with pkgsExtra.pkgs-unstable; [
