@@ -31,7 +31,7 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ghostty.url = "github:ghostty-org/ghostty/6bd3d204ea7b9ceba96011d2bcbfa2e07e2c93d5";
+    ghostty.url = "github:ghostty-org/ghostty/9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c";
 
     ### Rice/customization
     catppuccin-wallpapers = {
