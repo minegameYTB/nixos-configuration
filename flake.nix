@@ -101,7 +101,6 @@
       pkgsExtra = pkgsExtra system;
       
       ### Import all variable to configuration
-      inherit system;
       inherit inputs;
       inherit (inputs) nur;
       inherit (inputs) zen-browser;
@@ -119,8 +118,6 @@
         extraModules = [
           ./home-manager/configs/specific/nixos/stylix.nix
         ];
-        ### propagates the type of architecture given in the modules on the configurations in the system variable of this function
-        inherit system;
       });
       home-manager.backupFileExtension = "bak";
       home-manager.extraSpecialArgs = specialArgs system;
@@ -135,8 +132,6 @@
       import ./hm-profiles/server-profile.nix {
         inherit username;
         
-        ### propagates the type of architecture given in the modules on the configurations in the system variable of this function
-        inherit system;
       });
       home-manager.backupFileExtension = "bak";
       home-manager.extraSpecialArgs = specialArgs system;
