@@ -1,4 +1,4 @@
-{ lib, inputs, config, pkgs, pkgsExtra, ... }:
+{ lib, inputs, config, pkgs, pkgsExtra, ghostty, ... }:
 
 let
   ### Add external packages
@@ -41,7 +41,7 @@ in
        ### GUI Packages (only if X11 is enabled)
        gparted
        gearlever
-       ghostty
+       ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
      ])
      ++
      (with pkgsExtra.pkgs-unstable; [

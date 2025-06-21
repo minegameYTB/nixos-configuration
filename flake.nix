@@ -31,6 +31,7 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ghostty.url = "github:ghostty-org/ghostty";
 
     ### Rice/customization
     catppuccin-wallpapers = {
@@ -61,6 +62,7 @@
     zen-browser,
     nur,
     nix-flatpak,
+    ghostty,
     ...
   }@inputs:
   
@@ -104,6 +106,7 @@
       inherit inputs;
       inherit (inputs) nur;
       inherit (inputs) zen-browser;
+      inherit (inputs) ghostty;
     };
 
     ### Home-manager desktop config module (not a function call)
