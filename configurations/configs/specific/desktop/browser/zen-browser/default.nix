@@ -3,9 +3,6 @@
   config,
   pkgs,
   zen-browser,
-  
-  ### Add "system" as a function here (for zen-browser (in firejail section))
-  system,
   ...
 }:
 
@@ -19,7 +16,7 @@
  programs.firejail.wrappedBinaries = {
    zen = {
      ### Refer bin output with lib.getBin (see https://nixos.org/manual/nixpkgs/stable/#function-library-lib.attrsets.getBin)
-     executable = "${lib.getBin zen-browser.packages."${system}".default}/bin/zen";
+     executable = "${lib.getBin zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default}/bin/zen";
      extraArgs = [
        "--disable-mnt"
        "--private-tmp"
@@ -29,7 +26,7 @@
    };
    ### Add zen-beta (could be changed/removed when zen quit beta)
    zen-beta = {
-     executable = "${lib.getBin zen-browser.packages."${system}".default}/bin/zen-beta";
+     executable = "${lib.getBin zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default}/bin/zen-beta";
      extraArgs = config.programs.firejail.wrappedBinaries.zen.extraArgs;
    };
  };
