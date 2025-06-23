@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nurpkgs-repo-minegameYTB, ... }:
 
  let
    ### Add external packages
@@ -6,9 +6,16 @@
   #fhsEnv-shell = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
  in
 {
- home.packages = with pkgs; [
+ home.packages = 
+   (with nurpkgs-repo-minegameYTB.legacyPackages.${pkgs.stdenvNoCC.hostPlatform.system}; [
     ### Custom packages
-    ### Add custom-pkgs from my repo (nurpkgs-repo) through NUR
-    nur.repos.minegameYTB.sshrm
-  ];
+    ### Add custom-pkgs from my repo (nurpkgs-repo)
+    sshrm
+    editor.msedit-rs
+   ])
+   ++
+   (with pkgs; [
+     ### With nur namespace
+     #nur.repos.minegameYTB.sshrm
+]);
 }
