@@ -31,6 +31,7 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
     ghostty.url = "github:ghostty-org/ghostty/9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c";
 
     ### Rice/customization
@@ -63,6 +64,7 @@
     nur,
     nix-flatpak,
     ghostty,
+    nurpkgs-repo-minegameYTB,
     ...
   }@inputs:
   
@@ -107,6 +109,7 @@
       inherit (inputs) nur;
       inherit (inputs) zen-browser;
       inherit (inputs) ghostty;
+      inherit (inputs) nurpkgs-repo-minegameYTB;
     };
 
     ### Home-manager desktop config module (not a function call)
