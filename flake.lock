@@ -505,6 +505,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1750386251,
+        "narHash": "sha256-1ovgdmuDYVo5OUC5NzdF+V4zx2uT8RtsgZahxidBTyw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "076e8c6678d8c54204abcb4b1b14c366835a58bb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1747610100,
         "narHash": "sha256-rpR5ZPMkWzcnCcYYo3lScqfuzEw5Uyfh+R0EKZfroAc=",
         "owner": "NixOS",
@@ -519,7 +535,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1743448293,
         "narHash": "sha256-bmEPmSjJakAp/JojZRrUvNcDX2R5/nuX6bm+seVaGhs=",
@@ -583,6 +599,24 @@
         "type": "github"
       }
     },
+    "nurpkgs-repo-minegameYTB": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1750506479,
+        "narHash": "sha256-YZ18lLZP28XgKKecVBFBwxRgE6Ev7JrZyGDqBdh6JTs=",
+        "owner": "minegameYTB",
+        "repo": "nurpkgs-repo",
+        "rev": "b47f313fbc43e59ff8db72f8509bc5fba84482f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minegameYTB",
+        "repo": "nurpkgs-repo",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "blocklist": "blocklist",
@@ -597,6 +631,7 @@
         "nixpkgs-24-11": "nixpkgs-24-11",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
+        "nurpkgs-repo-minegameYTB": "nurpkgs-repo-minegameYTB",
         "stylix": "stylix",
         "zen-browser": "zen-browser"
       }
@@ -613,7 +648,7 @@
         "git-hooks": "git-hooks",
         "gnome-shell": "gnome-shell",
         "home-manager": "home-manager_2",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "nur": "nur_2",
         "systems": "systems_2",
         "tinted-foot": "tinted-foot",
@@ -794,7 +829,7 @@
     "zen-browser": {
       "inputs": {
         "home-manager": "home-manager_3",
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "lastModified": 1750436703,
