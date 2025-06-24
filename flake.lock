@@ -560,11 +560,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1750778175,
-        "narHash": "sha256-sGKb3+JlqcYj69VMxI3B1S8J1JnWeULg4TGlfzhNNsE=",
+        "lastModified": 1750783406,
+        "narHash": "sha256-Q6jjmmzMtwfavdESojT3A9GKSjDURqzz/aBFkwxPRXQ=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "8eecf34759012b158f74dd3eadfda81559578bf7",
+        "rev": "b73c9d3ed12b6e6770e307ab9bc252978a978c23",
         "type": "github"
       },
       "original": {
@@ -604,11 +604,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1750782838,
-        "narHash": "sha256-zTczknJnDKmyjPer85izPlzWBfZ6UTTaUhdL6EPauRo=",
+        "lastModified": 1750784126,
+        "narHash": "sha256-urU3G8hP0CmuR66cFxmP4nBpMDUbzPOmG8CSvIK5kaE=",
         "owner": "minegameYTB",
         "repo": "nurpkgs-repo",
-        "rev": "e0a3a6aceb3a288ccc2b6b0d72220f42d8f271a2",
+        "rev": "a48c9c8cd4538681cb69f85dc4c0c457f9a90ac4",
         "type": "github"
       },
       "original": {
