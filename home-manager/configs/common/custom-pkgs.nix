@@ -10,13 +10,13 @@
    (with pkgs; [
      ### With nur namespace (nixpkgs stable)
      #nur.repos.minegameYTB.sshrm
-     nur.repos.minegameYTB.editor.msedit-rs
+     #nur.repos.minegameYTB.editor.msedit-rs
  ])
  ++
    (with nurpkgs-repo-minegameYTB.legacyPackages.${pkgs.stdenvNoCC.hostPlatform.system}; [
      ### Custom packages
      ### Add custom-pkgs from my repo (nurpkgs-repo) (nixpkgs unstable)
      sshrm
-     #editor.msedit-rs
+     editor.msedit-rs
  ]);
 }
