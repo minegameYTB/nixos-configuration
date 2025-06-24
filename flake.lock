@@ -560,11 +560,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1750783406,
-        "narHash": "sha256-Q6jjmmzMtwfavdESojT3A9GKSjDURqzz/aBFkwxPRXQ=",
+        "lastModified": 1750787409,
+        "narHash": "sha256-OWjL6q/6Oaoo/lDfV54tgl1PyNBuY2l52IGWprzOOMM=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "b73c9d3ed12b6e6770e307ab9bc252978a978c23",
+        "rev": "6a43e74038f08600380f827d729a40885ed27f13",
         "type": "github"
       },
       "original": {
@@ -604,11 +604,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1750784126,
+        "lastModified": 1750790685,
         "narHash": "sha256-urU3G8hP0CmuR66cFxmP4nBpMDUbzPOmG8CSvIK5kaE=",
         "owner": "minegameYTB",
         "repo": "nurpkgs-repo",
-        "rev": "a48c9c8cd4538681cb69f85dc4c0c457f9a90ac4",
+        "rev": "e226de8e1270f44c4ef4f8fba403b1795fb1dc63",
         "type": "github"
       },
       "original": {
@@ -658,11 +658,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1750776042,
-        "narHash": "sha256-H4IJI1OpyNk+hdw+gtLGBNNXJ6ya7pngDPAS/2IfaIE=",
+        "lastModified": 1750788728,
+        "narHash": "sha256-InlwYaPamxiS3ShOo2w9ZDNRo6P04mmIFtqUZT9rSEM=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "cdb8217c65f6122c9fbc57b0e54a853e11c1a661",
+        "rev": "a46ee11cf5e6ca21cd0c7c5ad0020f239a639510",
         "type": "github"
       },
       "original": {
