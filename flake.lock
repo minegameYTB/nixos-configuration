@@ -604,11 +604,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1750790685,
+        "lastModified": 1750791014,
         "narHash": "sha256-urU3G8hP0CmuR66cFxmP4nBpMDUbzPOmG8CSvIK5kaE=",
         "owner": "minegameYTB",
         "repo": "nurpkgs-repo",
-        "rev": "e226de8e1270f44c4ef4f8fba403b1795fb1dc63",
+        "rev": "04ec2786fc1fbf557db74a58e6aa74664f43f0e6",
         "type": "github"
       },
       "original": {
