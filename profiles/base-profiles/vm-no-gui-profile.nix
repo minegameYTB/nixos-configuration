@@ -9,6 +9,9 @@
    ../../configurations/configs/networking/server-config.nix
    ../../configurations/configs/system/tmp-on-disk.nix
    
+   ### Option/modules logic implementation
+   ../../configurations/modules
+
    ### Vm specific option
    ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
    

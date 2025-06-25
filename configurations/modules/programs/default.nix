@@ -1,4 +1,4 @@
-{ lib, config, pkgs, pkgsExtra, ... }
+{ lib, config, pkgs, pkgsExtra, ... }:
 
 {
  ### Import all expression related to programs
