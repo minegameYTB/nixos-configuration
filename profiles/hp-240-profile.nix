@@ -13,9 +13,6 @@
    ../configurations/configs/system/tmp-on-disk.nix
    #../configurations/configs/bootloader/grub2/grub2-efi.nix
    #../configurations/configs/specific/laptop/power-mgmt.nix
-   
-   ### Option/modules logic implementation
-   ../configurations/modules
 
    ### X11 and desktop environment
    ../configurations/configs/specific/desktop/environment/gnome.nix
