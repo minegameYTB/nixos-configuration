@@ -7,27 +7,9 @@
 }:
 
 {
- ### Install zen-browser from inputs.zen-browser (specialArgs)
- environment.systemPackages = with pkgs; [
-   zen-browser.packages."${system}".default
- ];
-
- ### Firejail configuration for zen browser (enabled on configuration.nix)
- programs.firejail.wrappedBinaries = {
-   zen = {
-     ### Refer bin output with lib.getBin (see https://nixos.org/manual/nixpkgs/stable/#function-library-lib.attrsets.getBin)
-     executable = "${lib.getBin zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default}/bin/zen";
-     extraArgs = [
-       "--disable-mnt"
-       "--private-tmp"
-       "--private-dev"
-       "--keep-dev-shm"
-     ];
-   };
-   ### Add zen-beta (could be changed/removed when zen quit beta)
-   zen-beta = {
-     executable = "${lib.getBin zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default}/bin/zen-beta";
-     extraArgs = config.programs.firejail.wrappedBinaries.zen.extraArgs;
-   };
+ ### Install zen-browser from custom modules (see /configurations/modules/programs/zen-browser-modules.nix for all options)
+ programs.zen-browser = {
+   enable = true;
+   enableHardening = true;
  };
 }
