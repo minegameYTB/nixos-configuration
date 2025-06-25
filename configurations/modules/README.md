@@ -2,7 +2,13 @@
 
 to use declared modules, when you created a new profile (configuration) for a new machine
 
-add this line to (nixos-configuration root)/profiles/<machine name>-profiles.nix : "../configurations/modules" or "../../configurations/modules" if the targeted machine profiles is in (nixos-configuration root)/profiles/base-profiles
+add this line to (nixos-configuration root)/profiles/<machine name>-profiles.nix : 
+`../configurations/modules` or `../../configurations/modules`
+
+(you can add this module to configuration.nix (common configuration to all machine for this configuration)):
+`./modules`
+
+if the targeted machine profiles is in (nixos-configuration root)/profiles/base-profiles
 
 (see flake.nix for more details for implementing new profiles)
 
