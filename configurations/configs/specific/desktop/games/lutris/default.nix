@@ -6,6 +6,7 @@
  environment.systemPackages = with pkgsExtra.pkgs-unstable; [
    (lutris.override {
      extraPkgs = pkgs: [ wineWowPackages.staging ];
+     extraLibraries = pkgs: [ libadwaita gtk4 ];
    })
  ];
 }
