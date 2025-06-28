@@ -12,6 +12,7 @@
    ./configs/common/system-pkgs.nix    ### System packages
    ./configs/common/timezone.nix       ### Timezone
    ./configs/common/security.nix       ### Security
+   ./modules                           ### Modules implementation
  ];
    
  # Allow unfree packages
