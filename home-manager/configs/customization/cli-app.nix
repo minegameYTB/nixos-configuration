@@ -21,6 +21,9 @@
    extraPackages = with pkgs; [
      xclip 
      wl-clipboard
+     
+     ### For Telescope
+     fd
    ];
    plugins = with pkgs.vimPlugins; [
      ### Install plugins to use with this configuration
@@ -28,7 +31,10 @@
      lualine-nvim
      bufferline-nvim
      mini-indentscope
-     #nvim-treesitter.withAllGrammars
+     
+     ### Telescope dependency
+     telescope-nvim
+     nvim-treesitter.withAllGrammars
    ];
    extraLuaConfig = ''
      -- Nvim config
@@ -38,6 +44,7 @@
      vim.cmd("set shiftwidth=2")
      vim.o.autoindent = true
 
+     -- Theme
      vim.cmd('colorscheme tokyonight-night')
 
      -- mini-indentscope
@@ -60,6 +67,30 @@
      -- BufferLine config
      vim.opt.termguicolors = true
      require("bufferline").setup{}
+
+     -- Telescope
+     vim.keymap.set("n", "<space>fd", require('telescope.builtin').find_files)
+     require('telescope').setup{
+       defaults = {
+         mappings = {
+           i = {
+            -- Exemple de mapping personnalisé
+            ['<C-j>'] = require('telescope.actions').move_selection_next,
+            ['<C-k>'] = require('telescope.actions').move_selection_previous,
+           },
+         },
+         file_ignore_patterns = {
+           "node_modules", "venv", "build", "dist", "*.git", "*.pyc", "*.o", "*.so"
+         },
+         -- Other options
+       },
+       pickers = {
+         -- pickers config
+       },
+       extensions = {
+         -- extensions
+       }
+     }
    '';
  };
 
