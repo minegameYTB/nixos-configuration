@@ -35,6 +35,9 @@
      ### Telescope dependency
      telescope-nvim
      nvim-treesitter.withAllGrammars
+
+     ### Aesthetic plugin
+     dashboard-nvim
    ];
    extraLuaConfig = ''
      -- Nvim config
@@ -70,26 +73,11 @@
 
      -- Telescope
      vim.keymap.set("n", "<space>fd", require('telescope.builtin').find_files)
-     require('telescope').setup{
-       defaults = {
-         mappings = {
-           i = {
-            -- Exemple de mapping personnalisé
-            ['<C-j>'] = require('telescope.actions').move_selection_next,
-            ['<C-k>'] = require('telescope.actions').move_selection_previous,
-           },
-         },
-         file_ignore_patterns = {
-           "node_modules", "venv", "build", "dist", "*.git", "*.pyc", "*.o", "*.so"
-         },
-         -- Other options
-       },
-       pickers = {
-         -- pickers config
-       },
-       extensions = {
-         -- extensions
-       }
+    
+     -- Nvim dashboard
+     require('dashboard').setup {
+       -- config
+       theme = 'hyper'
      }
    '';
  };
