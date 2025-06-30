@@ -21,7 +21,6 @@
    extraPackages = with pkgs; [
      xclip 
      wl-clipboard
-     gcc
    ];
    plugins = with pkgs.vimPlugins; [
      ### Install plugins to use with this configuration
