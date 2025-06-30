@@ -12,7 +12,7 @@
 
  programs.neovim = {
    enable = true;
-   package = pkgsExtra.pkgs-24-11.neovim-unwrapped;
+   #package = pkgsExtra.pkgs-24-11.neovim-unwrapped;
    viAlias = true;
    vimAlias = true;
    withPython3 = false;
