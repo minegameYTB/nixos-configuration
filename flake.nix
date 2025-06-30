@@ -32,7 +32,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
-    ghostty.url = "github:ghostty-org/ghostty/9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c";
+    ghostty.url = "github:ghostty-org/ghostty/747076abbf599015df0d42eff1037d370be5cf88";
 
     ### Rice/customization
     catppuccin-wallpapers = {
