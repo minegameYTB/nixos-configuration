@@ -15,7 +15,7 @@ in
      github-desktop
 
      ### Libreoffice (and langpack)
-     libreoffice-fresh
+     #libreoffice-fresh
      hunspellDicts.fr-any
    ])
    ### All arch (pkgs from unstable branch)
@@ -31,7 +31,7 @@ in
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
      spotify
-     #onlyoffice-desktopeditors
+     onlyoffice-desktopeditors
      prismlauncher
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
