@@ -183,6 +183,7 @@
        inherit inputs nur;
        pkgsExtra = pkgsExtra system;
        inherit (inputs) zen-browser;
+       inherit (inputs) nurpkgs-repo-minegameYTB;
      };
    };
 
