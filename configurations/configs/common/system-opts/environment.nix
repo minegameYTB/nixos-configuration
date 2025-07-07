@@ -15,17 +15,17 @@
    df = "${pkgs.duf}/bin/duf -hide special";
 
    ### Original core utilities tools
-   "cat.ori" = "${pkgs.coreutils}/bin/cat";
-   "ls.ori" = "${pkgs.coreutils}/bin/ls";
-   "df.ori" = "${pkgs.coreutils}/bin/df";
+   "cat.ori" = "/run/current-system/sw/bin/cat";
+   "ls.ori" = "/run/current-system/sw/bin/ls";
+   "df.ori" = "/run/current-system/sw/bin/df";
    
    ### Prevent to use internal which config in zsh (shows aliases which path)
-   which = "${pkgs.which}/bin/which";
+   which = "/run/current-system/sw/bin/which";
    
    ### Other aliases
-   w-df = "${pkgs.procps}/bin/watch ${pkgs.duf}/bin/duf -hide special";
+   w-df = "/run/current-system/sw/bin/watch ${pkgs.duf}/bin/duf -hide special";
    ff = "${pkgs.fastfetch}/bin/fastfetch";
-   nix = "nix -v --refresh";
+   nix = "/run/current-system/sw/bin/nix -v --refresh";
    
    ### Git aliases
    gadd = "git add";
@@ -40,7 +40,7 @@
    ssh = "TERM=xterm-256color ssh";
 
    ### This alias is just inspired from macOS "open" command
-   open = "xdg-open";
+   open = "/run/current-system/sw/bin/xdg-open";
  };
  
   ### gnu nano
