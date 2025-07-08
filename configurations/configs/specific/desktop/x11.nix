@@ -32,6 +32,13 @@
    ATTRS{name}=="DualSense Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
  '';
 
+ ### IBUS
+ i18n.inputMethod = {
+   enable = true;
+   type = "ibus";
+   ibus.engines = with pkgs.ibus-engines; [ anthy hangul mozc ];
+ };
+
 # Enable touchpad support (enabled default in most desktopManager).
 # services.xserver.libinput.enable = true;
 
