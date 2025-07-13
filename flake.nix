@@ -15,6 +15,9 @@
    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+   ### Temporairy use PR for deezer-enhanced
+   nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
+
    ### Other repos
    home-manager = {
      url = "github:nix-community/home-manager/release-25.05";
@@ -59,6 +62,7 @@
    nixpkgs-unstable,
    nixpkgs-24-11,
    nixpkgs-23-11,
+   nixpkgs-pr,
    home-manager,
    zen-browser,
    nur,
@@ -123,6 +127,10 @@
        config = nixpkgsConfig;
      };
      pkgs-unstable = import nixpkgs-unstable {
+       inherit system;
+       config = nixpkgsConfig;
+     };
+     pkgs-pr = import nixpkgs-pr {
        inherit system;
        config = nixpkgsConfig;
      };
