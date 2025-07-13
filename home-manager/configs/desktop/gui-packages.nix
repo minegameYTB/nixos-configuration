@@ -46,6 +46,10 @@ in
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
    ])
+   ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-pr; [
+     ### Temporairy add deezer-enhanced here
+     deezer-enhanced
+   ])
    ### Packages from pkgs-unstable for aarch64-linux 
    ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here

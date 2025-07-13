@@ -471,13 +471,29 @@
         "type": "github"
       }
     },
-    "nixpkgs-unstable": {
+    "nixpkgs-pr": {
       "locked": {
-        "lastModified": 1751792365,
-        "narHash": "sha256-J1kI6oAj25IG4EdVlg2hQz8NZTBNYvIS0l4wpr9KcUo=",
+        "lastModified": 1752406582,
+        "narHash": "sha256-IkWhD/eyqiSXWJZ1cZxFRrOFmrW7OLXwH4QPs2IZ/zg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1fd8bada0b6117e6c7eb54aad5813023eed37ccb",
+        "rev": "e7584413738ffb09103eb85d0ac261ae0cd776ef",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "pull/424686/head",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1751984180,
+        "narHash": "sha256-LwWRsENAZJKUdD3SpLluwDmdXY9F45ZEgCb0X+xgOL0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9807714d6944a957c2e036f84b0ff8caf9930bc0",
         "type": "github"
       },
       "original": {
@@ -628,6 +644,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-23-11": "nixpkgs-23-11",
         "nixpkgs-24-11": "nixpkgs-24-11",
+        "nixpkgs-pr": "nixpkgs-pr",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
         "nurpkgs-repo-minegameYTB": "nurpkgs-repo-minegameYTB",
