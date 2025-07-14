@@ -320,6 +320,11 @@
              categories = [ "Wine" "X-Wine" "Wine-Programs-Accessories" ];
            };
 
+           "org/gnome/desktop/app-folders/folders/waydroid" = {
+             name = "Waydroid";
+             cathegorie = [ "X-WayDroid-App" ];
+           };
+
            "org/gnome/nautilus/preferences" = {
              show-create-link = true;
              show-delete-permanently = true;
