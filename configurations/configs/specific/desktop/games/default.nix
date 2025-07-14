@@ -7,5 +7,6 @@
    ./lutris
    #./heroic
    ./prismlauncher
+   ./waydroid
  ];
 }
