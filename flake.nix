@@ -26,7 +26,7 @@
    zen-browser.url = "github:0xc000022070/zen-browser-flake";
    nur = {
      url = "github:nix-community/nur";
-     inputs.nixpkgs.follows = "nixpkgs";
+     inputs.nixpkgs.follows = "nixpkgs-unstable";
    };
    stylix.url = "github:danth/stylix/release-25.05";
    nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
@@ -34,8 +34,8 @@
      url = "github:nix-community/nix-index-database";
      inputs.nixpkgs.follows = "nixpkgs";
    };
-   nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
-   ghostty.url = "github:ghostty-org/ghostty/9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c";
+   #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
+   ghostty.url = "github:ghostty-org/ghostty/34af1feed3155c07a422ffab9487a48093703d81";
 
    ### Rice/customization
    catppuccin-wallpapers = {
@@ -68,7 +68,7 @@
    nur,
    nix-flatpak,
    ghostty,
-   nurpkgs-repo-minegameYTB,
+   #nurpkgs-repo-minegameYTB,
    ...
  }@inputs:
 
@@ -140,7 +140,8 @@
    specialArgs = system: {
      inherit inputs;
      pkgsExtra = pkgsExtra system;
-     inherit (inputs) zen-browser ghostty nurpkgs-repo-minegameYTB;
+     inherit (inputs) zen-browser ghostty; 
+     #inherit (inputs) nurpkgs-repo-minegameYTB;
    };
 
    ### Home Manager desktop config (non-function call)
