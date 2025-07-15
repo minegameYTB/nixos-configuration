@@ -232,17 +232,17 @@
         "zon2nix": "zon2nix"
       },
       "locked": {
-        "lastModified": 1750540612,
-        "narHash": "sha256-43YLR3wq9bNYnxa4gu5ZqvyGhu3NxSySQha6eb9QjVY=",
+        "lastModified": 1752548156,
+        "narHash": "sha256-Oe5eoryfiY5TMqojxRWqM7d7GFnew2kiVfP8z4YC3Co=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c",
+        "rev": "34af1feed3155c07a422ffab9487a48093703d81",
         "type": "github"
       },
       "original": {
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "9d922e1c629dcd01b1bb2c7109f40305e5ac9c2c",
+        "rev": "34af1feed3155c07a422ffab9487a48093703d81",
         "type": "github"
       }
     },
@@ -436,22 +436,6 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1751180975,
-        "narHash": "sha256-BKk4yDiXr4LdF80OTVqYJ53Q74rOcA/82EClXug8xsY=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "a48741b083d4f36dd79abd9f760c84da6b4dc0e5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_4": {
-      "locked": {
         "lastModified": 1751211869,
         "narHash": "sha256-1Cu92i1KSPbhPCKxoiVG5qnoRiKTgR5CcGSRyLpOd7Y=",
         "owner": "NixOS",
@@ -466,7 +450,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1743448293,
         "narHash": "sha256-bmEPmSjJakAp/JojZRrUvNcDX2R5/nuX6bm+seVaGhs=",
@@ -486,7 +470,7 @@
       "inputs": {
         "flake-parts": "flake-parts",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unstable"
         ]
       },
       "locked": {
@@ -529,24 +513,6 @@
         "type": "github"
       }
     },
-    "nurpkgs-repo-minegameYTB": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_3"
-      },
-      "locked": {
-        "lastModified": 1751729183,
-        "narHash": "sha256-lCaURrGqggW4BAoRajB9bb7V00+GhhOUTnFZuEzrJ38=",
-        "owner": "minegameYTB",
-        "repo": "nurpkgs-repo",
-        "rev": "4a77f7b72716e470c2e678a15af0cdad014196b5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "minegameYTB",
-        "repo": "nurpkgs-repo",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "blocklist": "blocklist",
@@ -562,7 +528,6 @@
         "nixpkgs-pr": "nixpkgs-pr",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
-        "nurpkgs-repo-minegameYTB": "nurpkgs-repo-minegameYTB",
         "stylix": "stylix",
         "zen-browser": "zen-browser"
       }
@@ -576,7 +541,7 @@
         "firefox-gnome-theme": "firefox-gnome-theme",
         "flake-parts": "flake-parts_2",
         "gnome-shell": "gnome-shell",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_3",
         "nur": "nur_2",
         "systems": "systems_2",
         "tinted-foot": "tinted-foot",
@@ -736,7 +701,7 @@
     "zen-browser": {
       "inputs": {
         "home-manager": "home-manager_2",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1752488611,
@@ -755,7 +720,8 @@
     "zig": {
       "inputs": {
         "flake-compat": [
-          "ghostty"
+          "ghostty",
+          "flake-compat"
         ],
         "flake-utils": [
           "ghostty",
@@ -801,8 +767,8 @@
       },
       "original": {
         "owner": "jcollie",
-        "ref": "56c159be489cc6c0e73c3930bd908ddc6fe89613",
         "repo": "zon2nix",
+        "rev": "56c159be489cc6c0e73c3930bd908ddc6fe89613",
         "type": "github"
       }
     }
