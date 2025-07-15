@@ -9,5 +9,6 @@
  ### Add pyclip
  environment.systemPackages = with pkgs; [
    python313Packages.pyclip
+   nur.repos.ataraxiasjel.waydroid-script
  ];
 }
