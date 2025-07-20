@@ -53,6 +53,10 @@
      url = "github:StevenBlack/hosts";
      flake = false;
    };
+   lanzaboote = {
+     url = "github:nix-community/lanzaboote/v0.4.2";
+     inputs.nixpkgs.follows = "nixpkgs";
+   };
  };
 
  outputs = {
@@ -69,6 +73,7 @@
    nix-flatpak,
    ghostty,
    #nurpkgs-repo-minegameYTB,
+   lanzaboote,
    ...
  }@inputs:
 
