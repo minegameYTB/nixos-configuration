@@ -35,5 +35,8 @@
    ### NixOS configuration module (distant flake)
    ### import default.nix from this directory ↓
    ../configurations/config-modules
+
+   ### Add lanzaboote (separate module)
+   ../configurations/config-modules/lanzaboote
  ];
 }
