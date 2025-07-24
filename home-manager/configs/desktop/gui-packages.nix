@@ -11,7 +11,7 @@ in
      vlc
      amberol
      pika-backup
-     melonDS
+     #melonDS
      github-desktop
 
      ### Libreoffice (and langpack)
@@ -25,7 +25,7 @@ in
    ])
    ### Packages from pkgs-24.11 (all arch)
    ++ (with pkgsExtra.pkgs-24-11; [
-     rpi-imager
+     #rpi-imager
    ])
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
@@ -40,7 +40,7 @@ in
    ])
    ### Packages from nixpkgs-23-11 for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-23-11; [
-     citra
+     #citra
    ])
    ### Packages from pkgs-unstable for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
