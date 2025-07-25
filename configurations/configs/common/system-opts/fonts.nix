@@ -6,5 +6,10 @@
  #  (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
  #];
  
- fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
+ fonts.packages = with pkgs; [ 
+   nerd-fonts.jetbrains-mono
+
+   ### Japanese font
+   noto-fonts-cjk-sans
+ ];
 }
