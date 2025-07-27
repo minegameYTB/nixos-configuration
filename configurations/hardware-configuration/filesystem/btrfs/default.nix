@@ -1,10 +1,6 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
- imports = [ 
-   (modulesPath + "/installer/scan/not-detected.nix")
- ];
-
  ### Mount Point
  fileSystems."/" = { 
    #device = "/dev/disk/by-label/nixos-root";
@@ -27,7 +23,8 @@
 
  boot.supportedFilesystems = {
    btrfs = true;
-   ext4 = true; 
+   ext4 = true;
+   zfs = lib.mkForce false;
  };
 
  ### Network stack
