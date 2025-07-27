@@ -8,7 +8,7 @@ in
   options.programs.zen-browser = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Whether to enable the Zen web browser.";
     };
     package = lib.mkOption {
