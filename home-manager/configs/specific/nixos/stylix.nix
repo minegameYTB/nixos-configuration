@@ -10,12 +10,7 @@
        enable = false;
        #platform = "qtct";
      };
-     cava.enable = true;
    };
  };
 
- ### specific software to install
- home.packages = with pkgs; [
-   cava
- ];
 }
