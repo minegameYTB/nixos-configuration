@@ -7,7 +7,7 @@
  ### Stylix config
  stylix = {
    enable = true;
-   image = "${inputs.catppuccin-wallpapers}/misc/lonely-fish.png";
+   image = "${inputs.dotfiles-minegameYTB}/wallpapers/Custom/Matt-manual-upscale-1920x1080.png";
    
    ### Catppucin wallpaper
    #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
