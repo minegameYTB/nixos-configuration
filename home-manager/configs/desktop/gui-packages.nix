@@ -13,6 +13,7 @@ in
      pika-backup
      #melonDS
      github-desktop
+     tagainijisho
 
      ### Libreoffice (and langpack)
      #libreoffice-fresh
