@@ -1,4 +1,4 @@
-{ config, pkgs, pkgsExtra, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
  ### Import stylix modules like a expression
@@ -21,15 +21,15 @@
    fonts = {
      sansSerif = {
        ### Use pkgsExtra.pkgs-unstable to get adwaita-fonts (even if i use nixpkgs stable by default)
-       package = pkgsExtra.pkgs-unstable.adwaita-fonts;
+       package = pkgs.adwaita-fonts;
        name = "Adwaita Sans";
      };
      serif = {
-       package = pkgsExtra.pkgs-unstable.adwaita-fonts;
+       package = pkgs.adwaita-fonts;
        name = "Adwaita Sans";
      };
      monospace = {
-       package = pkgsExtra.pkgs-unstable.adwaita-fonts;
+       package = pkgs.adwaita-fonts;
        name = "Adwaita Mono";
      };
      sizes.applications = 11;
