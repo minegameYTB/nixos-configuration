@@ -15,6 +15,7 @@
      auto-optimise-store = true;
      experimental-features = [ "nix-command" "flakes" ];
      max-jobs = 2;
+     cores = 2;
      trusted-users = [ "@wheel" ];
      trusted-substituters = [
        "https://hydra.nixos.org/"
