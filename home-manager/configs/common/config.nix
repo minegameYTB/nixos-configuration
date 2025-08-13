@@ -145,4 +145,10 @@
  ### Prevent zsh to show question for .zshrc
  home.file.".zshrc".text = "### this file is here to prevent zsh to show question regarding this file.";
 
+ ### Fonts
+ home.packages = with pkgs; [
+   nerd-fonts.jetbrains-mono
+   noto-fonts-cjk-sans
+ ];
+ fonts.fontconfig.enable = true;
 }
