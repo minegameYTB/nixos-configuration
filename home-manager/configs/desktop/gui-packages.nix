@@ -15,6 +15,9 @@ in
      github-desktop
      tagainijisho
 
+     ### Zen browser
+     zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
+
      ### Libreoffice (and langpack)
      #libreoffice-fresh
      hunspellDicts.fr-any
