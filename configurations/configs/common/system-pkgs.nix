@@ -41,6 +41,9 @@ in
        ### GUI Packages (only if X11 is enabled)
        gparted
        gearlever
+       onlyoffice-desktopeditors
+
+       ### Ghostty
        ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
      ])
      ++
