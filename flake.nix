@@ -180,12 +180,19 @@
        ({ config, pkgs, ... }: {
          nixpkgs.overlays = [ nur.overlays.default ];
          home.shellAliases = {
+           ### Aliases
            nix = "nix --refresh -v --cores 2";
            home-manager = "home-manager -b bak";
+
+           ### Core utilities remplacement
            ls = "${pkgs.lsd}/bin/lsd";
            cat = "${pkgs.bat}/bin/bat";
+           df = "${pkgs.duf}/bin/duf -hide special";
+
+           ### Original core utilities (from nixpkgs)
            "ls.ori" = "${pkgs.coreutils}/bin/ls";
            "cat.ori" = "${pkgs.coreutils}/bin/cat";
+           "df.ori" = "${pkgs.coreutils}/bin/df";
          };
        })
        (import ./hm-profiles/desktop-profile.nix { inherit username; })
