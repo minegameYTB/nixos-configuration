@@ -14,16 +14,19 @@
    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+   
+   ### Upstream nixpkgs repo (pin git hash)
+   nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
 
-   ### Temporairy use PR for deezer-enhanced
-   nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
+   ### Temporairy use PR 
+   #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
    ### Other repos
    home-manager = {
      url = "github:nix-community/home-manager/release-25.05";
      inputs.nixpkgs.follows = "nixpkgs";
    };
-   zen-browser.url = "github:0xc000022070/zen-browser-flake/";
+   zen-browser.url = "github:0xc000022070/zen-browser-flake";
    nur = {
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs";
@@ -66,7 +69,8 @@
    nixpkgs-unstable,
    nixpkgs-24-11,
    nixpkgs-23-11,
-   nixpkgs-pr,
+   nixpkgs-master,
+   #nixpkgs-pr,
    home-manager,
    zen-browser,
    nur,
@@ -135,10 +139,14 @@
        inherit system;
        config = nixpkgsConfig;
      };
-     pkgs-pr = import nixpkgs-pr {
+     pkgs-master = import nixpkgs-master {
        inherit system;
        config = nixpkgsConfig;
      };
+     #pkgs-pr = import nixpkgs-pr {
+     #  inherit system;
+     #  config = nixpkgsConfig;
+     #};
    };
 
    ### Shared specialArgs for all configurations
