@@ -25,7 +25,6 @@ in
      nix-search-cli
      efibootmgr
      ntfs3g
-     git
      ripgrep
      nvd
      #nixos-rebuild

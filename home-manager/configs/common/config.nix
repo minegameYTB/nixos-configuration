@@ -15,6 +15,18 @@
  ### Git
  programs.git = {
    enable = true;
+   package = let
+     ### Define flags and change name of the git package
+     gitMinimal = pkgs.gitMinimal.override {
+       withManual = true;
+
+       ### Skip install check
+       doInstallCheck = false;
+     };
+     gitMinimalCustom = gitMinimal.overrideAttrs (oldAttrs: {
+       pname = "gitMinimal-custom";
+     });
+   in gitMinimalCustom;
    userName  = "Minegame YTB";
    userEmail = "53137994+minegameYTB@users.noreply.github.com";
    ignores = [
