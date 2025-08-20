@@ -486,19 +486,19 @@
         "type": "github"
       }
     },
-    "nixpkgs-pr": {
+    "nixpkgs-master": {
       "locked": {
-        "lastModified": 1752572863,
-        "narHash": "sha256-jGyAG38uDCvpiHl+c/PzItlwBwcimvc937ga9NEVDUg=",
+        "lastModified": 1755603928,
+        "narHash": "sha256-i8Bbz1enCdBMHtIiHeINzBucImCSqM1CXrFES4flBhE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5b0ee73c31b024b285e06a9e02e13104837c1dbc",
+        "rev": "034c0f3a92afae7fd757537058c060720844c004",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "pull/424686/head",
         "repo": "nixpkgs",
+        "rev": "034c0f3a92afae7fd757537058c060720844c004",
         "type": "github"
       }
     },
@@ -669,7 +669,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-23-11": "nixpkgs-23-11",
         "nixpkgs-24-11": "nixpkgs-24-11",
-        "nixpkgs-pr": "nixpkgs-pr",
+        "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
         "stylix": "stylix",
