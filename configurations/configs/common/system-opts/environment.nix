@@ -36,9 +36,6 @@
    gbr = "git branch";
    gft = "git fetch";
 
-   ### Use xterm-256color on runtime command
-   ssh = "TERM=xterm-256color ssh";
-
    ### This alias is just inspired from macOS "open" command
    open = "/run/current-system/sw/bin/xdg-open";
  };
