@@ -16,7 +16,7 @@
    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
    
    ### Upstream nixpkgs repo (pin git hash)
-   nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
+   #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
 
    ### Temporairy use PR 
    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
@@ -63,21 +63,28 @@
  };
 
  outputs = {
+   ### Primary sources
    self,
    nixpkgs,
-   stylix,
+
+   ### Other nixpkgs sources
    nixpkgs-unstable,
    nixpkgs-24-11,
    nixpkgs-23-11,
-   nixpkgs-master,
+   #nixpkgs-master,
    #nixpkgs-pr,
+
+   ### Other sources
+   stylix,
    home-manager,
-   zen-browser,
    nur,
    nix-flatpak,
-   ghostty,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
+
+   ### Sources for 3rd part software
+   ghostty,
+   zen-browser,
    ...
  }@inputs:
 
@@ -139,10 +146,10 @@
        inherit system;
        config = nixpkgsConfig;
      };
-     pkgs-master = import nixpkgs-master {
-       inherit system;
-       config = nixpkgsConfig;
-     };
+     #pkgs-master = import nixpkgs-master {
+     #  inherit system;
+     #  config = nixpkgsConfig;
+     #};
      #pkgs-pr = import nixpkgs-pr {
      #  inherit system;
      #  config = nixpkgsConfig;
