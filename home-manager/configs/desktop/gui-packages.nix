@@ -48,16 +48,18 @@ in
    ### Packages from pkgs-unstable for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
+     deezer-enhanced
    ])
+   ### Packages from pkgs-unstable for aarch64-linux
+   ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
+     ### unstable pkgs here
+   ]);
+   ### disable in flake.nix for the moment
    #++ lib.optionals isX86_64 (with pkgsExtra.pkgs-pr; [
      ### Temporairy add pkgs-pr repo here
      #deezer-enhanced
    #])
-   ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-master; [
-     deezer-enhanced
-   ])
-   ### Packages from pkgs-unstable for aarch64-linux 
-   ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
-     ### unstable pkgs here
-   ]);
+   #++ lib.optionals isX86_64 (with pkgsExtra.pkgs-master; [
+   #  deezer-enhanced
+   #]);
 }
