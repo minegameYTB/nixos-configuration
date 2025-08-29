@@ -21,11 +21,9 @@ in
    (with pkgs; [
      ### CLI
      wget
-     jq
      nix-search-cli
      efibootmgr
      ntfs3g
-     ripgrep
      nvd
 
      ### Pass $TERM env variable to ssh via a shell wrapper (and export openssh path as a global path for ssh wrapper)

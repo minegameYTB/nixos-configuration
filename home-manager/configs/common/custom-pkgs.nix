@@ -1,4 +1,9 @@
-{ config, pkgs, nurpkgs-repo-minegameYTB, ... }:
+{ 
+  config, 
+  pkgs, 
+  #nurpkgs-repo-minegameYTB, 
+  ... 
+}:
 
  let
    ### Add external packages

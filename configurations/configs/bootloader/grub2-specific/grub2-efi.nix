@@ -1,13 +1,9 @@
 { config, ... }:
 
 { 
- ### Add efi specific mountpoint
- fileSystems."/boot/efi" = {
-   label = "EFI";
-   fsType = "vfat";
-   options = [ "fmask=0022" "dmask=0022" ];
- };
-
+ ### Import efi mountpoint expression
+ imports = [ ../efi-mountpoint.nix ];
+ 
  boot.loader = {
    grub = {
      efiSupport = true;

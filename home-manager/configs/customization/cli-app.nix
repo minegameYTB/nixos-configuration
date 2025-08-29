@@ -3,7 +3,7 @@
 {
  ### Import conf file for cli software
  home.file = {
-   ".screenrc".source = "${inputs.dotfiles-minegameYTB}/configs/screen/screenrc";
+   #".screenrc".source = "${inputs.dotfiles-minegameYTB}/configs/screen/screenrc";
  };
 
  xdg.configFile = {
