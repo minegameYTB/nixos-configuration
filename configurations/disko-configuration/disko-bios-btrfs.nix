@@ -9,23 +9,11 @@
           format = "msdos";
           partitions = [
             {
-              name = "boot";
-              part-type = "primary";
-              start = "1M";
-              end = "512M";
-              bootable = true;
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/boot";
-                extraArgs = [ "-L" "nixos-boot" ];
-              };
-            }
-            {
               name = "root";
               part-type = "primary";
-              start = "512M";
+              start = "1M";
               end = "100%";
+              bootable = true;
               content = {
                 type = "btrfs";
                 extraArgs = [ "-L" "nixos-root" ];
