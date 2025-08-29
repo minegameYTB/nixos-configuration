@@ -30,7 +30,7 @@ in
      (pkgs.writeShellScriptBin "ssh" ''
        export PATH='${lib.getBin pkgs.openssh}'
        export TERM='xterm-256color'
-       exec -a "$0" ${pkgs.openssh}/bin/ssh "$@"
+       exec -a "$0" ${config.programs.ssh.package}/bin/ssh "$@"
      '')
      #nixos-rebuild
    ])

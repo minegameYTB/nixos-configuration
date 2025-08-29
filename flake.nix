@@ -31,7 +31,8 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs";
    };
-   stylix.url = "github:danth/stylix/release-25.05";
+   ### Stylix - release-25.05 branch (Sept 2025)
+   stylix.url = "github:danth/stylix/a9553a7486c86259b7678235cc26cfd70296251d";
    nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
