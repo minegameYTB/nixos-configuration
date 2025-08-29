@@ -1,10 +1,6 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, ... }:
 
 {
- imports = [ 
-   (modulesPath + "/installer/scan/not-detected.nix")
- ];
-
  ### Mount Point
  fileSystems."/" = { 
    #device = "/dev/disk/by-label/nixos-root";

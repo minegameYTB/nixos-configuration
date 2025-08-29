@@ -6,7 +6,8 @@
    ### Utilities
    jq
    dhall-json
-   screen
+   ripgrep
+   #screen
  ];
 
 }
