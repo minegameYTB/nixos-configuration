@@ -13,6 +13,8 @@
      withVmspawn = false;
      withRemote = false;
      withSysupdate = false;
+     withNetworkd = false;
+     withRepart = false;
    };
    systemdCustom = systemd.overrideAttrs (oldAttrs: {
      ### Disable checks
