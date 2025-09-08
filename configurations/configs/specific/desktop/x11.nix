@@ -36,7 +36,7 @@
  i18n.inputMethod = {
    enable = true;
    type = "ibus";
-   ibus.engines = with pkgs.ibus-engines; [ anthy hangul mozc ];
+   ibus.engines = with pkgs.ibus-engines; [ anthy hangul mozc libpinyin ];
  };
 
 # Enable touchpad support (enabled default in most desktopManager).
