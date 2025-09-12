@@ -13,7 +13,7 @@ update_flake(){
 check_rev_change(){
   if [[ -n $(git status --porcelain) ]]; then
     ### Initialize variable to get version and hash commit
-    NIXPKGS_VERSION=$(nix eval --raw "github:NixOS/nixpkgs/$(cat flake.lock | jq -r '.nodes.nixpkgs.locked.rev')#lib.version")
+    NIXPKGS_VERSION=$(nix eval --raw "github:NixOS/nixpkgs/$(cat flake.lock | jq -r '.nodes."nixpkgs-stable".locked.rev')#lib.version")
     echo -e "New revision\n"
     git add flake.lock
     git commit -m "[nixpkgs/${NIXPKGS_VERSION}] flake.lock: update to the new rev"
