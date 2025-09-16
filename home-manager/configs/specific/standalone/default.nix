@@ -1,7 +1,7 @@
 { inputs, lib, config, pkgs, ... }:
 
 {
- nixpkgs.overlays = [ nur.overlays.default ];
+ nixpkgs.overlays = [ inputs.nur.overlays.default ];
  home.shellAliases = {
    ### Aliases
    nix = "nix --refresh -v --cores 2";
