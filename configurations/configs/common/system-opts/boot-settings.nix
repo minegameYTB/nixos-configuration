@@ -18,6 +18,7 @@
      "boot.shell_on_fail"
    ];
    kernel.sysctl = {
+     "kernel.panic" = 10;
      "vm.swappiness" = 20;
    };
    #kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
