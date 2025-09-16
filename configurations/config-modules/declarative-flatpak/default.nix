@@ -13,7 +13,7 @@
    packages = [
      ### Argument order (to see commit, do "flatpak info software")
    # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
-     "flathub:app/io.github.shiftey.Desktop//stable"
+     #"flathub:app/io.github.shiftey.Desktop//stable"
      "flathub:app/io.mrarm.mcpelauncher//stable"
      #"com.usebottles.bottles"
    ];
