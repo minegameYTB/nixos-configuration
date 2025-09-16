@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ inputs, ... }:
 
 {
  ### Import nix-index-detabase module
