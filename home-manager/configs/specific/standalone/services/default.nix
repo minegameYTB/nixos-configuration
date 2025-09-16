@@ -1,8 +1,0 @@
-{ ... }:
-
-{
- ### Import services
- imports = [
-   ./systemd
- ];
-}
