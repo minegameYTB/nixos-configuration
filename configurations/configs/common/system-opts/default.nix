@@ -9,5 +9,6 @@
    ./system-apps.nix
    ./system-settings.nix
    ./fonts.nix
+   ./shell.nix
  ];
 }

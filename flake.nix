@@ -5,7 +5,7 @@
 
  inputs = {
    ### Main repo
-   nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.05";
 
    ### To test a PR on a flake:
    ### github:username/repo?ref=pull/<PR number>/head
@@ -24,12 +24,12 @@
    ### Other repos
    home-manager = {
      url = "github:nix-community/home-manager/release-25.05";
-     inputs.nixpkgs.follows = "nixpkgs";
+     inputs.nixpkgs.follows = "nixpkgs-main";
    };
    zen-browser.url = "github:0xc000022070/zen-browser-flake";
    nur = {
      url = "github:nix-community/nur";
-     inputs.nixpkgs.follows = "nixpkgs";
+     inputs.nixpkgs.follows = "nixpkgs-main";
    };
    ### Stylix - release-25.05 branch (Sept 2025)
    stylix.url = "github:danth/stylix/a9553a7486c86259b7678235cc26cfd70296251d";
@@ -37,7 +37,7 @@
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/stable-v3"; # For HM standalone
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
-     inputs.nixpkgs.follows = "nixpkgs";
+     inputs.nixpkgs.follows = "nixpkgs-main";
    };
    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
    ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
@@ -60,14 +60,14 @@
    };
    lanzaboote = {
      url = "github:nix-community/lanzaboote/v0.4.2";
-     inputs.nixpkgs.follows = "nixpkgs";
+     inputs.nixpkgs.follows = "nixpkgs-main";
    };
  };
 
  outputs = {
    ### Primary sources
    self,
-   nixpkgs,
+   nixpkgs-main,
 
    ### Other nixpkgs sources
    nixpkgs-unstable,
@@ -97,16 +97,16 @@
    nixpkgsConfig = {
      allowUnfree = true;
    };  
-   lib = nixpkgs.lib;
+   lib = nixpkgs-main.lib;
 
    ### Supported systems (x86_64 + ARM)
    systems = [ "x86_64-linux" "aarch64-linux" ];
    users = [ "minegame" ];
 
    ### Create patched nixpkgs for each system
-   nixpkgs-patched = system: (import nixpkgs { inherit system; }).applyPatches {
+   nixpkgs-patched = system: (import nixpkgs-main { inherit system; }).applyPatches {
      #name = "nixpkgs-patched-421549";
-     src = nixpkgs;
+     src = nixpkgs-main;
      patches = [
        #(builtins.fetchurl {
        #  ### Add ".patch" to get this link for a PR
@@ -127,7 +127,7 @@
    };
 
    ### Set unfree package directly from standard pkgs (non-patched) attr
-   pkgsFor = system: import nixpkgs {
+   pkgsFor = system: import nixpkgs-main {
      inherit system;
      config = nixpkgsConfig;
    };
@@ -190,46 +190,16 @@
 
    ### Create standalone Home Manager config
    mkHome = system: username: home-manager.lib.homeManagerConfiguration {
-     pkgs = import nixpkgs {
+     pkgs = import nixpkgs-main {
        inherit system;
        config = { allowUnfree = true; };
      };
      modules = [
-       ({ config, pkgs, ... }: {
-         nixpkgs.overlays = [ nur.overlays.default ];
-         home.shellAliases = {
-           ### Aliases
-           nix = "nix --refresh -v --cores 2";
-           home-manager = "home-manager -b bak";
-
-           ### Git alias
-           gadd = "git add";
-           gpush = "git push";
-           gpull = "git pull";
-           gc = "git commit";
-           gsw = "git switch";
-           gbr = "git branch";
-           gft = "git fetch";
-
-           ### Core utilities remplacement
-           ls = "${pkgs.lsd}/bin/lsd";
-           cat = "${pkgs.bat}/bin/bat";
-           df = "${pkgs.duf}/bin/duf -hide special";
-
-           ### Original core utilities (from nixpkgs)
-           "ls.ori" = "${pkgs.coreutils}/bin/ls";
-           "cat.ori" = "${pkgs.coreutils}/bin/cat";
-           "df.ori" = "${pkgs.coreutils}/bin/df";
-
-           ### Use xterm-256color on runtime command
-           ssh = "TERM=xterm-256color ssh";
-
-           ### This alias is just inspired from macOS "open" command
-           open = "${pkgs.xdg-utils}/bin/xdg-open";
-         };
-       })
        (import ./hm-profiles/desktop-profile.nix { inherit username; })
        stylix.homeModules.stylix
+       
+       ### Import specific expression for standalone hm (move futur function here)
+       ./home-manager/configs/specific/standalone
      ];
      extraSpecialArgs = {
        inherit inputs;
