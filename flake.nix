@@ -33,7 +33,8 @@
    };
    ### Stylix - release-25.05 branch (Sept 2025)
    stylix.url = "github:danth/stylix/a9553a7486c86259b7678235cc26cfd70296251d";
-   nix-flatpak.url = "github:gmodena/nix-flatpak/latest";
+   #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
+   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/stable-v3"; # For HM standalone
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
      inputs.nixpkgs.follows = "nixpkgs-main";
@@ -79,7 +80,8 @@
    stylix,
    home-manager,
    nur,
-   nix-flatpak,
+   #nix-flatpak,
+   declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
 
