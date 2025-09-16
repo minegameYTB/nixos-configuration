@@ -193,39 +193,6 @@
        config = { allowUnfree = true; };
      };
      modules = [
-       ({ config, pkgs, ... }: {
-         nixpkgs.overlays = [ nur.overlays.default ];
-         home.shellAliases = {
-           ### Aliases
-           nix = "nix --refresh -v --cores 2";
-           home-manager = "home-manager -b bak";
-
-           ### Git alias
-           gadd = "git add";
-           gpush = "git push";
-           gpull = "git pull";
-           gc = "git commit";
-           gsw = "git switch";
-           gbr = "git branch";
-           gft = "git fetch";
-
-           ### Core utilities remplacement
-           ls = "${pkgs.lsd}/bin/lsd";
-           cat = "${pkgs.bat}/bin/bat";
-           df = "${pkgs.duf}/bin/duf -hide special";
-
-           ### Original core utilities (from nixpkgs)
-           "ls.ori" = "${pkgs.coreutils}/bin/ls";
-           "cat.ori" = "${pkgs.coreutils}/bin/cat";
-           "df.ori" = "${pkgs.coreutils}/bin/df";
-
-           ### Use xterm-256color on runtime command
-           ssh = "TERM=xterm-256color ssh";
-
-           ### This alias is just inspired from macOS "open" command
-           open = "${pkgs.xdg-utils}/bin/xdg-open";
-         };
-       })
        (import ./hm-profiles/desktop-profile.nix { inherit username; })
        stylix.homeModules.stylix
        
