@@ -228,6 +228,9 @@
        })
        (import ./hm-profiles/desktop-profile.nix { inherit username; })
        stylix.homeModules.stylix
+       
+       ### Import specific expression for standalone hm (move futur function here)
+       ./home-manager/configs/specific/standalone
      ];
      extraSpecialArgs = {
        inherit inputs;
