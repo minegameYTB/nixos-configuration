@@ -41,7 +41,7 @@
  };
 
  ### Nix package (use nix package from this option)
- home.packages = with pkgs; [ config.nix.package ];
+ home.packages = with pkgs; [ nix ];
 
  ### Nvd diff hook
  home.activation = {
