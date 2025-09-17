@@ -3,7 +3,7 @@
 {
  ### Import all expression related to programs
  imports = [
-   #./zen-browser-module.nix
-   #./firefox-hardening.nix
+   ./zen-browser-module.nix
+   ./firefox-hardening.nix
  ];
 }

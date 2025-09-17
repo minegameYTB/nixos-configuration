@@ -12,7 +12,8 @@
    ./configs/common/system-pkgs.nix    ### System packages
    ./configs/common/timezone.nix       ### Timezone
    ./configs/common/security.nix       ### Security
-   ./modules                           ### Modules implementation
+   ./configs/overlays                  ### Global package overlay
+   #./modules                           ### Modules implementation
  ];
    
  # Allow unfree packages
