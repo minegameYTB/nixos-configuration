@@ -12,11 +12,11 @@ in
      amberol
      pika-backup
      #melonDS
-     github-desktop
      tagainijisho
 
      ### Zen browser
      zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
+   ])
 
      ### Libreoffice (and langpack)
      #libreoffice-fresh
@@ -28,13 +28,13 @@ in
      #melonDS
    ])
    ### Packages from pkgs-24.11 (all arch)
+   ])
    ++ (with pkgsExtra.pkgs-24-11; [
      #rpi-imager
    ])
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
-     spotify
      prismlauncher
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
@@ -48,7 +48,6 @@ in
    ### Packages from pkgs-unstable for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
-     deezer-enhanced
    ])
    ### Packages from pkgs-unstable for aarch64-linux
    ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [

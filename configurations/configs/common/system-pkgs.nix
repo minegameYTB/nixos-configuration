@@ -41,11 +41,14 @@ in
      gparted
      gearlever
      onlyoffice-desktopeditors
+     github-desktop
+     spotify
 
      ### Ghostty
      ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
    ]) ++ (with pkgsExtra.pkgs-unstable; [
      ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
+     deezer-enhanced
      #bottles
    ])
  ));
