@@ -22,7 +22,7 @@
 
      "flathub:app/io.github.shiftey.Desktop//stable"
      "flathub:app/io.mrarm.mcpelauncher//stable"
-     "flathub:app/com.spotify.Client//stable"
+     #"flathub:app/com.spotify.Client//stable"
      #"com.usebottles.bottles"
    ];
  };
