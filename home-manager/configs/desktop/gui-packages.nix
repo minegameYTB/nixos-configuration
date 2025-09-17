@@ -25,6 +25,7 @@ in
    ++ (with pkgsExtra.pkgs-unstable; [
      bitwarden-desktop
      #melonDS
+   ])
    ### Packages from pkgs-24.11 (all arch)
    ++ (with pkgsExtra.pkgs-24-11; [
      #rpi-imager
