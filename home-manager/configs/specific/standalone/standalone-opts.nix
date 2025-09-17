@@ -40,7 +40,7 @@
    open = "${pkgs.xdg-utils}/bin/xdg-open";
  };
 
- ### Nix package (use nix package from this option)
+ ### Nix package
  home.packages = with pkgs; [ nix ];
 
  ### Nvd diff hook
