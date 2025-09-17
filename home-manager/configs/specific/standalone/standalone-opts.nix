@@ -40,6 +40,9 @@
    open = "${pkgs.xdg-utils}/bin/xdg-open";
  };
 
+ ### Nix package (use nix package from this option)
+ home.packages = with pkgs; [ config.nix.package ];
+
  ### Nvd diff hook
  home.activation = {
    report-changes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
