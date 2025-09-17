@@ -12,6 +12,7 @@ in
      amberol
      pika-backup
      #melonDS
+     github-desktop
      tagainijisho
 
      ### Zen browser
@@ -33,6 +34,7 @@ in
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
+     spotify
      prismlauncher
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
@@ -46,6 +48,7 @@ in
    ### Packages from pkgs-unstable for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
      ### unstable pkgs here
+     deezer-enhanced
    ])
    ### Packages from pkgs-unstable for aarch64-linux
    ++ lib.optionals isAarch64 (with pkgsExtra.pkgs-unstable; [
