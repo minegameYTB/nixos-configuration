@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgsExtra, ... }:
 
 {
  ### Import plymouth expression
@@ -13,6 +13,16 @@
    variant = "";
  };
  
+ ### Mesa
+ hardware.graphics = {
+   ### Fix mesa version on nixpkgs 25.05
+   enable = true;
+   package = pkgsExtra.pkgs-25-05.mesa;
+   
+   ### Enable 32-bit platform
+   enable32Bit = true;
+   package32 = pkgsExtra.pkgs-25-05.pkgsi686Linux.mesa;
+ };
  ### Exclude Xterm 
  services.xserver.excludePackages = with pkgs; [
    xterm
