@@ -4,7 +4,7 @@
  ### Import x11 related expression
  imports = [ ../x11.nix ];
  
- # Enable the GNOME Desktop Environment.
+ # Enable the GNOME Desktop Environment. (remove xserver set on 25.11)
  services.xserver.displayManager.gdm.enable = true;
  services.xserver.desktopManager.gnome.enable = true;
  
