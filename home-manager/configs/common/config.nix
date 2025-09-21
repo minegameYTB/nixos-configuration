@@ -7,6 +7,7 @@
  nix = {
    gc = {
      automatic = true;
+     ### Change "frequency" to "dates"
      frequency = "weekly";
      options = "--delete-older-than 15d";
    };
