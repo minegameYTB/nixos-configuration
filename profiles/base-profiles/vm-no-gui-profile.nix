@@ -17,7 +17,7 @@
    
    ### Server specific
    ../../configurations/configs/specific/vm/guest/openssh.nix
-   ../../configurations/configs/specific/vm/guest/tailscale.nix
+   #../../configurations/configs/specific/vm/guest/tailscale.nix
 
    ### Other
    ../../configurations/hardware-configuration/specific/swap.nix
