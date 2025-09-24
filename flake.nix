@@ -337,7 +337,7 @@
          ### Add wrapper expression module
          (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
            extraModules = [
-             ./configurations/configs/specific/vm/guest/nextcloud.nix
+             #./configurations/configs/specific/vm/guest/nextcloud.nix
            ];
          })
        ];
