@@ -2,7 +2,7 @@
 
 {
  ### Import nix-flatpak like an expression
- imports = [ inputs.declarative-flatpak.nixosModule ];
+ imports = [ inputs.declarative-flatpak.nixosModules.default ];
 
  ### Declarative flatpak settings
  services.flatpak = {
