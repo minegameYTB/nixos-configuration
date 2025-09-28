@@ -2,7 +2,7 @@
 
 {
  ### Import nix-flatpak like an expression
- imports = [ inputs.declarative-flatpak.homeModule ];
+ imports = [ inputs.declarative-flatpak.homeModules.default ];
 
  ### Define flatpak environment variable
  home.sessionVariables = {
