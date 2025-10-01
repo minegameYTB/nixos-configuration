@@ -50,10 +50,6 @@
  ### Udev
  services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
- ### Etc overlay
- system.etc.overlay.enable = true;
-
-
  ### binfmt registration
  boot.binfmt.registrations = {
    appimage = {
