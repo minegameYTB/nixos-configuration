@@ -13,7 +13,7 @@
    settings = {
      warn-dirty = false;
      auto-optimise-store = true;
-     experimental-features = [ "nix-command" "flakes" ];
+     experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
      max-jobs = 2;
      cores = 2;
      trusted-users = [ "@wheel" ];
