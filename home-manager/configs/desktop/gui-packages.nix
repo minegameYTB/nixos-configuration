@@ -18,6 +18,9 @@ in
      ### Zen browser
      zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
 
+     ### Vivaldi browser
+     vivaldi
+
      ### Libreoffice (and langpack)
      #libreoffice-fresh
      hunspellDicts.fr-any
