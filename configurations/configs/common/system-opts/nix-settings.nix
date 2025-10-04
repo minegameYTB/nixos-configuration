@@ -1,11 +1,17 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
  ### Nix Settings
  nix = {
    ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
    channel.enable = false;
-  #registry.nix-custom-repo.to = {
+   registry = {
+     ctrlos.to = {
+       type = "path";
+       path = inputs.ctrl-os;
+     };
+   };
+  #registry.nix-custom-repo.to = 
   #  owner = "minegameYTB";
   #  repo = "nix-custom-repo";
   #  type = "github";
@@ -16,12 +22,17 @@
      experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
      max-jobs = 2;
      cores = 2;
+     
+     ### Substituers settings
      trusted-users = [ "@wheel" ];
+     substituters = [
+       "https://cache.ctrl-os.com/"
+     ];
      trusted-substituters = [
-       "https://hydra.nixos.org/"
+       "https://cache.ctrl-os.com/"
      ];
      trusted-public-keys = [
-       "hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
+       "ctrl-os:baPzGxj33zp/P+GAIJXsr8ss9Law+qEEFViX1+flbv8="
      ];
    };
    gc = {

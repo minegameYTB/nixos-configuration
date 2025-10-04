@@ -11,6 +11,7 @@
    ### github:username/repo?ref=pull/<PR number>/head
 
    ### Other nixpkgs repos
+   ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
    nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
    nixpkgs-25-05.url = "github:NixOS/nixpkgs/nixos-25.05"; # To pin mesa version temporairy for ghostty bug
@@ -71,10 +72,11 @@
    nixpkgs-main,
 
    ### Other nixpkgs sources
-   nixpkgs-unstable,
+   ctrl-os,
    nixpkgs-23-11,
    nixpkgs-24-11,
    nixpkgs-25-05,
+   nixpkgs-unstable,
    #nixpkgs-master,
    #nixpkgs-pr,
 
@@ -139,6 +141,10 @@
 
    ### Other sources (pkgs set)
    pkgsExtra = system: {
+     pkgs-lts = import ctrl-os {
+       inherit system;
+       config = nixpkgsConfig;
+     };
      pkgs-23-11 = import nixpkgs-23-11 {
        inherit system;
        config = nixpkgsConfig;
