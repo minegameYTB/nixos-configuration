@@ -37,6 +37,6 @@
    ../configurations/config-modules
 
    ### Add lanzaboote (separate module)
-   ../configurations/config-modules/lanzaboote
+   #../configurations/config-modules/lanzaboote
  ];
 }
