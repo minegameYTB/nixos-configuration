@@ -29,6 +29,7 @@
      gnome-tweaks
      gnome-extension-manager
      showtime
+     evolution
 
      ### Themes
      ### Override papirus-icon-theme to set folder green
@@ -62,14 +63,14 @@
 
  ### Exclude some Gnome default packages
  environment.gnome.excludePackages = with pkgs; [
-   #geary                ### Geary
+   geary                ### Geary
    gnome-tour           ### Gnome Tour
    epiphany             ### Gnome Web
    yelp                 ### Gnome help
    totem                ### Gnome Totem (video)
    gnome-maps           ### Gnome maps
    gnome-connections    ### Gnome connections
-   #gnome-console        ### Gnome console (default term)
+   #gnome-console       ### Gnome console (default term)
    gnome-music          ### Gnome Music
    gnome-system-monitor ### Gnome system monitor
    gnome-software       ### Gnome software
