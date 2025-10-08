@@ -1,4 +1,12 @@
-{ lib, inputs, config, pkgs, pkgsExtra, ghostty, ... }:
+{ 
+  lib,
+  inputs,
+  config,
+  pkgs,
+  pkgsExtra,
+  #ghostty,
+  ...
+}:
 
 let
   ### Add external packages
@@ -36,7 +44,8 @@ in
      onlyoffice-desktopeditors
 
      ### Ghostty
-     ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
+     #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
+     ghostty ### Use ghostty from nixpkgs to unpin mesa version
    ]) ++ (with pkgsExtra.pkgs-unstable; [
      ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
      #bottles
