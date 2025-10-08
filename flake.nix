@@ -36,8 +36,8 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   ### Stylix - release-25.05 branch (Sept 2025)
-   stylix.url = "github:danth/stylix/a9553a7486c86259b7678235cc26cfd70296251d";
+   ### Stylix - release-25.05 branch (Oct 2025)
+   stylix.url = "github:danth/stylix/4d065856e936fc6a99ba55d39ac2df9ded6bedbe";
    #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0"; # For HM standalone
    nix-index-database = {
