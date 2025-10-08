@@ -78,8 +78,8 @@
 
  ### Nautilus settings
  programs.nautilus-open-any-terminal = {
-   enable = true;
-   terminal = "ghostty";
+ #  enable = true;
+ #  terminal = "ghostty";
  };
 
  ### Disable some services 
