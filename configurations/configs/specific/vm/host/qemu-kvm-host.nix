@@ -21,17 +21,9 @@
      onBoot = "ignore";
      qemu.swtpm.enable = true;
    };
-   #libvirtd.qemu = {
-   #  package = pkgs.qemu_kvm;
-   #  ovmf.packages = [ pkgs.OVMFFull.fd ];
-   #  ovmf.enable = true;
-    #ovmf = {
-      #packages = [(pkgs.OVMF.override {
-      #  secureBoot = true;
-      #  tpmSupport = true;
-      #}).fd];
-     #};
-   #};
+   libvirtd.qemu = {
+     package = pkgs.qemu_kvm;
+   };
  };
 
  ### Nix specific
