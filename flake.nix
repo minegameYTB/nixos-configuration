@@ -27,7 +27,10 @@
      url = "github:nix-community/home-manager/release-25.05";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   zen-browser.url = "github:0xc000022070/zen-browser-flake";
+   zen-browser = {
+     url = "github:0xc000022070/zen-browser-flake";
+     inputs.nixpkgs.follows = "nixpkgs-main";
+   };
    nur = {
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
