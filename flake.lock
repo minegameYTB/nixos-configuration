@@ -114,6 +114,18 @@
         "type": "github"
       }
     },
+    "ctrl-os": {
+      "locked": {
+        "lastModified": 1759507780,
+        "narHash": "sha256-w4PC8XawDAGMSEDCl794JiMn+yqh9lzL4L6Yr1L2rdk=",
+        "type": "tarball",
+        "url": "https://channels.ctrl-os.com/permanent/ctrlos-b274108fb212cc0cbc39816cdaf018891d060a35.tar.xz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"
+      }
+    },
     "declarative-flatpak": {
       "locked": {
         "lastModified": 1758787189,
@@ -558,6 +570,7 @@
       "inputs": {
         "blocklist": "blocklist",
         "catppuccin-wallpapers": "catppuccin-wallpapers",
+        "ctrl-os": "ctrl-os",
         "declarative-flatpak": "declarative-flatpak",
         "dotfiles-minegameYTB": "dotfiles-minegameYTB",
         "home-manager": "home-manager",
