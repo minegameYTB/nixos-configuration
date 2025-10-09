@@ -5,8 +5,8 @@
  imports = [ ../x11.nix ];
  
  # Enable the GNOME Desktop Environment. (remove xserver set on 25.11)
- services.xserver.displayManager.gdm.enable = true;
- services.xserver.desktopManager.gnome.enable = true;
+ services.displayManager.gdm.enable = true;
+ services.desktopManager.gnome.enable = true;
  
  ### Gnome pinentry gpg
  programs.gnupg.agent = {

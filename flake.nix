@@ -4,8 +4,8 @@
  description = "A flake with my configuration";
 
  inputs = {
-   ### Main repo
-   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.05";
+   ### Main repo (prepare nixos 25.05)
+   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
 
    ### To test a PR on a flake:
    ### github:username/repo?ref=pull/<PR number>/head
@@ -23,9 +23,9 @@
    ### Temporairy use PR 
    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
-   ### Other repos
+   ### Other repos 
    home-manager = {
-     url = "github:nix-community/home-manager/release-25.05";
+     url = "github:nix-community/home-manager/5d61767c8dee7f9c66991335795dbca9e801c25a";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    zen-browser = {
@@ -36,8 +36,8 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   ### Stylix - release-25.05 branch (Oct 2025)
-   stylix.url = "github:danth/stylix/4d065856e936fc6a99ba55d39ac2df9ded6bedbe";
+   ### Stylix - future release-25.11 branch (Oct 2025)
+   stylix.url = "github:danth/stylix/09022804b2bcd217f3a41a644d26b23d30375d12";
    #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0"; # For HM standalone
    nix-index-database = {
@@ -192,7 +192,7 @@
      home-manager.users = lib.genAttrs users (username:
        import ./hm-profiles/desktop-profile-wrapped.nix {
          inherit username;
-         extraModules = [ ./home-manager/configs/specific/nixos/stylix.nix ];
+         extraModules = [ ./home-manager/configs/specific/nixos ];
        });
      home-manager.extraSpecialArgs = specialArgs system;
    };
