@@ -1,5 +1,4 @@
 ### (Flake created with https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users#org81dbd1d)
-### Change pkgsPatched by pkgsFor later (for nixosConfiguration parts)
 
 {
  description = "A flake with my configuration";
@@ -113,14 +112,14 @@
 
    ### Create patched nixpkgs for each system
    nixpkgs-patched = system: (import nixpkgs-main { inherit system; }).applyPatches {
-     name = "nixpkgs-patched-449396";
+     #name = "nixpkgs-patched-421549";
      src = nixpkgs-main;
      patches = [
-       (builtins.fetchurl {
-         ### Add ".patch" to get this link for a PR
-         url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/449396.patch";
-         sha256 = "15ra8my4dnlkp3a32j99hsbmimwpcwjzr596wmbcicx1w4c9nqvl";
-       })
+       #(builtins.fetchurl {
+       #  ### Add ".patch" to get this link for a PR
+       #  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/421549.patch";
+       #  sha256 = "1m0s79pa9kq2awd3rykn0w8b6qryzf18ddjld4im0gv6jj0y9qbn";
+       #})
 
        ### Local patch
        #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
@@ -231,7 +230,7 @@
      hp-probook = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -251,7 +250,7 @@
      hp-240 = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -271,7 +270,7 @@
      vm-desktop-efi = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -291,7 +290,7 @@
      vm-desktop-bios = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -311,7 +310,7 @@
      vm-desktop-bios-virtio = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -331,7 +330,7 @@
      vm-no-gui-efi = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -358,7 +357,7 @@
      vm-no-gui-bios = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -378,7 +377,7 @@
      vm-no-gui-bios-virtio = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
