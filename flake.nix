@@ -4,8 +4,8 @@
  description = "A flake with my configuration";
 
  inputs = {
-   ### Main repo (prepare nixos 25.05)
-   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
+   ### Main repo (prepare nixos 25.05) (nixos-unstable)
+   nixpkgs-main.url = "github:NixOS/nixpkgs/master";
 
    ### To test a PR on a flake:
    ### github:username/repo?ref=pull/<PR number>/head
@@ -46,6 +46,7 @@
    };
    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
+   lazyvim.url = "github:pfassina/lazyvim-nix";
 
    ### Rice/customization
    catppuccin-wallpapers = {
@@ -91,6 +92,7 @@
    declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
+   lazyvim,
 
    ### Sources for 3rd part software
    #ghostty,
