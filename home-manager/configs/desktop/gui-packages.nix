@@ -11,9 +11,12 @@ in
      vlc
      amberol
      pika-backup
-     #melonDS
      github-desktop
      tagainijisho
+     
+     ### Emulator
+     melonDS
+     azahar
 
      ### Zen browser
      zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default

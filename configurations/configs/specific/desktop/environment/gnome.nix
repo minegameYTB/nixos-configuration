@@ -56,6 +56,7 @@
      no-overview
      quick-settings-audio-panel
      grand-theft-focus
+     caffeine
 
     ### Disabled bcause stylix is incompatible with just-perfection
     #just-perfection
@@ -193,6 +194,7 @@
                "no-overview@fthx"
                "quick-settings-audio-panel@rayzeq.github.io"
                "grand-theft-focus@zalckos.github.com"
+               "caffeine@patapon.info"
              ];
              favorite-apps = [
                "zen-beta.desktop"
