@@ -25,8 +25,8 @@
       mini-indentscope
      
       ### Telescope dependency
-      telescope-nvim
-      nvim-treesitter.withAllGrammars
+      #telescope-nvim
+      #nvim-treesitter.withAllGrammars
 
       ### Aesthetic plugin
       dashboard-nvim
@@ -64,7 +64,7 @@
       require("bufferline").setup{}
 
       -- Telescope
-      vim.keymap.set("n", "<space>fd", require('telescope.builtin').find_files)
+      -- vim.keymap.set("n", "<space>fd", require('telescope.builtin').find_files)
     
       -- Nvim dashboard
       require('dashboard').setup {
