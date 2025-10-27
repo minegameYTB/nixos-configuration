@@ -46,7 +46,7 @@
    };
    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
-   lazyvim.url = "github:pfassina/lazyvim-nix";
+   #lazyvim.url = "github:pfassina/lazyvim-nix";
 
    ### Rice/customization
    catppuccin-wallpapers = {
@@ -92,7 +92,7 @@
    declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
-   lazyvim,
+   #lazyvim,
 
    ### Sources for 3rd part software
    #ghostty,
@@ -107,6 +107,13 @@
      allowUnfree = true;
    };  
    lib = nixpkgs-main.lib;
+
+   ### Overlay
+   overlay = ({ config, pkgs, ... }: {
+     nixpkgs.overlays = [
+       nur.overlays.default
+     ];
+   });
 
    ### Supported systems (x86_64 + ARM)
    systems = [ "x86_64-linux" "aarch64-linux" ];
@@ -140,9 +147,6 @@
      inherit system;
      config = nixpkgsConfig;
    };
-
-   ### Nur overlay
-   nurOverlay = ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; });
 
    ### Other sources (pkgs set)
    pkgsExtra = system: {
@@ -238,8 +242,8 @@
          ./configurations/configuration.nix
          ./profiles/hp-probook-profile.nix
          
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "HP-probook"; }
@@ -258,8 +262,8 @@
          ./configurations/configuration.nix
          ./profiles/hp-240-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "UTILISA-0SK6G4E"; }
@@ -278,8 +282,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-efi-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop"; }
@@ -298,8 +302,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-bios-novio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios"; }
@@ -318,8 +322,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-bios-vio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
@@ -338,8 +342,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-efi-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-srv"; }
@@ -365,8 +369,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-bios-novio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-srv-bios"; }
@@ -385,8 +389,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-bios-vio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
