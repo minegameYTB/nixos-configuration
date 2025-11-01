@@ -8,5 +8,6 @@
    #./heroic
    ./prismlauncher
    ./waydroid
+   ./emulator
  ];
 }

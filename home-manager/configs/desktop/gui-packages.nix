@@ -13,10 +13,6 @@ in
      pika-backup
      github-desktop
      tagainijisho
-     
-     ### Emulator
-     melonDS
-     azahar
 
      ### Zen browser
      zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
