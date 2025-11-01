@@ -25,7 +25,7 @@
 
    ### Other repos 
    home-manager = {
-     url = "github:nix-community/home-manager/5d61767c8dee7f9c66991335795dbca9e801c25a";
+     url = "github:nix-community/home-manager/";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    zen-browser = {
@@ -36,10 +36,10 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   ### Stylix - future release-25.11 branch (Oct 2025)
-   stylix.url = "github:danth/stylix/09022804b2bcd217f3a41a644d26b23d30375d12";
+   ### Stylix - future release-25.11 branch
+   stylix.url = "github:danth/stylix/master";
    #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
-   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0"; # For HM standalone
+   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
      inputs.nixpkgs.follows = "nixpkgs-main";
@@ -121,14 +121,14 @@
 
    ### Create patched nixpkgs for each system
    nixpkgs-patched = system: (import nixpkgs-main { inherit system; }).applyPatches {
-     #name = "nixpkgs-patched-421549";
+     name = "nixpkgs-patched-455370";
      src = nixpkgs-main;
      patches = [
-       #(builtins.fetchurl {
-       #  ### Add ".patch" to get this link for a PR
-       #  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/421549.patch";
-       #  sha256 = "1m0s79pa9kq2awd3rykn0w8b6qryzf18ddjld4im0gv6jj0y9qbn";
-       #})
+       (builtins.fetchurl {
+         ### Add ".patch" to get this link for a PR
+         url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
+         sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
+       })
 
        ### Local patch
        #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
@@ -236,7 +236,7 @@
      hp-probook = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
+       pkgs = pkgsPatched "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -276,7 +276,7 @@
      vm-desktop-efi = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
+       pkgs = pkgsPatched "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
