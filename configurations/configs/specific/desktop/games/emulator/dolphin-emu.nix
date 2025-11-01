@@ -7,13 +7,13 @@
  ### custom settings for bluetooth device (udev rules)
  services.udev = {
    packages = [ pkgsExtra.pkgs-unstable.dolphin-emu ];
-   extraRules = ''
+   extraRules = (if (config.hardware.bluetooth.enable == true) then ''
      # Dolphin-emu Bluetooth
      # (HP probook)
      SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0a2a", TAG+="uaccess"
-     
+   
      # (HP 240)
      SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="b00b", TAG+="uaccess"
-   '';
+   '' else "");
  };
 }

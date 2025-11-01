@@ -13,6 +13,9 @@
  boot.kernelModules = [ "kvm-intel" ];
  boot.extraModulePackages = [ ];
   
+ ### Bluetooth
+ hardware.bluetooth.enable = lib.mkForce true;
+
  ### Root/home mount point located to ../filesystem/btrfs
   
  ### Specific mount point
