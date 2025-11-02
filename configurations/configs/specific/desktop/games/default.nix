@@ -7,7 +7,7 @@
    ./lutris
    #./heroic
    ./prismlauncher
-   ./waydroid
+   #./waydroid
    ./emulator
  ];
 
