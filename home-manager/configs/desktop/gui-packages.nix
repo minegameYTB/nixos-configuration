@@ -37,7 +37,6 @@ in
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
      spotify
-     prismlauncher
    ])
    ### Packages specific to aarch64-linux (main pkgs branch)
    ++ lib.optionals isAarch64 (with pkgs; [
