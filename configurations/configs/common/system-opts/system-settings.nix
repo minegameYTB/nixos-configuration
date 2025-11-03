@@ -1,27 +1,6 @@
 { config, pkgs, ... }:
 
 {
- ### Systemd package
- systemd.package = let
-   systemd = pkgs.systemd.override {
-     ### Define name of custom version
-     pname = "systemdCustom";
-
-     ### Define option to disable
-     withAnalyze = false;
-     withFirstboot = false;
-     withVmspawn = false;
-     withRemote = false;
-     withSysupdate = false;
-     withNetworkd = false;
-     withRepart = false;
-   };
-   systemdCustom = systemd.overrideAttrs (oldAttrs: {
-     ### Disable checks
-     doInstallCheck = false;
-   });
- in systemdCustom;
-
  ### Nvd diff hook
  system.activationScripts.report-changes = ''
    PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
