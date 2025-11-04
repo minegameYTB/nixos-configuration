@@ -205,7 +205,7 @@
                "virt-manager.desktop"
                "org.prismlauncher.PrismLauncher.desktop"
                "discord.desktop"
-               "spotify.desktop"
+               "deezer-enhanced.desktop"
                "steam.desktop"
                "LocalSend.desktop"
              ];
@@ -260,6 +260,7 @@
                "system-tools"
                "universal-access"
                "wine"
+               "waydroid"
              ];
            };
 
