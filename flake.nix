@@ -236,7 +236,7 @@
      hp-probook = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
@@ -276,7 +276,7 @@
      vm-desktop-efi = lib.nixosSystem {
        system = "x86_64-linux";
        ### Inject pkgs attr with options
-       pkgs = pkgsPatched "x86_64-linux";
+       pkgs = pkgsFor "x86_64-linux";
        specialArgs = specialArgs "x86_64-linux";
        modules = [
          ./configurations/configuration.nix
