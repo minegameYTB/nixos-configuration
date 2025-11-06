@@ -20,7 +20,7 @@
  #nixpkgs.config.allowUnfree = true;
 
  ### Enable Firejail (common config)
- programs.firejail.enable = true;
+ #programs.firejail.enable = true;
 
 ###----------------------------------------------------------------
 
