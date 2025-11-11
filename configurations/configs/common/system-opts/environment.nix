@@ -17,7 +17,7 @@
 
    ### Original core utilities tools
    "cat.ori" = "/run/current-system/sw/bin/cat";
-   "ls.ori" = "/run/current-system/sw/bin/ls";
+   "ls.ori" = "/run/current-system/sw/bin/ls --color";
    "df.ori" = "/run/current-system/sw/bin/df";
    
    ### Prevent to use internal which config in zsh (shows aliases which path)
