@@ -14,6 +14,16 @@
  virtualisation = {
    kvmgt.enable = true;
    spiceUSBRedirection.enable = true;
+   qemu = {
+     ### Define qemu option for test vm
+     options = [
+       "-smp 2"
+       "-m 4096"
+       "-spice port=3001,disable-ticketing=on"
+       "-device virtio-vga"
+       "-display gtk"
+     ];
+   };
    libvirtd = {
      enable = true;
      
@@ -21,15 +31,15 @@
      onShutdown = "shutdown";
      onBoot = "ignore";
      qemu = {
+       ### Define package for vm
+       package = pkgs.qemu_kvm;
+
        ### Tpm support in qemu
        swtpm.enable = true;
        
        ### Run qemu vm in qemu-libvirtd user instead of root
        runAsRoot = true; # Temporary enable (default) this option (disable this to use qemu-libvirtd, when upgrading to 25.11 or testing parts)
      };
-   };
-   libvirtd.qemu = {
-     package = pkgs.qemu_kvm;
    };
  };
 
@@ -64,7 +74,10 @@
        exit 0
      fi
      
-     ### apply new owner if it's root
+     ### apply new owner if it's root (folder)
+     chown -R $newUser $targetDir
+
+     ### apply new owner on all directory of this directory
      chown -R $newUser $targetDir/*
    '';
  };
