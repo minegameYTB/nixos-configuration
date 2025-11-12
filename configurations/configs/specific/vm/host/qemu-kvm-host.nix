@@ -14,16 +14,6 @@
  virtualisation = {
    kvmgt.enable = true;
    spiceUSBRedirection.enable = true;
-   qemu = {
-     ### Define qemu option for test vm
-     options = [
-       "-smp 2"
-       "-m 4096"
-       "-spice port=3001,disable-ticketing=on"
-       "-device virtio-vga"
-       "-display gtk"
-     ];
-   };
    libvirtd = {
      enable = true;
      
