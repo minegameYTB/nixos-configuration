@@ -65,7 +65,7 @@
      fi
      
      ### apply new owner if it's root (folder)
-     chown -R $newUser $targetDir
+     chown -R $newUser:$newUser $targetDir
 
      ### apply new owner on all directory of this directory
      chown -R $newUser $targetDir/*
