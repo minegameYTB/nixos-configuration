@@ -8,7 +8,7 @@
  users.users.minegame = {
    description = "Minegame YTB";
    isNormalUser = true;
-   extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
+   extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" "input" ];
    initialPassword = "nixos";
  };
 
