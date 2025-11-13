@@ -17,6 +17,7 @@
    
      #"flathub:app/io.github.shiftey.Desktop//stable"
      "flathub:app/io.mrarm.mcpelauncher//stable"
+     "flathub:app/it.mq1.TinyWiiBackupManager//stable"
      #"com.usebottles.bottles"
    ];
  };
