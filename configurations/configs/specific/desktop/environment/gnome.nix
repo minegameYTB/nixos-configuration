@@ -28,7 +28,6 @@
      mission-center
      gnome-tweaks
      gnome-extension-manager
-     showtime
      evolution
 
      ### Themes
