@@ -1,9 +1,9 @@
 ### Call pkgsExtra to use latest lutris and wineStaging
-{ config, pkgs, ... }:
+{ config, pkgsExtra, ... }:
 
 {
  ### Add lutris (define override to add wineStaging in the environment of lutris)
- environment.systemPackages = with pkgs; [
+ environment.systemPackages = with pkgsExtra.pkgs-unstable; [
    (lutris.override {
      extraPkgs = pkgs: [ wineWowPackages.staging ];
      extraLibraries = pkgs: [ libadwaita gtk4 ];
