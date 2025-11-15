@@ -1,12 +1,11 @@
-{ config, pkgsExtra, ... }:
+{ config, pkgs, ... }:
 
 {
  ### Steam (already provide steam-run (unfree))
  programs.steam = {
    enable = true;
-   package = pkgsExtra.pkgs-unstable.steam;
    extraCompatPackages = [
-     pkgsExtra.pkgs-unstable.proton-ge-bin
+     pkgs.proton-ge-bin
    ];
  };
 }
