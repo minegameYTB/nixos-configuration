@@ -24,7 +24,7 @@ this flake as a structure with mutiple directory
 ```
 * nixos-configuration root 
 |
- \_ configurations (all configuration that describe settings for NixOS)
+ \_ configurations (all configuration that describe settings for NixOS (include flake specific modules and custom modules for this configuration))
 |
  \_ home-manager (related to home-manager settings (to add package to user level))
 |
@@ -34,7 +34,9 @@ this flake as a structure with mutiple directory
 |
  \_ flake.nix (local expression to describe this flake (nixpkgs version management uses flake.lock (which “fixes” package versions)))
 |
+\_ script (script folder)
+ |
  \_ mksymlink (a simple script shell which will create a symlink into the root of home directory)
-|
+ |
  \_ update-flake (a shell script that will update the flake.lock file and create a git commit automatically)
 ```
