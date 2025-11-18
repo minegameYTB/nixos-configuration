@@ -33,6 +33,9 @@
    "cat.ori" = "${pkgs.coreutils}/bin/cat";
    "df.ori" = "${pkgs.coreutils}/bin/df";
 
+   ### Rm never interact
+   rm = "${pkgs.coreutils}/bin/rm --interactive=never";
+
    ### Use xterm-256color on runtime command
    ssh = "TERM=xterm-256color ssh";
 
