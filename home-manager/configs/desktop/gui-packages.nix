@@ -23,6 +23,9 @@ in
      ### Libreoffice (and langpack)
      #libreoffice-fresh
      hunspellDicts.fr-any
+
+     ### CLI but GUI related
+     nur.repos.minegameYTB.gsettings-diff
    ])
    ### All arch (pkgs from unstable branch)
    ++ (with pkgsExtra.pkgs-unstable; [
