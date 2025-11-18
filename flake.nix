@@ -12,9 +12,6 @@
 
    ### Other nixpkgs repos
    ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
-   nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
-   nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
-   #nixpkgs-25-05.url = "github:NixOS/nixpkgs/nixos-25.05";
    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
    
    ### Upstream nixpkgs repo (pin git hash)
@@ -77,9 +74,6 @@
 
    ### Other nixpkgs sources
    ctrl-os,
-   nixpkgs-23-11,
-   nixpkgs-24-11,
-   #nixpkgs-25-05,
    nixpkgs-unstable,
    #nixpkgs-master,
    #nixpkgs-pr,
@@ -154,18 +148,6 @@
        inherit system;
        config = nixpkgsConfig;
      };
-     pkgs-23-11 = import nixpkgs-23-11 {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     pkgs-24-11 = import nixpkgs-24-11 {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     #pkgs-25-05 = import nixpkgs-25-05 {
-     #  inherit system;
-     #  config = nixpkgsConfig;
-     #};
      pkgs-unstable = import nixpkgs-unstable {
        inherit system;
        config = nixpkgsConfig;

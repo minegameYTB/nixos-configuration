@@ -29,10 +29,6 @@ in
      bitwarden-desktop
      rpi-imager
    ])
-   ### Packages from pkgs-24.11 (all arch)
-   ++ (with pkgsExtra.pkgs-24-11; [
-     #rpi-imager
-   ])
    ### Packages specific to x86_64-linux (main pkgs branch)
    ++ lib.optionals isX86_64 (with pkgs; [
      discord
@@ -41,10 +37,6 @@ in
    ### Packages specific to aarch64-linux (main pkgs branch)
    ++ lib.optionals isAarch64 (with pkgs; [
      legcord
-   ])
-   ### Packages from nixpkgs-23-11 for x86_64-linux only
-   ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-23-11; [
-     #citra
    ])
    ### Packages from pkgs-unstable for x86_64-linux only
    ++ lib.optionals isX86_64 (with pkgsExtra.pkgs-unstable; [
