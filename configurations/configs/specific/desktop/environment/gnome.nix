@@ -128,6 +128,10 @@
              show-battery-percentage = true;
            };
 
+           "org/gnome/shell/app-switcher" = {
+             current-workspace-only = true;
+           };
+
            "org/gnome/desktop/default-applications/terminal" = {
              exec = "ghostty";
            };
