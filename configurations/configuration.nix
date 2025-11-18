@@ -13,7 +13,7 @@
    ./configs/common/timezone.nix       ### Timezone
    ./configs/common/security.nix       ### Security
    ./configs/overlays                  ### Global package overlay
-   #./modules                           ### Modules implementation
+   ./modules                           ### Modules implementation
  ];
    
  # Allow unfree packages
