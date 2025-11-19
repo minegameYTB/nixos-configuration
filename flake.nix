@@ -43,7 +43,7 @@
    };
    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
-   #lazyvim.url = "github:pfassina/lazyvim-nix";
+   lazyvim.url = "github:pfassina/lazyvim-nix";
 
    ### Rice/customization
    catppuccin-wallpapers = {
@@ -86,7 +86,7 @@
    declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
-   #lazyvim,
+   lazyvim,
 
    ### Sources for 3rd part software
    #ghostty,

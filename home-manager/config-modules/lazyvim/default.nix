@@ -11,5 +11,17 @@
   };
 
   ### Setup lazyvim
-  programs.lazyvim.enable = true;
+  programs.lazyvim = {
+    enable = true;
+    extras = {
+      lang.nix.enable = true;
+    };
+    extraPackages = with pkgs; [
+      nixd # Nix LSP
+      nixfmt-rfc-style # Nix formatter
+      statix # For suggestion on nix files
+      gcc # Provides the C Compiler
+      tree-sitter # Provides the tree-sitter CLI
+    ];
+  };
 }
