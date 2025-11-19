@@ -38,7 +38,8 @@
      adw-gtk3
      
      ### From my nurpkgs repo
-     nur.repos.minegameYTB.theme.marble-shell-filled
+     nur.repos.minegameYTB.theme.marble-shell-filled # Theme
+     nur.repos.minegameYTB.gsettings-diff # Tools
    ]) 
    ++
    (with pkgs.gnomeExtensions; [
