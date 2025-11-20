@@ -100,7 +100,7 @@
    nixpkgsConfig = {
      allowUnfree = true;
    };  
-   lib = nixpkgs-main.lib;
+   inherit (nixpkgs-main) lib;
 
    ### Overlay
    overlay = ({ config, pkgs, ... }: {
@@ -175,23 +175,27 @@
 
    ### Home Manager desktop config (non-function call)
    homeManagerDesktopConfig = system: { config, pkgs, ... }: {
-     home-manager.useGlobalPkgs = true;
-     home-manager.useUserPackages = true;
-     home-manager.users = lib.genAttrs users (username:
-       import ./hm-profiles/desktop-profile-wrapped.nix {
-         inherit username;
-         extraModules = [ ./home-manager/configs/specific/nixos ];
-       });
-     home-manager.extraSpecialArgs = specialArgs system;
+     home-manager = {
+       useGlobalPkgs = true;
+       useUserPackages = true;
+       users = lib.genAttrs users (username:
+         import ./hm-profiles/desktop-profile-wrapped.nix {
+           inherit username;
+           extraModules = [ ./home-manager/configs/specific/nixos ];
+         });
+       extraSpecialArgs = specialArgs system;
+     };
    };
 
    ### Home Manager server config (non-function call)
    homeManagerServerConfig = system: { config, pkgs, ... }: {
-     home-manager.useGlobalPkgs = true;
-     home-manager.useUserPackages = true;
-     home-manager.users = lib.genAttrs users (username:
-       import ./hm-profiles/server-profile.nix { inherit username; });
-     home-manager.extraSpecialArgs = specialArgs system;
+     home-manager = {
+       useGlobalPkgs = true;
+       useUserPackages = true;
+       users = lib.genAttrs users (username:
+         import ./hm-profiles/server-profile.nix { inherit username; });
+       extraSpecialArgs = specialArgs system;
+     };
    };
 
    ### Create standalone Home Manager config
