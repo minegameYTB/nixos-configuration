@@ -4,7 +4,7 @@
  description = "A flake with my configuration";
 
  inputs = {
-   ### Main repo (prepare nixos 25.05)
+   ### Main repo (prepare nixos 25.11)
    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
 
    ### To test a PR on a flake:
