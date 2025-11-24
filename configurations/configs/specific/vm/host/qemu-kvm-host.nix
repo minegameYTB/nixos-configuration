@@ -28,7 +28,7 @@
        swtpm.enable = true;
        
        ### Run qemu vm in qemu-libvirtd user instead of root
-       runAsRoot = true; # Temporary enable (default) this option (disable this to use qemu-libvirtd, when upgrading to 25.11 or testing parts)
+       runAsRoot = false;
      };
    };
  };
