@@ -11,7 +11,7 @@
 
  home.shellAliases = {
    ### Aliases
-   nix = "nix --refresh -v --cores 2";
+   nix = "nix --refresh --cores 2";
    home-manager = "home-manager -b bak";
 
    ### Git alias
