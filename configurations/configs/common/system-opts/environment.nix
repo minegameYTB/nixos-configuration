@@ -29,7 +29,6 @@
    ### Other aliases
    w-df = "/run/current-system/sw/bin/watch ${pkgs.duf}/bin/duf -hide special";
    ff = "${pkgs.fastfetch}/bin/fastfetch";
-   nix = "/run/current-system/sw/bin/nix -v";
    
    ### Git aliases
    gadd = "git add";
