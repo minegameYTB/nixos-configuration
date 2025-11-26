@@ -4,8 +4,8 @@
  description = "A flake with my configuration";
 
  inputs = {
-   ### Main repo (prepare nixos 25.11)
-   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
+   ### Main repo
+   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
 
    ### To test a PR on a flake:
    ### github:username/repo?ref=pull/<PR number>/head
@@ -22,7 +22,7 @@
 
    ### Other repos 
    home-manager = {
-     url = "github:nix-community/home-manager/";
+     url = "github:nix-community/home-manager/release-25.11";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    zen-browser = {
@@ -34,7 +34,7 @@
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    ### Stylix - future release-25.11 branch
-   stylix.url = "github:danth/stylix/master";
+   stylix.url = "github:danth/stylix/release-25.11";
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
