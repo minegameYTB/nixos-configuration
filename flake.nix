@@ -35,7 +35,6 @@
    };
    ### Stylix - future release-25.11 branch
    stylix.url = "github:danth/stylix/master";
-   #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
@@ -82,7 +81,6 @@
    stylix,
    home-manager,
    nur,
-   #nix-flatpak,
    declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
