@@ -33,7 +33,7 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   ### Stylix - future release-25.11 branch
+   ### Stylix
    stylix.url = "github:danth/stylix/release-25.11";
    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
    nix-index-database = {

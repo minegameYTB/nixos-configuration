@@ -11,6 +11,11 @@
    echo ""
  '';
 
+ ### Ssh cli package (replace openssl by libressl)
+ programs.ssh.package = pkgs.openssh.override {
+   openssl = pkgs.libressl;
+ };
+
  ### Zram
  zramSwap.enable = true;
 
