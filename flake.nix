@@ -35,7 +35,7 @@
    };
    ### Stylix - future release-25.11 branch
    stylix.url = "github:danth/stylix/release-25.11";
-   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0";
+   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
      inputs.nixpkgs.follows = "nixpkgs-main";
