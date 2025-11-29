@@ -26,10 +26,6 @@
    ### Rm never interact
    rm = "/run/current-system/sw/bin/rm --interactive=never";
    
-   ### Other aliases
-   w-df = "/run/current-system/sw/bin/watch ${pkgs.duf}/bin/duf -hide special";
-   ff = "${pkgs.fastfetch}/bin/fastfetch";
-   
    ### Git aliases
    gadd = "git add";
    gpush = "git push";
