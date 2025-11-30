@@ -28,7 +28,7 @@ in
 
    ### Pass $TERM env variable to ssh via a shell wrapper (and export openssh path as a global path for ssh wrapper)
    (pkgs.writeShellScriptBin "ssh" ''
-     export PATH='${lib.getBin pkgs.openssh}'
+     export PATH='${lib.getBin config.programs.ssh.package}'
      export TERM='xterm-256color'
      exec -a "$0" ${config.programs.ssh.package}/bin/ssh "$@"
    '')

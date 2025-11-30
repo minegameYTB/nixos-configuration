@@ -17,7 +17,7 @@
 
    ### Original core utilities tools
    "cat.ori" = "/run/current-system/sw/bin/cat";
-   "ls.ori" = "/run/current-system/sw/bin/ls";
+   "ls.ori" = "/run/current-system/sw/bin/ls --color";
    "df.ori" = "/run/current-system/sw/bin/df";
    
    ### Prevent to use internal which config in zsh (shows aliases which path)
@@ -25,10 +25,6 @@
    
    ### Rm never interact
    rm = "/run/current-system/sw/bin/rm --interactive=never";
-   
-   ### Other aliases
-   w-df = "/run/current-system/sw/bin/watch ${pkgs.duf}/bin/duf -hide special";
-   ff = "${pkgs.fastfetch}/bin/fastfetch";
    
    ### Git aliases
    gadd = "git add";

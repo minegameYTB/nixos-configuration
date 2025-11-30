@@ -5,16 +5,13 @@
 
  inputs = {
    ### Main repo
-   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.05";
+   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
 
    ### To test a PR on a flake:
    ### github:username/repo?ref=pull/<PR number>/head
 
    ### Other nixpkgs repos
    ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
-   nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
-   nixpkgs-24-11.url = "github:NixOS/nixpkgs/nixos-24.11";
-   #nixpkgs-25-05.url = "github:NixOS/nixpkgs/nixos-25.05";
    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
    
    ### Upstream nixpkgs repo (pin git hash)
@@ -23,9 +20,9 @@
    ### Temporairy use PR 
    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
-   ### Other repos
+   ### Other repos 
    home-manager = {
-     url = "github:nix-community/home-manager/release-25.05";
+     url = "github:nix-community/home-manager/release-25.11";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    zen-browser = {
@@ -36,16 +33,16 @@
      url = "github:nix-community/nur";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
-   ### Stylix - release-25.05 branch (Oct 2025)
-   stylix.url = "github:danth/stylix/4d065856e936fc6a99ba55d39ac2df9ded6bedbe";
-   #nix-flatpak.url = "github:gmodena/nix-flatpak/latest"; # For NixOS flatpak
-   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.0.0"; # For HM standalone
+   ### Stylix
+   stylix.url = "github:danth/stylix/release-25.11";
+   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
    nix-index-database = {
      url = "github:nix-community/nix-index-database";
      inputs.nixpkgs.follows = "nixpkgs-main";
    };
    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
+   lazyvim.url = "github:pfassina/lazyvim-nix";
 
    ### Rice/customization
    catppuccin-wallpapers = {
@@ -76,9 +73,6 @@
 
    ### Other nixpkgs sources
    ctrl-os,
-   nixpkgs-23-11,
-   nixpkgs-24-11,
-   #nixpkgs-25-05,
    nixpkgs-unstable,
    #nixpkgs-master,
    #nixpkgs-pr,
@@ -87,10 +81,10 @@
    stylix,
    home-manager,
    nur,
-   #nix-flatpak,
    declarative-flatpak,
    #nurpkgs-repo-minegameYTB,
    lanzaboote,
+   lazyvim,
 
    ### Sources for 3rd part software
    #ghostty,
@@ -104,7 +98,14 @@
    nixpkgsConfig = {
      allowUnfree = true;
    };  
-   lib = nixpkgs-main.lib;
+   inherit (nixpkgs-main) lib;
+
+   ### Overlay
+   overlay = ({ config, pkgs, ... }: {
+     nixpkgs.overlays = [
+       nur.overlays.default
+     ];
+   });
 
    ### Supported systems (x86_64 + ARM)
    systems = [ "x86_64-linux" "aarch64-linux" ];
@@ -112,14 +113,14 @@
 
    ### Create patched nixpkgs for each system
    nixpkgs-patched = system: (import nixpkgs-main { inherit system; }).applyPatches {
-     #name = "nixpkgs-patched-421549";
+     name = "nixpkgs-patched-455370";
      src = nixpkgs-main;
      patches = [
-       #(builtins.fetchurl {
-       #  ### Add ".patch" to get this link for a PR
-       #  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/421549.patch";
-       #  sha256 = "1m0s79pa9kq2awd3rykn0w8b6qryzf18ddjld4im0gv6jj0y9qbn";
-       #})
+       (builtins.fetchurl {
+         ### Add ".patch" to get this link for a PR
+         url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
+         sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
+       })
 
        ### Local patch
        #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
@@ -139,27 +140,12 @@
      config = nixpkgsConfig;
    };
 
-   ### Nur overlay
-   nurOverlay = ({ config, pkgs, ... }: { nixpkgs.overlays = [ nur.overlays.default ]; });
-
    ### Other sources (pkgs set)
    pkgsExtra = system: {
      pkgs-lts = import ctrl-os {
        inherit system;
        config = nixpkgsConfig;
      };
-     pkgs-23-11 = import nixpkgs-23-11 {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     pkgs-24-11 = import nixpkgs-24-11 {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     #pkgs-25-05 = import nixpkgs-25-05 {
-     #  inherit system;
-     #  config = nixpkgsConfig;
-     #};
      pkgs-unstable = import nixpkgs-unstable {
        inherit system;
        config = nixpkgsConfig;
@@ -187,23 +173,27 @@
 
    ### Home Manager desktop config (non-function call)
    homeManagerDesktopConfig = system: { config, pkgs, ... }: {
-     home-manager.useGlobalPkgs = true;
-     home-manager.useUserPackages = true;
-     home-manager.users = lib.genAttrs users (username:
-       import ./hm-profiles/desktop-profile-wrapped.nix {
-         inherit username;
-         extraModules = [ ./home-manager/configs/specific/nixos/stylix.nix ];
-       });
-     home-manager.extraSpecialArgs = specialArgs system;
+     home-manager = {
+       useGlobalPkgs = true;
+       useUserPackages = true;
+       users = lib.genAttrs users (username:
+         import ./hm-profiles/desktop-profile-wrapped.nix {
+           inherit username;
+           extraModules = [ ./home-manager/configs/specific/nixos ];
+         });
+       extraSpecialArgs = specialArgs system;
+     };
    };
 
    ### Home Manager server config (non-function call)
    homeManagerServerConfig = system: { config, pkgs, ... }: {
-     home-manager.useGlobalPkgs = true;
-     home-manager.useUserPackages = true;
-     home-manager.users = lib.genAttrs users (username:
-       import ./hm-profiles/server-profile.nix { inherit username; });
-     home-manager.extraSpecialArgs = specialArgs system;
+     home-manager = {
+       useGlobalPkgs = true;
+       useUserPackages = true;
+       users = lib.genAttrs users (username:
+         import ./hm-profiles/server-profile.nix { inherit username; });
+       extraSpecialArgs = specialArgs system;
+     };
    };
 
    ### Create standalone Home Manager config
@@ -236,8 +226,8 @@
          ./configurations/configuration.nix
          ./profiles/hp-probook-profile.nix
          
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "HP-probook"; }
@@ -256,8 +246,8 @@
          ./configurations/configuration.nix
          ./profiles/hp-240-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "UTILISA-0SK6G4E"; }
@@ -276,8 +266,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-efi-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop"; }
@@ -296,8 +286,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-bios-novio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios"; }
@@ -316,8 +306,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-desktop-bios-vio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
@@ -336,8 +326,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-efi-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-srv"; }
@@ -363,8 +353,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-bios-novio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-srv-bios"; }
@@ -383,8 +373,8 @@
          ./configurations/configuration.nix
          ./profiles/vm-no-gui-bios-vio-profile.nix
 
-         ### Nur overlay
-         nurOverlay
+         ### Global overlay settings
+         overlay
 
          ### Hostname config
          { networking.hostName = "nixos-pve-desktop-bios-virtio"; }

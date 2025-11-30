@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-curl -s https://wallpapers.manishk.dev/install.sh | bash -s $1

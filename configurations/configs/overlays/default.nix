@@ -3,10 +3,11 @@
 {
  ### Import package overlays (and patch) on global software
  nixpkgs.overlays = [
-   #(import ../overlays/coreutils-full.nix)
-   #(import ../overlays/appimage-run.nix)
-   #(import ../overlays/gnome-control-center.nix)
-   #(import ../overlays/gnome-mutter.nix)
-   #(import ../overlays/package-name.nix)
+   #(import ./coreutils-full.nix)
+   #(import ./uutils-coreutils.nix)
+   #(import ./appimage-run.nix)
+   #(import ./gnome-control-center.nix)
+   #(import ./gnome-mutter.nix)
+   #(import ./package-name.nix)
  ];
 }
