@@ -5,8 +5,8 @@
  imports = [ ../x11.nix ];
  
  # Enable the GNOME Desktop Environment. (remove xserver set on 25.11)
- services.xserver.displayManager.gdm.enable = true;
- services.xserver.desktopManager.gnome.enable = true;
+ services.displayManager.gdm.enable = true;
+ services.desktopManager.gnome.enable = true;
  
  ### Gnome pinentry gpg
  programs.gnupg.agent = {
@@ -28,8 +28,8 @@
      mission-center
      gnome-tweaks
      gnome-extension-manager
-     showtime
      evolution
+     xarchiver
 
      ### Themes
      ### Override papirus-icon-theme to set folder green
@@ -39,7 +39,8 @@
      adw-gtk3
      
      ### From my nurpkgs repo
-     nur.repos.minegameYTB.theme.marble-shell-filled
+     nur.repos.minegameYTB.theme.marble-shell-filled # Theme
+     nur.repos.minegameYTB.gsettings-diff # Tools
    ]) 
    ++
    (with pkgs.gnomeExtensions; [
@@ -56,6 +57,7 @@
      no-overview
      quick-settings-audio-panel
      grand-theft-focus
+     caffeine
 
     ### Disabled bcause stylix is incompatible with just-perfection
     #just-perfection
@@ -128,6 +130,10 @@
              show-battery-percentage = true;
            };
 
+           "org/gnome/shell/app-switcher" = {
+             current-workspace-only = true;
+           };
+
            "org/gnome/desktop/default-applications/terminal" = {
              exec = "ghostty";
            };
@@ -193,6 +199,7 @@
                "no-overview@fthx"
                "quick-settings-audio-panel@rayzeq.github.io"
                "grand-theft-focus@zalckos.github.com"
+               "caffeine@patapon.info"
              ];
              favorite-apps = [
                "zen-beta.desktop"
@@ -203,7 +210,7 @@
                "virt-manager.desktop"
                "org.prismlauncher.PrismLauncher.desktop"
                "discord.desktop"
-               "spotify.desktop"
+               "deezer-enhanced.desktop"
                "steam.desktop"
                "LocalSend.desktop"
              ];
@@ -258,6 +265,7 @@
                "system-tools"
                "universal-access"
                "wine"
+               "waydroid"
              ];
            };
 

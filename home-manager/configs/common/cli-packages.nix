@@ -7,6 +7,7 @@
    jq
    dhall-json
    ripgrep
+   fastfetch
    #screen
  ];
 

@@ -31,17 +31,6 @@
  ### Localsend
  programs.localsend.enable = true;
 
- ### Controller
- services.udev.extraRules = ''
-   # USB
-   ATTRS{name}=="Sony Interactive Entertainment Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-   ATTRS{name}=="Sony Interactive Entertainment DualSense Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-   
-   # Bluetooth
-   ATTRS{name}=="Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-   ATTRS{name}=="DualSense Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
- '';
-
  ### IBUS
  i18n.inputMethod = {
    enable = true;

@@ -13,14 +13,14 @@
    ./configs/common/timezone.nix       ### Timezone
    ./configs/common/security.nix       ### Security
    ./configs/overlays                  ### Global package overlay
-   #./modules                           ### Modules implementation
+   ./modules                           ### Modules implementation
  ];
    
  # Allow unfree packages
  #nixpkgs.config.allowUnfree = true;
 
  ### Enable Firejail (common config)
- programs.firejail.enable = true;
+ #programs.firejail.enable = true;
 
 ###----------------------------------------------------------------
 

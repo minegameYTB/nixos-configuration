@@ -7,8 +7,7 @@
  nix = {
    gc = {
      automatic = true;
-     ### Change "frequency" to "dates"
-     frequency = "weekly";
+     dates = "weekly";
      options = "--delete-older-than 15d";
    };
  };
@@ -28,19 +27,21 @@
        pname = "gitMinimal-custom";
      });
    in gitMinimalCustom;
-   userName  = "Minegame YTB";
-   userEmail = "53137994+minegameYTB@users.noreply.github.com";
    ignores = [
      "*.swp"
      "*~"
    ];
-   extraConfig = {
+   settings = {
+     user.name  = "Minegame YTB";
+     user.email = "53137994+minegameYTB@users.noreply.github.com";
      credential = {
        ### Use gh from profile
        helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
      };
-     init.defaultBranch = "main";
-     #push.autoSetupRemote = true;
+     init = {
+       defaultBranch = "main";
+       rebase = true;
+     };
    };
  };
 

@@ -1,6 +1,9 @@
+# -- Build variable and "fake target" --
 NIX_FLAGS=--extra-experimental-features "nix-command flakes"
 SCRIPT_DIR=$(shell pwd)/script
+.PHONY: help update-flake mksymlink
 
+# -- Use help target by default (use '#' 3 times to show comment for help) --
 .DEFAULT_GOAL := help
 
 help:           ### Show help
@@ -9,16 +12,8 @@ help:           ### Show help
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?### .*$$' $(MAKEFILE_LIST) | awk '{printf "  \033[36m%-15s\033[0m %s\n", $$1, substr($$0, index($$0, "###") + 3)}'
 
-check:          ### Check files
-	nix $(NIX_FLAGS) flake check --no-build
-
 update-flake:   ### update-flake
 	bash -c $(SCRIPT_DIR)/update-flake
 
 mksymlink:      ### Make symlink
 	bash -c $(SCRIPT_DIR)/mksymlink
-
-fix:            ### Fix nix syntax
-	bash -c $(SCRIPT_DIR)/fix-syntax
-
-.PHONY: help update-flake mksymlink fix check
