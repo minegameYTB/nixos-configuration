@@ -196,6 +196,7 @@
               username:
               import ./hm-profiles/desktop-profile-wrapped.nix {
                 inherit username;
+                ### Stylix is referenced in ./home-manager/configs/specific/nixos/default.nix
                 extraModules = [ ./home-manager/configs/specific/nixos ];
               }
             );
