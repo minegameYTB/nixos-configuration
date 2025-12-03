@@ -9,20 +9,6 @@
   ### Import stylix modules like a expression
   imports = [ inputs.stylix.nixosModules.stylix ];
 
-  ### Ccache related options
-  programs.ccache.packageNames = [
-    "gdm"
-    "gnome-shell"
-    "gnome-text-editor"
-    "gnome-calculator"
-    "gnome-session"
-    "gnome-initial-setup"
-    "sushi"
-    "papers"
-    "gtksourceview4"
-    "gtksourceview5"
-  ];
-
   ### Stylix config
   stylix = {
     enable = true;

@@ -7,14 +7,6 @@
 }:
 
 {
-  ### Ccache
-  programs.ccache = {
-    enable = true;
-    cacheDir = "/nix/var/cache/ccache";
-
-    ### move packageNames option to some directory (stylix for exemple)
-  };
-
   ### Nix Settings
   nix = {
     ### Use nix from ctrl os
@@ -35,7 +27,6 @@
         "flakes"
         "ca-derivations"
       ];
-      extra-sandbox-paths = [ config.programs.ccache.cacheDir ];
       max-jobs = 2;
       cores = 2;
     };
