@@ -1,399 +1,433 @@
 ### (Flake created with https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users#org81dbd1d)
 
 {
- description = "A flake with my configuration";
+  description = "A flake with my configuration";
 
- inputs = {
-   ### Main repo
-   nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
+  inputs = {
+    ### Main repo
+    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
 
-   ### To test a PR on a flake:
-   ### github:username/repo?ref=pull/<PR number>/head
+    ### To test a PR on a flake:
+    ### github:username/repo?ref=pull/<PR number>/head
 
-   ### Other nixpkgs repos
-   ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
-   nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-   
-   ### Upstream nixpkgs repo (pin git hash)
-   #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
+    ### Other nixpkgs repos
+    ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-   ### Temporairy use PR 
-   #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
+    ### Upstream nixpkgs repo (pin git hash)
+    #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
 
-   ### Other repos 
-   home-manager = {
-     url = "github:nix-community/home-manager/release-25.11";
-     inputs.nixpkgs.follows = "nixpkgs-main";
-   };
-   zen-browser = {
-     url = "github:0xc000022070/zen-browser-flake";
-     inputs.nixpkgs.follows = "nixpkgs-main";
-   };
-   nur = {
-     url = "github:nix-community/nur";
-     inputs.nixpkgs.follows = "nixpkgs-main";
-   };
-   ### Stylix
-   stylix.url = "github:danth/stylix/release-25.11";
-   declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
-   nix-index-database = {
-     url = "github:nix-community/nix-index-database";
-     inputs.nixpkgs.follows = "nixpkgs-main";
-   };
-   #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
-   #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
-   lazyvim.url = "github:pfassina/lazyvim-nix";
+    ### Temporairy use PR
+    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
-   ### Rice/customization
-   catppuccin-wallpapers = {
-     url = "github:zhichaoh/catppuccin-wallpapers";
-     flake = false;
-   };  
-   dotfiles-minegameYTB = {
-     url = "github:minegameYTB/dotfiles";
-     flake = false;
-   };
+    ### Other repos
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+    nur = {
+      url = "github:nix-community/nur";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+    ### Stylix
+    stylix.url = "github:danth/stylix/release-25.11";
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
+    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
+    lazyvim.url = "github:pfassina/lazyvim-nix";
 
-   ### Utilities
-   ### Import blocklist as non-flake for /etc/hosts
-   blocklist = {
-     url = "github:StevenBlack/hosts";
-     flake = false;
-   };
-   lanzaboote = {
-     url = "github:nix-community/lanzaboote/v0.4.2";
-     inputs.nixpkgs.follows = "nixpkgs-main";
-   };
- };
+    ### Rice/customization
+    catppuccin-wallpapers = {
+      url = "github:zhichaoh/catppuccin-wallpapers";
+      flake = false;
+    };
+    dotfiles-minegameYTB = {
+      url = "github:minegameYTB/dotfiles";
+      flake = false;
+    };
 
- outputs = {
-   ### Primary sources
-   self,
-   nixpkgs-main,
+    ### Utilities
+    ### Import blocklist as non-flake for /etc/hosts
+    blocklist = {
+      url = "github:StevenBlack/hosts";
+      flake = false;
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+  };
 
-   ### Other nixpkgs sources
-   ctrl-os,
-   nixpkgs-unstable,
-   #nixpkgs-master,
-   #nixpkgs-pr,
+  outputs =
+    {
+      ### Primary sources
+      self,
+      nixpkgs-main,
 
-   ### Other sources
-   stylix,
-   home-manager,
-   nur,
-   declarative-flatpak,
-   #nurpkgs-repo-minegameYTB,
-   lanzaboote,
-   lazyvim,
+      ### Other nixpkgs sources
+      ctrl-os,
+      nixpkgs-unstable,
+      #nixpkgs-master,
+      #nixpkgs-pr,
 
-   ### Sources for 3rd part software
-   #ghostty,
-   zen-browser,
-   ...
- }@inputs:
+      ### Other sources
+      stylix,
+      home-manager,
+      nur,
+      declarative-flatpak,
+      #nurpkgs-repo-minegameYTB,
+      lanzaboote,
+      lazyvim,
 
- let
-   ### System variables
-   ### Nixpkgs config (unfree allowed)
-   nixpkgsConfig = {
-     allowUnfree = true;
-   };  
-   inherit (nixpkgs-main) lib;
+      ### Sources for 3rd part software
+      #ghostty,
+      zen-browser,
+      ...
+    }@inputs:
 
-   ### Overlay
-   overlay = ({ config, pkgs, ... }: {
-     nixpkgs.overlays = [
-       nur.overlays.default
-     ];
-   });
+    let
+      ### System variables
+      ### Nixpkgs config (unfree allowed)
+      nixpkgsConfig = {
+        allowUnfree = true;
+      };
+      inherit (nixpkgs-main) lib;
 
-   ### Supported systems (x86_64 + ARM)
-   systems = [ "x86_64-linux" "aarch64-linux" ];
-   users = [ "minegame" ];
+      ### Overlay
+      overlay = (
+        { config, pkgs, ... }:
+        {
+          nixpkgs.overlays = [
+            nur.overlays.default
+          ];
+        }
+      );
 
-   ### Create patched nixpkgs for each system
-   nixpkgs-patched = system: (import nixpkgs-main { inherit system; }).applyPatches {
-     name = "nixpkgs-patched-455370";
-     src = nixpkgs-main;
-     patches = [
-       (builtins.fetchurl {
-         ### Add ".patch" to get this link for a PR
-         url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
-         sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
-       })
+      ### Supported systems (x86_64 + ARM)
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      users = [ "minegame" ];
 
-       ### Local patch
-       #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
-       #./configurations/patch/nixpkgs/0000-libvirt-update.patch
-     ];
-   };
+      ### Create patched nixpkgs for each system
+      nixpkgs-patched =
+        system:
+        (import nixpkgs-main { inherit system; }).applyPatches {
+          name = "nixpkgs-patched-455370";
+          src = nixpkgs-main;
+          patches = [
+            (builtins.fetchurl {
+              ### Add ".patch" to get this link for a PR
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
+              sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
+            })
 
-   ### Import patched nixpkgs into pkgs-patched attr
-   pkgsPatched = system: import (nixpkgs-patched system) {
-     inherit system;
-     config = nixpkgsConfig;
-   };
+            ### Local patch
+            #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
+            #./configurations/patch/nixpkgs/0000-libvirt-update.patch
+          ];
+        };
 
-   ### Set unfree package directly from standard pkgs (non-patched) attr
-   pkgsFor = system: import nixpkgs-main {
-     inherit system;
-     config = nixpkgsConfig;
-   };
+      ### Import patched nixpkgs into pkgs-patched attr
+      pkgsPatched =
+        system:
+        import (nixpkgs-patched system) {
+          inherit system;
+          config = nixpkgsConfig;
+        };
 
-   ### Other sources (pkgs set)
-   pkgsExtra = system: {
-     pkgs-lts = import ctrl-os {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     pkgs-unstable = import nixpkgs-unstable {
-       inherit system;
-       config = nixpkgsConfig;
-     };
-     #pkgs-master = import nixpkgs-master {
-     #  inherit system;
-     #  config = nixpkgsConfig;
-     #};
-     #pkgs-pr = import nixpkgs-pr {
-     #  inherit system;
-     #  config = nixpkgsConfig;
-     #};
-   };
+      ### Set unfree package directly from standard pkgs (non-patched) attr
+      pkgsFor =
+        system:
+        import nixpkgs-main {
+          inherit system;
+          config = nixpkgsConfig;
+        };
 
-   ### Shared specialArgs for all configurations
-   specialArgs = system: {
-     inherit inputs;
-     pkgsExtra = pkgsExtra system;
-     inherit (inputs)
-       zen-browser 
-       #ghostty
-     ; 
-     #inherit (inputs) nurpkgs-repo-minegameYTB;
-   };
+      ### Other sources (pkgs set)
+      pkgsExtra = system: {
+        pkgs-lts = import ctrl-os {
+          inherit system;
+          config = nixpkgsConfig;
+        };
+        pkgs-unstable = import nixpkgs-unstable {
+          inherit system;
+          config = nixpkgsConfig;
+        };
+        #pkgs-master = import nixpkgs-master {
+        #  inherit system;
+        #  config = nixpkgsConfig;
+        #};
+        #pkgs-pr = import nixpkgs-pr {
+        #  inherit system;
+        #  config = nixpkgsConfig;
+        #};
+      };
 
-   ### Home Manager desktop config (non-function call)
-   homeManagerDesktopConfig = system: { config, pkgs, ... }: {
-     home-manager = {
-       useGlobalPkgs = true;
-       useUserPackages = true;
-       users = lib.genAttrs users (username:
-         import ./hm-profiles/desktop-profile-wrapped.nix {
-           inherit username;
-           extraModules = [ ./home-manager/configs/specific/nixos ];
-         });
-       extraSpecialArgs = specialArgs system;
-     };
-   };
+      ### Shared specialArgs for all configurations
+      specialArgs = system: {
+        inherit inputs;
+        pkgsExtra = pkgsExtra system;
+        inherit (inputs)
+          zen-browser
+          #ghostty
+          ;
+        #inherit (inputs) nurpkgs-repo-minegameYTB;
+      };
 
-   ### Home Manager server config (non-function call)
-   homeManagerServerConfig = system: { config, pkgs, ... }: {
-     home-manager = {
-       useGlobalPkgs = true;
-       useUserPackages = true;
-       users = lib.genAttrs users (username:
-         import ./hm-profiles/server-profile.nix { inherit username; });
-       extraSpecialArgs = specialArgs system;
-     };
-   };
+      ### Home Manager desktop config (non-function call)
+      homeManagerDesktopConfig =
+        system:
+        { config, pkgs, ... }:
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users = lib.genAttrs users (
+              username:
+              import ./hm-profiles/desktop-profile-wrapped.nix {
+                inherit username;
+                extraModules = [ ./home-manager/configs/specific/nixos ];
+              }
+            );
+            extraSpecialArgs = specialArgs system;
+          };
+        };
 
-   ### Create standalone Home Manager config
-   mkHome = system: username: home-manager.lib.homeManagerConfiguration {
-     pkgs = import nixpkgs-main {
-       inherit system;
-       config = { allowUnfree = true; };
-     };
-     modules = [
-       (import ./hm-profiles/desktop-profile.nix { inherit username; })
-       stylix.homeModules.stylix
-       
-       ### Import specific expression for standalone hm (move futur function here)
-       ./home-manager/configs/specific/standalone
-     ];
-     extraSpecialArgs = {
-       inherit inputs;
-       pkgsExtra = pkgsExtra system;
-       inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
-     };
-   };
- in {
-   nixosConfigurations = {
-     hp-probook = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/hp-probook-profile.nix
-         
-         ### Global overlay settings
-         overlay
+      ### Home Manager server config (non-function call)
+      homeManagerServerConfig =
+        system:
+        { config, pkgs, ... }:
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users = lib.genAttrs users (
+              username: import ./hm-profiles/server-profile.nix { inherit username; }
+            );
+            extraSpecialArgs = specialArgs system;
+          };
+        };
 
-         ### Hostname config
-         { networking.hostName = "HP-probook"; }
+      ### Create standalone Home Manager config
+      mkHome =
+        system: username:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs-main {
+            inherit system;
+            config = {
+              allowUnfree = true;
+            };
+          };
+          modules = [
+            (import ./hm-profiles/desktop-profile.nix { inherit username; })
+            stylix.homeModules.stylix
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerDesktopConfig "x86_64-linux")
-       ];
-     };
-     hp-240 = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/hp-240-profile.nix
+            ### Import specific expression for standalone hm (move futur function here)
+            ./home-manager/configs/specific/standalone
+          ];
+          extraSpecialArgs = {
+            inherit inputs;
+            pkgsExtra = pkgsExtra system;
+            inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
+          };
+        };
+    in
+    {
+      ### Formater
+      formatter.x86_64-linux = nixpkgs-main.legacyPackages.x86_64-linux.nixfmt;
 
-         ### Global overlay settings
-         overlay
+      ### configurations
+      nixosConfigurations = {
+        hp-probook = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/hp-probook-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "UTILISA-0SK6G4E"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerDesktopConfig "x86_64-linux")
-       ];
-     };
-     vm-desktop-efi = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-desktop-efi-profile.nix
+            ### Hostname config
+            { networking.hostName = "HP-probook"; }
 
-         ### Global overlay settings
-         overlay
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerDesktopConfig "x86_64-linux")
+          ];
+        };
+        hp-240 = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/hp-240-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-desktop"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerDesktopConfig "x86_64-linux")
-       ];
-     };
-     vm-desktop-bios = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-desktop-bios-novio-profile.nix
+            ### Hostname config
+            { networking.hostName = "UTILISA-0SK6G4E"; }
 
-         ### Global overlay settings
-         overlay
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerDesktopConfig "x86_64-linux")
+          ];
+        };
+        vm-desktop-efi = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-desktop-efi-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-desktop-bios"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerDesktopConfig "x86_64-linux")
-       ];
-     };
-     vm-desktop-bios-virtio = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-desktop-bios-vio-profile.nix
+            ### Hostname config
+            { networking.hostName = "nixos-pve-desktop"; }
 
-         ### Global overlay settings
-         overlay
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerDesktopConfig "x86_64-linux")
+          ];
+        };
+        vm-desktop-bios = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-desktop-bios-novio-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerDesktopConfig "x86_64-linux")
-       ];
-     };
-     vm-no-gui-efi = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-no-gui-efi-profile.nix
+            ### Hostname config
+            { networking.hostName = "nixos-pve-desktop-bios"; }
 
-         ### Global overlay settings
-         overlay
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerDesktopConfig "x86_64-linux")
+          ];
+        };
+        vm-desktop-bios-virtio = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-desktop-bios-vio-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-srv"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerServerConfig "x86_64-linux")
+            ### Hostname config
+            { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
 
-         ### Add wrapper expression module
-         (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
-           extraModules = [
-             #./configurations/configs/specific/vm/guest/nextcloud.nix
-           ];
-         })
-       ];
-     };
-     vm-no-gui-bios = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-no-gui-bios-novio-profile.nix
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerDesktopConfig "x86_64-linux")
+          ];
+        };
+        vm-no-gui-efi = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-no-gui-efi-profile.nix
 
-         ### Global overlay settings
-         overlay
+            ### Global overlay settings
+            overlay
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-srv-bios"; }
+            ### Hostname config
+            { networking.hostName = "nixos-pve-srv"; }
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerServerConfig "x86_64-linux")
-       ];
-     };
-     vm-no-gui-bios-virtio = lib.nixosSystem {
-       system = "x86_64-linux";
-       ### Inject pkgs attr with options
-       pkgs = pkgsFor "x86_64-linux";
-       specialArgs = specialArgs "x86_64-linux";
-       modules = [
-         ./configurations/configuration.nix
-         ./profiles/vm-no-gui-bios-vio-profile.nix
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerServerConfig "x86_64-linux")
 
-         ### Global overlay settings
-         overlay
+            ### Add wrapper expression module
+            (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
+              extraModules = [
+                #./configurations/configs/specific/vm/guest/nextcloud.nix
+              ];
+            })
+          ];
+        };
+        vm-no-gui-bios = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-no-gui-bios-novio-profile.nix
 
-         ### Hostname config
-         { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+            ### Global overlay settings
+            overlay
 
-         ### Home-manager module
-         home-manager.nixosModules.home-manager
-         (homeManagerServerConfig "x86_64-linux")
-       ];
-     };
-   };
+            ### Hostname config
+            { networking.hostName = "nixos-pve-srv-bios"; }
 
-   ### Multi-architecture home-manager configs
-   homeConfigurations = lib.listToAttrs (
-     lib.concatMap (username:
-       lib.concatMap (system: [{
-         name = "${username}@${system}";
-         value = mkHome system username;
-       }]) systems
-     ) users
-   );
- };
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerServerConfig "x86_64-linux")
+          ];
+        };
+        vm-no-gui-bios-virtio = lib.nixosSystem {
+          system = "x86_64-linux";
+          ### Inject pkgs attr with options
+          pkgs = pkgsFor "x86_64-linux";
+          specialArgs = specialArgs "x86_64-linux";
+          modules = [
+            ./configurations/configuration.nix
+            ./profiles/vm-no-gui-bios-vio-profile.nix
+
+            ### Global overlay settings
+            overlay
+
+            ### Hostname config
+            { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+
+            ### Home-manager module
+            home-manager.nixosModules.home-manager
+            (homeManagerServerConfig "x86_64-linux")
+          ];
+        };
+      };
+
+      ### Multi-architecture home-manager configs
+      homeConfigurations = lib.listToAttrs (
+        lib.concatMap (
+          username:
+          lib.concatMap (system: [
+            {
+              name = "${username}@${system}";
+              value = mkHome system username;
+            }
+          ]) systems
+        ) users
+      );
+    };
 }

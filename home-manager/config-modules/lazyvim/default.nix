@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   ### Import lazyvim expr
@@ -18,7 +23,7 @@
     };
     extraPackages = with pkgs; [
       nixd # Nix LSP
-      nixfmt-rfc-style # Nix formatter
+      nixfmt # Nix formatter
       statix # For suggestion on nix files
       gcc # Provides the C Compiler
       tree-sitter # Provides the tree-sitter CLI
