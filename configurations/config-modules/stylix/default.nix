@@ -16,6 +16,9 @@
     "gnome-text-editor"
     "gnome-calculator"
     "gnome-session"
+    "sushi"
+    "papers"
+    "gtksourceview4"
     "gtksourceview5"
   ];
 
