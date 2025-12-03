@@ -1,8 +1,14 @@
-{ lib, config, pkgs, pkgsExtra, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  pkgsExtra,
+  ...
+}:
 
 {
- ### Import all expression related to services
- imports = [
-   ./ctrl-os-substitutes.nix
- ];
+  ### Import all expression related to services
+  imports = [
+    ./ctrl-os-substitutes.nix
+  ];
 }

@@ -1,10 +1,15 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   boot = {
-   plymouth = {
-     enable = true;
-     theme = lib.mkDefault "bgrt";
-   };
+    plymouth = {
+      enable = true;
+      theme = lib.mkDefault "bgrt";
+    };
   };
 }

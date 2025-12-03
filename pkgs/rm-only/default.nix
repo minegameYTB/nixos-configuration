@@ -8,7 +8,7 @@ in
 stdenvNoCC.mkDerivation {
   pname = "rm-only";
   version = coreutils.version;
-  
+
   dontUnpack = true;
   dontBuild = true;
   dontConfigure = true;
@@ -23,9 +23,9 @@ stdenvNoCC.mkDerivation {
   '';
 
   ### Disable metadata
- #meta = {
- #  description = "Standalone 'rm' binary extracted from coreutils";
- #  license = pkgs.lib.licenses.gpl3Plus;
- #  platforms = pkgs.lib.platforms.all;
- #};
+  #meta = {
+  #  description = "Standalone 'rm' binary extracted from coreutils";
+  #  license = pkgs.lib.licenses.gpl3Plus;
+  #  platforms = pkgs.lib.platforms.all;
+  #};
 }

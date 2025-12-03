@@ -16,7 +16,10 @@
                 mountpoint = "/boot";
                 mountOptions = [ "umask=0077" ];
                 ### Add label
-                extraArgs = [ "-n" "EFI" ];
+                extraArgs = [
+                  "-n"
+                  "EFI"
+                ];
               };
             };
             root = {
@@ -25,7 +28,10 @@
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
-                extraArgs = [ "-L" "nixos-root" ];
+                extraArgs = [
+                  "-L"
+                  "nixos-root"
+                ];
               };
             };
             home = {
@@ -34,7 +40,10 @@
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/home";
-                extraArgs = [ "-L" "nixos-home" ];
+                extraArgs = [
+                  "-L"
+                  "nixos-home"
+                ];
               };
             };
           };
@@ -43,4 +52,3 @@
     };
   };
 }
-

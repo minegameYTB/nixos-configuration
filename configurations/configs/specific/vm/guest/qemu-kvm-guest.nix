@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
 
 {
- ### qemu-guest-agent
- services.qemuGuest.enable = true;
+  ### qemu-guest-agent
+  services.qemuGuest.enable = true;
 
- ### spice-vd-agent
- services.spice-vdagentd.enable = true;
+  ### spice-vd-agent
+  services.spice-vdagentd.enable = true;
 }

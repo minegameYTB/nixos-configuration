@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   # Some programs need SUID wrappers, can be configured further or are
@@ -12,4 +17,3 @@
   ### Apparmor
   security.apparmor.enable = true;
 }
-

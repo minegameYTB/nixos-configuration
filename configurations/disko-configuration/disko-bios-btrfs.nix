@@ -16,7 +16,10 @@
               bootable = true;
               content = {
                 type = "btrfs";
-                extraArgs = [ "-L" "nixos-root" ];
+                extraArgs = [
+                  "-L"
+                  "nixos-root"
+                ];
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
@@ -48,4 +51,3 @@
     };
   };
 }
-

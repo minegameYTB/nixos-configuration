@@ -1,8 +1,8 @@
 self: super: {
- #coreutils-full = super.coreutils-full.override {
- #  singleBinary = "no";
- #};
-  
+  #coreutils-full = super.coreutils-full.override {
+  #  singleBinary = "no";
+  #};
+
   coreutils-full = super.coreutils-full.overrideAttrs (oldAttrs: {
     configureFlags = [
       "--with-packager=https://nixos.org"
@@ -13,4 +13,3 @@ self: super: {
     doCheck = false;
   });
 }
-

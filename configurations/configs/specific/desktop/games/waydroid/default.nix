@@ -1,14 +1,14 @@
 { config, pkgs, ... }:
 
 {
- ### Waydroid
- virtualisation.waydroid = {
-   enable = true;
- };
+  ### Waydroid
+  virtualisation.waydroid = {
+    enable = true;
+  };
 
- ### Add pyclip
- environment.systemPackages = with pkgs; [
-   python313Packages.pyclip
-   nur.repos.ataraxiasjel.waydroid-script
- ];
+  ### Add pyclip
+  environment.systemPackages = with pkgs; [
+    python313Packages.pyclip
+    nur.repos.ataraxiasjel.waydroid-script
+  ];
 }
