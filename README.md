@@ -17,6 +17,27 @@ How to install this flake with nixos-install ?
 #> nixos-install --flake github:minegameYTB/nixos-configuration#<host>
 ```
 
+You must temporarily disable stylix before performing the installation (VM or bare metal) (ccache need to initialize is cache before change redirect to compiler (only in new installation)).
+(This may cause this type of error:
+```bash
+error: builder for '/nix/store/3xk33dhv7y3p1cngs9m51x96wzbz0lk5-gdm-49.2.drv' failed with exit code 1;
+       last 25 log lines:
+       > patching file daemon/gdm-session-worker.c
+       > Hunk #1 succeeded at 1652 with fuzz 1 (offset 137 lines).
+       > Hunk #2 succeeded at 1703 (offset 134 lines).
+       > applying patch /nix/store/6b6b3bjf07z7sb6hpas1ragyfr31jbqn-reset-environment.patch
+       > patching file daemon/gdm-wayland-session.c
+       > Hunk #1 succeeded at 288 (offset 3 lines).
+       > patching file daemon/gdm-x-session.c
+       > Hunk #1 succeeded at 630 (offset 20 lines).
+       >
+       > patching script interpreter paths in build-aux/find-x-server.sh
+       > build-aux/find-x-server.sh: interpreter directive changed from "#!/bin/sh" to "/nix/store/rlq03x4cwf8zn73hxaxnx0zn5q9kifls-bash-5.3p3/bin/sh"
+       > Running phase: updateAutotoolsGnuConfigScriptsPhase
+       > Running phase: configurePhase
+[...]
+```)
+
 # flake structure
 
 this flake as a structure with mutiple directory
