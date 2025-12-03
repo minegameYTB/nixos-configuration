@@ -244,7 +244,7 @@
     in
     {
       ### Formater
-      formatter.x86_64-linux = nixpkgs-main.legacyPackages.x86_64-linux.nixfmt;
+      formatter.x86_64-linux = nixpkgs-main.legacyPackages.x86_64-linux.nixfmt-tree;
 
       ### configurations
       nixosConfigurations = {
