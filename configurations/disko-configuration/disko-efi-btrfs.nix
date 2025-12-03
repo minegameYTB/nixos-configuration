@@ -19,14 +19,20 @@
                 format = "vfat";
                 mountpoint = "/boot";
                 mountOptions = [ "umask=0077" ];
-                extraArgs = [ "-n" "EFI" ];
+                extraArgs = [
+                  "-n"
+                  "EFI"
+                ];
               };
             };
             root = {
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = [ "-L" "nixos-root" ];
+                extraArgs = [
+                  "-L"
+                  "nixos-root"
+                ];
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
@@ -58,4 +64,3 @@
     };
   };
 }
-

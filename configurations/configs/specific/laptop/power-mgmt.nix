@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 
 {
- powerManagement.enable = true;
- powerManagement.powertop.enable = true;
+  powerManagement.enable = true;
+  powerManagement.powertop.enable = true;
 }

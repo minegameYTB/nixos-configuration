@@ -1,8 +1,8 @@
 { ... }:
 
 {
- ### Import external home-manager modules
- imports = [
-   ./lazyvim
- ];
+  ### Import external home-manager modules
+  imports = [
+    ./lazyvim
+  ];
 }

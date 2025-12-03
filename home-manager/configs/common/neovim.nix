@@ -11,9 +11,9 @@
     withRuby = false;
     defaultEditor = true;
     extraPackages = with pkgs; [
-      xclip 
+      xclip
       wl-clipboard
-     
+
       ### For Telescope
       #fd
     ];
@@ -23,7 +23,7 @@
       lualine-nvim
       bufferline-nvim
       mini-indentscope
-     
+
       ### Telescope dependency
       #telescope-nvim
       #nvim-treesitter.withAllGrammars
@@ -58,14 +58,14 @@
           theme = 'tokyonight'
         }
       }
-   
+
       -- BufferLine config
       vim.opt.termguicolors = true
       require("bufferline").setup{}
 
       -- Telescope
       -- vim.keymap.set("n", "<space>fd", require('telescope.builtin').find_files)
-    
+
       -- Nvim dashboard
       require('dashboard').setup {
         -- config

@@ -1,9 +1,9 @@
 { inputs, ... }:
 
 {
- ### Import nix-index-detabase module
- imports = [ inputs.nix-index-database.homeModules.nix-index ];
+  ### Import nix-index-detabase module
+  imports = [ inputs.nix-index-database.homeModules.nix-index ];
 
- ### Configure Nix index
- programs.nix-index.enable = true;
+  ### Configure Nix index
+  programs.nix-index.enable = true;
 }
