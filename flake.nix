@@ -21,10 +21,6 @@
     #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
     ### Other repos
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs-main";
-    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-main";
@@ -33,8 +29,6 @@
       url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
-    ### Stylix
-    stylix.url = "github:danth/stylix/release-25.11";
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -43,6 +37,18 @@
     #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo";
     #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155";
     lazyvim.url = "github:pfassina/lazyvim-nix";
+
+    ### Pinned 3rd part repos (stylix and home-manager) (change refs in same time (avoid incompatibility between 2 differants release))
+    home-manager = {
+      ### Home-manager - release-25.11 (4 Dec 2025)
+      url = "github:nix-community/home-manager/e1680d594a9281651cbf7d126941a8c8e2396183";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+
+    ### Stylix - release-25.11 (4 Dec 2025)
+    stylix.url = "github:danth/stylix/cfde343ff369c8aa898f263ed3dad8c5eb095491";
+
+    ### End of pinned repos
 
     ### Rice/customization
     catppuccin-wallpapers = {
