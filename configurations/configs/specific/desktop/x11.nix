@@ -51,4 +51,9 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  ### Enable kmscon in x11
+  services.kmscon = {
+    enable = true;
+    useXkbConfig = true;
+  };
 }
