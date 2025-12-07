@@ -24,12 +24,9 @@ in
       ### Zen browser
       zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
 
-      ### Vivaldi browser
-      vivaldi
-
       ### Libreoffice (and langpack)
       #libreoffice-fresh
-      hunspellDicts.fr-any
+      #hunspellDicts.fr-any
     ])
     ### All arch (pkgs from unstable branch)
     ++ (with pkgsExtra.pkgs-unstable; [
