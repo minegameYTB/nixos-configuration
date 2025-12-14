@@ -44,6 +44,7 @@
         defaultBranch = "main";
         rebase = true;
       };
+      color.ui = true;
     };
   };
 
