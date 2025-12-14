@@ -113,6 +113,10 @@
         {
           nixpkgs.overlays = [
             nur.overlays.default
+            (self: super: rec {
+              ### Force use gh from unstable (on system level)
+              gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
+            })
           ];
         }
       );
