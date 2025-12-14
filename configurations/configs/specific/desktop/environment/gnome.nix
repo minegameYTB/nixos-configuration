@@ -138,10 +138,6 @@
               current-workspace-only = true;
             };
 
-            "org/gnome/desktop/default-applications/terminal" = {
-              exec = "ghostty";
-            };
-
             "org/gnome/shell/extensions/blur-my-shell" = {
               hacks-level = lib.gvariant.mkInt32 2;
             };
