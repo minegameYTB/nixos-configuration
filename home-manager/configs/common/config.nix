@@ -115,6 +115,12 @@
   programs.bash = {
     enable = true;
     initExtra = ''
+      ### Color in tab
+      case "$TERM" in
+        xterm-color|*-256color) color_prompt=yes;;
+      esac
+
+
       # Provide a nice prompt if the terminal supports it.
       if [ "$TERM" != "dumb" ] || [ -n "$INSIDE_EMACS" ]; then
         PROMPT_COLOR="1;31m"
