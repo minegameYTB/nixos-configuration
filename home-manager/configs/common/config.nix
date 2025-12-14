@@ -169,4 +169,16 @@
     noto-fonts-cjk-sans
   ];
   fonts.fontconfig.enable = true;
+
+  ### Xdg settings
+  xdg = {
+    enable = true;
+    portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+      ];
+      config.common.default = "*";
+    };
+  };
 }
