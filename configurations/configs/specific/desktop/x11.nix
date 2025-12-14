@@ -33,9 +33,6 @@
     xterm
   ];
 
-  ### Localsend
-  programs.localsend.enable = true;
-
   ### IBUS
   i18n.inputMethod = {
     enable = true;
