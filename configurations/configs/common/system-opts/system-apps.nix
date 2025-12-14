@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 
 {
+  ### Localsend
+  programs.localsend.enable = true;
+
   ### Tmux
   programs.tmux = {
     enable = true;
