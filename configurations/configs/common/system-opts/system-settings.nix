@@ -3,12 +3,18 @@
 {
   ### Nvd diff hook
   system.activationScripts.report-changes = ''
-    PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
-    echo -e "\n===================================="
-    echo      "| Running nvd diff to show changes |"
-    echo -e   "====================================\n"
-    nvd diff /run/current-system $systemConfig
-    echo ""
+    ### Use report-changes hook as a function to use PATH as locale variable (instead of set it globally)
+    report-changes(){
+      PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
+      echo -e "\n===================================="
+      echo      "| Running nvd diff to show changes |"
+      echo -e   "====================================\n"
+      nvd diff /run/current-system $systemConfig
+      echo ""
+    }
+
+    ### Execute hook
+    report-changes
   '';
 
   ### Ssh cli package (replace openssl by libressl)

@@ -56,13 +56,19 @@
   home.activation = {
     report-changes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       ### Define strict variable on this context
-      export PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
-      echo -e "\n===================================="
-      echo      "| Running nvd diff to show changes |"
-      echo -e   "====================================\n"
-      ### Variable found in activation script
-      nvd diff $oldGenPath $newGenPath
-      echo ""
+      report-changes(){
+        export PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
+        echo -e "\n===================================="
+        echo      "| Running nvd diff to show changes |"
+        echo -e   "====================================\n"
+        
+        ### Variable found in activation script
+        nvd diff $oldGenPath $newGenPath
+        echo ""
+      }
+
+      ### Execute report-changes hook
+      report-changes
     '';
   };
 }
