@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+### Run deadnix (with some options to avoid "_" character in nix expression)
+deadnix -eqlL .

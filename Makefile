@@ -1,7 +1,7 @@
 # -- Build variable and "fake target" --
 NIX_FLAGS=--extra-experimental-features "nix-command flakes"
 SCRIPT_DIR=$(shell pwd)/script
-.PHONY: help update-flake mksymlink
+.PHONY: help update-flake mksymlink run-deadnix
 
 # -- Use help target by default (use '#' 3 times to show comment for help) --
 .DEFAULT_GOAL := help
@@ -17,3 +17,6 @@ update-flake:   ### update-flake
 
 mksymlink:      ### Make symlink
 	bash -c $(SCRIPT_DIR)/mksymlink
+
+run-deadnix:    ### Run deadnix (remove unused declaration in nix expressions)
+	bash -c $(SCRIPT_DIR)/run-deadnix
