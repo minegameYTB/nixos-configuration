@@ -2,7 +2,7 @@
   username,
   extraModules ? [ ],
   ...
-}@args:
+}:
 
 let
   baseProfile = import ./desktop-profile.nix { inherit username; };
