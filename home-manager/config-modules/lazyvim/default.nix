@@ -21,6 +21,15 @@
     extras = {
       lang.nix.enable = true;
     };
+    config = {
+      keymaps = ''
+        -- Stop yank on copy
+        vim.keymap.set({ "n", "x" }, "d", '"_d', { noremap = true, silent = true })
+        vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
+        -- Same for "c"
+        -- vim.keymap.set({ "n", "x" }, "c", '"_c', { noremap = true, silent = true })
+      '';
+    };
     extraPackages =
       (with pkgs; [
         nixd # Nix LSP
@@ -28,7 +37,6 @@
         statix # For suggestion on nix files
         gcc # Provides the C Compiler
         tree-sitter # Provides the tree-sitter CLI
-        feh # show jpg image in terminal
       ])
       ++
       ### Use git package from programs.git.package

@@ -39,20 +39,23 @@ in
       ### Extra packages always installed (from pkgsExtra)
       #ventoy
     ])
-    ++ (lib.optionals config.services.xserver.enable (
-      (with pkgs; [
-        ### GUI Packages (only if X11 is enabled)
-        gparted
-        gearlever
-        onlyoffice-desktopeditors
+    ++ (
+      lib.optionals config.services.xserver.enable (
+        with pkgs;
+        [
+          ### GUI Packages (only if X11 is enabled)
+          gparted
+          gearlever
+          onlyoffice-desktopeditors
 
-        ### Ghostty
-        #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
-        ghostty # Use ghostty from nixpkgs to unpin mesa version
-      ])
+          ### Ghostty
+          #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
+          ghostty # Use ghostty from nixpkgs to unpin mesa version
+        ]
+      )
       ++ (with pkgsExtra.pkgs-unstable; [
         ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
         #bottles
       ])
-    ));
+    );
 }
