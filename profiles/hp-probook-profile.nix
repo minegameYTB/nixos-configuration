@@ -30,7 +30,7 @@
     ../configurations/configs/specific/desktop/games
 
     ### Other
-    #../configurations/configs/specific/container/podman.nix
+    ../configurations/configs/specific/container/podman.nix
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
