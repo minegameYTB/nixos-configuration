@@ -1,9 +1,5 @@
 { config, pkgs, ... }:
 
-let
-  ### Add external packages
-  #sshrm = pkgs.callPackage ../pkgs/sshrm {};
-in
 {
 
   imports = [

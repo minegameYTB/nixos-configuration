@@ -8,15 +8,6 @@
   ...
 }:
 
-let
-  ### Add external packages
-  #fhsEnv-dev = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
-
-  ### Wrapper script
-  #nixos-rebuild = pkgs.writeShellScriptBin "nixos-rebuild" ''
-  #  exec -a "$0" ${pkgs.nixos-rebuild}/bin/nixos-rebuild -L "$@"
-  #'';
-in
 {
   environment.systemPackages =
     (with pkgs; [

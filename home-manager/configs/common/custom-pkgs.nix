@@ -5,11 +5,6 @@
   ...
 }:
 
-let
-  ### Add external packages
-  #sshrm = pkgs.callPackage ../../../pkgs/sshrm {};
-  #fhsEnv-shell = pkgs.callPackage ../../../pkgs/fhsEnv-dev {};
-in
 {
   home.packages = (
     with pkgs;
