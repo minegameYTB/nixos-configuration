@@ -426,13 +426,6 @@
           ];
         };
 
-        ### Don't use this configuration, it declare pkgsPatched as default to avoid delete by deadnix (as non declared expression)
-        dummy = lib.nixosSystem {
-          system = "x86_64-linux";
-          ### Inject pkgs attr with options
-          pkgs = pkgsPatched "x86_64-linux";
-        };
-
       };
 
       ### Multi-architecture home-manager configs
