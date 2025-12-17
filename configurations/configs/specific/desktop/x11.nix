@@ -51,12 +51,6 @@
   ### Xdg portal
   xdg.portal.enable = true;
 
-  ### For xdg-portal in home manager
-  environment.pathsToLink = [
-    "/share/xdg-desktop-portal"
-    "/share/applications"
-  ];
-
   ### Enable kmscon in x11
   services.kmscon = {
     enable = true;
