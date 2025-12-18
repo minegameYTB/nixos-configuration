@@ -26,8 +26,14 @@
         -- Stop yank on copy
         vim.keymap.set({ "n", "x" }, "d", '"_d', { noremap = true, silent = true })
         vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
+
         -- Same for "c"
         -- vim.keymap.set({ "n", "x" }, "c", '"_c', { noremap = true, silent = true })
+
+        -- Same for <Del>
+        vim.keymap.set("n", "<Del>", '"_x', { noremap = true, silent = true })
+        vim.keymap.set("i", "<Del>", '<Esc>"_xi', { noremap = true, silent = true })
+        vim.keymap.set("v", "<Del>", '"_x', { noremap = true, silent = true })
       '';
     };
     extraPackages =
