@@ -35,6 +35,7 @@
       gnome-extension-manager
       evolution
       xarchiver
+      sticky-notes
 
       ### Themes
       ### Override papirus-icon-theme to set folder green
