@@ -25,7 +25,6 @@
       experimental-features = [
         "nix-command"
         "flakes"
-        "ca-derivations"
       ];
       max-jobs = 2;
       cores = 2;
