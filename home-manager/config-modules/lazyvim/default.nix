@@ -18,6 +18,7 @@
   ### Setup lazyvim
   programs.lazyvim = {
     enable = true;
+    pluginSource = "nixpkgs";
     extras = {
       lang.nix.enable = true;
     };
