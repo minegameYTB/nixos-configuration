@@ -23,7 +23,7 @@
     };
     config = {
       keymaps = ''
-        -- Stop yank on copy
+        -- Disable yank on copy
         vim.keymap.set({ "n", "x" }, "d", '"_d', { noremap = true, silent = true })
         vim.keymap.set("n", "dd", '"_dd', { noremap = true, silent = true })
 
