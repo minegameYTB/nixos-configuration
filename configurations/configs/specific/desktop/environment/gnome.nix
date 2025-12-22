@@ -347,7 +347,7 @@
 
             "org/gnome/desktop/app-folders/folders/waydroid" = {
               name = "Waydroid";
-              cathegorie = [ "X-WayDroid-App" ];
+              categorie = [ "X-WayDroid-App" ];
             };
 
             "org/gnome/nautilus/preferences" = {
