@@ -8,6 +8,7 @@
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
     ../../configurations/configs/networking/server-config.nix
     ../../configurations/configs/system/tmp-on-disk.nix
+    ../../configurations/configs/specific/desktop/x11.nix # for kmscon config
 
     ### Vm specific option
     ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix

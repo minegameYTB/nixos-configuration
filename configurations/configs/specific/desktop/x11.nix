@@ -1,16 +1,9 @@
-{
-  config,
-  pkgs,
-  pkgsExtra,
-  ...
-}:
+{ config, pkgs, ... }:
 
 {
-  ### Import plymouth expression
-  imports = [ ./plymouth.nix ];
-
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services.xserver.enable =
+    config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -18,42 +11,31 @@
     variant = "";
   };
 
-  ### Mesa
-  hardware.graphics = {
-    ### Fix mesa version on nixpkgs 25.05
-    enable = true;
-    #package = pkgsExtra.pkgs-25-05.mesa;
-
-    ### Enable 32-bit platform
-    enable32Bit = true;
-    #package32 = pkgsExtra.pkgs-25-05.pkgsi686Linux.mesa;
-  };
   ### Exclude Xterm
   services.xserver.excludePackages = with pkgs; [
     xterm
   ];
 
-  ### IBUS
-  i18n.inputMethod = {
+  ### Mesa
+  hardware.graphics = {
     enable = true;
-    type = "ibus";
-    ibus.engines = with pkgs.ibus-engines; [
-      anthy
-      hangul
-      mozc
-      libpinyin
-    ];
+
+    ### Enable 32-bit platform
+    enable32Bit = true;
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  ### Xdg portal
-  xdg.portal.enable = true;
-
   ### Enable kmscon in x11
   services.kmscon = {
     enable = true;
     useXkbConfig = true;
+    fonts = [
+      {
+        name = "JetBrainsMono Nerd Font";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+      }
+    ];
   };
 }

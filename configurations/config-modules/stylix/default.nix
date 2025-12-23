@@ -11,7 +11,8 @@
 
   ### Stylix config
   stylix = {
-    enable = true;
+    enable =
+      config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
     image = "${inputs.dotfiles-minegameYTB}/wallpapers/Custom/Matt-manual-upscale-1920x1080.png";
 
     ### Catppucin wallpaper
