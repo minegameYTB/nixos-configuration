@@ -16,19 +16,13 @@
   programs.git = {
     enable = true;
     package =
-      let
-        ### Define flags and change name of the git package
-        gitMinimal = pkgs.gitMinimal.override {
-          withManual = true;
-
-          ### Skip install check
-          doInstallCheck = false;
-        };
-        gitMinimalCustom = gitMinimal.overrideAttrs (oldAttrs: {
+      (pkgs.git.override {
+        withManual = true;
+        doInstallCheck = false;
+      }).overrideAttrs
+        (oldAttrs: {
           pname = "gitMinimal-custom";
         });
-      in
-      gitMinimalCustom;
     ignores = [
       "*.swp"
       "*~"
