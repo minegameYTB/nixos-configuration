@@ -6,8 +6,8 @@
 }:
 
 {
-  ### Import x11 related expression
-  imports = [ ../x11.nix ];
+  ### Import desktop related expression
+  imports = [ ../desktop.nix ];
 
   ### enable kde plasma
   services.displayManager.sddm.enable = true;
