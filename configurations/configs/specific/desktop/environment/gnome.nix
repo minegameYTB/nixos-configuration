@@ -83,6 +83,9 @@
     gnome-software # Gnome software
   ];
 
+  ### Disable gnome-inital-setup package
+  services.gnome.gnome-initial-setup.enable = false;
+
   ### Nautilus settings
   programs.nautilus-open-any-terminal = {
     #  enable = true;
