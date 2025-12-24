@@ -27,9 +27,5 @@
       enable = true;
       theme = "agnoster";
     };
-    interactiveShellInit = ''
-      #export NIXOS_VERSION=$(nixos-version | sed -E 's/^([0-9]+\.[0-9]+)\..*/\1/')
-       export VM_OPTS=$(echo "-smp 2 -m 4096 -spice port=3001,disable-ticketing=on -device virtio-vga -display gtk")
-    '';
   };
 }
