@@ -6,9 +6,6 @@
 }:
 
 {
-  ### Shell replacement
-  users.defaultUserShell = pkgs.zsh;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.minegame = {
     description = "Minegame YTB";
@@ -25,7 +22,8 @@
 
   ### Fix non creation of Desktop...Download folder in graphical mode
   systemd.services."fix-xdg-user-dirs" = {
-    enable = config.services.xserver.enable == true;
+    enable =
+      config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
     wantedBy = [ "graphical.target" ];
     environment.PATH = lib.mkForce "${pkgs.coreutils}/bin:${pkgs.xdg-user-dirs}/bin";
     serviceConfig = {
