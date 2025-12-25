@@ -17,6 +17,7 @@
       efibootmgr
       ntfs3g
       nvd
+      inetutils
 
       ### Pass $TERM env variable to ssh via a shell wrapper (and export openssh path as a global path for ssh wrapper)
       (pkgs.writeShellScriptBin "ssh" ''
