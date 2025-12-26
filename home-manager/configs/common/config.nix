@@ -103,6 +103,9 @@
     enable = true;
     terminal = "screen-256color";
     clock24 = true;
+    plugins = with pkgs; [
+      tmuxPlugins.nord
+    ];
   };
 
   ### bash
