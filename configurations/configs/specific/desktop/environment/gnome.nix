@@ -134,7 +134,7 @@
               clock-show-date = true;
               color-scheme = "prefer-dark";
               gtk-theme = "adw-gtk3-dark";
-              icon-theme = "Papirus";
+              icon-theme = "Papirus-Dark";
               show-battery-percentage = true;
             };
 
