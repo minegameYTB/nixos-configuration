@@ -41,7 +41,7 @@
   };
 
   ### Ctrl-os substitutes (custom option (defined in /configurations/modules/nix/ctrl-os-substitutes.nix))
-  ctrl-os.substitutes.enable = true;
+  #ctrl-os.substitutes.enable = true;
 
   system = {
     ### Enable nixos-rebuild-ng to replace nixos-rebuild legacy (take "config.system.tools.nixos-rebuild.enable" value to use value defind in this option as true)

@@ -16,7 +16,7 @@
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgs-unstable attr in flake
-    ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
+    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
     #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004"; # pkgs-master attr in flake
@@ -89,7 +89,7 @@
       nixpkgs-main,
 
       ### Other nixpkgs sources
-      ctrl-os,
+      #ctrl-os,
       nixpkgs-unstable,
       #nixpkgs-master,
       #nixpkgs-pr,
@@ -186,10 +186,10 @@
       ### Declare other nixpkgs repos as pkgsExtra attribute
       ### Other sources (pkgs set)
       pkgsExtra = system: {
-        pkgs-lts = import ctrl-os {
-          inherit system;
-          config = nixpkgsConfig;
-        };
+        #pkgs-lts = import ctrl-os {
+        #  inherit system;
+        #  config = nixpkgsConfig;
+        #};
 
         pkgs-unstable = import nixpkgs-unstable {
           inherit system;
