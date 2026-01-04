@@ -35,7 +35,6 @@
       gnome-extension-manager
       evolution
       xarchiver
-      sticky-notes
 
       ### Themes
       ### Override papirus-icon-theme to set folder green
@@ -77,7 +76,7 @@
     totem # Gnome Totem (video)
     gnome-maps # Gnome maps
     gnome-connections # Gnome connections
-    #gnome-console       ### Gnome console (default term)
+    gnome-console # Gnome console (default term)
     gnome-music # Gnome Music
     gnome-system-monitor # Gnome system monitor
     gnome-software # Gnome software

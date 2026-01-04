@@ -22,8 +22,7 @@
 
   ### Fix non creation of Desktop...Download folder in graphical mode
   systemd.services."fix-xdg-user-dirs" = {
-    enable =
-      config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
+    enable = config.services.desktopManager.gnome.enable;
     wantedBy = [ "graphical.target" ];
     environment.PATH = lib.mkForce "${pkgs.coreutils}/bin:${pkgs.xdg-user-dirs}/bin";
     serviceConfig = {
