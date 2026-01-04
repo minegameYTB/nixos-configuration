@@ -2,8 +2,7 @@
 
 {
   # Enable the X11 windowing system.
-  services.xserver.enable =
-    config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
+  services.xserver.enable = config.services.desktopManager.gnome.enable;
 
   # Configure keymap in X11
   services.xserver.xkb = {

@@ -2,8 +2,7 @@
 
 {
   ### Localsend
-  programs.localsend.enable =
-    config.services.desktopManager.gnome.enable || config.services.desktopManager.plasma6.enable;
+  programs.localsend.enable = config.services.desktopManager.gnome.enable;
 
   ### Tmux
   programs.tmux = {
