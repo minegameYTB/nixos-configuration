@@ -7,7 +7,7 @@
     ../../configurations/hardware-configuration/filesystem/btrfs
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
     ../../configurations/configs/networking/desktop-config.nix
-    ../../configurations/configs/system/tmp-on-disk.nix
+    ../../configurations/configs/system/tmp-on-zram.nix
 
     ### X11 and desktop environment
     ../../configurations/configs/specific/desktop/environment/gnome.nix

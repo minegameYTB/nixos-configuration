@@ -7,7 +7,7 @@
     ../../configurations/hardware-configuration/filesystem/btrfs
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
     ../../configurations/configs/networking/server-config.nix
-    ../../configurations/configs/system/tmp-on-disk.nix
+    ../../configurations/configs/system/tmp-on-zram.nix
     ../../configurations/configs/specific/desktop/x11.nix # for kmscon config
 
     ### Vm specific option
