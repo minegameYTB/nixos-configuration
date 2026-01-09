@@ -11,9 +11,12 @@
   # programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;
-    # enableSSHSupport = true;
+    enableSSHSupport = true;
   };
 
   ### Apparmor
   security.apparmor.enable = true;
+
+  ### Chromium sandbox
+  security.chromiumSuidSandbox.enable = true;
 }
