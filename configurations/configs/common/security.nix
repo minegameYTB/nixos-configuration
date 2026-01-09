@@ -16,7 +16,4 @@
 
   ### Apparmor
   security.apparmor.enable = true;
-
-  ### Chromium sandbox
-  security.chromiumSuidSandbox.enable = true;
 }
