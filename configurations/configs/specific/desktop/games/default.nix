@@ -9,6 +9,7 @@
     ./prismlauncher
     ./waydroid
     ./emulator
+    ./other # Desktop games (not emulator or launcher)
   ];
 
   ### Specific settings for controller
