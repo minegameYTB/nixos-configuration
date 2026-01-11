@@ -48,5 +48,6 @@
       ++
       ### Use git package from programs.git.package
       [ config.programs.git.package ];
+    treesitterParsers = with pkgs.vimPlugins.nvim-treesitter-parsers; [ dtd ];
   };
 }
