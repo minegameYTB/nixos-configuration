@@ -10,7 +10,7 @@
     ../configurations/hardware-configuration/specific/intel-firmware.nix
     ../configurations/configs/bootloader/systemd-boot.nix
     ../configurations/configs/networking/desktop-config.nix
-    ../configurations/configs/system/tmp-on-zram.nix
+    ../configurations/configs/system/tmp-on-tmpfs.nix
     ../configurations/configs/specific/laptop/power-mgmt.nix
 
     ### X11 and desktop environment
