@@ -72,7 +72,7 @@
     geary # Geary
     gnome-tour # Gnome Tour
     epiphany # Gnome Web
-    yelp # Gnome help
+    #yelp # Gnome help
     totem # Gnome Totem (video)
     gnome-maps # Gnome maps
     gnome-connections # Gnome connections
