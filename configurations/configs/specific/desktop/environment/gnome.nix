@@ -269,6 +269,7 @@
                 "universal-access"
                 "wine"
                 "waydroid"
+                "education"
               ];
             };
 
@@ -350,6 +351,14 @@
             "org/gnome/desktop/app-folders/folders/waydroid" = {
               name = "Waydroid";
               categories = [ "X-WayDroid-App" ];
+            };
+
+            "org/gnome/desktop/app-folders/folders/education" = {
+              name = "Languages & Education";
+              categories = [
+                "Languages"
+                "Education"
+              ];
             };
 
             "org/gnome/nautilus/preferences" = {
