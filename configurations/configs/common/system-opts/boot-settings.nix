@@ -24,8 +24,13 @@
     ];
     kernel.sysctl = {
       "kernel.panic" = 10;
-      "vm.swappiness" = 20;
+      "vm.swappiness" = 10;
+      "kernel.printk" = "3 3 3 3";
+
+      # Hardening
+      "kernel.kptr_restrict" = 2;
+      "kernel.kexec_load_disabled" = 1;
     };
-    #kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 }
