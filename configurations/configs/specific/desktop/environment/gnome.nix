@@ -39,8 +39,8 @@
       pika-backup
 
       ### Themes
-      ### Override papirus-icon-theme to set folder green
-      (papirus-icon-theme.override { color = "red"; })
+      ### Override papirus-icon-theme to set folder color (see other available color here: https://github.com/costales/folder-color/?tab=readme-ov-file#create-a-new-theme)
+      (papirus-icon-theme.override { color = "grey"; })
 
       ### Gtk theme
       adw-gtk3
