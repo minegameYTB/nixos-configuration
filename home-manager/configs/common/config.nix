@@ -3,15 +3,6 @@
 {
   programs.home-manager.enable = true;
 
-  ### Nix option
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 15d";
-    };
-  };
-
   ### Git
   programs.git = {
     enable = true;
