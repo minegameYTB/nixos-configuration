@@ -8,7 +8,11 @@
     dhall-json
     ripgrep
     fastfetch
-    #screen
+
+    ### Installed for manpages (used as aliases)
+    bat
+    lsd
+    duf
   ];
 
 }
