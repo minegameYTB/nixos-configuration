@@ -40,7 +40,6 @@
       libva-vdpau-driver
       libva
       vulkan-loader
-      vulkan-validation-layers
     ];
 
     extraPackages32 = with pkgs.pkgsi686Linux; [
