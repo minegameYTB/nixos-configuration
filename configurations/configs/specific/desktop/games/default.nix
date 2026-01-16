@@ -14,7 +14,7 @@
     ./prismlauncher
     ./waydroid
     ./emulator
-    ./other # Desktop games (not emulator or launcher)
+    #./other # Desktop games (not emulator or launcher)
   ];
 
   ### Add specific configuration
