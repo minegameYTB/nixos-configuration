@@ -11,10 +11,18 @@ How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
 ```bash
 ### With the flake on local
+#> nix-shell -p disko
+#> disko -m destroy,format,mount nixos-configuration/configurations/disko-configuration/current/<configuration type>.nix --arg device '"/dev/<device>"'
 #> nixos-install --flake .#<host>
 
 ### Distant flake
+#> nix-shell -p disko
+#> wget https://raw.githubusercontent.com/minegameYTB/nixos-configuration/refs/heads/flake/configurations/disko-configuration/current/<configuration type>.nix
+#> disko -m destroy,format,mount ./<configuration type>.nix --arg device '"/dev/<device>"'
 #> nixos-install --flake github:minegameYTB/nixos-configuration#<host>
+
+### To only mount with disko (run nix command to obtain disko before):
+#> disko -m mount /configurations/disko-configuration/current/<configuration type>.nix --arg device '"/dev/<device>"'
 ```
 
 # flake structure
