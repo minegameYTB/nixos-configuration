@@ -10,6 +10,15 @@
   ### Initialise nur on home-manager standalone (already the case on hm-module on NixOS)
   nixpkgs.overlays = [ inputs.nur.overlays.default ];
 
+  ### Nix option
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 15d";
+    };
+  };
+
   ### Environment variable
   home.sessionVariables = {
     PATH = "$HOME/.local/share/flatpak/exports/bin:/var/lib/flatpak/exports/bin:$PATH";
