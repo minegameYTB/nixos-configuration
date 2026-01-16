@@ -58,7 +58,6 @@
       blur-my-shell
       logo-menu
       hide-activities-button
-      hibernate-status-button
       clipboard-history
       no-overview
       quick-settings-audio-panel
