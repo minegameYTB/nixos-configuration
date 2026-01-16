@@ -35,6 +35,8 @@
       gnome-extension-manager
       evolution
       xarchiver
+      amberol
+      pika-backup
 
       ### Themes
       ### Override papirus-icon-theme to set folder green

@@ -16,13 +16,7 @@ in
     ### All arch
     (with pkgs; [
       vlc
-      amberol
-      pika-backup
-      github-desktop
       tagainijisho
-
-      ### Zen browser
-      zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
 
       ### Libreoffice (and langpack)
       #libreoffice-fresh
@@ -31,7 +25,6 @@ in
     ### All arch (pkgs from unstable branch)
     ++ (with pkgsExtra.pkgs-unstable; [
       bitwarden-desktop
-      rpi-imager
     ])
     ### Packages specific to x86_64-linux (main pkgs branch)
     ++ lib.optionals isX86_64 (
