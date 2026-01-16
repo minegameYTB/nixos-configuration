@@ -29,4 +29,5 @@
     else
       ""
   );
+  hardware.xone.enable = true;
 }
