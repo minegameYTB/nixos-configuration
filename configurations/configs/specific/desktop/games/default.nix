@@ -33,7 +33,6 @@
   };
   ### Mesa
   hardware.graphics = {
-    enable = true;
     extraPackages = with pkgs; [
       intel-gpu-tools
       intel-media-driver
@@ -44,8 +43,6 @@
       vulkan-validation-layers
     ];
 
-    ### Enable 32-bit platform
-    enable32Bit = true;
     extraPackages32 = with pkgs.pkgsi686Linux; [
       intel-gpu-tools
       intel-media-driver
