@@ -1,32 +1,24 @@
 {
+  device ? throw "Set this to your disk device, e.g. /dev/sda",
+  ...
+}:
+
+{
   disko.devices = {
     disk = {
-      main = {
-        ### Main disk of hp-probook (change this bfor installing on another computer)
-        ### (uncomment to use another disk device)
-        device = "/dev/disk/by-id/ata-CT500BX500SSD1_2349E88829C8";
-        ### For sda for example
-        #device = "/dev/sda";
+      sda = {
+        inherit device;
         type = "disk";
         content = {
-          type = "gpt";
-          partitions = {
-            ESP = {
-              size = "512M";
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
-                extraArgs = [
-                  "-n"
-                  "EFI"
-                ];
-              };
-            };
-            root = {
-              size = "100%";
+          type = "table";
+          format = "msdos";
+          partitions = [
+            {
+              name = "root";
+              part-type = "primary";
+              start = "1M";
+              end = "100%";
+              bootable = true;
               content = {
                 type = "btrfs";
                 extraArgs = [
@@ -57,8 +49,8 @@
                   };
                 };
               };
-            };
-          };
+            }
+          ];
         };
       };
     };

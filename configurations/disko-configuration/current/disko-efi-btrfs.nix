@@ -1,19 +1,33 @@
 {
+  device ? throw "Set this to your disk device, e.g. /dev/sda",
+  ...
+}:
+
+{
   disko.devices = {
     disk = {
-      sda = {
-        device = "/dev/vda";
+      main = {
+        inherit device;
         type = "disk";
         content = {
-          type = "table";
-          format = "msdos";
-          partitions = [
-            {
-              name = "root";
-              part-type = "primary";
-              start = "1M";
-              end = "100%";
-              bootable = true;
+          type = "gpt";
+          partitions = {
+            ESP = {
+              size = "512M";
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];
+                extraArgs = [
+                  "-n"
+                  "EFI"
+                ];
+              };
+            };
+            root = {
+              size = "100%";
               content = {
                 type = "btrfs";
                 extraArgs = [
@@ -44,8 +58,8 @@
                   };
                 };
               };
-            }
-          ];
+            };
+          };
         };
       };
     };
