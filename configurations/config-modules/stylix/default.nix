@@ -12,7 +12,7 @@
   ### Stylix config
   stylix = {
     enable = config.services.desktopManager.gnome.enable;
-    image = "${inputs.dotfiles-minegameYTB}/wallpapers/Custom/Matt-manual-upscale-1920x1080.png";
+    image = "${inputs.dotfiles-minegameYTB}/wallpapers/Wierschem.jpeg";
 
     ### Catppucin wallpaper
     #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
