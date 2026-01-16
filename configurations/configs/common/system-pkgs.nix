@@ -38,6 +38,8 @@
           gparted
           gearlever
           onlyoffice-desktopeditors
+          github-desktop
+          rpi-imager
 
           ### Ghostty
           #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
