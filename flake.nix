@@ -46,14 +46,14 @@
     lazyvim.url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
-    # Home-manager - release-25.11 (4 Dec 2025)
+    # Home-manager - release-25.11 (8 Jan 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/e1680d594a9281651cbf7d126941a8c8e2396183";
+      url = "github:nix-community/home-manager/82fb7dedaad83e5e279127a38ef410bcfac6d77c";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-25.11 (4 Dec 2025)
-    stylix.url = "github:danth/stylix/cfde343ff369c8aa898f263ed3dad8c5eb095491";
+    # Stylix - release-25.11 (8 Jan 2026)
+    stylix.url = "github:danth/stylix/55380d322f095ec9bc574f66f2870f19db46e6a1";
 
     ### End of pinned repos
 
