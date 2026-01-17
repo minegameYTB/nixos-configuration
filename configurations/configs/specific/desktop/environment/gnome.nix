@@ -146,15 +146,16 @@
               hacks-level = lib.gvariant.mkInt32 2;
             };
 
+            "org/gnome/shell/extensions/blur-my-shell/panel" = {
+              static-blur = false;
+            };
+
             "org/gnome/shell/extensions/blur-my-shell/applications" = {
               blur = true;
               brightness = "0.8";
               opacity = lib.gvariant.mkInt32 245;
               dynamic-opacity = false;
-              whitelist = [
-                "com.mitchellh.ghostty"
-                "org.gnome.TextEditor"
-              ];
+              whitelist = [ "com.mitchellh.ghostty" ];
             };
 
             "org/gnome/shell/extensions/dash-to-dock" = {
