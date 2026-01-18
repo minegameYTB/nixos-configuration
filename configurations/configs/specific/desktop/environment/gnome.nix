@@ -75,7 +75,6 @@
 
   ### Gpaste settings
   programs.gpaste.enable = true;
-  services.desktopManager.gnome.sessionPath = with pkgs; [ gpaste ];
 
   ### Disable gnome-inital-setup package
   services.gnome.gnome-initial-setup.enable = false;
