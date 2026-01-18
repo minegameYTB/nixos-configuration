@@ -179,15 +179,13 @@
               symbolic-icon = true;
             };
 
-            # "org/gnome/shell/extensions/just-perfection" = {
-            #   theme = true;
-            #   window-demands-attention-focus = true;
-            #   workspace-peek = false;
-            #   startup-status = lib.gvariant.mkInt32 0;
-            # };
-
             "org/gnome/shell/extensions/user-theme" = {
               name = "Marble-red-dark-filled";
+            };
+
+            "org/gnome/shell/extensions/clipboard-history" = {
+              cache-only-favorites = true;
+              window-width-percentage = lib.gvariant.mkInt32 28;
             };
 
             "org/gnome/shell" = {
