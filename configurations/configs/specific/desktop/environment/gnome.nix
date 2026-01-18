@@ -51,11 +51,11 @@
       blur-my-shell
       logo-menu
       hide-activities-button
+      clipboard-history
       no-overview
       quick-settings-audio-panel
       grand-theft-focus
       caffeine
-      # Gpaste provide extension directly
     ]);
 
   ### Exclude some Gnome default packages
@@ -72,9 +72,6 @@
     gnome-system-monitor # Gnome system monitor
     gnome-software # Gnome software
   ];
-
-  ### Gpaste settings
-  programs.gpaste.enable = true;
 
   ### Disable gnome-inital-setup package
   services.gnome.gnome-initial-setup.enable = false;
@@ -170,11 +167,9 @@
               name = "Marble-red-dark-filled";
             };
 
-            "org/gnome/GPaste" = {
-              images-support = true;
-              open-centered = true;
-              growing-lines = true;
-              track-extension-state = true;
+            "org/gnome/shell/extensions/clipboard-history" = {
+              cache-only-favorites = true;
+              window-width-percentage = lib.gvariant.mkInt32 28;
             };
 
             "org/gnome/shell" = {
@@ -187,7 +182,7 @@
                 "logomenu@aryan_k"
                 "user-theme@gnome-shell-extensions.gcampax.github.com"
                 "tiling-assistant@leleat-on-github"
-                "GPaste@gnome-shell-extensions.gnome.org"
+                "clipboard-history@alexsaveau.dev"
                 "no-overview@fthx"
                 "quick-settings-audio-panel@rayzeq.github.io"
                 "grand-theft-focus@zalckos.github.com"
