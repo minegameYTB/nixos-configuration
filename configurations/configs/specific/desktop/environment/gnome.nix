@@ -9,7 +9,7 @@
   ### Import desktop related expression
   imports = [ ../desktop.nix ];
 
-  # Enable the GNOME Desktop Environment. (remove xserver set on 25.11)
+  # Enable the GNOME Desktop Environment.
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
@@ -18,14 +18,7 @@
     pinentryPackage = lib.mkDefault pkgs.pinentry-gnome3;
   };
 
-  ### Qt
-  #qt = {
-  #  enable = true;
-  #  platformTheme = "gnome";
-  #  style = "adwaita-dark";
-  #};
-
-  ### Gnome Extensions
+  ### Gnome specific packages
   environment.systemPackages =
     (with pkgs; [
       ### Other gnome related packages
@@ -58,14 +51,11 @@
       blur-my-shell
       logo-menu
       hide-activities-button
-      clipboard-history
       no-overview
       quick-settings-audio-panel
       grand-theft-focus
       caffeine
-
-      ### Disabled bcause stylix is incompatible with just-perfection
-      #just-perfection
+      # Gpaste provide extension directly
     ]);
 
   ### Exclude some Gnome default packages
@@ -83,14 +73,12 @@
     gnome-software # Gnome software
   ];
 
+  ### Gpaste settings
+  programs.gpaste.enable = true;
+  services.desktopManager.gnome.sessionPath = with pkgs; [ gpaste ];
+
   ### Disable gnome-inital-setup package
   services.gnome.gnome-initial-setup.enable = false;
-
-  ### Nautilus settings
-  programs.nautilus-open-any-terminal = {
-    #  enable = true;
-    #  terminal = "ghostty";
-  };
 
   ### Disable some services
   systemd.services."getty@tty1".enable = false;
@@ -183,9 +171,11 @@
               name = "Marble-red-dark-filled";
             };
 
-            "org/gnome/shell/extensions/clipboard-history" = {
-              cache-only-favorites = true;
-              window-width-percentage = lib.gvariant.mkInt32 28;
+            "org/gnome/GPaste" = {
+              images-support = true;
+              open-centered = true;
+              growing-lines = true;
+              track-extension-state = true;
             };
 
             "org/gnome/shell" = {
@@ -198,7 +188,7 @@
                 "logomenu@aryan_k"
                 "user-theme@gnome-shell-extensions.gcampax.github.com"
                 "tiling-assistant@leleat-on-github"
-                "clipboard-history@alexsaveau.dev"
+                "GPaste@gnome-shell-extensions.gnome.org"
                 "no-overview@fthx"
                 "quick-settings-audio-panel@rayzeq.github.io"
                 "grand-theft-focus@zalckos.github.com"
@@ -208,7 +198,6 @@
                 "zen-beta.desktop"
                 "org.gnome.Calendar.desktop"
                 "org.gnome.Nautilus.desktop"
-                #"org.gnome.Software.desktop"
                 "com.mitchellh.ghostty.desktop"
                 "virt-manager.desktop"
                 "org.prismlauncher.PrismLauncher.desktop"
