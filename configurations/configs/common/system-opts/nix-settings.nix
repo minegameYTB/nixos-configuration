@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  pkgsExtra,
   inputs,
   ...
 }:
@@ -10,7 +9,7 @@
   ### Nix Settings
   nix = {
     ### Use nix from ctrl os
-    #package = pkgsExtra.pkgs-lts.nix;
+    #package = pkgs.pkgs-lts.nix;
 
     ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
     channel.enable = false;

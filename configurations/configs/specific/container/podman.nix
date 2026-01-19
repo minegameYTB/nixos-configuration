@@ -1,7 +1,7 @@
 {
   lib,
   config,
-  pkgsExtra,
+  pkgs,
   ...
 }:
 
@@ -9,10 +9,10 @@
   ### Podman
   virtualisation.podman = {
     enable = true;
-    package = pkgsExtra.pkgs-unstable.podman;
+    package = pkgs.pkgs-unstable.podman;
   };
 
   environment.systemPackages =
-    (with pkgsExtra.pkgs-unstable; [ distrobox ])
-    ++ (lib.optionals config.services.xserver.enable (with pkgsExtra.pkgs-unstable; [ distroshelf ]));
+    (with pkgs.pkgs-unstable; [ distrobox ])
+    ++ (lib.optionals config.services.xserver.enable (with pkgs.pkgs-unstable; [ distroshelf ]));
 }

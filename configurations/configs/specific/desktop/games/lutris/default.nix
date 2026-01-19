@@ -1,4 +1,4 @@
-### Call pkgsExtra to use latest lutris and wineStaging
+### Call pkgs.pkgs-unstable to use latest lutris and wineStaging
 { config, pkgs, ... }:
 
 {

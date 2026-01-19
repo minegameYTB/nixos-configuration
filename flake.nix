@@ -131,7 +131,7 @@
       inherit (nixpkgs-main) lib;
 
       ### Global overlay configuration (can use this function to extend pkgs or replace recursivly packages)
-      overlay = {
+      overlay = system: {
         nixpkgs.overlays = [
           ### Extend pkgs with nur namespace
           nur.overlays.default
@@ -139,6 +139,23 @@
           ### Custom extend of pkgs or replacing pkgs by other
           (self: super: rec {
             ### Extend pkgs namespace here
+            # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
+            pkgs-unstable = import nixpkgs-unstable {
+              inherit system;
+              config = nixpkgsConfig;
+            };
+            #pkgs-lts = import ctrl-os {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
+            #pkgs-master = import nixpkgs-master {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
+            #pkgs-pr = import nixpkgs-pr {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
 
             ### Replace packages here
             ### Force use gh from unstable (on system level)
@@ -183,34 +200,9 @@
           config = nixpkgsConfig;
         };
 
-      ### Declare other nixpkgs repos as pkgsExtra attribute
-      ### Other sources (pkgs set)
-      pkgsExtra = system: {
-        #pkgs-lts = import ctrl-os {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-
-        pkgs-unstable = import nixpkgs-unstable {
-          inherit system;
-          config = nixpkgsConfig;
-        };
-
-        #pkgs-master = import nixpkgs-master {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-
-        #pkgs-pr = import nixpkgs-pr {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-      };
-
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
         inherit inputs;
-        pkgsExtra = pkgsExtra system;
         inherit (inputs)
           zen-browser
           #ghostty
@@ -271,7 +263,6 @@
           ];
           extraSpecialArgs = {
             inherit inputs;
-            pkgsExtra = pkgsExtra system;
             inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
           };
         };
@@ -290,7 +281,6 @@
           inputs
           pkgsFor
           pkgsPatched
-          pkgsExtra
           specialArgs
           homeManagerDesktopConfig
           homeManagerServerConfig

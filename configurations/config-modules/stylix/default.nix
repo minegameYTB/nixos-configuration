@@ -25,7 +25,6 @@
     polarity = "dark";
     fonts = {
       sansSerif = {
-        ### Use pkgsExtra.pkgs-unstable to get adwaita-fonts (even if i use nixpkgs stable by default)
         package = pkgs.adwaita-fonts;
         name = "Adwaita Sans";
       };
