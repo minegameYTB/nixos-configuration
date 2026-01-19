@@ -15,7 +15,7 @@
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 
     ### Other nixpkgs repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgs-unstable attr in flake
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgsUnstable attr in flake
     #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
@@ -43,7 +43,11 @@
 
     ### Distant flake modules
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
-    lazyvim.url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - release-25.11 (8 Jan 2026)
@@ -140,19 +144,20 @@
           (self: super: rec {
             ### Extend pkgs namespace here
             # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
-            pkgs-unstable = import nixpkgs-unstable {
+            pkgsUnstable = import nixpkgs-unstable {
               inherit system;
               config = nixpkgsConfig;
+              overlays = [ ];
             };
-            #pkgs-lts = import ctrl-os {
+            #pkgsLts = import ctrl-os {
             #  inherit system;
             #  config = nixpkgsConfig;
             #};
-            #pkgs-master = import nixpkgs-master {
+            #pkgsMaster = import nixpkgs-master {
             #  inherit system;
             #  config = nixpkgsConfig;
             #};
-            #pkgs-pr = import nixpkgs-pr {
+            #pkgsPr = import nixpkgs-pr {
             #  inherit system;
             #  config = nixpkgsConfig;
             #};

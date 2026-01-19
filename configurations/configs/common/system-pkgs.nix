@@ -25,8 +25,8 @@
       '')
       #nixos-rebuild
     ])
-    ++ (with pkgs.pkgs-unstable; [
-      ### Extra packages always installed (from pkgs.pkgs-unstable)
+    ++ (with pkgs.pkgsUnstable; [
+      ### Extra packages always installed (from pkgs.pkgsUnstable)
       #ventoy
     ])
     ++ (
@@ -45,8 +45,8 @@
           ghostty
         ]
       )
-      ++ (with pkgs.pkgs-unstable; [
-        ### Extra GUI packages from pkgs.pkgs-unstable (only if X11 is enabled)
+      ++ (with pkgs.pkgsUnstable; [
+        ### Extra GUI packages from pkgs.pkgsUnstable (only if X11 is enabled)
         #bottles
       ])
     );

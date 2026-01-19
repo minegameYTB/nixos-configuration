@@ -22,7 +22,7 @@ in
       #hunspellDicts.fr-any
     ])
     ### All arch (pkgs from unstable branch)
-    ++ (with pkgs.pkgs-unstable; [
+    ++ (with pkgs.pkgsUnstable; [
       bitwarden-desktop
     ])
     ### Packages specific to x86_64-linux (main pkgs branch)
@@ -40,17 +40,17 @@ in
         legcord
       ]
     )
-    ### Packages from pkgs-unstable for x86_64-linux only
+    ### Packages from pkgsUnstable for x86_64-linux only
     ++ lib.optionals isX86_64 (
-      with pkgs.pkgs-unstable;
+      with pkgs.pkgsUnstable;
       [
         ### unstable pkgs here
         deezer-enhanced
       ]
     )
-    ### Packages from pkgs-unstable for aarch64-linux
+    ### Packages from pkgsUnstable for aarch64-linux
     ++ lib.optionals isAarch64 (
-      with pkgs.pkgs-unstable;
+      with pkgs.pkgsUnstable;
       [
         ### unstable pkgs here
       ]

@@ -16,7 +16,7 @@
         ];
     };
     extraCompatPackages = [
-      pkgs.pkgs-unstable.proton-ge-bin
+      pkgs.pkgsUnstable.proton-ge-bin
     ];
   };
 }

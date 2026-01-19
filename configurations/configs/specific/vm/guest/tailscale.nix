@@ -4,7 +4,7 @@
   ### Tailscale (server specific option)
   services.tailscale = {
     enable = true;
-    package = pkgs.pkgs-unstable.tailscale;
+    package = pkgs.pkgsUnstable.tailscale;
     useRoutingFeatures = "server";
     openFirewall = true;
 
