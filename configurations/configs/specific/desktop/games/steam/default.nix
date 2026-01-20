@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  pkgsExtra,
   ...
 }:
 
@@ -17,7 +16,7 @@
         ];
     };
     extraCompatPackages = [
-      pkgsExtra.pkgs-unstable.proton-ge-bin
+      pkgs.pkgsUnstable.proton-ge-bin
     ];
   };
 }

@@ -2,7 +2,6 @@
   lib,
   config,
   pkgs,
-  pkgsExtra,
   zen-browser,
   ...
 }:
@@ -23,7 +22,7 @@ in
       #hunspellDicts.fr-any
     ])
     ### All arch (pkgs from unstable branch)
-    ++ (with pkgsExtra.pkgs-unstable; [
+    ++ (with pkgs.pkgsUnstable; [
       bitwarden-desktop
     ])
     ### Packages specific to x86_64-linux (main pkgs branch)
@@ -41,27 +40,27 @@ in
         legcord
       ]
     )
-    ### Packages from pkgs-unstable for x86_64-linux only
+    ### Packages from pkgsUnstable for x86_64-linux only
     ++ lib.optionals isX86_64 (
-      with pkgsExtra.pkgs-unstable;
+      with pkgs.pkgsUnstable;
       [
         ### unstable pkgs here
         deezer-enhanced
       ]
     )
-    ### Packages from pkgs-unstable for aarch64-linux
+    ### Packages from pkgsUnstable for aarch64-linux
     ++ lib.optionals isAarch64 (
-      with pkgsExtra.pkgs-unstable;
+      with pkgs.pkgsUnstable;
       [
         ### unstable pkgs here
       ]
     );
   ### disable in flake.nix for the moment
-  #++ lib.optionals isX86_64 (with pkgsExtra.pkgs-pr; [
+  #++ lib.optionals isX86_64 (with pkgs.pkgs-pr; [
   ### Temporairy add pkgs-pr repo here
   #deezer-enhanced
   #])
-  #++ lib.optionals isX86_64 (with pkgsExtra.pkgs-master; [
+  #++ lib.optionals isX86_64 (with pkgs.pkgs-master; [
   #  deezer-enhanced
   #]);
 }

@@ -1,12 +1,12 @@
-{ config, pkgsExtra, ... }:
+{ config, pkgs, ... }:
 
 {
   ### Add dolphin-emu
-  environment.systemPackages = with pkgsExtra.pkgs-unstable; [ dolphin-emu ];
+  environment.systemPackages = with pkgs.pkgsUnstable; [ dolphin-emu ];
 
   ### custom settings for bluetooth device (udev rules)
   services.udev = {
-    packages = [ pkgsExtra.pkgs-unstable.dolphin-emu ];
+    packages = [ pkgs.pkgsUnstable.dolphin-emu ];
     extraRules = (
       if (config.hardware.bluetooth.enable == true) then
         ''

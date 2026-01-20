@@ -9,7 +9,6 @@
   ### Function from flake.nix imported here by imported function in nix
   pkgsFor,
   pkgsPatched,
-  pkgsExtra,
   specialArgs,
   homeManagerDesktopConfig,
   homeManagerServerConfig,
@@ -30,7 +29,7 @@
       ./profiles/hp-probook-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "HP-probook"; }
@@ -52,7 +51,7 @@
       ./profiles/hp-240-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "UTILISA-0SK6G4E"; }
@@ -74,7 +73,7 @@
       ./profiles/vm-desktop-efi-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-desktop"; }
@@ -96,7 +95,7 @@
       ./profiles/vm-desktop-bios-novio-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-desktop-bios"; }
@@ -118,7 +117,7 @@
       ./profiles/vm-desktop-bios-vio-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
@@ -140,7 +139,6 @@
       ./profiles/vm-no-gui-efi-profile.nix
 
       ### Global overlay settings
-      overlay
 
       ### Hostname config
       { networking.hostName = "nixos-pve-srv"; }
@@ -169,7 +167,7 @@
       ./profiles/vm-no-gui-bios-novio-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-srv-bios"; }
@@ -191,7 +189,7 @@
       ./profiles/vm-no-gui-bios-vio-profile.nix
 
       ### Global overlay settings
-      overlay
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
