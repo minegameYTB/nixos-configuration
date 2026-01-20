@@ -3,7 +3,6 @@
   inputs,
   config,
   pkgs,
-  pkgsExtra,
   #ghostty,
   ...
 }:
@@ -26,8 +25,8 @@
       '')
       #nixos-rebuild
     ])
-    ++ (with pkgsExtra.pkgs-unstable; [
-      ### Extra packages always installed (from pkgsExtra)
+    ++ (with pkgs.pkgsUnstable; [
+      ### Extra packages always installed (from pkgs.pkgsUnstable)
       #ventoy
     ])
     ++ (
@@ -43,11 +42,11 @@
 
           ### Ghostty
           #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
-          ghostty # Use ghostty from nixpkgs to unpin mesa version
+          ghostty
         ]
       )
-      ++ (with pkgsExtra.pkgs-unstable; [
-        ### Extra GUI packages from pkgsExtra (only if X11 is enabled)
+      ++ (with pkgs.pkgsUnstable; [
+        ### Extra GUI packages from pkgs.pkgsUnstable (only if X11 is enabled)
         #bottles
       ])
     );

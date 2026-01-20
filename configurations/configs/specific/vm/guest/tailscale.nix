@@ -1,10 +1,10 @@
-{ config, pkgsExtra, ... }:
+{ config, pkgs, ... }:
 
 {
   ### Tailscale (server specific option)
   services.tailscale = {
     enable = true;
-    package = pkgsExtra.pkgs-unstable.tailscale;
+    package = pkgs.pkgsUnstable.tailscale;
     useRoutingFeatures = "server";
     openFirewall = true;
 

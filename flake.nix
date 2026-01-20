@@ -15,7 +15,7 @@
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 
     ### Other nixpkgs repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgs-unstable attr in flake
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgsUnstable attr in flake
     #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
@@ -43,7 +43,11 @@
 
     ### Distant flake modules
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
-    lazyvim.url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - release-25.11 (8 Jan 2026)
@@ -131,7 +135,7 @@
       inherit (nixpkgs-main) lib;
 
       ### Global overlay configuration (can use this function to extend pkgs or replace recursivly packages)
-      overlay = {
+      overlay = system: {
         nixpkgs.overlays = [
           ### Extend pkgs with nur namespace
           nur.overlays.default
@@ -139,6 +143,24 @@
           ### Custom extend of pkgs or replacing pkgs by other
           (self: super: rec {
             ### Extend pkgs namespace here
+            # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
+            pkgsUnstable = import nixpkgs-unstable {
+              inherit system;
+              config = nixpkgsConfig;
+              overlays = [ ];
+            };
+            #pkgsLts = import ctrl-os {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
+            #pkgsMaster = import nixpkgs-master {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
+            #pkgsPr = import nixpkgs-pr {
+            #  inherit system;
+            #  config = nixpkgsConfig;
+            #};
 
             ### Replace packages here
             ### Force use gh from unstable (on system level)
@@ -183,34 +205,9 @@
           config = nixpkgsConfig;
         };
 
-      ### Declare other nixpkgs repos as pkgsExtra attribute
-      ### Other sources (pkgs set)
-      pkgsExtra = system: {
-        #pkgs-lts = import ctrl-os {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-
-        pkgs-unstable = import nixpkgs-unstable {
-          inherit system;
-          config = nixpkgsConfig;
-        };
-
-        #pkgs-master = import nixpkgs-master {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-
-        #pkgs-pr = import nixpkgs-pr {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-      };
-
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
         inherit inputs;
-        pkgsExtra = pkgsExtra system;
         inherit (inputs)
           zen-browser
           #ghostty
@@ -271,7 +268,6 @@
           ];
           extraSpecialArgs = {
             inherit inputs;
-            pkgsExtra = pkgsExtra system;
             inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
           };
         };
@@ -290,7 +286,6 @@
           inputs
           pkgsFor
           pkgsPatched
-          pkgsExtra
           specialArgs
           homeManagerDesktopConfig
           homeManagerServerConfig
