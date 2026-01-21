@@ -21,7 +21,7 @@
   };
 
   ### Fix non creation of Desktop...Download folder in graphical mode
-  systemd.services."fix-xdg-user-dirs" = {
+  systemd.services."fix-xdg-user-dirs" = rec {
     enable = config.services.desktopManager.gnome.enable;
     wantedBy = [ "graphical.target" ];
     environment.PATH = lib.mkForce "${pkgs.coreutils}/bin:${pkgs.xdg-user-dirs}/bin";
@@ -37,7 +37,7 @@
       NoNewPrivileges = "yes";
     };
     script = ''
-      HOME=${config.users.users.minegame.home}
+      HOME=/home/${serviceConfig.User}
       testFile=$HOME/.xdg-user-dir-done
 
       ### test if ".xdg-user-dir-done" is created
