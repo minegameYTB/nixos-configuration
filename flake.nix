@@ -263,6 +263,8 @@
             (import ./hm-profiles/desktop-profile.nix { inherit username; })
             stylix.homeModules.stylix
 
+            (overlay system)
+
             ### Import specific expression for standalone hm (move futur function here)
             ./home-manager/configs/specific/standalone
           ];
