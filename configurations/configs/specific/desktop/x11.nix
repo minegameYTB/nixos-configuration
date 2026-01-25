@@ -37,4 +37,7 @@
       }
     ];
   };
+  
+  ### Enable xdg portal (if x11 is enable)
+  xdg.portal.enable = config.services.xserver.enable;
 }

@@ -15,6 +15,7 @@
     ./waydroid
     ./emulator
     #./other # Desktop games (not emulator or launcher)
+    ./flatpak
   ];
 
   ### Add specific configuration
