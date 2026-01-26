@@ -134,40 +134,19 @@
       ### Lib from nixpkgs-main
       inherit (nixpkgs-main) lib;
 
-      ### Global overlay configuration (can use this function to extend pkgs or replace recursivly packages)
-      overlay = system: {
-        nixpkgs.overlays = [
-          ### Extend pkgs with nur namespace
-          nur.overlays.default
+      ### Global overlay configuration (import global overlay in ./overlay.nix)
+      overlay =
+        system:
+        import ./overlay.nix {
+          inherit
+            system
+            inputs
+            lib
 
-          ### Custom extend of pkgs or replacing pkgs by other
-          (self: super: rec {
-            ### Extend pkgs namespace here
-            # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
-            pkgsUnstable = import nixpkgs-unstable {
-              inherit system;
-              config = nixpkgsConfig;
-              overlays = [ ];
-            };
-            #pkgsLts = import ctrl-os {
-            #  inherit system;
-            #  config = nixpkgsConfig;
-            #};
-            #pkgsMaster = import nixpkgs-master {
-            #  inherit system;
-            #  config = nixpkgsConfig;
-            #};
-            #pkgsPr = import nixpkgs-pr {
-            #  inherit system;
-            #  config = nixpkgsConfig;
-            #};
-
-            ### Replace packages here
-            ### Force use gh from unstable (on system level)
-            gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
-          })
-        ];
-      };
+            ### Nixpkgs option variable
+            nixpkgsConfig
+            ;
+        };
 
       ### Setup nixpkgs-patched (nixpkgs with custom patch)
       nixpkgs-patched =
