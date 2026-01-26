@@ -12,7 +12,6 @@
     (with pkgs; [
       ### CLI
       wget
-      nix-search-cli
       efibootmgr
       ntfs3g
       nvd
