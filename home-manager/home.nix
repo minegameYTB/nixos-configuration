@@ -3,10 +3,7 @@
 {
 
   imports = [
-    ./configs/common/cli-packages.nix
-    ./configs/common/custom-pkgs.nix
-    ./configs/common/config.nix
-    #./configs/common/neovim.nix
+    ./configs/common
 
     ### Import home-manager external modules (nixos specific)
     ./config-modules
