@@ -139,6 +139,7 @@
       ./profiles/vm-no-gui-efi-profile.nix
 
       ### Global overlay settings
+      (overlay defaultArch)
 
       ### Hostname config
       { networking.hostName = "nixos-pve-srv"; }
