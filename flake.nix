@@ -232,12 +232,7 @@
       mkHome =
         system: username:
         home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs-main {
-            inherit system;
-            config = {
-              allowUnfree = true;
-            };
-          };
+          pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/desktop-profile.nix { inherit username; })
             stylix.homeModules.stylix
@@ -252,6 +247,12 @@
             inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
           };
         };
+
+      mkHomeAttr = username: system: {
+        name = "${username}@${system}";
+        value = mkHome system username;
+      };
+
     in
     {
       ### Formatter
@@ -278,15 +279,7 @@
 
       ### Declare home-manager standalone configuration
       homeConfigurations = lib.listToAttrs (
-        lib.concatMap (
-          username:
-          lib.concatMap (system: [
-            {
-              name = "${username}@${system}";
-              value = mkHome system username;
-            }
-          ]) systems
-        ) users
+        lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) users
       );
     };
 }
