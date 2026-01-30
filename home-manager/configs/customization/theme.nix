@@ -5,7 +5,7 @@
   home.packages = with pkgs; [
     ### Theme
     adw-gtk3
-  
+
     ### Cursor
     ### same for cursor (move this to stylix configuration too)
     catppuccin-cursors.mochaDark
