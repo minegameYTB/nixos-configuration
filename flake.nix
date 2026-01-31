@@ -83,6 +83,11 @@
       url = "github:nix-community/lanzaboote/v0.4.2"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
+
+    glfOS-modules = {
+      url = "git+https://framagit.org/gaming-linux-fr/glf-os/glf-os.git?ref=main"; # For nvidia settings module
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
   };
 
   ### Declare outputs for configuration (inputs attr is inject here)
@@ -124,7 +129,6 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "aarch64-darwin"
       ];
 
       ### Nixpkgs specific configuration (allow non-free app and software)
