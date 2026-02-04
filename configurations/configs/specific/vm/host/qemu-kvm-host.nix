@@ -28,7 +28,6 @@
     spiceUSBRedirection.enable = true;
     libvirtd = {
       enable = true;
-
       shutdownTimeout = 90;
       onShutdown = "shutdown";
       onBoot = "ignore";
