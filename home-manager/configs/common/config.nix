@@ -6,14 +6,6 @@
   ### Git
   programs.git = {
     enable = true;
-    package =
-      (pkgs.git.override {
-        withManual = true;
-        doInstallCheck = false;
-      }).overrideAttrs
-        (oldAttrs: {
-          pname = "gitMinimal-custom";
-        });
     ignores = [
       "*.swp"
       "*~"

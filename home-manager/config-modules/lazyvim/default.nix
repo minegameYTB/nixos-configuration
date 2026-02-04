@@ -37,17 +37,16 @@
         vim.keymap.set("v", "<Del>", '"_x', { noremap = true, silent = true })
       '';
     };
-    extraPackages =
-      (with pkgs; [
+    extraPackages = (
+      with pkgs;
+      [
         nixd # Nix LSP
         nixfmt # Nix formatter
         statix # For suggestion on nix files
         gcc # Provides the C Compiler
         tree-sitter # Provides the tree-sitter CLI
-      ])
-      ++
-      ### Use git package from programs.git.package
-      [ config.programs.git.package ];
+      ]
+    );
     treesitterParsers = with pkgs.vimPlugins.nvim-treesitter-parsers; [ dtd ];
   };
 }
