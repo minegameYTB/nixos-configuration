@@ -13,6 +13,6 @@
   };
 
   environment.systemPackages =
-    (with pkgs.pkgsUnstable; if !config.services.xserver.enable then [ distrobox ] else [ ])
+    (with pkgs.pkgsUnstable; [ distrobox ])
     ++ (lib.optionals config.services.xserver.enable (with pkgs.pkgsUnstable; [ distroshelf ]));
 }
