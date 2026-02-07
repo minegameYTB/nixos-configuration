@@ -33,41 +33,6 @@
     };
   };
 
-  ### Fastfetch
-  # programs.fastfetch = {
-  #   enable = true;
-  #  settings = {
-  #    logo = {
-  #      padding = {
-  #       top = 1;
-  #      };
-  #    };
-  #    modules = [
-  #      "separator"
-  #      "datetime"
-  #      "os"
-  #      "locale"
-  #      "shell"
-  #      "host"
-  #      "kernel"
-  #      "uptime"
-  #      "packages"
-  #      "display"
-  #      "de"
-  #      "wm"
-  #      "cpu"
-  #      "gpu"
-  #      "memory"
-  #      "swap"
-  #      "battery"
-  #      "poweradapter"
-  #      "separator"
-  #      "colors"
-  #      "separator"
-  #    ];
-  #  };
-  # };
-
   ### Htop
   programs.htop = {
     enable = true;
@@ -78,7 +43,38 @@
       show_thread_names = true;
       highlight_base_name = true;
       screen_tabs = true;
-    };
+      fields = with config.lib.htop.fields; [
+        PID
+        USER
+        PRIORITY
+        NICE
+        M_SIZE
+        M_RESIDENT
+        M_SHARE
+        STATE
+        PERCENT_CPU
+        PERCENT_MEM
+        TIME
+        COMM
+      ];
+    }
+    // (
+      with config.lib.htop;
+      leftMeters [
+        (bar "AllCPUs")
+        (bar "Memory")
+        (bar "Swap")
+      ]
+    )
+    // (
+      with config.lib.htop;
+      rightMeters [
+        (text "System")
+        (text "Tasks")
+        (text "LoadAverage")
+        (text "Uptime")
+      ]
+    );
   };
 
   ### Tmux
@@ -118,33 +114,6 @@
     '';
   };
 
-  ### zsh
-  #programs.zsh = {
-  #  enable = true;
-  #  syntaxHighlighting = {
-  #    enable = true;
-  #    highlighters = [
-  #      "main"
-  #    ];
-  #    styles = {
-  #      "comment" = "fg=red,bold";
-  #      "unknown-token" = "fg=red";
-  #    };
-  #  };
-  #  autosuggestion = {
-  #    enable = true;
-  #    strategy = [ "match_prev_cmd" ];
-  #  };
-  #  oh-my-zsh = {
-  #    enable = true;
-  #    theme = "agnoster";
-  #  };
-  ### Replace initExtra by InitContent (after upgrade to home-manager/nixos-25.05)
-  #  initExtra = ''
-  #    export NIXPKGS_COMMIT=$(curl -s https://raw.githubusercontent.com/minegameYTB/nixos-configuration/flake/flake.lock | jq -r '.nodes."nixpkgs".locked.rev' | cut -c1-8)
-  #  '';
-  #};
-
   ### Prevent zsh to show question for .zshrc
   home.file.".zshrc".text =
     "### this file is here to prevent zsh to show question regarding this file.";
@@ -153,6 +122,11 @@
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    noto-fonts-color-emoji
   ];
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig = {
+    enable = true;
+    antialiasing = true;
+  };
 }
