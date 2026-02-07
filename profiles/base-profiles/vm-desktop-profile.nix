@@ -6,6 +6,7 @@
     ### Core
     ../../configurations/hardware-configuration/filesystem/btrfs
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
+    ../../configurations/hardware-configuration/specific/intel-firmware.nix
     ../../configurations/configs/networking/desktop-config.nix
     ../../configurations/configs/system/tmp-on-tmpfs.nix
 
