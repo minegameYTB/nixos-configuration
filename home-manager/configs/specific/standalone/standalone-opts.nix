@@ -3,9 +3,14 @@
   lib,
   config,
   pkgs,
+  zen-browser,
   ...
 }:
 
+let
+  isX86_64 = pkgs.stdenvNoCC.hostPlatform.isx86_64;
+  isAarch64 = pkgs.stdenvNoCC.hostPlatform.isAarch64;
+in
 {
   ### Initialise nur on home-manager standalone (already the case on hm-module on NixOS)
   nixpkgs.overlays = [ inputs.nur.overlays.default ];
@@ -58,8 +63,12 @@
     open = "${pkgs.xdg-utils}/bin/xdg-open";
   };
 
-  ### Nix package
-  home.packages = with pkgs; [ nix ];
+  ### HM standalone package
+  home.packages = with pkgs; [
+    # Install nix from nixpkgs (follow nixos stable (nixpkgs-main repo))
+    nix
+    zen-browser.packages."${pkgs.stdenvNoCC.hostPlatform.system}".default
+  ];
 
   ### Nvd diff hook
   home.activation = {
