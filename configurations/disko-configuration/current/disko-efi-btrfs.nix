@@ -1,5 +1,6 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
+  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixe value or 100% for the disk size",
   ...
 }:
 
@@ -27,7 +28,7 @@
               };
             };
             root = {
-              size = "100%";
+              inherit size;
               content = {
                 type = "btrfs";
                 extraArgs = [

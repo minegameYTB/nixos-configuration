@@ -1,5 +1,6 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
+  size ? throw "Set size for partition e.g. 100G or 100%",
   ...
 }:
 
@@ -17,7 +18,7 @@
               name = "root";
               part-type = "primary";
               start = "1M";
-              end = "100%";
+              end = size;
               bootable = true;
               content = {
                 type = "btrfs";
