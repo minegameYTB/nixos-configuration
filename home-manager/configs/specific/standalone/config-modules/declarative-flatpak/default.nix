@@ -24,11 +24,7 @@
       ### Argument order (to see commit, do "flatpak info software")
       ### Search package with this command (for all used info)
       # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
-
-      #"flathub:app/io.github.shiftey.Desktop//stable"
-      "flathub:app/io.mrarm.mcpelauncher//stable"
-      #"flathub:app/com.spotify.Client//stable"
-      #"com.usebottles.bottles"
+      "flathub:app/app.zen_browser.zen//stable"
     ];
   };
 }
