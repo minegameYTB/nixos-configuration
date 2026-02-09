@@ -12,7 +12,6 @@ with inputs;
   nixpkgs.overlays = [
     ### Extend pkgs with nur namespace
     nur.overlays.default
-    nixgl.overlay
 
     ### Custom extend of pkgs or replacing pkgs by other
     (self: super: rec {
