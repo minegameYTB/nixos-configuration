@@ -59,9 +59,6 @@
     # Stylix - release-25.11 (8 Jan 2026)
     stylix.url = "github:danth/stylix/55380d322f095ec9bc574f66f2870f19db46e6a1";
 
-    # nixGL - fix warning stdenv hostPlatform.system
-    nixgl.url = "github:nix-community/nixGL/d0cd6aab4e02279c8af82870921971855945fe29";
-
     ### End of pinned repos
 
     ### Non flake repos (for rice and dotfiles)
@@ -120,7 +117,6 @@
       ### Sources for 3rd part software
       #ghostty,
       zen-browser,
-      nixgl,
       ...
     }@inputs:
 
