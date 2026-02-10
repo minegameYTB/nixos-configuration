@@ -12,7 +12,7 @@
     #./lutris
     #./heroic
     ./prismlauncher
-    ./waydroid
+    #./waydroid
     ./emulator
     ./other # Desktop games (not emulator or launcher)
     ./flatpak
