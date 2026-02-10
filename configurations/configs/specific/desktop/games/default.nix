@@ -13,7 +13,7 @@
     #./heroic
     ./prismlauncher
     #./waydroid
-    ./emulator
+    #./emulator
     ./other # Desktop games (not emulator or launcher)
     ./flatpak
   ];
