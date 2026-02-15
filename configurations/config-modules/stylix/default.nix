@@ -45,11 +45,32 @@
       name = "catppuccin-mocha-dark-cursors";
       size = 24;
     };
+    autoEnable = false;
+    overlays.enable = false;
     targets = {
+      gnome.enable = true;
+      gnome-text-editor.enable = true;
+      gtk.enable = true;
+      gtksourceview.enable = true;
+      qt.enable = true;
+      kmscon.enable = true;
+      fontconfig.enable = true;
+      console.enable = true;
       plymouth = {
         enable = true;
         logoAnimated = false;
       };
     };
   };
+
+  ### Patch for gnome-shell (disable dark mode option) (enable this overlay when prepare flake to NixOS 26.05)
+  #nixpkgs.overlays = [
+  #  (self: super: {
+  #    gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
+  #      patches = (oldAttrs.patches or [ ]) ++ [
+  #        "${inputs.stylix}/modules/gnome/shell_remove_dark_mode.patch"
+  #      ];
+  #    });
+  #  })
+  #];
 }
