@@ -13,15 +13,6 @@
   stylix = {
     enable = config.services.desktopManager.gnome.enable;
     image = "${inputs.dotfiles-minegameYTB}/wallpapers/Wierschem.jpeg";
-
-    ### Catppucin wallpaper
-    #"${inputs.catppuccin-wallpapers}/landscapes/Cloudsnight.jpg";
-
-    ### Accept fetchurl derivation (see stylix doc)
-    #image = pkgs.fetchurl {
-    #  url = "";
-    #  sha256 = "";
-    #};
     polarity = "dark";
     fonts = {
       sansSerif = {
