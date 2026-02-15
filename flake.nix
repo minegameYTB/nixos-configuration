@@ -16,7 +16,6 @@
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgsUnstable attr in flake
-    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
     #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004"; # pkgs-master attr in flake
@@ -24,28 +23,25 @@
 
     ### Other repos (non-nixpkgs but specific for a software or distant overlays) (pass this repos with specialArgs (with inputs in it))
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake"; # (inputs) zen-browser attr in config (extend this to a overlays later)
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nur = {
-      url = "github:nix-community/nur"; # nur attr in config (already extended with a overlay (see overlay function))
+      url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nix-index-database = {
-      url = "github:nix-community/nix-index-database"; # (inputs) nix-index-database attr in config (distant flake modules available with inputs attr)
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo"; # (inputs) nurpkgs-repo-minegameYTB attr in config (extend this later when enable for pkgs)
-    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155"; # (inputs) ghostty attr in config (for pkgs, extend with a particular name to avoid attr conflict)
-
     ### Distant flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1";
 
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      url = "github:pfassina/lazyvim-nix";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -73,14 +69,13 @@
     };
 
     ### Utilities (flake and non flake repos)
-    ### Import blocklist as non-flake for /etc/hosts
     blocklist = {
       url = "github:StevenBlack/hosts";
       flake = false;
     };
 
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.2"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
+      url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -98,7 +93,6 @@
       nixpkgs-main,
 
       ### Other nixpkgs sources
-      #ctrl-os,
       nixpkgs-unstable,
       #nixpkgs-master,
       #nixpkgs-pr,
@@ -106,7 +100,6 @@
       ### Other sources
       nur,
       declarative-flatpak,
-      #nurpkgs-repo-minegameYTB,
 
       ### External flake modules
       stylix,
@@ -115,7 +108,6 @@
       lazyvim,
 
       ### Sources for 3rd part software
-      #ghostty,
       zen-browser,
       ...
     }@inputs:
@@ -192,11 +184,7 @@
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
         inherit inputs;
-        inherit (inputs)
-          zen-browser
-          #ghostty
-          #nurpkgs-repo-minegameYTB
-          ;
+        inherit (inputs) zen-browser;
       };
 
       ### Declare Home-manager function (for desktop and full CLI)
@@ -247,10 +235,7 @@
             ### Import specific expression for standalone hm (move futur function here)
             ./home-manager/configs/specific/standalone
           ];
-          extraSpecialArgs = {
-            inherit inputs;
-            inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
-          };
+          extraSpecialArgs = specialArgs system;
         };
 
       mkHomeAttr = username: system: {
