@@ -33,7 +33,16 @@
       "module.sig_enforce=1"
       "lockdown=integrity"
       "ipv6.disable=1"
-    ];
+      "random.trust_cpu=off"
+    ]
+    ++ (
+      if config.hardware.cpu.intel.updateMicrocode then
+        [ "intel_iommu=on" ]
+      else if config.hardware.cpu.amd.updateMicrocode then
+        [ "amd_iommu=on" ]
+      else
+        [ ]
+    );
     kernel.sysctl = {
       # QoL settings
       "kernel.panic" = 10;
@@ -47,6 +56,7 @@
       "kernel.dmesg_restrict" = 1;
       "kernel.unprivileged_bpf_disabled" = 1;
       "kernel.yama.ptrace_scope" = 1;
+      "fs.suid_dumpable" = 0;
 
       # Hardening (filesystem)
       "fs.protected_symlinks" = 1;
@@ -82,6 +92,30 @@
       "net.ipv6.conf.all.accept_source_route" = 0;
       "net.ipv6.conf.default.accept_source_route" = 0;
     };
+    blacklistedKernelModules = [
+      # Disable "obscur" kernel module
+      "dccp"
+      "sctp"
+      "rds"
+      "tipc"
+      "n-hdlc"
+      "ax25"
+      "netrom"
+      "x25"
+      "rose"
+      "decnet"
+      "econet"
+      "af_802154"
+      "ipx"
+      "appletalk"
+      "psnap"
+      "p8023"
+      "p8022"
+      "can"
+      "atm"
+      "firewire-core"
+      "thunderbolt"
+    ];
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 }
