@@ -32,6 +32,7 @@
       "debugfs=off"
       "module.sig_enforce=1"
       "lockdown=integrity"
+      "ipv6.disable=1"
     ];
     kernel.sysctl = {
       # QoL settings
