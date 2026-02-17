@@ -83,31 +83,4 @@
     };
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
-
-  ### Hardening /proc directory mount option
-  # Define procfs hidepid and gid=proc option by default
-  fileSystems."/proc" = {
-    fsType = "proc";
-    noCheck = true;
-    options = [
-      "rw"
-      "nosuid"
-      "nodev"
-      "noexec"
-      "relatime"
-      "hidepid=2"
-      "gid=${config.users.groups.proc.name}"
-    ];
-  };
-
-  # Create group for proc and assign root user
-  users.groups.proc = {
-    name = "proc";
-    gid = 30001;
-  };
-
-  # Set override for systemd-login service
-  systemd.services."systemd-logind".serviceConfig.SupplementaryGroups = [
-    config.users.groups.proc.name
-  ];
 }
