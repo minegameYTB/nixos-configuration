@@ -9,6 +9,7 @@
     systemd-boot = {
       enable = true;
       configurationLimit = 10;
+      edk2-uefi-shell.enable = true;
 
       ### Enable Memtest86+ entry for all systemd-boot based configuration
       # Add entry
