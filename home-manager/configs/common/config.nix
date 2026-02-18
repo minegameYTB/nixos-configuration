@@ -122,11 +122,6 @@
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    noto-fonts-color-emoji
   ];
-  fonts.fontconfig = {
-    enable = true;
-    antialiasing = true;
-  };
+  fonts.fontconfig.enable = true;
 }
