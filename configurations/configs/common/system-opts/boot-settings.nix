@@ -36,9 +36,9 @@
       "random.trust_cpu=off"
     ]
     ++ (
-      if config.hardware.cpu.intel.updateMicrocode then
+      if (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) then
         [ "intel_iommu=on" ]
-      else if config.hardware.cpu.amd.updateMicrocode then
+      else if (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) then
         [ "amd_iommu=on" ]
       else
         [ ]
