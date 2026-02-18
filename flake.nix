@@ -38,9 +38,6 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    #nurpkgs-repo-minegameYTB.url = "github:minegameYTB/nurpkgs-repo"; # (inputs) nurpkgs-repo-minegameYTB attr in config (extend this later when enable for pkgs)
-    #ghostty.url = "github:ghostty-org/ghostty/5306e7cf567ccb37028701a00504bcf28484b155"; # (inputs) ghostty attr in config (for pkgs, extend with a particular name to avoid attr conflict)
-
     ### Distant flake modules
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
 
@@ -106,7 +103,6 @@
       ### Other sources
       nur,
       declarative-flatpak,
-      #nurpkgs-repo-minegameYTB,
 
       ### External flake modules
       stylix,
@@ -115,7 +111,6 @@
       lazyvim,
 
       ### Sources for 3rd part software
-      #ghostty,
       zen-browser,
       ...
     }@inputs:
@@ -192,11 +187,7 @@
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
         inherit inputs;
-        inherit (inputs)
-          zen-browser
-          #ghostty
-          #nurpkgs-repo-minegameYTB
-          ;
+        inherit (inputs) zen-browser;
       };
 
       ### Declare Home-manager function (for desktop and full CLI)
@@ -247,10 +238,7 @@
             ### Import specific expression for standalone hm (move futur function here)
             ./home-manager/configs/specific/standalone
           ];
-          extraSpecialArgs = {
-            inherit inputs;
-            inherit (inputs) zen-browser nurpkgs-repo-minegameYTB;
-          };
+          extraSpecialArgs = specialArgs system;
         };
 
       mkHomeAttr = username: system: {
