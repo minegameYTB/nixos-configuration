@@ -21,33 +21,32 @@
       emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
     };
     consoleLogLevel = 0;
-    kernelParams =
-      lib.mkDefault [
-        "quiet"
+    kernelParams = [
+      "quiet"
 
-        ### Hardening
-        "slab_nomerge"
-        "page_alloc.shuffle=1"
-        "pti=on"
-        "vsyscall=none"
-        "debugfs=off"
-        "module.sig_enforce=1"
-        "lockdown=integrity"
-        "ipv6.disable=1"
-        "random.trust_cpu=off"
-      ]
-      ++ (
-        if (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) then
-          [ "intel_iommu=on" ]
-        else if (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) then
-          [ "amd_iommu=on" ]
-        else
-          [
-            "init_on_alloc=1"
-            "init_on_free=1"
-          ]
-      );
-    kernel.sysctl = lib.mkDefault {
+      ### Hardening
+      "slab_nomerge"
+      "page_alloc.shuffle=1"
+      "pti=on"
+      "vsyscall=none"
+      "debugfs=off"
+      "module.sig_enforce=1"
+      "lockdown=integrity"
+      "ipv6.disable=1"
+      "random.trust_cpu=off"
+    ]
+    ++ (
+      if (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) then
+        [ "intel_iommu=on" ]
+      else if (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) then
+        [ "amd_iommu=on" ]
+      else
+        [
+          "init_on_alloc=1"
+          "init_on_free=1"
+        ]
+    );
+    kernel.sysctl = {
       # QoL settings
       "kernel.panic" = 10;
       "vm.swappiness" = 10;
