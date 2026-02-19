@@ -8,6 +8,8 @@
 {
   ### Boot config (followed this guide for hardening: https://madaidans-insecurities.github.io/guides/linux-hardening.html)
   boot = {
+    # Define size for /dev directory
+    devSize = "16m";
     binfmt = {
       preferStaticEmulators = true;
       emulatedSystems = [
@@ -24,8 +26,6 @@
 
       ### Hardening
       "slab_nomerge"
-      "init_on_alloc=1"
-      "init_on_free=1"
       "page_alloc.shuffle=1"
       "pti=on"
       "vsyscall=none"
@@ -41,7 +41,10 @@
       else if (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) then
         [ "amd_iommu=on" ]
       else
-        [ ]
+        [
+          "init_on_alloc=1"
+          "init_on_free=1"
+        ]
     );
     kernel.sysctl = {
       # QoL settings
