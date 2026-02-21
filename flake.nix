@@ -77,7 +77,7 @@
     };
 
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.2"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
+      url = "github:nix-community/lanzaboote/v1.0.0"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
