@@ -121,4 +121,17 @@
     ];
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
+
+  ### Mount /mnt as a tmpfs (limit persistant folder)
+  fileSystems."/mnt" = {
+    fsType = "tmpfs";
+    noCheck = true;
+    options = [
+      "nodev"
+      "noexec"
+      "nosuid"
+      "noswap"
+      "size=4k"
+    ];
+  };
 }
