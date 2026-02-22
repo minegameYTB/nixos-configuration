@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 ### Define restricted PATH for NixOS usage
 PATH="/bin:/usr/bin:/run/current-system/sw/bin"
@@ -13,11 +14,14 @@ source $installLib/lib.sh
 source $installLib/nixos-install.sh
 source $installLib/hm-standalone-install.sh
 
+echo "$0 v0.1b"
+sleep 2
+
 ### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))
 ### Logic: if /etc/NIXOS and /run/current-system is present (or /run/booted-system), count as a nixos system
 
 if [[ -e "/etc/NIXOS" && -d "/run/current-system" ]]; then
-  echo "NixOS based OS detected (by /etc/NIXOS and /run/current-system), continued install phase"
+  echo -e "NixOS based OS detected (by /etc/NIXOS and /run/current-system), continued install phase\n"
   mode=nixosInstall
 else
   if [[ "$(uname -s)" != "Linux" ]]; then
@@ -25,7 +29,7 @@ else
     echo "Stopped at install step (Error 2)"
     exit 2
   fi
-  echo "Non NixOS system detected, assuming you're on Linux system, continuing install script, but for HM standalone"
+  echo -e "Non NixOS system detected, assuming you're on Linux system, continuing install script, but for HM standalone\n"
   mode=hmInstall
 fi
 

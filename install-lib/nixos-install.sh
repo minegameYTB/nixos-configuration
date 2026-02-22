@@ -25,17 +25,17 @@ nixosInstallFn() {
   echo "Available disks:"
   lsblk -d -n -o NAME,SIZE,TYPE | grep disk | grep -E '^(sd|vd|nvme|hd)'
 
-  read -ep "Enter size of your new installation: " sizeDisk
+  read -ep "\nEnter size of your new installation: " sizeDisk
   read -ep "Enter device to install NixOS (like /dev/sda, /dev/vda...): " deviceDisk
   sleep 1
   run_command nix "${nixFlags[@]}" run nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile --argstr device "$deviceDisk" --argstr size "$sizeDisk"
 
-  echo "Profile available:"
+  echo -e "\Profile available:"
   nix "${nixFlags[@]}" flake show
 
   read -ep "Enter name of profile to install: " nixosProfile
 
-  echo "$nixProfile selected to install"
+  echo -e "\n$nixProfile selected to install"
   
   echo -e "\033[1;33m/!\ Starting installation in:\033[0m"
     for i in {5..1}; do
