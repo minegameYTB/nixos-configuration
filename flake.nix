@@ -117,8 +117,9 @@
 
     ### Declare function here
     let
-      ### User to install home-manager configuration (replace this if you change username if you fork this repo)
+      ### User for user configuration and home manager standalone, please change this username when you fork this repo, thanks !
       users = [ "minegame" ];
+      description = "Minegame YTB";
 
       ### System supported for this config (to use on home-manager for example)
       systems = [
@@ -186,7 +187,7 @@
 
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
-        inherit inputs;
+        inherit inputs users description;
         inherit (inputs) zen-browser;
       };
 
