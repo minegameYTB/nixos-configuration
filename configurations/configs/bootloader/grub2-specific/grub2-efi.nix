@@ -9,7 +9,11 @@
       efiSupport = true;
       device = "nodev";
     };
-    ### Use /boot/efi as a mountpoint for grub2
-    efi.efiSysMountPoint = "/boot/efi";
+    efi = {
+      ### Use /boot/efi as a mountpoint for grub2
+      efiSysMountPoint = "/boot/efi";
+      
+      ### Enable EFI editable variable
+      canTouchEfiVariables = true;
   };
 }
