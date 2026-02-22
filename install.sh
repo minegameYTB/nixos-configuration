@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 ### Define restricted PATH for NixOS usage
 PATH="/bin:/usr/bin:/run/current-system/sw/bin"

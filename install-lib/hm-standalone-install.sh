@@ -32,7 +32,7 @@ hmInstallFn() {
 
     echo "curl is now installed"
   else
-     echo "curl is already installed"
+    echo "curl is already installed"
   fi
 
 
