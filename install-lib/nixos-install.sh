@@ -44,5 +44,5 @@ nixosInstallFn() {
   done
   echo -e "\r  \033[1;32m0\033[0m - Install NixOS now !                    "
   
-  run_command nixos-install --flake .#$nixosProfile
+  run_command nixos-install --no-channel-copy --flake .#$nixosProfile
 }
