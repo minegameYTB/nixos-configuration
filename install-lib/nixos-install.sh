@@ -35,7 +35,7 @@ nixosInstallFn() {
 
   read -ep "Enter name of profile to install: " nixosProfile
 
-  echo -e "\n$nixProfile selected to install"
+  echo -e "\n$nixosProfile selected to install"
   
   echo -e "\033[1;33m/!\ Starting installation in:\033[0m"
     for i in {5..1}; do
