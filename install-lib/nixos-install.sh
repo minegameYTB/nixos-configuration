@@ -42,7 +42,7 @@ nixosInstallFn() {
     echo -ne "\r  \033[1;36m$i\033[0m seconds... (Ctrl+C to cancel) "
     sleep 1
   done
-  echo -e "\r  \033[1;32m0\033[0m - Install NixOS now !                    "
+  echo -e "\r  \033[1;32m0\033[0m - Installing NixOS conf                    "
   
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile
 }
