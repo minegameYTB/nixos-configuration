@@ -40,6 +40,7 @@
           onlyoffice-desktopeditors
           github-desktop
           rpi-imager
+          chromium
 
           # Ghostty
           #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
