@@ -13,7 +13,7 @@ source $installLib/lib.sh
 source $installLib/nixos-install.sh
 source $installLib/hm-standalone-install.sh
 
-echo "$0 v0.1b"
+echo "$0 v1.0b"
 sleep 2
 
 ### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))

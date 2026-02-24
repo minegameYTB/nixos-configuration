@@ -2,14 +2,35 @@
 
 ### Nix settings
 nixFlags=(--extra-experimental-features "nix-command flakes")
-nixpkgsRev="23d72dabcb3b12469f57b37170fcbc1789bd7457"
+
+### Get nixpkgs-main hash or use fallback hash
+nixpkgsRev=$(jq -r '.nodes["nixpkgs-main"].locked.rev' flake.lock 2>/dev/null || echo "23d72dabcb3b12469f57b37170fcbc1789bd7457")
+
+### ANSI color variable
+if [[ -n "${NO_COLOR:-}" ]] || [[ "${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
+    # Set no color if terminal is runned in older Unix system
+    BOLD="" RED="" GREEN="" YELLOW="" BLUE="" MAGENTA="" CYAN="" RESET=""
+else
+    BOLD='\033[1m'
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    BLUE='\033[1;34m'
+    MAGENTA='\033[1;35m'
+    CYAN='\033[1;36m'
+    RESET='\033[0m'
+fi
 
 warn() {
-  printf "\033[1;35mwarning:\033[0m %s\n" "$*" >&2
+  printf "${BOLD}${MAGENTA}warning:${RESET} %s\n" "$*" >&2
+}
+
+info() {
+  printf "${CYAN}info:${RESET} %s\n" "$*"
 }
 
 run_command() {
-  echo -e "\n\033[1;34m▶ Run command:\033[0m"
-  echo -e "  \033[33m$*\033[0m\n"
+  printf "\n${BLUE}▶ Run command:${RESET}"
+  printf "  ${YELLOW}%s${RESET}\n\n" "$*"
   "$@"
 }
