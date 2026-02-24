@@ -22,7 +22,7 @@ else
 fi
 
 warn() {
-  printf "${BOLD}${MAGENTA}warning:${RESET} %s\n" "$*" >&2
+  printf "${MAGENTA}warning:${RESET} %s\n" "$*" >&2
 }
 
 info() {
