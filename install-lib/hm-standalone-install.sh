@@ -24,7 +24,7 @@ hmInstallFn() {
       fedora|almalinux)
         run_command sudo dnf install -y curl
       ;;
-      *) 
+      *)
         warn "distribution not supported, please install curl manually with your package manager (Stopped at curl installation (Error 1)"
         exit 1
       ;;

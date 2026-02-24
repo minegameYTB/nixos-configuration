@@ -13,14 +13,15 @@ source $installLib/lib.sh
 source $installLib/nixos-install.sh
 source $installLib/hm-standalone-install.sh
 
-echo "$0 v0.1b"
+echo "$0 v1.0b"
 sleep 2
 
 ### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))
 ### Logic: if /etc/NIXOS and /run/current-system is present (or /run/booted-system), count as a nixos system
 
 if [[ -e "/etc/NIXOS" && -d "/run/current-system" ]]; then
-  echo -e "NixOS based OS detected (by /etc/NIXOS and /run/current-system), continued install phase\n"
+  info "NixOS based OS detected (by /etc/NIXOS and /run/current-system), continued install phase"
+  echo ""
   mode=nixosInstall
 else
   if [[ "$(uname -s)" != "Linux" ]]; then
@@ -28,7 +29,8 @@ else
     echo "Stopped at install step (Error 2)"
     exit 2
   fi
-  echo -e "Non NixOS system detected, assuming you're on Linux system, continuing install script, but for HM standalone\n"
+  info "Non NixOS system detected, assuming you're on Linux system, continuing install script, but for HM standalone"
+  echo ""
   mode=hmInstall
 fi
 
