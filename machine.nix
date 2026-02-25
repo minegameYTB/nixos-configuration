@@ -92,8 +92,7 @@
     specialArgs = specialArgs defaultArch;
     modules = [
       ./configurations/configuration.nix
-      ./profiles/vm-desktop-efi-profile.nix
-      ./configurations/hardware-configuration/filesystem/zfs
+      ./profiles/vm-desktop-efi-zfs-profile.nix
 
       ### Global overlay settings
       (overlay defaultArch)
