@@ -84,6 +84,28 @@
     ];
   };
 
+  # VM preset (desktop efi zfs)
+  vm-desktop-efi-zfs = lib.nixosSystem {
+    system = defaultArch;
+    ### Inject pkgs attr with options
+    pkgs = pkgsFor defaultArch;
+    specialArgs = specialArgs defaultArch;
+    modules = [
+      ./configurations/configuration.nix
+      ./profiles/vm-desktop-efi-profile.nix
+      ./configurations/hardware-configuration/filesystem/zfs
+
+      ### Global overlay settings
+      (overlay defaultArch)
+
+      ### Hostname config
+      { networking.hostName = "nixos-pve-desktop"; }
+
+      ### Home-manager module
+      home-manager.nixosModules.home-manager
+      (homeManagerDesktopConfig defaultArch)
+    ];
+  };
   # VM preset (desktop bios)
   vm-desktop-bios = lib.nixosSystem {
     system = defaultArch;
