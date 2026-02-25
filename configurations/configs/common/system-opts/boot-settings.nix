@@ -122,6 +122,12 @@
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 
+  ### Declare machine-id
+  environment.etc."machine-id" = {
+    text = "b08dfa6083e7567a1921a715000001fb";
+    mode = "0444";
+  };
+
   ### Mount /mnt as a tmpfs (limit persistant folder)
   fileSystems."/mnt" = {
     fsType = "tmpfs";
