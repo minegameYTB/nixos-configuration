@@ -47,7 +47,7 @@
         rootFsOptions = {
           acltype = "posixacl";
           xattr = "sa";
-          compression = "ztsd";
+          compression = "zstd";
           #normalization = "formD";
           atime = "off";
           "com.sun:auto-snapshot" = "false";
@@ -58,7 +58,7 @@
           nix = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               atime = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -68,7 +68,7 @@
           "nix/var" = {
             type = "zfs_fs";
             options = {
-              compression = "lz4";
+              compression = "zstd-5";
               atime = "off";
               #recordsize = "1M";
               "com.sun:auto-snapshot" = "false";
@@ -79,7 +79,7 @@
           var = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               atime = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -89,7 +89,7 @@
           "var/log" = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               "com.sun:auto-snapshot" = "true";
             };
             mountpoint = "/var/log";
@@ -98,7 +98,7 @@
           "var/cache" = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               "com.sun:auto-snapshot" = "false";
             };
             mountpoint = "/var/cache";
@@ -107,7 +107,7 @@
           "var/tmp" = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               "com.sun:auto-snapshot" = "false";
             };
             mountpoint = "/var/tmp";
@@ -116,7 +116,7 @@
           home = {
             type = "zfs_fs";
             options = {
-              compression = "ztsd-5";
+              compression = "zstd-5";
               atime = "off";
               "com.sun:auto-snapshot" = "true";
             };
