@@ -86,17 +86,15 @@
   networking.hostId = "b08dfa60";
 
   ### Fix mount boot
-  boot.initrd = {
-    systemd.services.wait-for-disks = {
+  boot.initrd.systemd = {
+    services.wait-for-disks = {
       description = "Wait for disks to settle (udev)";
       wantedBy = [ "initrd-fs.target" ];
       before = [
         "zfs-import-zroot.service"
         "sysroot.mount"
       ];
-      unitConfig = {
-        DefaultDependencies = false;
-      };
+      unitConfig.DefaultDependencies = false;
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -104,12 +102,12 @@
         TimeoutStartSec = 150;
       };
     };
-    systemd.services."zfs-import-zroot" = {
+    services."zfs-import-zroot" = {
       after = [ "wait-for-disks.service" ];
       wants = [ "wait-for-disks.service" ];
       serviceConfig.TimeoutStartSec = 120;
     };
-    systemd.services."zfs-mount" = {
+    services."zfs-mount" = {
       after = [
         "zfs-import-zroot.service"
         "wait-for-disks.service"
@@ -119,7 +117,7 @@
         TimeoutStartSec = 180;
       };
     };
-    systemd.mounts = [
+    mounts = [
       {
         where = "/sysroot";
         what = "zroot";
