@@ -40,7 +40,10 @@
           onlyoffice-desktopeditors
           github-desktop
           rpi-imager
-          chromium
+
+          ### Chromium based browser
+          vivaldi
+          vivaldi-ffmpeg-codecs
 
           # Ghostty
           #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
