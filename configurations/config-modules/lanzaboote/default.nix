@@ -33,7 +33,7 @@
   systemd.services.cleanup-lanzaboote-auth = {
     description = "Clean unused new .auth files in /";
     environment = lib.mkForce {
-      PATH = "${pkgs.efivar.bin}/bin:${pkgs.coreutils.out}/bin:${pkgs.gawk.out}/bin";
+      PATH = "${pkgs.efivar.bin}/bin:${pkgs.hexdump}/bin:${pkgs.coreutils.out}/bin:${pkgs.gawk.out}/bin";
     };
     wantedBy = [ "multi-user.target" ];
     after = [ "efivarfs.mount" ];
