@@ -64,6 +64,26 @@
     package = pkgs.zfs;
   };
 
+  services.zfs = {
+    autoScrub = {
+      enable = true;
+      pools = [ "zroot" ];
+      interval = "monthly";
+    };
+    autoSnapshot = {
+      enable = true;
+      weekly = 8;
+      monthly = 0;
+      frequent = 0;
+      hourly = 0;
+      daily = 0;
+    };
+    trim = {
+      enable = true;
+      interval = "weekly";
+    };
+  };
+
   ### For zfs import
   networking.hostId = "b08dfa60";
 
