@@ -46,6 +46,8 @@
     fsType = "zfs";
   };
 
+  swapDevices = [ ];
+
   ### Enable ZFS
   services.zfs.trim.enable = true;
 
@@ -86,6 +88,4 @@
 
   ### For zfs import
   networking.hostId = "b08dfa60";
-
-  swapDevices = [ ];
 }
