@@ -48,9 +48,6 @@
 
   swapDevices = [ ];
 
-  ### Enable ZFS
-  services.zfs.trim.enable = true;
-
   ### Add supported file systems
   boot.supportedFilesystems = {
     zfs = true;
