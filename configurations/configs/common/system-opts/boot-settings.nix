@@ -119,8 +119,7 @@
       "firewire-core"
       "thunderbolt"
     ];
-    ### Latest lts (linux 6.18.x) is insupported by zfs userland package (test this later)
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 
   ### Declare machine-id
