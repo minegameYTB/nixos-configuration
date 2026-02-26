@@ -56,8 +56,13 @@
     ext4 = true;
   };
 
-  ### ZFS package
-  boot.zfs.package = pkgs.zfs;
+  ### ZFS specific options
+  boot.zfs = {
+    removeLinuxDRM = true;
+    forceImportRoot = true;
+    devNodes = "/dev/disk/by-partlabel/disk-main-zfs";
+    package = pkgs.zfs;
+  };
 
   ### For zfs import
   networking.hostId = "b08dfa60";
