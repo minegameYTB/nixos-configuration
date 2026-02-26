@@ -96,7 +96,7 @@
       "net.ipv6.conf.default.accept_source_route" = 0;
     };
     blacklistedKernelModules = [
-      # Disable "obscur" kernel module
+      # Disable "obscurs" kernel modules
       "dccp"
       "sctp"
       "rds"
@@ -137,6 +137,7 @@
       "noexec"
       "nosuid"
       "noswap"
+      "mode=755"
       "size=4k"
     ];
   };
