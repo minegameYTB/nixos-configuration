@@ -59,7 +59,7 @@
   boot.zfs = {
     removeLinuxDRM = true;
     forceImportRoot = true;
-    devNodes = "/dev/disk/by-partlabel/disk-main-zfs";
+    devNodes = "/dev/disk/by-id";
     package = pkgs.zfs;
   };
 
