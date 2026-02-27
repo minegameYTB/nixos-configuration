@@ -6,6 +6,10 @@
     device = "/dev/disk/by-label/EFI";
     fsType = "vfat";
     options = [
+      "noexec"
+      "nodev"
+      "nosuid"
+      "noatime"
       "fmask=0077"
       "dmask=0077"
     ];
