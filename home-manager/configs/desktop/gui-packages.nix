@@ -7,58 +7,65 @@
 }:
 
 let
-  ### By ABI (kernel type)
-  isLinux = pkgs.stdenvNoCC.hostPlatform.isLinux;
-  isDarwin = pkgs.stdenvNoCC.hostPlatform.isDarwin;
-
-  ### By arch
   isX86_64 = pkgs.stdenvNoCC.hostPlatform.isx86_64;
   isAarch64 = pkgs.stdenvNoCC.hostPlatform.isAarch64;
 in
 {
   home.packages =
-    ### All arch and all ABI (main pkgs)
+    ### All arch
     (with pkgs; [
-      ### Add multi ABI packages here
-    ])
+      vlc
+      amberol
+      pika-backup
+      github-desktop
+      tagainijisho
+      warp
 
-    ### All arch and all ABI (pkgsUnstable)
+      ### Libreoffice (and langpack)
+      #libreoffice-fresh
+      #hunspellDicts.fr-any
+    ])
+    ### All arch (pkgs from unstable branch)
     ++ (with pkgs.pkgsUnstable; [
       bitwarden-desktop
+      #rpi-imager
     ])
-
-    ### x86_64-linux ABI (main pkgs)
-    ++ lib.optionals (isX86_64 && isLinux) (
+    ### Packages specific to x86_64-linux (main pkgs branch)
+    ++ lib.optionals isX86_64 (
       with pkgs;
       [
-        vlc
-        tagainijisho
         discord
+        #spotify
       ]
     )
-
-    ### x86_64-linux ABI (pkgsUnstable)
-    ++ lib.optionals (isX86_64 && isLinux) (
-      with pkgs.pkgsUnstable;
-      [
-        deezer-enhanced
-      ]
-    )
-
-    ### aarch64-linux ABI (main pkgs)
-    ++ lib.optionals (isAarch64 && isLinux) (
+    ### Packages specific to aarch64-linux (main pkgs branch)
+    ++ lib.optionals isAarch64 (
       with pkgs;
       [
         legcord
       ]
     )
-
-    ### aarch64-darwin ABI (main pkgs)
-    ++ lib.optionals (isAarch64 && isDarwin) (
-      with pkgs;
+    ### Packages from pkgs-unstable for x86_64-linux only
+    ++ lib.optionals isX86_64 (
+      with pkgs.pkgsUnstable;
       [
-        vlc-bin
-        discord
+        ### unstable pkgs here
+        deezer-enhanced
+      ]
+    )
+    ### Packages from pkgs-unstable for aarch64-linux
+    ++ lib.optionals isAarch64 (
+      with pkgs.pkgsUnstable;
+      [
+        ### unstable pkgs here
       ]
     );
+  ### disable in flake.nix for the moment
+  #++ lib.optionals isX86_64 (with pkgs.pkgsPr; [
+  ### Temporairy add pkgs-pr repo here
+  #deezer-enhanced
+  #])
+  #++ lib.optionals isX86_64 (with pkgs.pkgsMaster; [
+  #  deezer-enhanced
+  #]);
 }
