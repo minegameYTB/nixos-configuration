@@ -12,6 +12,7 @@
     (with pkgs; [
       # CLI
       wget
+      file
       efibootmgr
       ntfs3g
       nvd
