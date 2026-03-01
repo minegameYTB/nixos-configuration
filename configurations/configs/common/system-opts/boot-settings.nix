@@ -135,9 +135,15 @@ in
     blacklistedKernelModules = unusedAllModulesCategories;
 
     ### Concat list into string named "install (modules name) /bin/true", "m:" take unusedAllModulesCategories as a value
-    extraModprobeConfig = builtins.concatStringsSep "\n" (
-      map (m: "install ${m} ${pkgs.coreutils}/bin/true") unusedAllModulesCategories
-    );
+    extraModprobeConfig =
+      # If empty list, do nothing
+      if unusedAllModulesCategories == [ ] then
+        ""
+      else
+        builtins.concatStringsSep "\n" (
+          map (m: "install ${m} ${pkgs.coreutils}/bin/true") unusedAllModulesCategories
+        )
+        + "\n";
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 
