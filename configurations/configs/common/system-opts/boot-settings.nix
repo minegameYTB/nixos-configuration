@@ -5,6 +5,43 @@
   ...
 }:
 
+let
+  ### Declare unused module and block them automatically and dynamically with blacklistedKernelModules and extraModprobeConfig options
+  unusedNetModules = [
+    "dccp"
+    "sctp"
+    "rds"
+    "tipc"
+    "n-hdlc"
+    "ax25"
+    "netrom"
+    "x25"
+    "rose"
+    "decnet"
+    "econet"
+    "af_802154"
+    "ipx"
+    "appletalk"
+    "psnap"
+    "p8023"
+    "p8022"
+    "can"
+    "atm"
+  ];
+  unusedAdvModules = [
+    "firewire-core"
+    "thunderbolt"
+  ];
+  unusedFilesystemModules = [
+    "cramfs"
+    "freevxfs"
+    "jffs2"
+    "hfs"
+    "hfsplus"
+  ];
+
+  unusedAllModulesCategories = unusedNetModules ++ unusedAdvModules ++ unusedFilesystemModules;
+in
 {
   ### Boot config (followed this guide for hardening: https://madaidans-insecurities.github.io/guides/linux-hardening.html)
   boot = {
@@ -95,30 +132,12 @@
       "net.ipv6.conf.all.accept_source_route" = 0;
       "net.ipv6.conf.default.accept_source_route" = 0;
     };
-    blacklistedKernelModules = [
-      # Disable "obscurs" kernel modules
-      "dccp"
-      "sctp"
-      "rds"
-      "tipc"
-      "n-hdlc"
-      "ax25"
-      "netrom"
-      "x25"
-      "rose"
-      "decnet"
-      "econet"
-      "af_802154"
-      "ipx"
-      "appletalk"
-      "psnap"
-      "p8023"
-      "p8022"
-      "can"
-      "atm"
-      "firewire-core"
-      "thunderbolt"
-    ];
+    blacklistedKernelModules = unusedAllModulesCategories;
+
+    ### Concat list into string named "install (modules name) /bin/true", "m:" take unusedAllModulesCategories as a value
+    extraModprobeConfig = builtins.concatStringsSep "\n" (
+      map (m: "install ${m} ${pkgs.coreutils}/bin/true") unusedAllModulesCategories
+    );
     kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
   };
 
