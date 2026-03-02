@@ -1,7 +1,7 @@
 {
-  device ? throw "Set this to your disk device, e.g. /dev/sda",
-  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixe value or 100% for the disk size",
-  keyFile ? throw "Set path of secret keyfile e.g. /run/media/$USER/usbVolume",
+  device ? throw "Set this for your disk device, e.g. /dev/sda",
+  size ? throw "Set size for partition e.g; 100G or 100%, GPT only accept fixed value or 100% for disk size",
+  keyFile ? throw "Set path of secret keyfile e.g. /run/media/$USER/usbVolume or /dev/mmcblk0 for raw device who host key in raw partition",
   ...
 }:
 
@@ -35,11 +35,10 @@
                 name = "luks-encrypted";
                 settings = {
                   allowDiscards = true;
-                  # Run nix run nixpkgs#openssl -- rand -out /tmp/secret.key 512 before initialize disk with this expression (via install script, and add warning for key conservation)
                   keyFileSize = 4096;
                   inherit keyFile;
+                  additionalKeyFiles = [ "/tmp/additionalSecret.key" ]; # For recovery
                 };
-                #additionalKeyFiles = [ "/tmp/additionalSecret.key" ]; # Other key (for recovery)
                 content = {
                   type = "btrfs";
                   extraArgs = [
