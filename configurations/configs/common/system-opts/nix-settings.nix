@@ -22,6 +22,7 @@
       warn-dirty = false;
       auto-optimise-store = true;
       trusted-users = [ "@wheel" ];
+      download-buffer-size = 134217728; # 128M for download buffer
       experimental-features = [
         "nix-command"
         "flakes"
