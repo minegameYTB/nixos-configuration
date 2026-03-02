@@ -36,7 +36,7 @@
                 settings = {
                   allowDiscards = true;
                   # Run nix run nixpkgs#openssl -- rand -out /tmp/secret.key 512 before initialize disk with this expression (via install script, and add warning for key conservation)
-                  keyFileSize = 512;
+                  keyFileSize = 4096;
                   inherit keyFile;
                 };
                 #additionalKeyFiles = [ "/tmp/additionalSecret.key" ]; # Other key (for recovery)
