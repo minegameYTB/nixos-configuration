@@ -68,7 +68,6 @@ in
       "vsyscall=none"
       "debugfs=off"
       "module.sig_enforce=1"
-      "lockdown=integrity"
       "ipv6.disable=1"
       "random.trust_cpu=off"
     ]
