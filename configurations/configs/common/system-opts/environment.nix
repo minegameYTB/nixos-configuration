@@ -5,7 +5,6 @@
   environment.variables = {
     EDITOR = "nvim";
     NIXPKGS_ALLOW_UNFREE = "1";
-    VM_OPTS = "$(echo '-smp 2 -m 4096 -spice port=3001,disable-ticketing=on -device virtio-vga -display gtk')";
   };
 
   ### Shell environment
