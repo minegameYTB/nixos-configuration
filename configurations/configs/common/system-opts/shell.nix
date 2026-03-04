@@ -9,6 +9,9 @@
     enable = true;
     enableBashCompletion = true;
     vteIntegration = true;
+    interactiveShellInit = ''
+      VM_OPTS="$(echo '-smp 2 -m 4096 -spice port=3001,disable-ticketing=on -device virtio-vga -display gtk')"
+    '';
     syntaxHighlighting = {
       enable = true;
       highlighters = [
