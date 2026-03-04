@@ -21,7 +21,11 @@
     "sr_mod"
     "rtsx_pci_sdmmc"
   ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [
+    ### For luks keyFile support
+    "mmc_block"
+    "sd_mod"
+  ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ];
 
