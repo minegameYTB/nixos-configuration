@@ -37,7 +37,7 @@
         [
           # GUI Packages (only if X11 is enabled)
           gparted
-          gearlever
+          #gearlever
           onlyoffice-desktopeditors
           github-desktop
           rpi-imager

@@ -8,8 +8,8 @@
 
   ### Declare inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
-    ### Main repo
-    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
+    ### Main repo (prepare NixOS 26.05)
+    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     ### Note: to test PR (with a flake configuration):
     ### github:username/<repo-name>?ref=pull/<PR number>/head
@@ -39,7 +39,7 @@
     };
 
     ### Distant flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
 
     lazyvim = {
       url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
@@ -47,14 +47,14 @@
     };
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
-    # Home-manager - release-25.11 (8 Jan 2026)
+    # Home-manager - main (4 Mar 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/82fb7dedaad83e5e279127a38ef410bcfac6d77c";
+      url = "github:nix-community/home-manager/5a75730e6f21ee624cbf86f4915c6e7489c74acc";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-25.11 (8 Jan 2026)
-    stylix.url = "github:danth/stylix/55380d322f095ec9bc574f66f2870f19db46e6a1";
+    # Stylix - master (28 Feb 2026)
+    stylix.url = "github:danth/stylix/c4b8e80a1020e09a1f081ad0f98ce804a6e85acf";
 
     ### End of pinned repos
 
