@@ -3,9 +3,9 @@
 ### Define restricted PATH for NixOS usage
 PATH="/bin:/usr/bin:/run/current-system/sw/bin"
 
-### Define installLib as a variable (make changes easy), main function will by present on the install script directly
+### Define installLib as a variable (make changes easy), main function will by present on the install script directly and script name
 installLib=$(pwd)/install-lib
-
+name="$(basename -s .sh $0)"
 ### Source lib shell script (common and reusable function and variable)
 source $installLib/lib.sh
 
@@ -13,7 +13,7 @@ source $installLib/lib.sh
 source $installLib/nixos-install.sh
 source $installLib/hm-standalone-install.sh
 
-echo "$0 v1.0b"
+echo "$name v1.2b"
 sleep 2
 
 ### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))

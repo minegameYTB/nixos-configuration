@@ -58,10 +58,18 @@ nixosInstallFn() {
   echo -e "\r  ${GREEN} - Installing NixOS conf${RESET}                    "
   
   info "Partitionning disk"
+  diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk") # Dynamic args for disko
+
+  if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
+    read -p "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
+    keyFile=${keyFile:-/tmp/secret.key} # Same method here
+    diskoArgs+=(--argstr keyFile $keyFile)
+  fi
+
   run_command nix "${nixFlags[@]}" run \
     nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile \
-    --argstr device "$deviceDisk" --argstr size "$sizeDisk"
- 
+    "${diskoArgs[@]}"
+
   sleep 1
   info "installing NixOS configuration with this profile: '$nixosProfile'"
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile
