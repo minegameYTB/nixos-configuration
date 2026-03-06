@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -20,4 +25,18 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  ### BlockList (https://github.com/StevenBlack/hosts)
+  ### (https://gitlab.com/librephoenix/nixos-config/-/blob/0324f60ab14f8551b72ea6078562813befc72786/system/security/blocklist.nix)
+  networking.extraHosts =
+    let
+      blocklist = builtins.readFile "${inputs.blocklist}/alternates/fakenews-gambling/hosts";
+    in
+    if config.services.xserver.enable then
+      ''
+
+        ${blocklist}
+      ''
+    else
+      "";
 }
