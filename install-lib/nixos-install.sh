@@ -16,7 +16,19 @@ nixosInstallFn() {
   # Get info if the host is UEFI or BIOS (boot method)
   if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
     echo "Your pc use UEFI method to boot, continuing with 'disko-efi-btrfs' nix expression"
-    diskoFile=$(pwd)/configurations/disko-configuration/current/disko-efi-btrfs.nix
+
+    read -p "Do you want to use luks encrypted device ? [y/N]: " diskoEncrypted
+    diskoEncrypted=${diskoEncrypted:-N} # Set "N" as a default value (${variable:-default})
+    
+    ### condition for encryption choice
+    if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
+        diskoFile=$(pwd)/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix
+        echo "Using encrypted LUKS configuration"
+    else
+        diskoFile=$(pwd)/configurations/disko-configuration/current/disko-efi-btrfs.nix
+        echo "Using standard (non-encrypted) configuration"
+    fi
+
   else
     echo "Your pc use BIOS method to boot, continuing with 'disko-bios-btrfs' nix expression"
     diskoFile=$(pwd)/configurations/disko-configuration/current/disko-bios-btrfs.nix
@@ -28,8 +40,8 @@ nixosInstallFn() {
   echo ""
   read -ep "Enter size of your new installation: " sizeDisk
   read -ep "Enter device to install NixOS (like /dev/sda, /dev/vda...): " deviceDisk
+  info "Prepare $deviceDisk for installing"
   sleep 1
-  run_command nix "${nixFlags[@]}" run nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile --argstr device "$deviceDisk" --argstr size "$sizeDisk"
 
   echo -e "\nProfile available:"
   nix "${nixFlags[@]}" flake show
@@ -45,5 +57,12 @@ nixosInstallFn() {
   done
   echo -e "\r  ${GREEN} - Installing NixOS conf${RESET}                    "
   
+  info "Partitionning disk"
+  run_command nix "${nixFlags[@]}" run \
+    nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile \
+    --argstr device "$deviceDisk" --argstr size "$sizeDisk"
+ 
+  sleep 1
+  info "installing NixOS configuration with this profile: '$nixosProfile'"
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile
 }
