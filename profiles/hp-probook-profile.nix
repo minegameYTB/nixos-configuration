@@ -9,7 +9,7 @@
     ../configurations/hardware-configuration/machines/hp-probook/hardware-configuration.nix
     ../configurations/hardware-configuration/specific/intel-firmware.nix
     ../configurations/configs/bootloader/systemd-boot.nix
-    ../configurations/configs/networking/desktop-config.nix
+    ../configurations/configs/networking
     ../configurations/configs/system/tmp-on-tmpfs.nix
     ../configurations/configs/specific/laptop/power-mgmt.nix
 
