@@ -7,7 +7,7 @@
     ../../configurations/hardware-configuration/filesystem/btrfs
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
     ../../configurations/hardware-configuration/specific/intel-firmware.nix
-    ../../configurations/configs/networking/server-config.nix
+    ../../configurations/configs/networking
     ../../configurations/configs/system/tmp-on-tmpfs.nix
     ../../configurations/configs/specific/desktop/x11.nix # for kmscon config
 
