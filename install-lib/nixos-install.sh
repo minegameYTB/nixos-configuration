@@ -55,7 +55,7 @@ nixosInstallFn() {
     echo -ne "\r  ${CYAN}$i${RESET} seconds... (Ctrl+C to cancel) "
     sleep 1
   done
-  echo -e "\r  ${GREEN} - Installing NixOS conf${RESET}                    "
+  echo -e "\r  ${GREEN} - Installing NixOS conf${RESET}                    \n"
   
   info "Partitionning disk"
   diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk") # Dynamic args for disko
@@ -71,6 +71,7 @@ nixosInstallFn() {
     "${diskoArgs[@]}"
 
   sleep 1
+  echo ""
   info "installing NixOS configuration with this profile: '$nixosProfile'"
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile
 }
