@@ -21,6 +21,10 @@
       ];
       user.databases = [
         {
+          ### Lock some settings
+          locks = [
+            "/org/gnome/desktop/app-folders/folder-children"
+          ];
           settings = {
             "org/gnome/desktop/wm/preferences" = {
               button-layout = ":minimize,maximize,close";
