@@ -41,11 +41,6 @@
     ### Distant flake modules
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
 
-    lazyvim = {
-      url = "github:pfassina/lazyvim-nix"; # (inputs) lazyvim-nix attr in config (distant flake modules)
-      inputs.nixpkgs.follows = "nixpkgs-main";
-    };
-
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - release-25.11 (8 Jan 2026)
     home-manager = {
@@ -55,6 +50,12 @@
 
     # Stylix - release-25.11 (8 Jan 2026)
     stylix.url = "github:danth/stylix/55380d322f095ec9bc574f66f2870f19db46e6a1";
+
+    # Lazyvim-nix - main (3 Mar 2026)
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix/b6d60dd1d9564faef475a0da68c83e81283aba2a"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
 
     ### End of pinned repos
 
