@@ -37,13 +37,12 @@ addLuksPassphrase() {
   echo "You will be prompted to enter the new passphrase (twice for confirmation)."
   echo "The key file '$keyFile' will be used to authenticate this operation."
 
-  run_command cryptsetup luksAddKey --key-file "$keyFile" --key-size "$keySize" "$luksPartition"
+  run_command cryptsetup luksAddKey --key-file "$keyFile" --key-size="$keySize" "$luksPartition"
 
   if [[ $? -eq 0 ]]; then
     echo -e "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
   else
     warn "Failed to add passphrase. You can retry manually with:"
-    echo "  cryptsetup luksAddKey --key-file $keyFile $luksPartition"
   fi
 }
 
