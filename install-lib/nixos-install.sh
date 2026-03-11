@@ -11,13 +11,19 @@ setupLuksEncryption() {
 
   read -p "Do you want to add a passphrase as a second LUKS key slot ? [y/N]: " addPassphrase
   addPassphrase=${addPassphrase:-N}
+
+  if [[ "$addPassphrase" =~ ^[yY]$ ]]; then
+    read -ep "Enter the key size in bits [4096]: " luksKeySize
+    luksKeySize=${luksKeySize:-4096}
+  fi
 }
 
 # Add a passphrase to a LUKS key slot using an existing key file
-# Usage: addLuksPassphrase <deviceDisk> <keyFile>
+# Usage: addLuksPassphrase <deviceDisk> <keyFile> <keySize>
 addLuksPassphrase() {
   local deviceDisk="$1"
   local keyFile="$2"
+  local keySize="${3:-4096}"
 
   local luksPartition
   luksPartition=$(blkid -t TYPE=crypto_LUKS -o device | grep "^${deviceDisk}[0-9]")
@@ -31,7 +37,7 @@ addLuksPassphrase() {
   echo "You will be prompted to enter the new passphrase (twice for confirmation)."
   echo "The key file '$keyFile' will be used to authenticate this operation."
 
-  run_command cryptsetup luksAddKey --key-file "$keyFile" "$luksPartition"
+  run_command cryptsetup luksAddKey --key-file "$keyFile" --key-size "$keySize" "$luksPartition"
 
   if [[ $? -eq 0 ]]; then
     echo -e "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
@@ -109,7 +115,7 @@ nixosInstallFn() {
     "${diskoArgs[@]}"
 
   if [[ "$diskoEncrypted" =~ ^[yY]$ ]] && [[ "$addPassphrase" =~ ^[yY]$ ]]; then
-    addLuksPassphrase "$deviceDisk" "$keyFile"
+    addLuksPassphrase "$deviceDisk" "$keyFile" "$luksKeySize"
   fi
 
   sleep 1
