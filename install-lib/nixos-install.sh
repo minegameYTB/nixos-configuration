@@ -50,7 +50,7 @@ nixosInstallFn() {
 
   echo -e "\n$nixosProfile selected to install"
   
-  echo -e "\033[1;33m/!\ Starting installation in:\033[0m"
+  echo -e "${YELLOW}/!\ Starting installation in:${RESET}"
     for i in {5..1}; do
     echo -ne "\r  ${CYAN}$i${RESET} seconds... (Ctrl+C to cancel) "
     sleep 1
@@ -61,7 +61,7 @@ nixosInstallFn() {
   diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk") # Dynamic args for disko
 
   if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-    read -p "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
+    read -ep "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
     keyFile=${keyFile:-/tmp/secret.key} # Same method here
     diskoArgs+=(--argstr keyFile $keyFile)
   fi
