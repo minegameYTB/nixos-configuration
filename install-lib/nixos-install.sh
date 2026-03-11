@@ -64,11 +64,40 @@ nixosInstallFn() {
     read -ep "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
     keyFile=${keyFile:-/tmp/secret.key} # Same method here
     diskoArgs+=(--argstr keyFile $keyFile)
+
+    read -p "Do you want to add a passphrase as a second LUKS key slot ? [y/N]: " addPassphrase
+    addPassphrase=${addPassphrase:-N}
   fi
 
   run_command nix "${nixFlags[@]}" run \
     nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile \
     "${diskoArgs[@]}"
+
+  ### Add passphrase to LUKS key slot if requested
+  if [[ "$diskoEncrypted" =~ ^[yY]$ ]] && [[ "$addPassphrase" =~ ^[yY]$ ]]; then
+    echo ""
+    info "Adding passphrase as a second LUKS key slot on $deviceDisk"
+    echo "You will be prompted to enter the new passphrase (twice for confirmation)."
+    echo "The key file '$keyFile' will be used to authenticate this operation."
+
+    # Find the LUKS partition (first partition of the device, or the device itself)
+    if lsblk -no TYPE "${deviceDisk}1" 2>/dev/null | grep -q "crypt\|part"; then
+      luksPartition="${deviceDisk}1"
+    else
+      luksPartition="$deviceDisk"
+    fi
+
+    run_command cryptsetup luksAddKey \
+      --key-file "$keyFile" \
+      "$luksPartition"
+
+    if [[ $? -eq 0 ]]; then
+      echo -e "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
+    else
+      warn "Failed to add passphrase. You can retry manually with:"
+      echo "  cryptsetup luksAddKey --key-file $keyFile $luksPartition"
+    fi
+  fi
 
   sleep 1
   echo ""
