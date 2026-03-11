@@ -2,6 +2,45 @@
 
 ### Install script for NixOS systems
 
+# Prompt the user for LUKS key file and optional passphrase
+# Usage: setupLuksEncryption
+# Exports: keyFile, addPassphrase
+setupLuksEncryption() {
+  read -ep "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
+  keyFile=${keyFile:-/tmp/secret.key}
+
+  read -p "Do you want to add a passphrase as a second LUKS key slot ? [y/N]: " addPassphrase
+  addPassphrase=${addPassphrase:-N}
+}
+
+# Add a passphrase to a LUKS key slot using an existing key file
+# Usage: addLuksPassphrase <deviceDisk> <keyFile>
+addLuksPassphrase() {
+  local deviceDisk="$1"
+  local keyFile="$2"
+
+  local luksPartition
+  luksPartition=$(blkid -t TYPE=crypto_LUKS -o device | grep "^${deviceDisk}[0-9]")
+
+  if [[ -z "$luksPartition" ]]; then
+    warn "No LUKS partition found on $deviceDisk"
+    return 1
+  fi
+
+  info "Adding passphrase as a second LUKS key slot on $luksPartition"
+  echo "You will be prompted to enter the new passphrase (twice for confirmation)."
+  echo "The key file '$keyFile' will be used to authenticate this operation."
+
+  run_command cryptsetup luksAddKey --key-file "$keyFile" "$luksPartition"
+
+  if [[ $? -eq 0 ]]; then
+    echo -e "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
+  else
+    warn "Failed to add passphrase. You can retry manually with:"
+    echo "  cryptsetup luksAddKey --key-file $keyFile $luksPartition"
+  fi
+}
+
 nixosInstallFn() {
   sleep 1
   ### Test if run with sudo or root
@@ -19,7 +58,7 @@ nixosInstallFn() {
 
     read -p "Do you want to use luks encrypted device ? [y/N]: " diskoEncrypted
     diskoEncrypted=${diskoEncrypted:-N} # Set "N" as a default value (${variable:-default})
-    
+
     ### condition for encryption choice
     if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
         diskoFile=$(pwd)/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix
@@ -49,26 +88,29 @@ nixosInstallFn() {
   read -ep "Enter name of profile to install: " nixosProfile
 
   echo -e "\n$nixosProfile selected to install"
-  
+
   echo -e "${YELLOW}/!\ Starting installation in:${RESET}"
-    for i in {5..1}; do
+  for i in {5..1}; do
     echo -ne "\r  ${CYAN}$i${RESET} seconds... (Ctrl+C to cancel) "
     sleep 1
   done
   echo -e "\r  ${GREEN} - Installing NixOS conf${RESET}                    \n"
-  
+
   info "Partitionning disk"
   diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk") # Dynamic args for disko
 
   if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-    read -ep "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
-    keyFile=${keyFile:-/tmp/secret.key} # Same method here
-    diskoArgs+=(--argstr keyFile $keyFile)
+    setupLuksEncryption
+    diskoArgs+=(--argstr keyFile "$keyFile")
   fi
 
   run_command nix "${nixFlags[@]}" run \
     nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile \
     "${diskoArgs[@]}"
+
+  if [[ "$diskoEncrypted" =~ ^[yY]$ ]] && [[ "$addPassphrase" =~ ^[yY]$ ]]; then
+    addLuksPassphrase "$deviceDisk" "$keyFile"
+  fi
 
   sleep 1
   echo ""
