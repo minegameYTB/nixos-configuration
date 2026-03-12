@@ -71,11 +71,11 @@
     "blocklist": {
       "flake": false,
       "locked": {
-        "lastModified": 1772904411,
-        "narHash": "sha256-nn/dCHZnxyQJq9uCrylIpKNVovLyeWhhQLAWqRSk/KY=",
+        "lastModified": 1773239891,
+        "narHash": "sha256-oNmcZEOUg1AuCZ3jFtrfO+dOJ6DhwMMg/rgJ8fn7+bg=",
         "owner": "StevenBlack",
         "repo": "hosts",
-        "rev": "b32ed2a83ceb820bd9d2bb8cfad48244923008aa",
+        "rev": "c5915141ac18f35a7d219ad6b48e453e65dd3acb",
         "type": "github"
       },
       "original": {
@@ -286,11 +286,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1768853388,
-        "narHash": "sha256-VW5cYV3h1d9hsLKzz2tEu8U3NLGHUuGAx/nQMy8FO3k=",
+        "lastModified": 1773209926,
+        "narHash": "sha256-Pol9rahcbZCUbJ9ZtLWVMJcxcg9veXf6lII72P02Oak=",
         "ref": "main",
-        "rev": "b9f5834dc593f002b49fd005668573f2ccc759c5",
-        "revCount": 338,
+        "rev": "4c252255348394488b7e36e3de498c0818c47433",
+        "revCount": 526,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       },
@@ -445,11 +445,11 @@
     },
     "nixpkgs-main": {
       "locked": {
-        "lastModified": 1772963539,
-        "narHash": "sha256-9jVDGZnvCckTGdYT53d/EfznygLskyLQXYwJLKMPsZs=",
+        "lastModified": 1773122722,
+        "narHash": "sha256-FIqHByVqxCprNjor1NqF80F2QQoiiyqanNNefdlvOg4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9dcb002ca1690658be4a04645215baea8b95f31d",
+        "rev": "62dc67aa6a52b4364dd75994ec00b51fbf474e50",
         "type": "github"
       },
       "original": {
@@ -461,11 +461,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1764667669,
-        "narHash": "sha256-7WUCZfmqLAssbDqwg9cUDAXrSoXN79eEEq17qhTNM/Y=",
+        "lastModified": 1772963539,
+        "narHash": "sha256-9jVDGZnvCckTGdYT53d/EfznygLskyLQXYwJLKMPsZs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "418468ac9527e799809c900eda37cbff999199b6",
+        "rev": "9dcb002ca1690658be4a04645215baea8b95f31d",
         "type": "github"
       },
       "original": {
@@ -477,11 +477,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1772963539,
-        "narHash": "sha256-9jVDGZnvCckTGdYT53d/EfznygLskyLQXYwJLKMPsZs=",
+        "lastModified": 1773122722,
+        "narHash": "sha256-FIqHByVqxCprNjor1NqF80F2QQoiiyqanNNefdlvOg4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9dcb002ca1690658be4a04645215baea8b95f31d",
+        "rev": "62dc67aa6a52b4364dd75994ec00b51fbf474e50",
         "type": "github"
       },
       "original": {
@@ -499,11 +499,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773156311,
-        "narHash": "sha256-JSFoDDe+309sdWGZxZd5yTWB8GI74AWFO/L4e3lrOW4=",
+        "lastModified": 1773312379,
+        "narHash": "sha256-vqDS7pNTtQP+c4OSbh/lXSORrEKOMHZbXiPHbJ2aNe4=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "de945fa160e74322b3016dceed185bdd3789479a",
+        "rev": "b2617c8dda6c65c9e5fd34f770a0cea9801d4647",
         "type": "github"
       },
       "original": {
@@ -784,11 +784,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773117756,
-        "narHash": "sha256-47P/mNwhBao57SDfEMQqWPrK8GEUCcVj/Bb24390BDk=",
+        "lastModified": 1773290887,
+        "narHash": "sha256-L1yMYmFffHfZNP+hKJGRBmrFKkn/VDhu7jEbVftBQuM=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "bb5e69d7f82c0a58ad11b5ae46755c44772e335c",
+        "rev": "9346698c4562819f61b4e5097151ec0b17729fab",
         "type": "github"
       },
       "original": {
