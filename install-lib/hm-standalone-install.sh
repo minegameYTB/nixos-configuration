@@ -19,9 +19,11 @@ hmInstallFn() {
     case "$distro" in
       ubuntu|debian|linuxmint|pop)
         run_command sudo apt update
+        run_command sudo apt upgrade
         run_command sudo apt install -y curl
       ;;
       fedora|almalinux)
+        run_command sudo dnf upgrade # update and upgrade package in a row
         run_command sudo dnf install -y curl
       ;;
       *)
@@ -46,7 +48,8 @@ hmInstallFn() {
 
   ### Install nix via determinate-nix project (upstream nix)
   echo "Install Nix via nix-installer (determinate-nix project)"
-  run_command curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh | sh -s -- install --prefer-upstream-nix
+  run_command curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
+    | sh -s -- install --prefer-upstream-nix
   ### Test if nix is installed correctly (source is configuration btw)
   if command -v nix &> /dev/zero; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
