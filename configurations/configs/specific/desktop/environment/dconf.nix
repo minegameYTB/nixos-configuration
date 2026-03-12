@@ -279,7 +279,7 @@
               use-system-font = false;
               spellcheck = false;
               show-line-numbers = true;
-              style-scheme = if config.stylix.enable then "stylix" else "Adwaita-dark";
+              #style-scheme = if config.stylix.enable then "stylix" else "Adwaita-dark";
             };
           };
         }
