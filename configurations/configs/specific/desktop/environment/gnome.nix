@@ -88,4 +88,18 @@
     "text/plain" = "org.gnome.TextEditor.desktop";
     "application/x-shellscript" = "org.gnome.TextEditor.desktop";
   };
+
+  ### Add gstreamer dependancy to nautilus package
+  nixpkgs.overlays = [
+    (self: super: {
+      nautilus = super.nautilus.overrideAttrs (oldAttrs: {
+        buildInputs =
+          oldAttrs.buildInputs or [ ]
+          ++ (with super.gst_all_1; [
+            gst-plugins-good
+            gst-plugins-bad
+          ]);
+      });
+    })
+  ];
 }
