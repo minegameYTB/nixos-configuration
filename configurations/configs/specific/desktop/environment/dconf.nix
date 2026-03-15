@@ -97,20 +97,19 @@
             };
 
             "org/gnome/shell" = {
-              enabled-extensions = [
-                "appindicatorsupport@rgcjonas.gmail.com"
-                "blur-my-shell@aunetx"
-                "dash-to-dock@micxgx.gmail.com"
-                "just-perfection-desktop@just-perfection"
-                "Hide_Activities@shay.shayel.org"
-                "logomenu@aryan_k"
-                "user-theme@gnome-shell-extensions.gcampax.github.com"
-                "tiling-assistant@leleat-on-github"
-                "clipboard-history@alexsaveau.dev"
-                "no-overview@fthx"
-                "quick-settings-audio-panel@rayzeq.github.io"
-                "grand-theft-focus@zalckos.github.com"
-                "caffeine@patapon.info"
+              enabled-extensions = with pkgs.gnomeExtensions; [
+                appindicator.extensionUuid
+                blur-my-shell.extensionUuid
+                dash-to-dock.extensionUuid
+                hide-activities-button.extensionUuid
+                logo-menu.extensionUuid
+                user-themes.extensionUuid
+                tiling-assistant.extensionUuid
+                clipboard-history.extensionUuid
+                no-overview.extensionUuid
+                quick-settings-audio-panel.extensionUuid
+                grand-theft-focus.extensionUuid
+                caffeine.extensionUuid
               ];
               favorite-apps = [
                 "zen-beta.desktop"
@@ -122,7 +121,6 @@
                 "discord.desktop"
                 "deezer-enhanced.desktop"
                 "steam.desktop"
-                "LocalSend.desktop"
               ];
             };
 
