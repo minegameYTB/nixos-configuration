@@ -6,6 +6,7 @@ PATH="/bin:/usr/bin:/run/current-system/sw/bin"
 ### Define installLib as a variable (make changes easy), main function will by present on the install script directly and script name
 installLib=$(pwd)/install-lib
 name="$(basename -s .sh $0)"
+
 ### Source lib shell script (common and reusable function and variable)
 source $installLib/lib.sh
 
