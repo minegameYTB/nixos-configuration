@@ -4,7 +4,6 @@
   ### Import nix expression for vm-desktop
   imports = [
     ### Core
-    ../../configurations/hardware-configuration/filesystem/btrfs
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix
     ../../configurations/hardware-configuration/specific/intel-firmware.nix
     ../../configurations/configs/networking
