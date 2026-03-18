@@ -11,8 +11,8 @@ showDiskLsblk(){
 # Usage: setupLuksEncryption
 # Exports: keyFile, addPassphrase
 setupLuksEncryption() {
-  read -p "Do you want to generate a random key? [Y/n]: " generateKey
-  generateKey=${generateKey:-Y}
+  read -p "Do you want to generate a random key? [y/N]: " generateKey
+  generateKey=${generateKey:-N}
 
   if [[ "$generateKey" =~ ^[yY]$ ]]; then
     read -p "Store the key on a [f]ile or a raw [p]artition? [F/p]: " keyStorage
@@ -22,7 +22,14 @@ setupLuksEncryption() {
       showDiskLsblk
       read -ep "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
       info "Writing random key to $keyFile"
-      run_command dd if=/dev/urandom of="$keyFile" bs=4096 count=1
+      warn "This action will replace the actual keyfile installed in devices, save it ASAP"
+      
+      ### Create a temporary keyFile and install it in partition or full device
+      run_command dd if=/dev/urandom of=/tmp/temporary-keyFile.key bs=4096 count=1
+      echo "Apply permission to avoid non root user to see it"
+      run_command chmod 400 /tmp/temporary-keyFile.key
+      echo "Apply keyfile directly on $keyFile"
+      run_command dd if=/tmp/temporary-keyFile.key of="$keyFile" bs=4096 count=1
     else
       keyFile="/tmp/secret.key"
       info "Generating random key file at $keyFile"
