@@ -2,12 +2,39 @@
 
 ### Install script for NixOS systems
 
+showDiskLsblk(){
+  echo "Available block devices:"
+  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd)'
+}
+
 # Prompt the user for LUKS key file and optional passphrase
 # Usage: setupLuksEncryption
 # Exports: keyFile, addPassphrase
 setupLuksEncryption() {
-  read -ep "Enter the path to your LUKS key file [/tmp/secret.key]: " keyFile
-  keyFile=${keyFile:-/tmp/secret.key}
+  read -p "Do you want to generate a random key? [Y/n]: " generateKey
+  generateKey=${generateKey:-Y}
+
+  if [[ "$generateKey" =~ ^[yY]$ ]]; then
+    read -p "Store the key on a [f]ile or a raw [p]artition? [F/p]: " keyStorage
+    keyStorage=${keyStorage:-F}
+
+    if [[ "$keyStorage" =~ ^[pP]$ ]]; then
+      showDiskLsblk
+      read -ep "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
+      info "Writing random key to $keyFile"
+      run_command dd if=/dev/urandom of="$keyFile" bs=4096 count=1
+    else
+      keyFile="/tmp/secret.key"
+      info "Generating random key file at $keyFile"
+      run_command dd if=/dev/urandom of="$keyFile" bs=4096 count=1
+      run_command chmod 400 "$keyFile"
+    fi
+
+  else
+    showDiskLsblk
+    read -ep "Enter path to existing key file or device [/tmp/secret.key]: " keyFile
+    keyFile=${keyFile:-/tmp/secret.key}
+  fi
 
   read -p "Do you want to add a passphrase as a second LUKS key slot ? [y/N]: " addPassphrase
   addPassphrase=${addPassphrase:-N}
@@ -78,8 +105,7 @@ nixosInstallFn() {
     diskoFile=$(pwd)/configurations/disko-configuration/current/disko-bios-btrfs.nix
   fi
 
-  echo "Available disks:"
-  lsblk -d -n -o NAME,SIZE,TYPE | grep disk | grep -E '^(sd|vd|nvme|hd)'
+  showDiskLsblk
 
   echo ""
   read -ep "Enter size of your new installation: " sizeDisk
