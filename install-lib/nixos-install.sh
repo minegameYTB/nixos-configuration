@@ -23,7 +23,9 @@ setupLuksEncryption() {
       read -ep "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
       info "Writing random key to $keyFile"
       warn "This action will replace the actual keyfile installed in devices, save it ASAP"
-      
+      sleep 5
+     
+      echo "Adding keyfile to $keyFile device"
       ### Create a temporary keyFile and install it in partition or full device
       run_command dd if=/dev/urandom of=/tmp/temporary-keyFile.key bs=4096 count=1
       echo "Apply permission to avoid non root user to see it"
