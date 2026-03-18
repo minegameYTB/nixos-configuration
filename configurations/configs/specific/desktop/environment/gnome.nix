@@ -103,7 +103,7 @@
       });
 
       ### disable extensions_app option on gnome-shell
-      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: rec {
+      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
         mesonFlags = oldAttrs.mesonFlags or [ ] ++ [ "-Dextensions_app=false" ];
       });
     })
