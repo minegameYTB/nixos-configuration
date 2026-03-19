@@ -89,9 +89,10 @@
     "application/x-shellscript" = "org.gnome.TextEditor.desktop";
   };
 
-  ### Add gstreamer dependancy to nautilus package
+  ### Overlays some gnome package
   nixpkgs.overlays = [
     (self: super: {
+      # Add gstreamer dependancy to nautilus package
       nautilus = super.nautilus.overrideAttrs (oldAttrs: {
         buildInputs =
           oldAttrs.buildInputs or [ ]
@@ -99,6 +100,11 @@
             gst-plugins-good
             gst-plugins-bad
           ]);
+      });
+
+      ### disable extensions_app option on gnome-shell
+      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags or [ ] ++ [ "-Dextensions_app=false" ];
       });
     })
   ];

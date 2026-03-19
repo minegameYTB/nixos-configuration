@@ -28,6 +28,9 @@
       ./configurations/configuration.nix
       ./profiles/hp-probook-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
@@ -49,6 +52,9 @@
     modules = [
       ./configurations/configuration.nix
       ./profiles/hp-240-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
@@ -72,6 +78,9 @@
       ./configurations/configuration.nix
       ./profiles/vm-desktop-efi-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
@@ -93,6 +102,9 @@
     modules = [
       ./configurations/configuration.nix
       ./profiles/vm-desktop-bios-novio-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
@@ -116,6 +128,9 @@
       ./configurations/configuration.nix
       ./profiles/vm-desktop-bios-vio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
@@ -137,6 +152,9 @@
     modules = [
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-efi-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
@@ -167,6 +185,9 @@
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-bios-novio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
@@ -188,6 +209,9 @@
     modules = [
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-bios-vio-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
