@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   ### Luks specific settings
@@ -7,7 +12,7 @@
     device = "/dev/disk/by-partlabel/disk-main-luks";
 
     # For keyFile, make sure to change this path (and user used) in case of a fork and using luks encryption
-    keyFile = "/dev/disk/by-id/mmc-APPSD_0x00000354-part1";
+    keyFile = lib.mkDefault "/dev/disk/by-id/mmc-APPSD_0x00000354-part1";
     keyFileSize = 4096;
     keyFileTimeout = 5;
   };
