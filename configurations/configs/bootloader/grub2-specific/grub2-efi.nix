@@ -12,8 +12,9 @@
     efi = {
       ### Use /boot/efi as a mountpoint for grub2
       efiSysMountPoint = "/boot/efi";
-      
+
       ### Enable EFI editable variable
       canTouchEfiVariables = true;
+    };
   };
 }
