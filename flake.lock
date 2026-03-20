@@ -286,11 +286,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1773209926,
-        "narHash": "sha256-Pol9rahcbZCUbJ9ZtLWVMJcxcg9veXf6lII72P02Oak=",
+        "lastModified": 1773827103,
+        "narHash": "sha256-fzcLvTmdpvsgw2VvJIMqDk96mZe/CFsxmemW4KwXKRU=",
         "ref": "main",
-        "rev": "4c252255348394488b7e36e3de498c0818c47433",
-        "revCount": 526,
+        "rev": "c5ac5dba3d70b23ee5f7c2643d700170011896d3",
+        "revCount": 527,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       },
@@ -499,11 +499,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773931005,
-        "narHash": "sha256-3DtJCz8B/GY7SfcJDWJgpl8kmWJzUXswBL4Zdk37uoM=",
+        "lastModified": 1774038166,
+        "narHash": "sha256-2scMfliUXjiHdXf86QOoE5F2FL7fYawtIZmjEDwiGVM=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "539c0acb524f0436a97144fb9d29850367f7ccb1",
+        "rev": "eadd50240302d1c35257a0615bad7b3884ca0f36",
         "type": "github"
       },
       "original": {
