@@ -47,7 +47,7 @@ hmInstallFn() {
   fi
 
   ### Install nix via determinate-nix project (upstream nix)
-  echo "Install Nix via nix-installer (determinate-nix project)"
+  info "Install Nix via nix-installer (determinate-nix project)"
   printf "\n${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}\n\n" >&2
   curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
     | sh -s -- install --prefer-upstream-nix
@@ -58,7 +58,7 @@ hmInstallFn() {
     exit 3
   fi
 
-  echo "Initialize HM first generation"
+  info "Initialize HM first generation"
   run_command nix "${nixFlags[@]}" run $hm_branch -- init --switch
 
   echo "Install HM configuration"
@@ -85,6 +85,6 @@ hmInstallFn() {
     exit 5
   fi
 
-  echo "Install HM as $userName ($nixArch)"
+  info "Install HM as $userName ($nixArch)"
   run_command home-manager -b bak --flake .#$userName@$nixArch switch
 }
