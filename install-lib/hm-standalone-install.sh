@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 ### Install hm standalone if non NixOS system
 
 hmInstallFn() {
@@ -39,23 +37,21 @@ hmInstallFn() {
 
   if [[ -n "$version" ]]; then
     hm_branch="home-manager/release-${version}"
-    echo "Using nixpkgs $version from flake.lock (nixpkgs-main)"
+    echo "Using nixpkgs stable $version from flake.lock (nixpkgs-main)"
+  elif [[ "$nixpkgs_ref" == *"unstable"* ]]; then
+    hm_branch="home-manager/master"
+    info "nixpkgs-main is on unstable channel, using $hm_branch"
   else
     hm_branch="home-manager/master"
-    warn "Could not parse flake.lock, using default $hm_branch"
+    warn "Could not parse flake.lock ref ('$nixpkgs_ref'), falling back to $hm_branch"
   fi
 
   ### Install nix via determinate-nix project (upstream nix)
-  # FIX: Ne pas passer par run_command ici car le pipe vers sh capturerait
-  # les printf ANSI et tenterait de les exécuter comme du shell
   echo "Install Nix via nix-installer (determinate-nix project)"
   printf "\n${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}\n\n" >&2
   curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
     | sh -s -- install --prefer-upstream-nix
 
-  ### FIX: sourcer inconditionnellement le profil Nix dans la session courante
-  ### (l'ancien code utilisait /dev/zero au lieu de /dev/null, la condition échouait
-  ### silencieusement et le source n'était jamais exécuté)
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
   if ! command -v nix &> /dev/null; then
     warn "Nix installation seems to have failed, nix binary not found (Error 3)"
@@ -63,7 +59,6 @@ hmInstallFn() {
   fi
 
   echo "Initialize HM first generation"
-  # FIX: ajout de 'run' manquant dans la commande nix
   run_command nix "${nixFlags[@]}" run $hm_branch -- init --switch
 
   echo "Install HM configuration"

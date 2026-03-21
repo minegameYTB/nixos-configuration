@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 ### Install script for NixOS systems
 
 showDiskLsblk(){
