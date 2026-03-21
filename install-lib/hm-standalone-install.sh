@@ -68,7 +68,6 @@ hmInstallFn() {
   case "$arch" in
     x86_64)   nixArch="x86_64-linux" ;;
     aarch64)  nixArch="aarch64-linux" ;;
-    armv7l)   nixArch="armv7l-linux" ;;
     *)
       warn "Unsupported architecture: $arch (Error 4)"
       exit 4
