@@ -37,7 +37,6 @@ hmInstallFn() {
     echo "curl is already installed"
   fi
 
-
   if [[ -n "$version" ]]; then
     hm_branch="home-manager/release-${version}"
     echo "Using nixpkgs $version from flake.lock (nixpkgs-main)"
@@ -47,20 +46,29 @@ hmInstallFn() {
   fi
 
   ### Install nix via determinate-nix project (upstream nix)
+  # FIX: Ne pas passer par run_command ici car le pipe vers sh capturerait
+  # les printf ANSI et tenterait de les exécuter comme du shell
   echo "Install Nix via nix-installer (determinate-nix project)"
-  run_command curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
+  printf "\n${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}\n\n" >&2
+  curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
     | sh -s -- install --prefer-upstream-nix
-  ### Test if nix is installed correctly (source is configuration btw)
-  if command -v nix &> /dev/zero; then
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
+  ### FIX: sourcer inconditionnellement le profil Nix dans la session courante
+  ### (l'ancien code utilisait /dev/zero au lieu de /dev/null, la condition échouait
+  ### silencieusement et le source n'était jamais exécuté)
+  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  if ! command -v nix &> /dev/null; then
+    warn "Nix installation seems to have failed, nix binary not found (Error 3)"
+    exit 3
   fi
 
   echo "Initialize HM first generation"
-  run_command nix "${nixFlags[@]}" $hm_branch -- init --switch
+  # FIX: ajout de 'run' manquant dans la commande nix
+  run_command nix "${nixFlags[@]}" run $hm_branch -- init --switch
 
   echo "Install HM configuration"
 
   read -ep "What is your username ? (the username need to be change in flake.nix, users.nix...) " userName
   echo "Install HM as $userName (x86_64-linux is hardcoded)"
-  home-manager -b bak --flake .#$userName@x86_64-linux switch
+  run_command home-manager -b bak --flake .#$userName@x86_64-linux switch
 }
