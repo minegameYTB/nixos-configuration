@@ -10,11 +10,14 @@
 with inputs;
 {
   nixpkgs.overlays = [
-    ### Extend pkgs with nur namespace
-    nur.overlays.default
-
     ### Custom extend of pkgs or replacing pkgs by other
     (self: super: rec {
+      ### Extend pkgs with nur namespace
+      nur = import inputs.nur {
+        nurpkgs = pkgsUnstable;
+        pkgs = pkgsUnstable;
+      };
+
       ### Extend pkgs namespace here
       # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
       pkgsUnstable = import nixpkgs-unstable {
