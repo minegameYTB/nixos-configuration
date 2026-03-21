@@ -30,7 +30,8 @@
       gnome-tweaks
       gnome-extension-manager
       evolution
-      xarchiver
+      #xarchiver
+      file-roller
       amberol
       pika-backup
 
