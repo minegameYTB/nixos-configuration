@@ -6,6 +6,16 @@ nixFlags=(--extra-experimental-features "nix-command flakes")
 ### Get nixpkgs-main hash or use fallback hash
 nixpkgsRev=$(jq -r '.nodes["nixpkgs-main"].locked.rev' flake.lock 2>/dev/null || echo "23d72dabcb3b12469f57b37170fcbc1789bd7457")
 
+arch=$(uname -m)
+case "$arch" in
+  x86_64)   nixArch="x86_64-linux" ;;
+  aarch64)  nixArch="aarch64-linux" ;;
+  *)
+    warn "Unsupported architecture: $arch"
+    exit 1
+  ;;
+esac
+
 ### ANSI color variable
 if [[ -n "${NO_COLOR:-}" ]] || [[ "${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
     # Set no color if terminal is runned in older Unix system
