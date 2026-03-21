@@ -3,8 +3,6 @@
 hmInstallFn() {
   nixpkgs_ref=$(jq -r '.nodes."nixpkgs-main".original.ref // .nodes.nixpkgs.original.ref' flake.lock 2>/dev/null)
   version=$(echo "$nixpkgs_ref" | grep -oP '\d+\.\d+')
-  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix | head -1)
-  userName=${userName:-$default_user}
 
   ### detect distro and install curl if needed
   if [[ -f /etc/os-release ]]; then
@@ -65,7 +63,29 @@ hmInstallFn() {
 
   echo "Install HM configuration"
 
-  read -ep "What is your username ? [${default_user}] " userName
+  ### Detect system architecture
+  arch=$(uname -m)
+  case "$arch" in
+    x86_64)   nixArch="x86_64-linux" ;;
+    aarch64)  nixArch="aarch64-linux" ;;
+    armv7l)   nixArch="armv7l-linux" ;;
+    *)
+      warn "Unsupported architecture: $arch (Error 4)"
+      exit 4
+    ;;
+  esac
+
+  ### Extract default username from flake.nix (users = [ "..." ])
+  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix 2>/dev/null | head -1)
+
+  read -r -p "What is your username ? [${default_user}] " userName
+  userName="${userName:-$default_user}"
+
+  if [[ -z "$userName" ]]; then
+    warn "No username provided and could not parse flake.nix (Error 5)"
+    exit 5
+  fi
+
   echo "Install HM as $userName ($nixArch)"
   run_command home-manager -b bak --flake .#$userName@$nixArch switch
 }
