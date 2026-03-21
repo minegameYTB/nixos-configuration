@@ -3,6 +3,7 @@
 hmInstallFn() {
   nixpkgs_ref=$(jq -r '.nodes."nixpkgs-main".original.ref // .nodes.nixpkgs.original.ref' flake.lock 2>/dev/null)
   version=$(echo "$nixpkgs_ref" | grep -oP '\d+\.\d+')
+  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix | head -1)
 
   ### detect distro and install curl if needed
   if [[ -f /etc/os-release ]]; then
@@ -63,7 +64,7 @@ hmInstallFn() {
 
   echo "Install HM configuration"
 
-  read -ep "What is your username ? (the username need to be change in flake.nix, users.nix...) " userName
+  read -ep "What is your username ? [${default_user}] " userName
   echo "Install HM as $userName ($nixArch)"
   run_command home-manager -b bak --flake .#$userName@$nixArch switch
 }
