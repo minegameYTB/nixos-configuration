@@ -87,4 +87,7 @@ hmInstallFn() {
 
   info "Install HM as $userName ($nixArch)"
   run_command home-manager -b bak --flake .#$userName@$nixArch switch
+
+  echo ""
+  info "HM is installed, restart to add desktop icons"
 }
