@@ -4,6 +4,7 @@ hmInstallFn() {
   nixpkgs_ref=$(jq -r '.nodes."nixpkgs-main".original.ref // .nodes.nixpkgs.original.ref' flake.lock 2>/dev/null)
   version=$(echo "$nixpkgs_ref" | grep -oP '\d+\.\d+')
   default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix | head -1)
+  userName=${userName:-$default_user}
 
   ### detect distro and install curl if needed
   if [[ -f /etc/os-release ]]; then
