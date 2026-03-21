@@ -64,6 +64,6 @@ hmInstallFn() {
   echo "Install HM configuration"
 
   read -ep "What is your username ? (the username need to be change in flake.nix, users.nix...) " userName
-  echo "Install HM as $userName (x86_64-linux is hardcoded)"
-  run_command home-manager -b bak --flake .#$userName@x86_64-linux switch
+  echo "Install HM as $userName ($nixArch)"
+  run_command home-manager -b bak --flake .#$userName@$nixArch switch
 }
