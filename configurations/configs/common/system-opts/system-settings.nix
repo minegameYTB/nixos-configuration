@@ -40,30 +40,6 @@
   ### Udev
   services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
-  ### Openntpd client
-  services.openntpd = {
-    enable = true;
-    servers = [
-      "time.cloudflare.com"
-      "0.fr.pool.ntp.org"
-      "1.fr.pool.ntp.org"
-      "2.fr.pool.ntp.org"
-      "3.fr.pool.ntp.org"
-    ];
-  };
-  # To use tsc if it's real device
-  boot.kernelParams =
-    if (config.services.qemuGuest.enable) then
-      [
-        "clocksource=kvm-clock"
-      ]
-    else
-      [
-        "clocksource=tsc"
-        "tsc=reliable"
-        "intel_idle.max_cstate=1"
-      ];
-
   ### Appimage support
   programs.appimage = {
     enable = true;
