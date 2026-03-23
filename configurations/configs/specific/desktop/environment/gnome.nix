@@ -27,7 +27,7 @@
       ### Other gnome related packages
       virt-viewer
       mission-center
-      gnome-tweaks
+      refine
       gnome-extension-manager
       evolution
       #xarchiver
