@@ -44,12 +44,12 @@
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - main (13 Mar 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/ef12a9a2b0f77c8fa3dda1e7e494fca668909056";
+      url = "github:nix-community/home-manager/9df3a639007cfe0d074433f7fc225ea94f877d08";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     # Stylix - master (28 Feb 2026)
-    stylix.url = "github:danth/stylix/c4b8e80a1020e09a1f081ad0f98ce804a6e85acf";
+    stylix.url = "github:danth/stylix/e31c79f571c5595a155f84b9d77ce53a84745494";
 
     # Lazyvim-nix - main (9 Mar 2026)
     lazyvim = {
