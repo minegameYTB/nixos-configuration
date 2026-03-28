@@ -26,6 +26,13 @@
         export TERM='xterm-256color'
         exec -a "$0" ${config.programs.ssh.package}/bin/ssh "$@"
       '')
+
+      # Provide xdg-open alias (open) as a command
+      (pkgs.writeShellScriptBin "open" ''
+        export PATH='${lib.getBin config.programs.ssh.package}'
+        exec -a $0" ${pkgs.xdg-utils}/bin/xdg-open "$@"
+      '')
+
     ])
     ++ (with pkgs.pkgsUnstable; [
       # Extra packages always installed (from pkgs.pkgsUnstable)
