@@ -30,7 +30,7 @@
       # Provide xdg-open alias (open) as a command
       (pkgs.writeShellScriptBin "open" ''
         export PATH='${lib.getBin config.programs.ssh.package}'
-        exec -a $0" ${pkgs.xdg-utils}/bin/xdg-open "$@"
+        exec -a "$0" ${pkgs.xdg-utils}/bin/xdg-open "$@"
       '')
 
     ])
