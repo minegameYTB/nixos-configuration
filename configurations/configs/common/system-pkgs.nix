@@ -48,6 +48,7 @@
           onlyoffice-desktopeditors
           github-desktop
           rpi-imager
+          easyeffects
 
           ### Chromium based browser
           vivaldi
