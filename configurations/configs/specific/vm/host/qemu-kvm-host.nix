@@ -10,7 +10,10 @@
   programs.virt-manager.enable = true;
 
   ### Vm specific package
-  environment.systemPackages = with pkgs; [ libguestfs ];
+  environment.systemPackages = with pkgs; [
+    libguestfs
+    nur.repos.minegameYTB.kvm-archive
+  ];
 
   ### KSM ram optimisation
   hardware.ksm.enable = true;

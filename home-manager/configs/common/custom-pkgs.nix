@@ -11,9 +11,7 @@
     [
       ### With nur namespace (nixpkgs stable)
       nur.repos.minegameYTB.sshrm
-      #nur.repos.minegameYTB.editor.msedit
       nur.repos.minegameYTB.GLFfetch-glfos
-      nur.repos.minegameYTB.kvm-archive
     ]
   );
   #++
