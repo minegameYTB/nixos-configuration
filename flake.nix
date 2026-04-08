@@ -155,13 +155,13 @@
         ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
         (import nixpkgs-main { inherit system; }).applyPatches {
-          name = "nixpkgs-patched-455370";
+          name = "nixpkgs-patched-507681";
           src = nixpkgs-main;
           patches = [
             (builtins.fetchurl {
               ### Add ".patch" to get this link for a PR
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
-              sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/507681.patch";
+              sha256 = "02fvdf0zf8v9nw588fzlw3kxnp6qhv0yab5ssmn1zxkni4y0mdyg";
             })
 
             ### Local patch

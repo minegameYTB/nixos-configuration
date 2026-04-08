@@ -22,7 +22,7 @@
   hp-probook = lib.nixosSystem {
     system = defaultArch;
     ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
+    pkgs = pkgsPatched defaultArch;
     specialArgs = specialArgs defaultArch;
     modules = [
       ./configurations/configuration.nix
