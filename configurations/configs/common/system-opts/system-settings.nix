@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   ### Nvd diff hook
@@ -18,8 +23,18 @@
   '';
 
   ### Ssh cli package (replace openssl by libressl)
-  programs.ssh.package = pkgs.openssh.override {
-    openssl = pkgs.libressl;
+  programs.ssh.package = pkgs.symlinkJoin {
+    name = "openssh-libressl-${pkgs.openssh.version}";
+    paths = [
+      (pkgs.openssh.override {
+        openssl = pkgs.libressl;
+      })
+    ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/ssh \
+        --set TERM "xterm-256color" \
+    '';
   };
 
   ### Zram
