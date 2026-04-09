@@ -33,9 +33,6 @@
     gsw = "git switch";
     gbr = "git branch";
     gft = "git fetch";
-
-    ### This alias is just inspired from macOS "open" command
-    open = "/run/current-system/sw/bin/xdg-open";
   };
 
   ### gnu nano
