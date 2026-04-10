@@ -111,6 +111,7 @@
                 quick-settings-audio-panel.extensionUuid
                 grand-theft-focus.extensionUuid
                 caffeine.extensionUuid
+                bluetooth-battery-meter.extensionUuid
               ];
               favorite-apps = [
                 "zen-beta.desktop"
