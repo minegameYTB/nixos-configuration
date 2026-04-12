@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 
 {
-  ### Localsend (cause hostPlatform warning)
-  #programs.localsend.enable = config.services.desktopManager.gnome.enable;
+  ### Localsend
+  programs.localsend.enable = config.services.desktopManager.gnome.enable;
 
   ### Tmux
   programs.tmux = {
