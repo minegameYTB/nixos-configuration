@@ -155,9 +155,7 @@
         ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
         (import nixpkgs-main { inherit system; }).applyPatches {
-          name = "nixpkgs-patched-${
-            builtins.substring 0 8 (nixpkgs-main.rev or builtins.hashString "sha256" (toString nixpkgs-main))
-          }";
+          name = "nixpkgs-patched";
           src = nixpkgs-main;
           patches = [
             (builtins.fetchurl {
