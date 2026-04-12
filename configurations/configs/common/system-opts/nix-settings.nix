@@ -6,6 +6,9 @@
 }:
 
 {
+  ### Import nixpkgs-path-registry.nix expression
+  imports = [ ./nixpkgs-path-registry.nix ];
+
   ### Nix Settings
   nix = {
     ### Use nix from ctrl os
