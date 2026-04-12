@@ -156,7 +156,7 @@
         system:
         (import nixpkgs-main { inherit system; }).applyPatches {
           name = "nixpkgs-patched-${
-            builtins.substring 0 8 (builtins.hashString "sha256" (toString nixpkgs-main))
+            builtins.substring 0 8 (nixpkgs-main.rev or builtins.hashString "sha256" (toString nixpkgs-main))
           }";
           src = nixpkgs-main;
           patches = [
