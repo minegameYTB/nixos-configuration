@@ -60,6 +60,7 @@
       quick-settings-audio-panel
       grand-theft-focus
       caffeine
+      bluetooth-battery-meter
     ]);
 
   ### Exclude some Gnome default packages

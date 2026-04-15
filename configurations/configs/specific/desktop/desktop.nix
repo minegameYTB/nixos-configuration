@@ -19,7 +19,4 @@
       libpinyin
     ];
   };
-
-  ### Xdg portal
-  xdg.portal.enable = true;
 }

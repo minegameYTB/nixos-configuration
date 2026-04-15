@@ -42,14 +42,14 @@
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
-    # Home-manager - main (13 Mar 2026)
+    # Home-manager - main (6 Apr 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/9df3a639007cfe0d074433f7fc225ea94f877d08";
+      url = "github:nix-community/home-manager/5de7dbd151b0bd65d45785553d4a22d832733ffc";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - master (28 Feb 2026)
-    stylix.url = "github:danth/stylix/e31c79f571c5595a155f84b9d77ce53a84745494";
+    # Stylix - master (6 Apr 2026)
+    stylix.url = "github:danth/stylix/d27951a6539951d87f75cf0a7cda8a3a24016019";
 
     # Lazyvim-nix - main (9 Mar 2026)
     lazyvim = {
@@ -155,13 +155,13 @@
         ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
         (import nixpkgs-main { inherit system; }).applyPatches {
-          name = "nixpkgs-patched-455370";
+          name = "nixpkgs-patched";
           src = nixpkgs-main;
           patches = [
             (builtins.fetchurl {
               ### Add ".patch" to get this link for a PR
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/455370.patch";
-              sha256 = "0ndpfv11q7rdm11zspm712g7c0lmjfi2jihp3vqy62zx24v78bm9";
+              url = "https://github.com/NixOS/nixpkgs/commit/3b4a0798b7c01d90ef25015e2dbdb47fe2a83fc2.patch";
+              sha256 = "07hm2y2b39p85a7p8yyyxmidv5jzxxrvj4bl36l3nmq4z2cp5hpj";
             })
 
             ### Local patch
