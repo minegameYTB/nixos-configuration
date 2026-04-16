@@ -42,6 +42,7 @@
           github-desktop
           rpi-imager
           easyeffects
+          upscayl
 
           ### Chromium based browser
           vivaldi
