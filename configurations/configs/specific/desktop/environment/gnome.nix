@@ -29,7 +29,8 @@
       mission-center
       gnome-tweaks
       gnome-extension-manager
-      evolution
+      #evolution
+      thunderbird
       xarchiver
       amberol
       pika-backup
