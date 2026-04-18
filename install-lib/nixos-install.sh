@@ -58,19 +58,16 @@ setupTempSwap() {
   info "Filesystem on /mnt: $mountFs — creating ${swapSizeMiB} MiB swapfile at $swapFile"
 
   if [[ "$mountFs" == "btrfs" ]]; then
-    ### btrfs: fallocate does not work for swap files
-    ### Must create an empty file + disable COW (chattr +C) before writing any data
-    run_command truncate -s 0 "$swapFile"
-    run_command chattr +C "$swapFile"         # disable Copy-on-Write, required on btrfs
-    run_command btrfs property set "$swapFile" compression none 2>/dev/null || true
-    run_command dd if=/dev/zero of="$swapFile" bs=1M count="$swapSizeMiB" status=progress
+    ### btrfs: use mkswapfile which handles COW disable and swap init in one step
+    ### requires btrfs-progs >= 6.1
+    run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
   else
     ### ext4, xfs, etc.: fallocate is sufficient and much faster
     run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
+    run_command chmod 600 "$swapFile"
+    run_command mkswap "$swapFile"
   fi
 
-  run_command chmod 600 "$swapFile"
-  run_command mkswap "$swapFile"
   run_command swapon "$swapFile"
 
   ### Confirmation
@@ -201,8 +198,8 @@ nixosInstallFn() {
   showDiskLsblk
 
   echo ""
-  read -ep "Enter device to install NixOS (like /dev/sda, /dev/vda...): " deviceDisk
   read -ep "Enter size of your new installation: " sizeDisk
+  read -ep "Enter device to install NixOS (like /dev/sda, /dev/vda...): " deviceDisk
   info "Prepare $deviceDisk for installing"
   sleep 1
 
