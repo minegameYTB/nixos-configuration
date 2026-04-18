@@ -34,3 +34,21 @@ run_command() {
   printf "  ${YELLOW}%s${RESET}\n\n" "$*"
   "$@"
 }
+
+# Read default username from flake.nix (users = [ "..." ]) and prompt for confirmation
+# Usage: getDefaultUser <error_code>
+# Exports: userName
+getDefaultUser() {
+  local errorCode="${1:-5}"
+
+  local default_user
+  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix 2>/dev/null | head -1)
+
+  read -r -p "What is your username? [${default_user}] " userName
+  userName="${userName:-$default_user}"
+
+  if [[ -z "$userName" ]]; then
+    warn "No username provided and could not parse flake.nix (Error $errorCode)"
+    exit "$errorCode"
+  fi
+}

@@ -101,16 +101,8 @@ hmInstallFn() {
     ;;
   esac
 
-  ### Extract default username from flake.nix (users = [ "..." ])
-  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix 2>/dev/null | head -1)
-
-  read -r -p "What is your username ? [${default_user}] " userName
-  userName="${userName:-$default_user}"
-
-  if [[ -z "$userName" ]]; then
-    warn "No username provided and could not parse flake.nix (Error 5)"
-    exit 5
-  fi
+  ### Extract default username from flake.nix and prompt for confirmation
+  getDefaultUser 5
 
   info "Install HM as $userName ($nixArch)"
   run_command home-manager -b bak --flake .#$userName@$nixArch switch
