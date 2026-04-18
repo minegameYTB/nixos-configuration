@@ -5,6 +5,89 @@ showDiskLsblk(){
   lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd)'
 }
 
+# Detect total RAM and decide whether a temporary swap is needed
+# Swap is created when RAM < SWAP_THRESHOLD_GiB (default: 4 GiB)
+# Override behaviour via environment variables:
+#   SWAP_THRESHOLD_GiB=<n>  — change the RAM threshold (default: 4)
+#   FORCE_SWAP=1            — always create swap regardless of RAM
+#   FORCE_SWAP=0            — never create swap regardless of RAM
+# Usage: detectRam
+# Exports: ramMiB, swapSizeMiB, needSwap
+detectRam() {
+  ramKiB=$(awk '/^MemTotal:/ { print $2 }' /proc/meminfo)
+  ramMiB=$(( ramKiB / 1024 ))
+  ramGiB=$(( ramMiB / 1024 ))
+  swapSizeMiB=$ramMiB  # swap size = total RAM (standard convention for install)
+
+  ### Default threshold: 4 GiB — overridable via SWAP_THRESHOLD_GiB
+  local thresholdGiB=${SWAP_THRESHOLD_GiB:-4}
+
+  info "Detected RAM: ${ramGiB} GiB (${ramMiB} MiB) — threshold: ${thresholdGiB} GiB"
+
+  ### Determine whether swap is needed, with optional env var overrides
+  if [[ "${FORCE_SWAP:-}" == "1" ]]; then
+    needSwap=1
+    info "FORCE_SWAP=1 — swap creation forced regardless of RAM"
+  elif [[ "${FORCE_SWAP:-}" == "0" ]]; then
+    needSwap=0
+    info "FORCE_SWAP=0 — swap creation disabled regardless of RAM"
+  elif (( ramGiB < thresholdGiB )); then
+    needSwap=1
+    info "RAM (${ramGiB} GiB) is below threshold (${thresholdGiB} GiB) — swap will be created (${swapSizeMiB} MiB)"
+  else
+    needSwap=0
+    info "RAM (${ramGiB} GiB) meets or exceeds threshold (${thresholdGiB} GiB) — swap not needed"
+  fi
+}
+
+# Create a temporary swapfile on /mnt (already mounted by disko)
+# Handles btrfs (needs truncate + chattr +C) vs other filesystems (fallocate)
+# Usage: setupTempSwap
+# Exports: swapFile
+setupTempSwap() {
+  swapFile="/mnt/.swapfile-install"
+
+  ### Detect filesystem type of /mnt
+  mountFs=$(findmnt -n -o FSTYPE /mnt 2>/dev/null)
+
+  if [[ -z "$mountFs" ]]; then
+    warn "Could not detect filesystem on /mnt, skipping swap setup"
+    return 1
+  fi
+
+  info "Filesystem on /mnt: $mountFs — creating ${swapSizeMiB} MiB swapfile at $swapFile"
+
+  if [[ "$mountFs" == "btrfs" ]]; then
+    ### btrfs: fallocate does not work for swap files
+    ### Must create an empty file + disable COW (chattr +C) before writing any data
+    run_command truncate -s 0 "$swapFile"
+    run_command chattr +C "$swapFile"         # disable Copy-on-Write, required on btrfs
+    run_command btrfs property set "$swapFile" compression none 2>/dev/null || true
+    run_command dd if=/dev/zero of="$swapFile" bs=1M count="$swapSizeMiB" status=progress
+  else
+    ### ext4, xfs, etc.: fallocate is sufficient and much faster
+    run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
+  fi
+
+  run_command chmod 600 "$swapFile"
+  run_command mkswap "$swapFile"
+  run_command swapon "$swapFile"
+
+  ### Confirmation
+  swapTotal=$(free -m | awk '/^Swap:/ { print $2 }')
+  info "Swap activated — total swap now: ${swapTotal} MiB"
+}
+
+# Deactivate and remove the temporary swapfile after installation
+# Usage: teardownTempSwap
+teardownTempSwap() {
+  if [[ -n "$swapFile" && -f "$swapFile" ]]; then
+    info "Removing temporary swapfile $swapFile"
+    run_command swapoff "$swapFile"
+    run_command rm -f "$swapFile"
+  fi
+}
+
 # Prompt the user for LUKS key file and optional passphrase
 # Usage: setupLuksEncryption
 # Exports: keyFile, addPassphrase
@@ -90,6 +173,9 @@ nixosInstallFn() {
     exit 1
   fi
 
+  ### Detect RAM early (used later for swap sizing)
+  detectRam
+
   ### Partitionning the disk with disko
   # Get info if the host is UEFI or BIOS (boot method)
   if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
@@ -150,8 +236,17 @@ nixosInstallFn() {
     addLuksPassphrase "$deviceDisk" "$keyFile" "$luksKeySize"
   fi
 
+  ### Setup temporary swap on /mnt (now mounted by disko) before nixos-install
+  ### nixos-install can be very RAM-hungry during flake evaluation
+  if (( needSwap )); then
+    setupTempSwap
+  fi
+
   sleep 1
   echo ""
   info "installing NixOS configuration with this profile: '$nixosProfile'"
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile
+
+  ### Cleanup swap after installation (no-op if swap was not created)
+  teardownTempSwap
 }
