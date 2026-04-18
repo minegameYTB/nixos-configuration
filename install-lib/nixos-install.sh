@@ -9,6 +9,7 @@ showDiskLsblk(){
 # Swap is created when RAM < SWAP_THRESHOLD_GiB (default: 4 GiB)
 # Override behaviour via environment variables:
 #   SWAP_THRESHOLD_GiB=<n>  — change the RAM threshold (default: 4)
+#   SWAP_SIZE_MiB=<n>       — change the swap size in MiB (default: 8192)
 #   FORCE_SWAP=1            — always create swap regardless of RAM
 #   FORCE_SWAP=0            — never create swap regardless of RAM
 # Usage: detectRam
@@ -17,7 +18,7 @@ detectRam() {
   ramKiB=$(awk '/^MemTotal:/ { print $2 }' /proc/meminfo)
   ramMiB=$(( ramKiB / 1024 ))
   ramGiB=$(( ramMiB / 1024 ))
-  swapSizeMiB=$ramMiB  # swap size = total RAM (standard convention for install)
+  swapSizeMiB=${SWAP_SIZE_MiB:-8192}  # fixed 8 GiB by default — overridable via SWAP_SIZE_MiB
 
   ### Default threshold: 4 GiB — overridable via SWAP_THRESHOLD_GiB
   local thresholdGiB=${SWAP_THRESHOLD_GiB:-4}
