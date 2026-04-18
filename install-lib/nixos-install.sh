@@ -201,8 +201,8 @@ nixosInstallFn() {
   showDiskLsblk
 
   echo ""
-  read -ep "Enter size of your new installation: " sizeDisk
   read -ep "Enter device to install NixOS (like /dev/sda, /dev/vda...): " deviceDisk
+  read -ep "Enter size of your new installation: " sizeDisk
   info "Prepare $deviceDisk for installing"
   sleep 1
 
