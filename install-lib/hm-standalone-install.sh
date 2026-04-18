@@ -35,6 +35,33 @@ hmInstallFn() {
     echo "curl is already installed"
   fi
 
+  ### Install flatpak system-wide and add Flathub remote
+  ### App management is handled by the HM module — this only sets up the system layer
+  info "Installing Flatpak and adding Flathub (system-wide)"
+
+  if ! command -v flatpak &> /dev/null; then
+    case "$distro" in
+      ubuntu|debian|linuxmint|pop)
+        run_command sudo apt install -y flatpak
+      ;;
+      fedora|almalinux)
+        run_command sudo dnf install -y flatpak
+      ;;
+      *)
+        warn "distribution not supported for flatpak installation, skipping (you may install it manually)"
+      ;;
+    esac
+  else
+    echo "flatpak is already installed"
+  fi
+
+  ### Add Flathub remote at system level if not already present
+  if flatpak remotes --system | grep -q "^flathub"; then
+    echo "Flathub remote already registered (system)"
+  else
+    run_command sudo flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  fi
+
   if [[ -n "$version" ]]; then
     hm_branch="home-manager/release-${version}"
     echo "Using nixpkgs stable $version from flake.lock (nixpkgs-main)"
