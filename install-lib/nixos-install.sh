@@ -72,8 +72,8 @@ setupTempSwap() {
   run_command swapon "$swapFile"
 
   ### Confirmation
-  swapTotal=$(free -m | awk '/^Swap:/ { print $2 }')
-  info "Swap activated — total swap now: ${swapTotal} MiB"
+  swapTotal=$(swapon --show=SIZE --noheadings | tr -d ' ' | paste -sd '+')
+  info "Swap activated — active swap: ${swapTotal}"
 }
 
 # Deactivate and remove the temporary swapfile after installation
