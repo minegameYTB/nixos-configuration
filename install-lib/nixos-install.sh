@@ -247,4 +247,9 @@ nixosInstallFn() {
 
   ### Cleanup swap after installation (no-op if swap was not created)
   teardownTempSwap
+
+  ### Set user password via nixos-enter
+  getDefaultUser 6
+  info "Setting password for $userName via nixos-enter"
+  run_command nixos-enter --root /mnt -- passwd "$userName"
 }
