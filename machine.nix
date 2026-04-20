@@ -72,7 +72,7 @@
   vm-desktop-efi = lib.nixosSystem {
     system = defaultArch;
     ### Inject pkgs attr with options
-    pkgs = pkgsPatched defaultArch;
+    pkgs = pkgsFor defaultArch;
     specialArgs = specialArgs defaultArch;
     modules = [
       ./configurations/configuration.nix

@@ -29,7 +29,8 @@
       mission-center
       refine
       gnome-extension-manager
-      evolution
+      #evolution
+      thunderbird
       #xarchiver
       file-roller
       amberol
@@ -65,11 +66,9 @@
 
   ### Exclude some Gnome default packages
   environment.gnome.excludePackages = with pkgs; [
-    geary # Geary
     gnome-tour # Gnome Tour
     epiphany # Gnome Web
-    #yelp # Gnome help
-    totem # Gnome Totem (video)
+    #totem # Gnome Totem (video)
     gnome-maps # Gnome maps
     gnome-connections # Gnome connections
     gnome-console # Gnome console (default term)
