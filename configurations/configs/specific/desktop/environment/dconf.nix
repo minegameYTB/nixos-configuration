@@ -121,10 +121,8 @@
                 "org.gnome.Nautilus.desktop"
                 "com.mitchellh.ghostty.desktop"
                 "virt-manager.desktop"
-                "org.prismlauncher.PrismLauncher.desktop"
                 "discord.desktop"
                 "deezer-enhanced.desktop"
-                "steam.desktop"
               ];
             };
 
