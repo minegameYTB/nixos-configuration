@@ -144,17 +144,4 @@ in
       "size=4k"
     ];
   };
-
-  ### Mount /etc/systemd as a tmpfs
-  fileSystems."/etc/systemd" = {
-    fsType = "tmpfs";
-    options = [
-      "nodev"
-      "noexec"
-      "nosuid"
-      "noswap"
-      "mode=755"
-      "size=4k"
-    ];
-  };
 }
