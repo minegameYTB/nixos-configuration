@@ -9,6 +9,8 @@
   ### Podman
   virtualisation.podman = {
     enable = true;
+    dockerCompat = true;
+    dockerSocket.enable = true;
     package = pkgs.podman;
   };
 
