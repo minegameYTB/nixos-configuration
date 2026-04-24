@@ -18,6 +18,7 @@
       "libvirtd"
       "kvm"
       "input"
+      "podman" # To use docker socket with podman
     ];
     initialPassword = "nixos";
   });
