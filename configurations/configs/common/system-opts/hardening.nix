@@ -102,7 +102,8 @@ in
       "vm.unprivileged_userfaultfd" = 0;
 
       # Hardening (network)
-      "net.core.bpf_jit_enable" = 0;
+      "net.core.bpf_jit_enable" = 1;
+      "net.core.bpf_jit_harden" = 2;
       "net.ipv4.tcp_syncookies" = 1;
       "net.ipv4.tcp_rfc1337" = 1;
 
