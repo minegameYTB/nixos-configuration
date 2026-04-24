@@ -113,6 +113,7 @@
                 grand-theft-focus.extensionUuid
                 caffeine.extensionUuid
                 bluetooth-battery-meter.extensionUuid
+                gsconnect.extensionUuid
               ];
               favorite-apps = [
                 "zen-beta.desktop"

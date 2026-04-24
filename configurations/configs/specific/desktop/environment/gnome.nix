@@ -16,6 +16,12 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  ### KDE connect integration
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.gnomeExtensions.gsconnect;
+  };
+
   ### Gnome pinentry gpg
   programs.gnupg.agent = {
     pinentryPackage = lib.mkDefault pkgs.pinentry-gnome3;
@@ -29,9 +35,7 @@
       mission-center
       refine
       gnome-extension-manager
-      #evolution
       thunderbird
-      #xarchiver
       file-roller
       amberol
       pika-backup
@@ -62,6 +66,7 @@
       grand-theft-focus
       caffeine
       bluetooth-battery-meter
+      gsconnect
     ]);
 
   ### Exclude some Gnome default packages
