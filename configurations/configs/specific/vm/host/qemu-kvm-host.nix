@@ -16,11 +16,11 @@
   ];
 
   ### KSM ram optimisation
-  hardware.ksm.enable = true;
+  #hardware.ksm.enable = true;
 
   ### Virtualisation settings
   virtualisation = {
-    kvmgt.enable = true;
+    #kvmgt.enable = true;
     spiceUSBRedirection.enable = true;
     libvirtd = {
       enable = true;
