@@ -4,6 +4,7 @@
   ### Common env variable
   environment.variables = {
     EDITOR = "nvim";
+    PAGER = "mdless";
     NIXPKGS_ALLOW_UNFREE = "1";
   };
 

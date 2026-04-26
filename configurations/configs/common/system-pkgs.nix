@@ -16,6 +16,7 @@
       efibootmgr
       ntfs3g
       nvd
+      mdcat
 
       # Man pages
       man-pages
