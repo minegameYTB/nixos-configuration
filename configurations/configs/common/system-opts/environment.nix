@@ -17,6 +17,7 @@
     "cat.ori" = "/run/current-system/sw/bin/cat";
     "ls.ori" = "/run/current-system/sw/bin/ls --color";
     "df.ori" = "/run/current-system/sw/bin/df";
+    sudo = "sudo "; # To correctly use shell aliases with sudo command
 
     ### Prevent to use internal which config in zsh (shows aliases which path)
     which = "/run/current-system/sw/bin/which";
