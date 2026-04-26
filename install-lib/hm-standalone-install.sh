@@ -1,14 +1,18 @@
 ### Install hm standalone if non NixOS system
 
 hmInstallFn() {
-  nixpkgs_ref=$(jq -r '.nodes."nixpkgs-main".original.ref // .nodes.nixpkgs.original.ref' flake.lock 2>/dev/null)
-  version=$(echo "$nixpkgs_ref" | grep -oP '\d+\.\d+')
+  nixpkgs_ref=$(jq -r '.nodes."nixpkgs-main".original.ref // .nodes.nixpkgs.original.ref // empty' \
+    flake.lock 2>/dev/null) || nixpkgs_ref=""
+
+  version=$(echo "$nixpkgs_ref" | grep -oP '\d+\.\d+' || true)
 
   ### detect distro and install curl if needed
   if [[ -f /etc/os-release ]]; then
     source /etc/os-release
-    distro=$ID
-    echo "Detected distribution: $distro ($PRETTY_NAME)"
+    distro="${ID:-unknown}"
+    echo "Detected distribution: $distro (${PRETTY_NAME:-unknown})"
+  else
+    distro="unknown"
   fi
 
   if ! command -v curl &> /dev/null; then
@@ -56,7 +60,8 @@ hmInstallFn() {
   fi
 
   ### Add Flathub remote at system level if not already present
-  if flatpak remotes --system | grep -q "^flathub"; then
+  flathub_registered=$(flatpak remotes --system 2>/dev/null | grep -c "^flathub" || echo "0")
+  if [[ "$flathub_registered" -gt 0 ]]; then
     echo "Flathub remote already registered (system)"
   else
     run_command sudo flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -79,7 +84,13 @@ hmInstallFn() {
   curl -fsSL https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
     | sh -s -- install --prefer-upstream-nix
 
-  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  else
+    warn "nix-daemon.sh not found — Nix installation may have failed (Error 3)"
+    exit 3
+  fi
+
   if ! command -v nix &> /dev/null; then
     warn "Nix installation seems to have failed, nix binary not found (Error 3)"
     exit 3

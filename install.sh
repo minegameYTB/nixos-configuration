@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 ### Define restricted PATH for NixOS usage
 PATH="/bin:/usr/bin:/run/current-system/sw/bin"
@@ -14,7 +15,7 @@ source $installLib/lib.sh
 source $installLib/nixos-install.sh
 source $installLib/hm-standalone-install.sh
 
-echo "$name v1.0"
+echo "$name v1.1"
 sleep 2
 
 ### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))

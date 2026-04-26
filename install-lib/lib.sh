@@ -4,7 +4,12 @@
 nixFlags=(--extra-experimental-features "nix-command flakes")
 
 ### Get nixpkgs-main hash or use fallback hash
-nixpkgsRev=$(jq -r '.nodes["nixpkgs-main"].locked.rev' flake.lock 2>/dev/null || echo "23d72dabcb3b12469f57b37170fcbc1789bd7457")
+nixpkgsRev=$(jq -r '.nodes["nixpkgs-main"].locked.rev // empty' flake.lock 2>/dev/null) \
+  || nixpkgsRev="23d72dabcb3b12469f57b37170fcbc1789bd7457"
+
+if [[ -z "$nixpkgsRev" || "$nixpkgsRev" == "null" ]]; then
+  nixpkgsRev="23d72dabcb3b12469f57b37170fcbc1789bd7457"
+fi
 
 ### ANSI color variable
 if [[ -n "${NO_COLOR:-}" ]] || [[ "${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
@@ -42,7 +47,7 @@ getDefaultUser() {
   local errorCode="${1:-5}"
 
   local default_user
-  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix 2>/dev/null | head -1)
+  default_user=$(grep -oP '(?<=users = \[ ")[^"]+' flake.nix 2>/dev/null | head -1 || true)
 
   read -r -p "What is your username? [${default_user}] " userName
   userName="${userName:-$default_user}"

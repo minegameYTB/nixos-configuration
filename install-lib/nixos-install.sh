@@ -2,7 +2,7 @@
 
 showDiskLsblk(){
   echo "Available block devices:"
-  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd)'
+  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd)' || true
 }
 
 # Detect total RAM and decide whether a temporary swap is needed
@@ -49,7 +49,7 @@ setupTempSwap() {
   swapFile="/mnt/.swapfile-install"
 
   ### Detect filesystem type of /mnt
-  mountFs=$(findmnt -n -o FSTYPE /mnt 2>/dev/null)
+  mountFs=$(findmnt -n -o FSTYPE /mnt 2>/dev/null || true)
 
   if [[ -z "$mountFs" ]]; then
     warn "Could not detect filesystem on /mnt, skipping swap setup"
@@ -72,14 +72,14 @@ setupTempSwap() {
   run_command swapon "$swapFile"
 
   ### Confirmation
-  swapTotal=$(swapon --show=SIZE --noheadings | tr -d ' ' | paste -sd '+')
+  swapTotal=$(swapon --show=SIZE --noheadings | tr -d ' ' | paste -sd '+' || true)
   info "Swap activated — active swap: ${swapTotal}"
 }
 
 # Deactivate and remove the temporary swapfile after installation
 # Usage: teardownTempSwap
 teardownTempSwap() {
-  if [[ -n "$swapFile" && -f "$swapFile" ]]; then
+  if [[ -n "${swapFile:-}" && -f "${swapFile:-}" ]]; then
     info "Removing temporary swapfile $swapFile"
     run_command swapoff "$swapFile"
     run_command rm -f "$swapFile"
@@ -141,7 +141,7 @@ addLuksPassphrase() {
   local keySize="${3:-4096}"
 
   local luksPartition
-  luksPartition=$(blkid -t TYPE=crypto_LUKS -o device | grep "^${deviceDisk}[0-9]")
+  luksPartition=$(blkid -t TYPE=crypto_LUKS -o device 2>/dev/null | grep "^${deviceDisk}[0-9]" || true)
 
   if [[ -z "$luksPartition" ]]; then
     warn "No LUKS partition found on $deviceDisk"
@@ -152,9 +152,7 @@ addLuksPassphrase() {
   echo "You will be prompted to enter the new passphrase (twice for confirmation)."
   echo "The key file '$keyFile' will be used to authenticate this operation."
 
-  run_command cryptsetup luksAddKey --key-file "$keyFile" --keyfile-size="$keySize" "$luksPartition"
-
-  if [[ $? -eq 0 ]]; then
+  if run_command cryptsetup luksAddKey --key-file "$keyFile" --keyfile-size="$keySize" "$luksPartition"; then
     echo -e "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
   else
     warn "Failed to add passphrase. Continuing with keyfile only"
@@ -176,6 +174,8 @@ nixosInstallFn() {
 
   ### Partitionning the disk with disko
   # Get info if the host is UEFI or BIOS (boot method)
+  diskoEncrypted="N"  # default value — must be initialized before the if block (guards against -u)
+
   if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
     echo "Your pc use UEFI method to boot, continuing with 'disko-efi-btrfs' nix expression"
 
@@ -230,8 +230,8 @@ nixosInstallFn() {
     nixpkgs/$nixpkgsRev#disko -- -m destroy,format,mount $diskoFile \
     "${diskoArgs[@]}"
 
-  if [[ "$diskoEncrypted" =~ ^[yY]$ ]] && [[ "$addPassphrase" =~ ^[yY]$ ]]; then
-    addLuksPassphrase "$deviceDisk" "$keyFile" "$luksKeySize"
+  if [[ "$diskoEncrypted" =~ ^[yY]$ ]] && [[ "${addPassphrase:-N}" =~ ^[yY]$ ]]; then
+    addLuksPassphrase "$deviceDisk" "$keyFile" "${luksKeySize:-4096}"
   fi
 
   ### Setup temporary swap on /mnt (now mounted by disko) before nixos-install
@@ -259,5 +259,6 @@ nixosInstallFn() {
     run_command cp -r nixos-configuration /mnt/home/$userName
     info "change owner of the dirctory of nixos-configuration"
     run_command chown -R 1000:100 /mnt/home/$userName/nixos-configuration
-    #run_command chown -R --preserve-root 1000:100 /mnt/home/$userName/nixos-configuration/.*
+  
+  info "Installation Completed ! Please reboot to use NixOS"
 }
