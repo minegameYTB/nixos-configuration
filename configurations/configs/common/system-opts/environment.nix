@@ -3,8 +3,6 @@
 {
   ### Common env variable
   environment.variables = {
-    EDITOR = "nvim";
-    PAGER = "mdless";
     NIXPKGS_ALLOW_UNFREE = "1";
   };
 
@@ -23,7 +21,7 @@
     ### Prevent to use internal which config in zsh (shows aliases which path)
     which = "/run/current-system/sw/bin/which";
 
-    ### Rm never interact
+    ### Rm (never interact option)
     rm = "/run/current-system/sw/bin/rm --interactive=never";
 
     ### Git aliases
@@ -42,7 +40,7 @@
     enable = false;
     nanorc = ''
       set autoindent
-      set linenumbers 
+      set linenumbers
     '';
   };
 }
