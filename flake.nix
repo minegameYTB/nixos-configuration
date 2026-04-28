@@ -51,9 +51,9 @@
     # Stylix - master (22 Apr 2026)
     stylix.url = "github:danth/stylix/84971726c7ef0bb3669a5443e151cc226e65c518";
 
-    # Lazyvim-nix - main (9 Mar 2026)
+    # Lazyvim-nix - main (2 Apr 2026)
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix/f3752da774f09f1c50f249df79df419fbddc4f2c"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      url = "github:pfassina/lazyvim-nix/c1c27d9b3fd74d243a34985c5440a14aa0c2a169"; # (inputs) lazyvim-nix attr in config (distant flake modules)
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
