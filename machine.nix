@@ -85,7 +85,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop"; }
+      { networking.hostName = "nixos-kvm-desktop"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -110,7 +110,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios"; }
+      { networking.hostName = "nixos-kvm-desktop-bios"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -135,7 +135,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -160,7 +160,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-srv"; }
+      { networking.hostName = "nixos-kvm-srv"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -192,7 +192,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-srv-bios"; }
+      { networking.hostName = "nixos-kvm-srv-bios"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -217,7 +217,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
