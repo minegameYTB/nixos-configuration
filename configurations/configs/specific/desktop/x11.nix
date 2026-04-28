@@ -28,7 +28,7 @@
 
   ### Enable kmscon in x11
   services.kmscon = {
-    enable = true;
+    enable = false;
     useXkbConfig = true;
     fonts = [
       {
