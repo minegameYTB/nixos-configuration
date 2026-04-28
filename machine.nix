@@ -110,7 +110,7 @@
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop"; }
+      { networking.hostName = "nixos-kvm-desktop"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
