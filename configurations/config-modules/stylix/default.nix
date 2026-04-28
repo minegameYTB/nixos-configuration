@@ -44,7 +44,7 @@
       gtk.enable = true;
       gtksourceview.enable = true;
       qt.enable = true;
-      kmscon.enable = true;
+      #kmscon.enable = true;
       fontconfig.enable = true;
       console.enable = true;
       plymouth = {

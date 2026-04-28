@@ -15,45 +15,45 @@
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 
     ### Other nixpkgs repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgsUnstable attr in flake
-    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
-    #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004"; # pkgs-master attr in flake
-    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head"; # pkgs-pr attr in flake
+    #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
+    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
     ### Other repos (non-nixpkgs but specific for a software or distant overlays) (pass this repos with specialArgs (with inputs in it))
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake"; # (inputs) zen-browser attr in config (extend this to a overlays later)
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nur = {
-      url = "github:nix-community/nur"; # nur attr in config (already extended with a overlay (see overlay function))
+      url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nix-index-database = {
-      url = "github:nix-community/nix-index-database"; # (inputs) nix-index-database attr in config (distant flake modules available with inputs attr)
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     ### Distant flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6";
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - main (6 Apr 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/5de7dbd151b0bd65d45785553d4a22d832733ffc";
+      url = "github:nix-community/home-manager/508daf831ab8d1b143d908239c39a7d8d39561b2";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - master (6 Apr 2026)
-    stylix.url = "github:danth/stylix/d27951a6539951d87f75cf0a7cda8a3a24016019";
+    # Stylix - master (22 Apr 2026)
+    stylix.url = "github:danth/stylix/84971726c7ef0bb3669a5443e151cc226e65c518";
 
-    # Lazyvim-nix - main (9 Mar 2026)
+    # Lazyvim-nix - main (2 Apr 2026)
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix/f3752da774f09f1c50f249df79df419fbddc4f2c"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      url = "github:pfassina/lazyvim-nix/c1c27d9b3fd74d243a34985c5440a14aa0c2a169";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -78,7 +78,7 @@
     };
 
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.0.0"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
+      url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 

@@ -24,6 +24,7 @@
           ### Lock some settings
           locks = [
             "/org/gnome/desktop/app-folders/folder-children"
+            "/org/gnome/shell/extensions/blur-my-shell/hacks-level"
           ];
           settings = {
             "org/gnome/desktop/wm/preferences" = {
@@ -112,6 +113,7 @@
                 grand-theft-focus.extensionUuid
                 caffeine.extensionUuid
                 bluetooth-battery-meter.extensionUuid
+                gsconnect.extensionUuid
               ];
               favorite-apps = [
                 "zen-beta.desktop"
@@ -119,10 +121,8 @@
                 "org.gnome.Nautilus.desktop"
                 "com.mitchellh.ghostty.desktop"
                 "virt-manager.desktop"
-                "org.prismlauncher.PrismLauncher.desktop"
                 "discord.desktop"
                 "deezer-enhanced.desktop"
-                "steam.desktop"
               ];
             };
 
