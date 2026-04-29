@@ -40,7 +40,7 @@ with inputs;
 
       ### Replace packages here
       ### Force use gh from unstable (on system level)
-      gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
+      #gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
     })
   ];
 }
