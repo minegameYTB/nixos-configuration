@@ -71,11 +71,11 @@
     "blocklist": {
       "flake": false,
       "locked": {
-        "lastModified": 1776965612,
-        "narHash": "sha256-mGti2nilpiN5Sc0qZ9w4e/NBi3dfuHvLRjsr/kUMZc0=",
+        "lastModified": 1777299728,
+        "narHash": "sha256-n2ne22h6juJ4UN9I7o7/WNoYDB7Xa8AKB1mz2qJrwaQ=",
         "owner": "StevenBlack",
         "repo": "hosts",
-        "rev": "46c0aa9d8bdec12012c7907d28f17cde6f795033",
+        "rev": "d5b7e74f31314eacd99b86ca1d09cd53434d762a",
         "type": "github"
       },
       "original": {
@@ -286,11 +286,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1773827103,
-        "narHash": "sha256-fzcLvTmdpvsgw2VvJIMqDk96mZe/CFsxmemW4KwXKRU=",
+        "lastModified": 1777324008,
+        "narHash": "sha256-M2mrzvXyI2SRntXw9AzOJGyKhZSVnnYKSYqmvhNW8Zo=",
         "ref": "main",
-        "rev": "c5ac5dba3d70b23ee5f7c2643d700170011896d3",
-        "revCount": 527,
+        "rev": "ffda83a0af24db6eb87863df7a3bcab9bb5543c1",
+        "revCount": 530,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       },
@@ -477,11 +477,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1776877367,
-        "narHash": "sha256-EHq1/OX139R1RvBzOJ0aMRT3xnWyqtHBRUBuO1gFzjI=",
+        "lastModified": 1777268161,
+        "narHash": "sha256-bxrdOn8SCOv8tN4JbTF/TXq7kjo9ag4M+C8yzzIRYbE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0726a0ecb6d4e08f6adced58726b95db924cef57",
+        "rev": "1c3fe55ad329cbcb28471bb30f05c9827f724c76",
         "type": "github"
       },
       "original": {
@@ -499,11 +499,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777236984,
-        "narHash": "sha256-l8G9dL57b79AgQxfbgvexAzVd2Um1rl4dmUTzHHvpDE=",
+        "lastModified": 1777464184,
+        "narHash": "sha256-Qz8bNXmOVv3GMBeui0NEAO7Yo9Oex26xtersbZnLWXY=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "87b43cdb75608022cb2b3273845902daec324854",
+        "rev": "012a636c2afb01ad6d890db780dfa743b2981609",
         "type": "github"
       },
       "original": {
@@ -784,11 +784,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777218171,
-        "narHash": "sha256-+JGU5Cw6Zm3XVl3xBCkbY7/lTxfLQpjuuhF0IB4dJ8k=",
+        "lastModified": 1777356688,
+        "narHash": "sha256-fOhJpz7QAkBWAAih72CmnIfIN0pHfuZjhZQ/hBLNWxo=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "8a8e30610393c7f1a766a119dea37bf82d0ebcf6",
+        "rev": "b3c972b3d8537a9cf7a0db96b164c9c3e580884a",
         "type": "github"
       },
       "original": {
