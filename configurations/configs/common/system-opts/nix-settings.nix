@@ -39,11 +39,13 @@
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
+      persistent = true;
+      randomizedDelaySec = "45min";
+      options = "--delete-older-than 14d --max-freed 15G";
     };
     optimise = {
       automatic = true;
-      dates = [ "weekly" ];
+      dates = [ "monthly" ];
     };
   };
 
