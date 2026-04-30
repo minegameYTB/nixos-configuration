@@ -21,6 +21,11 @@
       ];
       user.databases = [
         {
+          ### Lock some settings
+          locks = [
+            "/org/gnome/desktop/app-folders/folder-children"
+            "/org/gnome/shell/extensions/blur-my-shell/hacks-level"
+          ];
           settings = {
             "org/gnome/desktop/wm/preferences" = {
               button-layout = ":minimize,maximize,close";
