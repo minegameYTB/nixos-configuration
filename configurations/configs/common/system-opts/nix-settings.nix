@@ -39,11 +39,13 @@
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
+      persistent = true;
+      randomizedDelaySec = "45min";
+      options = "--delete-older-than 14d --max-freed 15G";
     };
     optimise = {
       automatic = true;
-      dates = [ "weekly" ];
+      dates = [ "monthly" ];
     };
   };
 
@@ -58,4 +60,19 @@
       nixos-install.enable = false;
     };
   };
+
+  ### Override nixos-rebuild to use -F flag by default
+  nixpkgs.overlays = [
+    (self: super: {
+      nixos-rebuild-ng = super.nixos-rebuild-ng.overrideAttrs (oldAttrs: {
+        nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
+
+        postFixup = (oldAttrs.postFixup or "") + ''
+          wrapProgram $out/bin/nixos-rebuild \
+            --run 'MAGENTA="\e[35m"; RESET="\e[0m"; echo -e "$MAGENTA""warning:$RESET This custom modification of nixos-rebuild use --flake (or -F) flag by default (remove warning before merge to flake branch)" >&2' \
+            --add-flags "-F"
+        '';
+      });
+    })
+  ];
 }

@@ -10,7 +10,7 @@
   system.activationScripts.report-changes = ''
     ### Use report-changes hook as a function to use PATH as locale variable (instead of set it globally)
     report-changes(){
-      PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
+      local PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
       echo -e "\n===================================="
       echo      "| Running nvd diff to show changes |"
       echo -e   "====================================\n"

@@ -29,6 +29,7 @@
   ### GH
   programs.gh = {
     enable = true;
+    package = pkgs.pkgsUnstable.gh;
     settings = {
       git_protocol = "https";
     };
