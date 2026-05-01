@@ -13,6 +13,7 @@
   programs.neovim = {
     viAlias = true;
     vimAlias = true;
+    defaultEditor = true;
   };
 
   ### Setup lazyvim
