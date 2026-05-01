@@ -154,7 +154,7 @@
       nixpkgs-patched =
         ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
-        (import nixpkgs-main { inherit system; }).applyPatches {
+        nixpkgs-main.legacyPackages.${system}.applyPatches {
           name = "nixpkgs-patched";
           src = nixpkgs-main;
           patches = [
