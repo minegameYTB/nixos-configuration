@@ -95,14 +95,28 @@
             # MAINTENANCE:
             #   - Add new build actions to BUILD_ACTIONS
             #   - Add personal commands via register_cmd + case block
+            #
+            # ADDING A COMMAND:
+            #   1. register_cmd "name" "description"
+            #   2. add in dispatch case:
+            #        name)
+            #          echo "do something"
+            #          exit 0
+            #          ;;
             # ----------------------------------------------------------------------
 
             # --- colors ---
             if [[ -n "''${NO_COLOR:-}" ]] || [[ "''${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
                 BOLD="" RED="" GREEN="" YELLOW="" BLUE="" MAGENTA="" CYAN="" RESET=""
             else
-                BOLD='\033[1m'; RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
-                BLUE='\033[1;34m'; MAGENTA='\033[1;35m'; CYAN='\033[1;36m'; RESET='\033[0m'
+                BOLD='\033[1m'
+                RED='\033[0;31m'
+                GREEN='\033[0;32m'
+                YELLOW='\033[0;33m'
+                BLUE='\033[1;34m'
+                MAGENTA='\033[1;35m'
+                CYAN='\033[1;36m'
+                RESET='\033[0m'
             fi
 
             warn() {
@@ -138,9 +152,9 @@
             }
 
             # register personal commands here
-            register_cmd "status" "show host, flake path, and last 5 generations"
-            register_cmd "hello"  "simple test command"
             register_cmd "cmds"   "show this help for custom commands"
+            register_cmd "status" "show host, flake path, and last 5 generations"
+            register_cmd "hello"  "says hi !"
 
             # dispatch personal commands
             case "''${1:-}" in
@@ -155,7 +169,7 @@
                 exit 0
                 ;;
               hello)
-                echo "Hi!"
+                echo "Hi !"
                 exit 0
                 ;;
               ### Other custom command here
@@ -169,10 +183,10 @@
             # auto-inject --flake for build actions
             if is_build_action "''${1:-}" && ! has_flake_flag "$@"; then
               if (( $# >= 2 )) && looks_like_flake "$2"; then
-                warn "injecting --flake $2"
+                info "injecting --flake $2"
                 set -- "$1" --flake "$2" "''${@:3}"
               else
-                warn "injecting --flake"
+                info "injecting --flake"
                 set -- "$1" --flake "''${@:2}"
               fi
             fi
@@ -182,9 +196,9 @@
           nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
 
           postFixup = (oldAttrs.postFixup or "") + ''
+            ### Inject wrapper to nixos-rebuild
             wrapProgram $out/bin/nixos-rebuild \
-              --run 'source ${flakeWrapper}' \
-              --run 'warn "This wrapper injects --flake by default"'
+              --run 'source ${flakeWrapper}'
           '';
         }
       );
