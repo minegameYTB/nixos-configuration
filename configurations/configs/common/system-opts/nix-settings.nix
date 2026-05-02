@@ -69,11 +69,41 @@
         let
           flakeWrapper = super.writeShellScript "nixos-rebuild-flake-wrapper" ''
             set -euo pipefail
-
-            # REAL_NRB is inject via --set
-            : "''${REAL_NRB:?REAL_NRB must be set}"
-
+            REAL_NRB="$(dirname "$0")/.nixos-rebuild-wrapped"
             DEFAULT_FLAKE="''${NRB_FLAKE:-}"
+
+            # ----------------------------------------------------------------------
+            # nixos-rebuild wrapper - flake injector + personal commands
+            #
+            # PURPOSE:
+            #   - Auto-inject '--flake' for build actions so you can run:
+            #       nixos-rebuild switch
+            #     instead of:
+            #       nixos-rebuild switch --flake .#host
+            #   - Add personal helper commands (status, hello, help, etc.)
+            #
+            # BEHAVIOR:
+            #   1. Reorder ".#host switch" -> "switch .#host"
+            #   2. Inject --flake if missing for build actions
+            #   3. Pass through all other commands untouched
+            #   4. Intercept personal commands before upstream
+            #
+            # CONFIG:
+            #   export NRB_FLAKE=/path/to/flake  # default flake to use
+            #   export NO_COLOR=1                # disable colors
+            #
+            # MAINTENANCE:
+            #   - Add new build actions to BUILD_ACTIONS
+            #   - Add personal commands via register_cmd + case block
+            #
+            # ADDING A COMMAND:
+            #   1. register_cmd "name" "description"
+            #   2. add in dispatch case:
+            #        name)
+            #          echo "do something"
+            #          exit 0
+            #          ;;
+            # ----------------------------------------------------------------------
 
             # --- colors ---
             if [[ -n "''${NO_COLOR:-}" ]] || [[ "''${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
@@ -89,9 +119,15 @@
                 RESET='\033[0m'
             fi
 
-            warn() { printf "''${MAGENTA}warning:''${RESET} %s\n" "$*" >&2; }
-            info()  { printf "''${CYAN}info:''${RESET} %s\n" "$*"; }
+            warn() {
+              printf "''${MAGENTA}warning:''${RESET} %s\n" "$*" >&2;
+            }
 
+            info() {
+              printf "''${CYAN}info:''${RESET} %s\n" "$*";
+            }
+
+            # --- core logic ---
             BUILD_ACTIONS=( switch boot test build dry-build dry-activate build-vm build-vm-with-bootloader build-image repl edit )
             is_build_action() {
               local a="$1"; for x in "''${BUILD_ACTIONS[@]}"; do [[ "$x" == "$a" ]] && return 0; done; return 1;
@@ -103,6 +139,7 @@
               case "$1" in *\#*|./*|../*|/*) return 0;; *) return 1;; esac;
             }
 
+            # --- personal command helper ---
             declare -A PERSONAL_CMDS
             register_cmd() { PERSONAL_CMDS["$1"]="$2"; }
             show_personal_help() {
@@ -114,10 +151,12 @@
               printf "''${YELLOW}Tip:''${RESET} run 'nixos-rebuild --help' for upstream help\n"
             }
 
+            # register personal commands here
             register_cmd "cmds"   "show this help for custom commands"
             register_cmd "status" "show host, flake path, and last 5 generations"
             register_cmd "hello"  "says hi !"
 
+            # dispatch personal commands
             case "''${1:-}" in
               cmds|personal)
                 show_personal_help
@@ -133,6 +172,7 @@
                 echo "Hi !"
                 exit 0
                 ;;
+              ### Other custom command here
             esac
 
             # fix argument order: ".#host switch" -> "switch .#host"
@@ -140,7 +180,7 @@
               set -- "$2" "$1" "''${@:3}"
             fi
 
-            # auto-inject --flake
+            # auto-inject --flake for build actions
             if is_build_action "''${1:-}" && ! has_flake_flag "$@"; then
               if (( $# >= 2 )) && looks_like_flake "$2"; then
                 info "injecting --flake $2"
@@ -150,23 +190,15 @@
                 set -- "$1" --flake "''${@:2}"
               fi
             fi
-
-            # ← point clé : exec remplace le process,
-            #   ce qui permet à nixos-rebuild de se self-restart correctement
-            exec "$REAL_NRB" "$@"
           '';
         in
         {
           nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
 
           postFixup = (oldAttrs.postFixup or "") + ''
-            # Renomme le binaire original
-            mv $out/bin/nixos-rebuild $out/bin/.nixos-rebuild-wrapped
-
-            # Crée un nouveau binaire qui appelle le script wrapper
-            # REAL_NRB pointe vers le vrai binaire, pas vers $0
-            makeWrapper ${flakeWrapper} $out/bin/nixos-rebuild \
-              --set REAL_NRB "$out/bin/.nixos-rebuild-wrapped"
+            ### Inject wrapper to nixos-rebuild
+            wrapProgram $out/bin/nixos-rebuild \
+              --run 'source ${flakeWrapper}'
           '';
         }
       );
