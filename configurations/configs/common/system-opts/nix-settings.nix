@@ -70,7 +70,9 @@
           flakeWrapper = super.writeShellScript "nixos-rebuild-flake-wrapper" ''
             set -euo pipefail
 
-            REAL_NRB="$(dirname "$(realpath "$0")")/.nixos-rebuild-wrapped"
+            # REAL_NRB is inject via --set
+            : "''${REAL_NRB:?REAL_NRB must be set}"
+
             DEFAULT_FLAKE="''${NRB_FLAKE:-}"
 
             # --- colors ---
@@ -158,10 +160,13 @@
           nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
 
           postFixup = (oldAttrs.postFixup or "") + ''
+            # Renomme le binaire original
             mv $out/bin/nixos-rebuild $out/bin/.nixos-rebuild-wrapped
 
-            # Pas de --set REAL_NRB : on le résout au runtime via $0
-            makeWrapper ${flakeWrapper} $out/bin/nixos-rebuild
+            # Crée un nouveau binaire qui appelle le script wrapper
+            # REAL_NRB pointe vers le vrai binaire, pas vers $0
+            makeWrapper ${flakeWrapper} $out/bin/nixos-rebuild \
+              --set REAL_NRB "$out/bin/.nixos-rebuild-wrapped"
           '';
         }
       );
