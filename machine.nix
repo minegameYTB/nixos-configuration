@@ -93,6 +93,31 @@
     ];
   };
 
+  # VM preset (desktop efi)
+  vm-desktop-efi-luks = lib.nixosSystem {
+    system = defaultArch;
+    ### Inject pkgs attr with options
+    pkgs = pkgsFor defaultArch;
+    specialArgs = specialArgs defaultArch;
+    modules = [
+      ./configurations/configuration.nix
+      ./profiles/vm-desktop-efi-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix
+
+      ### Global overlay settings
+      (overlay defaultArch)
+
+      ### Hostname config
+      { networking.hostName = "nixos-kvm-desktop"; }
+
+      ### Home-manager module
+      home-manager.nixosModules.home-manager
+      (homeManagerDesktopConfig defaultArch)
+    ];
+  };
+
   # VM preset (desktop bios)
   vm-desktop-bios = lib.nixosSystem {
     system = defaultArch;
