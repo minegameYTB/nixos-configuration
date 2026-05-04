@@ -9,6 +9,8 @@ clone this repository (preferably in your home directory) on your NixOS installa
 
 How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
+
+# Manual installation
 ```bash
 ### With the flake on local
 #> nix-shell -p disko
@@ -23,6 +25,15 @@ How to install this flake with nixos-install ?
 
 ### To only mount with disko (run nix command to obtain disko before):
 #> disko -m mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device>
+```
+
+# Automated installation (NixOS and Home Manager)
+```bash
+### with root for NixOS
+#> ./install.sh
+
+### Without root (home manager (on traditional linux distribution))
+$> ./install.sh
 ```
 
 # flake structure
