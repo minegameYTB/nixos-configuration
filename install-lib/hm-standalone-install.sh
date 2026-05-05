@@ -60,8 +60,7 @@ hmInstallFn() {
   fi
 
   ### Add Flathub remote at system level if not already present
-  flathub_registered=$(flatpak remotes --system 2>/dev/null | grep -c "^flathub" || echo "0")
-  if [[ "$flathub_registered" -gt 0 ]]; then
+  if flatpak remotes --system 2>/dev/null | grep -q "^flathub"; then
     echo "Flathub remote already registered (system)"
   else
     run_command sudo flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
