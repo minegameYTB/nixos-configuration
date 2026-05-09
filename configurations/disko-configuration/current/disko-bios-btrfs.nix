@@ -48,6 +48,29 @@
                       "noatime"
                     ];
                   };
+                  "@log" = {
+                    mountpoint = "/var/log";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                    ];
+                  };
+                  "@cache" = {
+                    mountpoint = "/var/cache";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                    ];
+                  };
+                  "@lib" = {
+                    mountpoint = "/var/lib";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                      "noautodefrag"
+                    ];
+                  };
+                  ### Other mountpoint to create
                 };
               };
             }

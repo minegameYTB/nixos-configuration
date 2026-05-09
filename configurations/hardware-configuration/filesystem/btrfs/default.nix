@@ -38,6 +38,47 @@
     ];
   };
 
+  fileSystems."/var/log" = {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@log"
+      "compress=zstd:5"
+      "noatime"
+      "nodev"
+      "nosuid"
+      "noexec"
+      "nofail"
+    ];
+  };
+
+  fileSystems."/var/cache" = {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@cache"
+      "compress=zstd:5"
+      "noatime"
+      "nodev"
+      "nosuid"
+      "noexec"
+      "nofail"
+    ];
+  };
+
+  fileSystems."/var/lib" = {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@lib"
+      "compress=zstd:5"
+      "noatime"
+      "nodev"
+      "nosuid"
+      "nofail"
+    ];
+  };
+
   ### Btrfs scrub maintenance
   services.btrfs.autoScrub = {
     enable = true;
@@ -49,13 +90,4 @@
     btrfs = true;
     ext4 = true;
   };
-
-  ### Network stack
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 }
