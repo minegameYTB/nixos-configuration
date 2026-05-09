@@ -55,7 +55,6 @@
     options = [
       "subvol=@games"
       "compress=zstd:5"
-      "autodefrag"
       "nofail"
       "noatime"
       "nodev"
