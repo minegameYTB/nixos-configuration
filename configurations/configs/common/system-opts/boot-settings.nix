@@ -142,7 +142,19 @@ in
           map (m: "install ${m} ${pkgs.coreutils}/bin/true") unusedAllModulesCategories
         )
         + "\n";
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
+    kernelPackages = pkgs.pkgsKrnl.linuxKernel.packages.linux_6_18;
+    kernelPatches = [
+      {
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f4c50a4034e6
+        name = "patch-xfrm-f4c50a4";
+        patch = (
+          pkgs.fetchurl {
+            url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/patch/?id=f4c50a4034e62ab75f1d5cdd191dd5f9c77fdff4";
+            hash = "sha256-j5l548aKMPIxfSfwy4hJadBvQN2kZsutpOVjLSXSk0A=";
+          }
+        );
+      }
+    ];
   };
 
   ### Declare machine-id

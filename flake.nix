@@ -11,6 +11,9 @@
     ### Main repo
     nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    ### Temporary nixpkgs pin
+    nixpkgs-krnl.url = "github:NixOS/nixpkgs/0c88e1f";
+
     ### Note: to test PR (with a flake configuration):
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 
