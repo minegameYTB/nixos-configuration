@@ -6,7 +6,15 @@
 }:
 
 {
+  ### Import common btrfs config
+  imports = [ ../btrfs-common.nix ];
+
   ### Luks specific settings
+  boot.initrd.kernelModules = [
+    ### For luks keyFile support
+    "mmc_block"
+  ];
+
   # Settings for luks
   boot.initrd.luks.devices."luks-encrypted" = {
     device = "/dev/disk/by-partlabel/disk-main-luks";
