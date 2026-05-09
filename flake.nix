@@ -98,12 +98,6 @@
       self,
       nixpkgs-main,
 
-      ### Other nixpkgs sources
-      #ctrl-os,
-      nixpkgs-unstable,
-      #nixpkgs-master,
-      #nixpkgs-pr,
-
       ### Other sources
       nur,
       declarative-flatpak,
