@@ -11,6 +11,9 @@
     ### Main repo (prepare NixOS 26.05)
     nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    ### Pin kernel version
+    nixpkgs-krnl.url = "github:NixOS/nixpkgs/549bd84";
+
     ### Note: to test PR (with a flake configuration):
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 

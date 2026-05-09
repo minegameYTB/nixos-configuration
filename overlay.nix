@@ -25,6 +25,11 @@ with inputs;
         config = nixpkgsConfig;
         overlays = [ ];
       };
+      pkgsKrnl = import nixpkgs-krnl {
+        inherit system;
+        config = nixpkgsConfig;
+        overlays = [ ];
+      };
       #pkgsLts = import ctrl-os {
       #  inherit system;
       #  config = nixpkgsConfig;
