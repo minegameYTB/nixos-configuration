@@ -87,7 +87,7 @@ in
       "vm.swappiness" = 10;
 
       # Disable Coredump
-      "kernel.core_pattern" = lib.mkForce "|${pkgs.coreutils-full}/bin/false";
+      "kernel.core_pattern" = lib.mkForce "|${pkgs.coreutils}/bin/false";
 
       # Hardening (kernel)
       "kernel.printk" = "3 3 3 3";
