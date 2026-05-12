@@ -86,6 +86,9 @@ in
       "kernel.panic" = 10;
       "vm.swappiness" = 10;
 
+      # Disable Coredump
+      "kernel.core_pattern" = lib.mkForce "|${pkgs.coreutils-full}/bin/false";
+
       # Hardening (kernel)
       "kernel.printk" = "3 3 3 3";
       "kernel.kptr_restrict" = 2;
@@ -94,7 +97,7 @@ in
       "kernel.dmesg_restrict" = 1;
       "kernel.unprivileged_bpf_disabled" = 1;
       "kernel.yama.ptrace_scope" = 1;
-      "fs.suid_dumpable" = 0;
+      "fs.suid_dumpable" = 0; # For coredump too
 
       # Hardening (filesystem)
       "fs.protected_symlinks" = 1;
@@ -150,5 +153,10 @@ in
       "mode=755"
       "size=4k"
     ];
+  };
+
+  ### Disable systemd-coredump (https://www.linuxtricks.fr/wiki/desactiver-les-core-dumps-sous-linux-systemd-coredump-inclus)
+  systemd.coredump.settings.Coredump = {
+    Storage = "none";
   };
 }
