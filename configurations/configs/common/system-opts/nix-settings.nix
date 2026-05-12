@@ -69,7 +69,7 @@
         let
           flakeWrapper = super.writeShellScript "nixos-rebuild-flake-wrapper" ''
             set -euo pipefail
-            REAL_NRB="$(dirname "$0")/.nixos-rebuild-wrapped"
+            REAL_NRB="$(dirname "$0")/.nixos-rebuild-wrapped_"
             DEFAULT_FLAKE="''${NRB_FLAKE:-}"
 
             # ----------------------------------------------------------------------
