@@ -443,22 +443,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-krnl": {
-      "locked": {
-        "lastModified": 1778003029,
-        "narHash": "sha256-q/nkKLDtHIyLjZpKhWk3cSK5IYsFqtMd6UtXF3ddjgA=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "0c88e1f2bdb93d5999019e99cb0e61e1fe2af4c5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "0c88e1f",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-main": {
       "locked": {
         "lastModified": 1778430510,
@@ -587,7 +571,6 @@
         "lanzaboote": "lanzaboote",
         "lazyvim": "lazyvim",
         "nix-index-database": "nix-index-database",
-        "nixpkgs-krnl": "nixpkgs-krnl",
         "nixpkgs-main": "nixpkgs-main",
         "nixpkgs-unstable": "nixpkgs-unstable_2",
         "nur": "nur",
