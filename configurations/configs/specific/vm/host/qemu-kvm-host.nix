@@ -24,10 +24,10 @@
     spiceUSBRedirection.enable = true;
     libvirtd = {
       enable = true;
-      package = pkgs.libvirt.override {
-        enableXen = false;
-        enableZfs = false;
-      };
+      #package = pkgs.libvirt.override {
+      #  enableXen = false;
+      #  enableZfs = false;
+      #};
       shutdownTimeout = 90;
       onShutdown = "shutdown";
       onBoot = "ignore";
