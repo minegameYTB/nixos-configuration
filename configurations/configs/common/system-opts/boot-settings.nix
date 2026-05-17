@@ -21,7 +21,11 @@
       emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
     };
     consoleLogLevel = 0;
-    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-lts-lto;
+    kernelPackages =
+      if config.deviceMarker == "desktop" then
+        pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto
+      else
+        pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;
     kernelPatches = [
       #{
       #  # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f4c50a4034e6

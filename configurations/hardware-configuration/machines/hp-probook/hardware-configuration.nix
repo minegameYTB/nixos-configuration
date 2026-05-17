@@ -70,4 +70,7 @@
       "nosuid"
     ];
   };
+
+  ### device marker
+  deviceMarker = "desktop";
 }
