@@ -23,7 +23,7 @@
     consoleLogLevel = 0;
     kernelPackages =
       if config.hostProfile == "desktop" then
-        pkgs.cachyosKernels.linuxPackages-cachyos-lts-lto
+        pkgs.cachyosKernels.linuxPackages-cachyos-lts
       else
         pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;
     kernelPatches = [
