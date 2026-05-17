@@ -29,12 +29,12 @@
       ];
       max-jobs = 2;
       cores = 2;
-      #substituters = [
-      #  "https://minegameytb.cachix.org"
-      #];
-      #trusted-public-keys = [
-      #  "minegameytb.cachix.org-1:JvOgXYklqCayYEJWzlt0Sqc6zvs0S65ZZsWHYWh7qnc="
-      #];
+      substituters = [
+        "https://attic.xuyh0120.win/lantian"
+      ];
+      trusted-public-keys = [
+        "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+      ];
     };
     gc = {
       automatic = true;

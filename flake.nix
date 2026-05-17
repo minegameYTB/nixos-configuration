@@ -22,6 +22,9 @@
     #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
     #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
 
+    ### Kernel
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+
     ### Other repos (non-nixpkgs but specific for a software or distant overlays) (pass this repos with specialArgs (with inputs in it))
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
@@ -94,6 +97,9 @@
       ### Core (include self to auto-refere eventually use local packages with an overlay)
       self,
       nixpkgs-main,
+
+      ### Kernel
+      nix-cachyos-kernel,
 
       ### Other sources
       nur,
