@@ -71,6 +71,6 @@
     ];
   };
 
-  ### device marker
-  deviceMarker = "desktop";
+  ### host marker
+  hostProfile = "desktop";
 }

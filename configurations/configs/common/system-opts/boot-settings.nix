@@ -22,7 +22,7 @@
     };
     consoleLogLevel = 0;
     kernelPackages =
-      if config.deviceMarker == "desktop" then
+      if config.hostProfile == "desktop" then
         pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto
       else
         pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;

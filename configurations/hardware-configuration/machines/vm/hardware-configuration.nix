@@ -29,6 +29,6 @@
   ### Bluetooth
   hardware.bluetooth.enable = lib.mkForce false;
 
-  ### device marker
-  deviceMarker = "server";
+  ### host marker
+  hostProfile = "server";
 }
