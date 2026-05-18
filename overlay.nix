@@ -11,7 +11,7 @@ with inputs;
 {
   nixpkgs.overlays = [
     ### Kernel
-    nix-cachyos-kernel.overlays.pinned
+    nix-cachyos-kernel.overlays.default
 
     ### Custom extend of pkgs or replacing pkgs by other
     (self: super: rec {
