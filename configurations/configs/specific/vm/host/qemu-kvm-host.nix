@@ -15,6 +15,14 @@
   ### KSM ram optimisation
   hardware.ksm.enable = true;
 
+  ### Temporary enable vmware-workstation here (remove this line bfor migrate to 26.05 (installed in 26.05 ver of this config))
+  virtualisation.vmware.host = {
+    enable = true;
+    #package = pkgs.vmware-workstation.override { # not working yet
+    #  enableInstaller = true;
+    #};
+  };
+
   ### Virtualisation settings
   virtualisation = {
     kvmgt.enable = true;
