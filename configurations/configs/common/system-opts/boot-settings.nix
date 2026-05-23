@@ -25,7 +25,7 @@
       if config.hostProfile == "desktop" then
         pkgs.cachyosKernels.linuxPackages-cachyos-lts
       else
-        pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;
+        pkgs.cachyosKernels.linuxPackages-cachyos-server;
     kernelPatches = [
       #{
       #  # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f4c50a4034e6
