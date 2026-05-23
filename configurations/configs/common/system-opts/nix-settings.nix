@@ -29,12 +29,8 @@
       ];
       max-jobs = 2;
       cores = 2;
-      substituters = [
-        "https://attic.xuyh0120.win/lantian"
-      ];
-      trusted-public-keys = [
-        "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
-      ];
+      substituters = [ ];
+      trusted-public-keys = [ ];
     };
     gc = {
       automatic = true;
