@@ -2,6 +2,7 @@
 
 This configuration use a stable version of NixOS
 
+---
 ### Installation
 
 clone this repository (preferably in your home directory) on your NixOS installation
@@ -10,7 +11,6 @@ clone this repository (preferably in your home directory) on your NixOS installa
 How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
 
----
 #### Manual installation
 ```bash
 ### With the flake on local
