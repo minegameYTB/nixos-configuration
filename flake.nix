@@ -97,22 +97,6 @@
       ### Core (include self to auto-refere eventually use local packages with an overlay)
       self,
       nixpkgs-main,
-
-      ### Kernel
-      nix-cachyos-kernel,
-
-      ### Other sources
-      nur,
-      declarative-flatpak,
-
-      ### External flake modules
-      stylix,
-      home-manager,
-      lanzaboote,
-      lazyvim,
-
-      ### Sources for 3rd part software
-      zen-browser,
       ...
     }@inputs:
 
@@ -229,11 +213,11 @@
       ### Declare mkHome function (home manager standard configuration on homeConfigurations attribute on hm standalone setup)
       mkHome =
         system: username:
-        home-manager.lib.homeManagerConfiguration {
+        inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/desktop-profile.nix { inherit username; })
-            stylix.homeModules.stylix
+            inputs.stylix.homeModules.stylix
 
             (overlay system)
 
