@@ -2,7 +2,7 @@
 
 This configuration use a stable version of NixOS
 
-## Installation
+### Installation
 
 clone this repository (preferably in your home directory) on your NixOS installation
 `git clone https://github.com/minegameytb/nixos-configuration`
@@ -10,7 +10,8 @@ clone this repository (preferably in your home directory) on your NixOS installa
 How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
 
-### Manual installation
+---
+#### Manual installation
 ```bash
 ### With the flake on local
 #> nix-shell -p disko
@@ -27,7 +28,7 @@ How to install this flake with nixos-install ?
 #> disko -m mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device>
 ```
 
-### Automated installation (NixOS and Home Manager)
+#### Automated installation (NixOS and Home Manager)
 ```bash
 ### with root for NixOS
 #> ./install.sh
@@ -35,7 +36,7 @@ How to install this flake with nixos-install ?
 ### Without root (home manager (on traditional linux distribution))
 $> ./install.sh
 ```
-
+---
 ## flake structure
 
 this flake as a structure with mutiple directory
