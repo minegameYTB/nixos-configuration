@@ -9,7 +9,7 @@
   ### Declare inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
     ### Main repo (prepare NixOS 26.05)
-    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-main.url = "github:NixOS/nixpkgs/release-26.05";
 
     ### Note: to test PR (with a flake configuration):
     ### github:username/<repo-name>?ref=pull/<PR number>/head
