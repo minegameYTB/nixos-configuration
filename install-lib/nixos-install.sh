@@ -245,7 +245,7 @@ nixosInstallFn() {
   echo ""
   info "installing NixOS configuration with this profile: '$nixosProfile'"
   run_command nixos-install --no-channel-copy --flake .#$nixosProfile \
-    --option extra-substituters  "https://attic.xuyh0120.win/lantian" \
+    --option extra-substituters "https://attic.xuyh0120.win/lantian" \
     --option extra-trusted-public-keys "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
 
   ### Cleanup swap after installation (no-op if swap was not created)
