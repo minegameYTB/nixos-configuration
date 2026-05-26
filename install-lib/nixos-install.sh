@@ -6,9 +6,9 @@ showDiskLsblk(){
 }
 
 # Detect total RAM and decide whether a temporary swap is needed
-# Swap is created when RAM < SWAP_THRESHOLD_GiB (default: 4 GiB)
+# Swap is created when RAM < SWAP_THRESHOLD_GiB (default: 8 GiB)
 # Override behaviour via environment variables:
-#   SWAP_THRESHOLD_GiB=<n>  — change the RAM threshold (default: 4)
+#   SWAP_THRESHOLD_GiB=<n>  — change the RAM threshold (default: 8)
 #   SWAP_SIZE_MiB=<n>       — change the swap size in MiB (default: 8192)
 #   FORCE_SWAP=1            — always create swap regardless of RAM
 #   FORCE_SWAP=0            — never create swap regardless of RAM
@@ -20,8 +20,8 @@ detectRam() {
   ramGiB=$(( ramMiB / 1024 ))
   swapSizeMiB=${SWAP_SIZE_MiB:-8192}  # fixed 8 GiB by default — overridable via SWAP_SIZE_MiB
 
-  ### Default threshold: 4 GiB — overridable via SWAP_THRESHOLD_GiB
-  local thresholdGiB=${SWAP_THRESHOLD_GiB:-4}
+  ### Default threshold: 8 GiB — overridable via SWAP_THRESHOLD_GiB
+  local thresholdGiB=${SWAP_THRESHOLD_GiB:-8}
 
   info "Detected RAM: ${ramGiB} GiB (${ramMiB} MiB) — threshold: ${thresholdGiB} GiB"
 
@@ -150,7 +150,7 @@ addLuksPassphrase() {
 
   echo ""
   info "Adding passphrase as a second LUKS key slot on $luksPartition"
-  echo "You will be prompted to enter the new passphrase (twice for confirmation)."
+ aecho "You will be prompted to enter the new passphrase (twice for confirmation)."
   echo "The key file '$keyFile' will be used to authenticate this operation."
 
   if run_command cryptsetup luksAddKey --key-file "$keyFile" --keyfile-size="$keySize" "$luksPartition"; then
