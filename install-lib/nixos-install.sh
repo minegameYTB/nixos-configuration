@@ -259,10 +259,10 @@ nixosInstallFn() {
   info "The configuration will be copied in your home folder"
 
   cd .. || exit 1
-    run_command git config pull.rebase true
     run_command cp -r nixos-configuration /mnt/home/$userName
     info "change owner of the dirctory of nixos-configuration"
     run_command chown -R 1000:100 /mnt/home/$userName/nixos-configuration
+    run_command git -C /mnt/home/$userName/nixos-configuration config pull.rebase true
   
   info "Installation Completed ! Please reboot to use NixOS"
 }
