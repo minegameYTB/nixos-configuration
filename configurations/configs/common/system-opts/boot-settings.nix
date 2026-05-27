@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -22,10 +23,15 @@
     };
     consoleLogLevel = 0;
     kernelPackages =
+      let
+        # Customise CachyOS kernel to use helper expression
+        helpers = pkgs.callPackage "${inputs.nix-cachyos-kernel.outPath}/helpers.nix" { };
+      in
       if config.hostProfile == "desktop" then
-        pkgs.cachyosKernels.linuxPackages-cachyos-lts
+        # Use "helpers.kernelModuleLLVMOverride" with lto variant bcause lto use clang as compiler
+        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-lts-lto
       else
-        pkgs.cachyosKernels.linuxPackages-cachyos-server;
+        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;
     kernelPatches = [
       #{
       #  # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f4c50a4034e6
