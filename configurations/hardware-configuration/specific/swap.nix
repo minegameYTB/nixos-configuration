@@ -6,10 +6,10 @@
     {
       device = "/var/lib/swapfile";
       size = 8 * 1024;
-      randomEncryption = {
-        enable = true;
-        source = "/dev/urandom";
-      };
+      #randomEncryption = {
+      #  enable = true;
+      #  source = "/dev/urandom";
+      #};
     }
   ];
 }
