@@ -29,7 +29,7 @@
       in
       if config.hostProfile == "desktop" then
         # Use "helpers.kernelModuleLLVMOverride" with lto variant bcause lto use clang as compiler
-        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-lts
+        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-bore
       else
         helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-server;
     kernelPatches = [
