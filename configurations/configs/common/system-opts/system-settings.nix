@@ -1,11 +1,16 @@
-{ config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   ### Nvd diff hook
   system.activationScripts.report-changes = ''
     ### Use report-changes hook as a function to use PATH as locale variable (instead of set it globally)
     report-changes(){
-      PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
+      local PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${config.nix.package}/bin"
       echo -e "\n===================================="
       echo      "| Running nvd diff to show changes |"
       echo -e   "====================================\n"
@@ -18,8 +23,18 @@
   '';
 
   ### Ssh cli package (replace openssl by libressl)
-  programs.ssh.package = pkgs.openssh.override {
-    openssl = pkgs.libressl;
+  programs.ssh.package = pkgs.symlinkJoin {
+    name = "openssh-libressl-${pkgs.openssh.version}";
+    paths = [
+      (pkgs.openssh.override {
+        openssl = pkgs.libressl;
+      })
+    ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/ssh \
+        --set TERM "xterm-256color" \
+    '';
   };
 
   ### Zram

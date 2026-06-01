@@ -31,4 +31,7 @@
   ### Root/home mount point located to ../filesystem/btrfs
 
   ### Specific mountpoint
+
+  ### host marker
+  hostProfile = "desktop";
 }

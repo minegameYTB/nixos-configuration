@@ -4,6 +4,7 @@
   ### Import all system-opts configuration
   imports = [
     ./boot-settings.nix
+    ./hardening.nix
     ./environment.nix
     ./nix-settings.nix
     ./system-apps.nix

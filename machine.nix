@@ -28,6 +28,9 @@
       ./configurations/configuration.nix
       ./profiles/hp-probook-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
@@ -49,6 +52,9 @@
     modules = [
       ./configurations/configuration.nix
       ./profiles/hp-240-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
@@ -72,11 +78,39 @@
       ./configurations/configuration.nix
       ./profiles/vm-desktop-efi-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop"; }
+      { networking.hostName = "nixos-kvm-desktop"; }
+
+      ### Home-manager module
+      home-manager.nixosModules.home-manager
+      (homeManagerDesktopConfig defaultArch)
+    ];
+  };
+
+  # VM preset (desktop efi)
+  vm-desktop-efi-luks = lib.nixosSystem {
+    system = defaultArch;
+    ### Inject pkgs attr with options
+    pkgs = pkgsFor defaultArch;
+    specialArgs = specialArgs defaultArch;
+    modules = [
+      ./configurations/configuration.nix
+      ./profiles/vm-desktop-efi-profile.nix
+
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix
+
+      ### Global overlay settings
+      (overlay defaultArch)
+
+      ### Hostname config
+      { networking.hostName = "nixos-kvm-desktop"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -94,11 +128,14 @@
       ./configurations/configuration.nix
       ./profiles/vm-desktop-bios-novio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios"; }
+      { networking.hostName = "nixos-kvm-desktop-bios"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -116,11 +153,14 @@
       ./configurations/configuration.nix
       ./profiles/vm-desktop-bios-vio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -138,11 +178,14 @@
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-efi-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-srv"; }
+      { networking.hostName = "nixos-kvm-srv"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -167,11 +210,14 @@
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-bios-novio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-srv-bios"; }
+      { networking.hostName = "nixos-kvm-srv-bios"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager
@@ -189,11 +235,14 @@
       ./configurations/configuration.nix
       ./profiles/vm-no-gui-bios-vio-profile.nix
 
+      ### Import fs configuration
+      ./configurations/hardware-configuration/filesystem/btrfs
+
       ### Global overlay settings
       (overlay defaultArch)
 
       ### Hostname config
-      { networking.hostName = "nixos-pve-desktop-bios-virtio"; }
+      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
 
       ### Home-manager module
       home-manager.nixosModules.home-manager

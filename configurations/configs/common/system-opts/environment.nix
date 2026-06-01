@@ -3,7 +3,6 @@
 {
   ### Common env variable
   environment.variables = {
-    EDITOR = "nvim";
     NIXPKGS_ALLOW_UNFREE = "1";
   };
 
@@ -18,11 +17,12 @@
     "cat.ori" = "/run/current-system/sw/bin/cat";
     "ls.ori" = "/run/current-system/sw/bin/ls --color";
     "df.ori" = "/run/current-system/sw/bin/df";
+    sudo = "sudo "; # To correctly use shell aliases with sudo command
 
     ### Prevent to use internal which config in zsh (shows aliases which path)
     which = "/run/current-system/sw/bin/which";
 
-    ### Rm never interact
+    ### Rm (never interact option)
     rm = "/run/current-system/sw/bin/rm --interactive=never";
 
     ### Git aliases
@@ -33,9 +33,6 @@
     gsw = "git switch";
     gbr = "git branch";
     gft = "git fetch";
-
-    ### This alias is just inspired from macOS "open" command
-    open = "/run/current-system/sw/bin/xdg-open";
   };
 
   ### gnu nano
@@ -44,7 +41,7 @@
     enable = false;
     nanorc = ''
       set autoindent
-      set linenumbers 
+      set linenumbers
     '';
   };
 }

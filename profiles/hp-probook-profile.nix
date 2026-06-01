@@ -4,8 +4,6 @@
   ### Import nix expression for hp-probook
   imports = [
     ### Core
-    ### Include btrfs mountpoints expr
-    ../configurations/hardware-configuration/filesystem/btrfs
     ../configurations/hardware-configuration/machines/hp-probook/hardware-configuration.nix
     ../configurations/hardware-configuration/specific/intel-firmware.nix
     ../configurations/configs/bootloader/systemd-boot.nix
@@ -31,6 +29,7 @@
 
     ### Other
     ../configurations/configs/specific/container/podman.nix
+    ../configurations/hardware-configuration/specific/swap.nix
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓

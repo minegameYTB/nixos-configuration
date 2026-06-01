@@ -21,7 +21,7 @@
     "sr_mod"
     "rtsx_pci_sdmmc"
   ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ];
 
@@ -70,4 +70,7 @@
       "nosuid"
     ];
   };
+
+  ### host marker
+  hostProfile = "desktop";
 }

@@ -2,13 +2,18 @@
 
 This configuration use a stable version of NixOS
 
-how to install this flake: 
+---
+### Installation
 
 clone this repository (preferably in your home directory) on your NixOS installation
 `git clone https://github.com/minegameytb/nixos-configuration`
 
 How to install this flake with nixos-install ?
 (on the new partition (mounted on /mnt))
+
+The documentation of install script is [here](INSTALL.md)
+
+#### Manual installation
 ```bash
 ### With the flake on local
 #> nix-shell -p disko
@@ -18,14 +23,23 @@ How to install this flake with nixos-install ?
 ### Distant flake
 #> nix-shell -p disko
 #> wget https://raw.githubusercontent.com/minegameYTB/nixos-configuration/refs/heads/flake/configurations/disko-configuration/current/<configuration type>.nix
-#> disko -m destroy,format,mount ./<configuration type>.nix --arg device '"/dev/<device>"'
+#> disko -m destroy,format,mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device> --argstr size <size (fixed or %)> (eventually --argstr keyFile </path/to/keyfile (or /dev/<device1-..9>)
 #> nixos-install --flake github:minegameYTB/nixos-configuration#<host>
 
 ### To only mount with disko (run nix command to obtain disko before):
-#> disko -m mount /configurations/disko-configuration/current/<configuration type>.nix --arg device '"/dev/<device>"'
+#> disko -m mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device>
 ```
 
-# flake structure
+#### Automated installation (NixOS and Home Manager)
+```bash
+### with root for NixOS
+#> ./install.sh
+
+### Without root (home manager (on traditional linux distribution))
+$> ./install.sh
+```
+---
+## flake structure
 
 this flake as a structure with mutiple directory
 

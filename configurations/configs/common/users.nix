@@ -31,7 +31,7 @@
       );
     in
     rec {
-      enable = config.services.desktopManager.gnome.enable;
+      enable = config.services.xserver.enable;
       wantedBy = [ "graphical.target" ];
       environment.PATH = lib.mkForce "${pkgs.coreutils}/bin:${pkgs.xdg-user-dirs}/bin";
       serviceConfig = {

@@ -54,14 +54,14 @@
     };
   };
 
-  ### Patch for gnome-shell (disable dark mode option) (enable this overlay when prepare flake to NixOS 26.05)
-  #nixpkgs.overlays = [
-  #  (self: super: {
-  #    gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
-  #      patches = (oldAttrs.patches or [ ]) ++ [
-  #        "${inputs.stylix}/modules/gnome/shell_remove_dark_mode.patch"
-  #      ];
-  #    });
-  #  })
-  #];
+  ### Patch for gnome-shell (disable dark mode option)
+  nixpkgs.overlays = [
+    (self: super: {
+      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
+        patches = (oldAttrs.patches or [ ]) ++ [
+          "${inputs.stylix}/modules/gnome/shell_remove_dark_mode.patch"
+        ];
+      });
+    })
+  ];
 }
