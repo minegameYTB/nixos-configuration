@@ -60,6 +60,12 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
+    # Lazyvim-nix - main (3 Mar 2026)
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix/b6d60dd1d9564faef475a0da68c83e81283aba2a"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
+
     ### End of pinned repos
 
     ### Non flake repos (for rice and dotfiles)
