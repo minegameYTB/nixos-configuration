@@ -9,51 +9,54 @@
   ### Declare inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
     ### Main repo
-    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     ### Note: to test PR (with a flake configuration):
     ### github:username/<repo-name>?ref=pull/<PR number>/head
 
     ### Other nixpkgs repos
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable"; # pkgsUnstable attr in flake
-    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz"; # pkgs-lts attr in flake
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
-    #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004"; # pkgs-master attr in flake
-    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head"; # pkgs-pr attr in flake
+    #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
+    #nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/424686/head";
+
+    ### Kernel
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
 
     ### Other repos (non-nixpkgs but specific for a software or distant overlays) (pass this repos with specialArgs (with inputs in it))
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake"; # (inputs) zen-browser attr in config (extend this to a overlays later)
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nur = {
-      url = "github:nix-community/nur"; # nur attr in config (already extended with a overlay (see overlay function))
+      url = "github:nix-community/nur";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     nix-index-database = {
-      url = "github:nix-community/nix-index-database"; # (inputs) nix-index-database attr in config (distant flake modules available with inputs attr)
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     ### Distant flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.1"; # (inputs) declarative-flatpak attr in config (distant flake modules available with inputs attr)
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6";
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
-    # Home-manager - release-25.11 (8 Jan 2026)
+    # Home-manager - release-26.05 (25 May 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/82fb7dedaad83e5e279127a38ef410bcfac6d77c";
+      url = "github:nix-community/home-manager/b179bde238977f7d4454fc770b1a727eaf55111c";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-25.11 (8 Jan 2026)
-    stylix.url = "github:danth/stylix/55380d322f095ec9bc574f66f2870f19db46e6a1";
+    # Stylix - master (21 May 2026) (wait stylix repo to move on release-26.05 branch)
+    stylix.url = "github:danth/stylix/c1456cc4ba3c9485e7b4158c909eeca5a752cd59";
 
-    # Lazyvim-nix - main (3 Mar 2026)
+    # Lazyvim-nix - main (2 Apr 2026)
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix/b6d60dd1d9564faef475a0da68c83e81283aba2a"; # (inputs) lazyvim-nix attr in config (distant flake modules)
+      url = "github:pfassina/lazyvim-nix/c1c27d9b3fd74d243a34985c5440a14aa0c2a169";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -78,7 +81,7 @@
     };
 
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.0.0"; # imported as a external flake modules (test this time to time bcause secure-boot implementation (setup a vm to test this))
+      url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -94,25 +97,6 @@
       ### Core (include self to auto-refere eventually use local packages with an overlay)
       self,
       nixpkgs-main,
-
-      ### Other nixpkgs sources
-      #ctrl-os,
-      nixpkgs-unstable,
-      #nixpkgs-master,
-      #nixpkgs-pr,
-
-      ### Other sources
-      nur,
-      declarative-flatpak,
-
-      ### External flake modules
-      stylix,
-      home-manager,
-      lanzaboote,
-      lazyvim,
-
-      ### Sources for 3rd part software
-      zen-browser,
       ...
     }@inputs:
 
@@ -154,14 +138,14 @@
       nixpkgs-patched =
         ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
-        (import nixpkgs-main { inherit system; }).applyPatches {
-          name = "nixpkgs-patched-507681";
+        nixpkgs-main.legacyPackages.${system}.applyPatches {
+          name = "nixpkgs-patched";
           src = nixpkgs-main;
           patches = [
             (builtins.fetchurl {
               ### Add ".patch" to get this link for a PR
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/507681.patch";
-              sha256 = "02fvdf0zf8v9nw588fzlw3kxnp6qhv0yab5ssmn1zxkni4y0mdyg";
+              url = "https://github.com/NixOS/nixpkgs/commit/3b4a0798b7c01d90ef25015e2dbdb47fe2a83fc2.patch";
+              sha256 = "07hm2y2b39p85a7p8yyyxmidv5jzxxrvj4bl36l3nmq4z2cp5hpj";
             })
 
             ### Local patch
@@ -229,11 +213,11 @@
       ### Declare mkHome function (home manager standard configuration on homeConfigurations attribute on hm standalone setup)
       mkHome =
         system: username:
-        home-manager.lib.homeManagerConfiguration {
+        inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/desktop-profile.nix { inherit username; })
-            stylix.homeModules.stylix
+            inputs.stylix.homeModules.stylix
 
             (overlay system)
 

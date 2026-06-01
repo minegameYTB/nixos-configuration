@@ -16,6 +16,12 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  ### KDE connect integration
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.gnomeExtensions.gsconnect;
+  };
+
   ### Gnome pinentry gpg
   programs.gnupg.agent = {
     pinentryPackage = lib.mkDefault pkgs.pinentry-gnome3;
@@ -27,11 +33,10 @@
       ### Other gnome related packages
       virt-viewer
       mission-center
-      gnome-tweaks
+      refine
       gnome-extension-manager
-      #evolution
       thunderbird
-      xarchiver
+      file-roller
       amberol
       pika-backup
 
@@ -60,15 +65,15 @@
       quick-settings-audio-panel
       grand-theft-focus
       caffeine
+      bluetooth-battery-meter
+      gsconnect
     ]);
 
   ### Exclude some Gnome default packages
   environment.gnome.excludePackages = with pkgs; [
-    geary # Geary
     gnome-tour # Gnome Tour
     epiphany # Gnome Web
-    #yelp # Gnome help
-    totem # Gnome Totem (video)
+    #totem # Gnome Totem (video)
     gnome-maps # Gnome maps
     gnome-connections # Gnome connections
     gnome-console # Gnome console (default term)
@@ -89,4 +94,24 @@
     "text/plain" = "org.gnome.TextEditor.desktop";
     "application/x-shellscript" = "org.gnome.TextEditor.desktop";
   };
+
+  ### Overlays some gnome package
+  nixpkgs.overlays = [
+    (self: super: {
+      # Add gstreamer dependancy to nautilus package
+      nautilus = super.nautilus.overrideAttrs (oldAttrs: {
+        buildInputs =
+          oldAttrs.buildInputs or [ ]
+          ++ (with super.gst_all_1; [
+            gst-plugins-good
+            gst-plugins-bad
+          ]);
+      });
+
+      ### disable extensions_app option on gnome-shell
+      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags or [ ] ++ [ "-Dextensions_app=false" ];
+      });
+    })
+  ];
 }

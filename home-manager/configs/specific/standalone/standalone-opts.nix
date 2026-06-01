@@ -8,6 +8,7 @@
 
 {
   ### Better integration of home manager in standalone mode
+  targets.genericLinux.enable = true;
 
   ### Initialise nur on home-manager standalone (already the case on hm-module on NixOS)
   nixpkgs.overlays = [ inputs.nur.overlays.default ];

@@ -6,6 +6,7 @@
   ### Git
   programs.git = {
     enable = true;
+    signing.format = "openpgp";
     ignores = [
       "*.swp"
       "*~"
@@ -28,6 +29,7 @@
   ### GH
   programs.gh = {
     enable = true;
+    package = pkgs.pkgsUnstable.gh;
     settings = {
       git_protocol = "https";
     };
