@@ -112,12 +112,14 @@
                 CYAN='\033[1;36m'
                 RESET='\033[0m'
             fi
+
             warn() {
               printf "''${MAGENTA}warning:''${RESET} %s\n" "$*" >&2;
             }
             info() {
               printf "''${CYAN}info:''${RESET} %s\n" "$*";
             }
+
             # --- core logic ---
             BUILD_ACTIONS=( switch boot test build dry-build dry-activate build-vm build-vm-with-bootloader build-image repl edit )
             is_build_action() {
@@ -129,6 +131,7 @@
             looks_like_flake() {
               case "$1" in *\#*|./*|../*|/*) return 0;; *) return 1;; esac;
             }
+
             # --- personal command helper ---
             declare -A PERSONAL_CMDS
             register_cmd() { PERSONAL_CMDS["$1"]="$2"; }
@@ -140,10 +143,12 @@
               echo
               printf "''${YELLOW}Tip:''${RESET} run 'nixos-rebuild --help' for upstream help\n"
             }
+
             # register personal commands here
             register_cmd "cmds"   "show this help for custom commands"
             register_cmd "status" "show host, flake path, and last 5 generations"
             register_cmd "hello"  "says hi !"
+
             # dispatch personal commands
             case "''${1:-}" in
               cmds|personal)
@@ -162,10 +167,12 @@
                 ;;
               ### Other custom command here
             esac
+
             # fix argument order: ".#host switch" -> "switch .#host"
             if (( $# >= 2 )) && looks_like_flake "$1" && is_build_action "$2"; then
               set -- "$2" "$1" "''${@:3}"
             fi
+
             # auto-inject --flake for build actions
             if is_build_action "''${1:-}" && ! has_flake_flag "$@"; then
               if (( $# >= 2 )) && looks_like_flake "$2"; then
