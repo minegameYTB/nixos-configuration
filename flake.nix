@@ -51,8 +51,8 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - master (21 May 2026) (wait stylix repo to move on release-26.05 branch)
-    stylix.url = "github:danth/stylix/c1456cc4ba3c9485e7b4158c909eeca5a752cd59";
+    # Stylix - release-26.05 (2 Jun 2026)
+    stylix.url = "github:danth/stylix/45b51150627b28b1d4a4ab4e5d645af8cb7c2ef6";
 
     # Lazyvim-nix - main (2 Apr 2026)
     lazyvim = {
