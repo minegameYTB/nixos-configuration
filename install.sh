@@ -1,46 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-### Define restricted PATH for NixOS usage
+# Restrict PATH to known safe locations for NixOS live environments.
 PATH="/bin:/usr/bin:/run/current-system/sw/bin"
 
-### Define installLib as a variable (make changes easy), main function will by present on the install script directly and script name
-installLib=$(pwd)/install-lib
-name="$(basename -s .sh $0)"
+# installLib points to the directory that contains lib.sh and the install
+# scripts.  Using $(pwd) keeps it relocatable without hard-coded paths.
+installLib="$(pwd)/install-lib"
+name="$(basename -s .sh "$0")"
 
-### Source lib shell script (common and reusable function and variable)
-source $installLib/lib.sh
+# Source common variables and functions (colours, logging, checkpoint system).
+# shellcheck source=install-lib/lib.sh
+source "$installLib/lib.sh"
 
-### Source install method
-source $installLib/nixos-install.sh
-source $installLib/hm-standalone-install.sh
+# Source install method implementations.
+# shellcheck source=install-lib/nixos-install.sh
+source "$installLib/nixos-install.sh"
+# shellcheck source=install-lib/hm-standalone-install.sh
+source "$installLib/hm-standalone-install.sh"
 
 echo "$name v1.1"
 sleep 2
 
-### Check if host is nixos (check also root app directory (/run/current-system and not /bin or /sbin))
-### Logic: if /etc/NIXOS and /run/current-system is present (or /run/booted-system), count as a nixos system
+# ---------------------------------------------------------------------------
+# Detect whether we are running on NixOS or a generic Linux system.
+#
+# NixOS detection: both /etc/NIXOS (marker file) and /run/current-system
+# (the active system profile) must be present.  Checking /run/current-system
+# (rather than /bin or /sbin) avoids false positives on systems that happen
+# to have an /etc/NIXOS file but are not running NixOS.
+# ---------------------------------------------------------------------------
 
 if [[ -e "/etc/NIXOS" && -d "/run/current-system" ]]; then
-  info "NixOS based OS detected (by /etc/NIXOS and /run/current-system), continued install phase"
+  info "NixOS detected (via /etc/NIXOS + /run/current-system) — running NixOS install"
   echo ""
-  mode=nixosInstall
+  mode="nixosInstall"
 else
   if [[ "$(uname -s)" != "Linux" ]]; then
-    warn "This script is designed to be used on Linux systems (Sorry BSD, macOS and Solaris (and derivative) users)"
-    echo "Stopped at install step (Error 2)"
+    warn "This script is designed for Linux systems only (Error 2)"
     exit 2
   fi
-  info "Non NixOS system detected, assuming you're on Linux system, continuing install script, but for HM standalone"
+  info "Non-NixOS Linux detected — running Home Manager standalone install"
   echo ""
-  mode=hmInstall
+  mode="hmInstall"
 fi
 
 case "$mode" in
   nixosInstall)
     nixosInstallFn
-  ;;
+    ;;
   hmInstall)
     hmInstallFn
-  ;;
+    ;;
 esac
