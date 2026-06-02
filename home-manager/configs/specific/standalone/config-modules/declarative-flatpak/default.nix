@@ -9,11 +9,6 @@
   ### Import nix-flatpak like an expression
   imports = [ inputs.declarative-flatpak.homeModules.default ];
 
-  ### Define flatpak environment variable
-  home.sessionVariables = {
-    XDG_DATA_DIRS = "$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:$XDG_DATA_DIRS";
-  };
-
   ### Declarative flatpak settings (do a script to install it automatically system side (with normal package manager))
   services.flatpak = {
     enable = true;
