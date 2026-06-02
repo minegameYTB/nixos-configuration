@@ -29,7 +29,7 @@
       ./profiles/hp-probook-profile.nix
 
       ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
+      ./configurations/hardware-configuration/filesystem/luks-btrfs
 
       ### Global overlay settings
       (overlay defaultArch)
