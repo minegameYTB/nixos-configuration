@@ -150,7 +150,7 @@ addLuksPassphrase() {
 
   echo ""
   info "Adding passphrase as a second LUKS key slot on $luksPartition"
- aecho "You will be prompted to enter the new passphrase (twice for confirmation)."
+  echo "You will be prompted to enter the new passphrase (twice for confirmation)."
   echo "The key file '$keyFile' will be used to authenticate this operation."
 
   if run_command cryptsetup luksAddKey --key-file "$keyFile" --keyfile-size="$keySize" "$luksPartition"; then
