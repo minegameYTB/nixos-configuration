@@ -71,11 +71,11 @@
     "blocklist": {
       "flake": false,
       "locked": {
-        "lastModified": 1780408676,
-        "narHash": "sha256-0PRT3j4E3ZElvcYBBfZts9TbAQva2BDRXlnRe5xV6Z8=",
+        "lastModified": 1780420379,
+        "narHash": "sha256-0iypZYMc58v5lBS4dDdMqswd6QFFdTfd74OlEZgLlws=",
         "owner": "StevenBlack",
         "repo": "hosts",
-        "rev": "9ded1583ad0c8aac2aaef5001e89eeb2f939a15c",
+        "rev": "6ea99ec2e3056c7aaf9e7a779c9f6a112e6cf900",
         "type": "github"
       },
       "original": {
@@ -617,11 +617,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780409552,
-        "narHash": "sha256-TThb0FkfQq/7+SR6g5c2oCDVN6q8GGTekVz8/44jFw4=",
+        "lastModified": 1780436137,
+        "narHash": "sha256-aEIJ4a2K2mY4OZScVvynZPCrCQwnTAcD2d9QgUJbrSI=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "a4f0e96e8f671be85316e5a1b9bdff4fbfc70700",
+        "rev": "f8bd6ac97875b50ecb2c7bf961ff68df755b221e",
         "type": "github"
       },
       "original": {
