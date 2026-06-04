@@ -7,7 +7,7 @@
 
 showDiskLsblk() {
   echo "Available block devices:"
-  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd)' || true
+  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd|mmcblk)' || true
 }
 
 # ---------------------------------------------------------------------------
