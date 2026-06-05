@@ -29,6 +29,9 @@
   ### Bluetooth
   hardware.bluetooth.enable = lib.mkForce false;
 
+  ### Arch
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
   ### host marker
   hostProfile = "server";
 }
