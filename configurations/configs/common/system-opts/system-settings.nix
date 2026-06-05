@@ -44,7 +44,7 @@
   services.fstrim.enable = true;
 
   ### Fwupd
-  services.fwupd.enable = true;
+  #services.fwupd.enable = true;
 
   ### Nix-ld
   programs.nix-ld.enable = true;
