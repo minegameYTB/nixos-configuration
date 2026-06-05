@@ -28,8 +28,10 @@
   ### Bluetooth
   hardware.bluetooth.enable = lib.mkForce true;
 
-  ### Root/home mount point located to ../filesystem/btrfs
+  ### Arch
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
+  ### Root/home mount point located to ../filesystem/btrfs
   ### Specific mount point
   fileSystems."/mnt/DATA" = {
     label = "DATA";
