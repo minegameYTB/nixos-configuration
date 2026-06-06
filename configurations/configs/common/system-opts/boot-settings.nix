@@ -13,6 +13,7 @@
     devSize = "16m";
     binfmt = {
       preferStaticEmulators = true;
+      addEmulatedSystemsToNixSandbox = true;
       emulatedSystems = [
         "aarch64-linux"
       ];
