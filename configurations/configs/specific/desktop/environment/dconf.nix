@@ -282,6 +282,14 @@
               show-line-numbers = true;
               #style-scheme = if config.stylix.enable then "stylix" else "Adwaita-dark";
             };
+
+            "org/gnome/desktop/privacy" = {
+              old-files-age = lib.gvariant.mkInt32 7;
+              recent-files-max-age = lib.gvariant.mkInt32 7;
+              remove-old-temp-files = true;
+              remove-old-trash-files = true;
+            };
+            ### Other gsettings settings here
           };
         }
       ];
