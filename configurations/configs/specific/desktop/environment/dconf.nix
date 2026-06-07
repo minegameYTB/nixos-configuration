@@ -74,7 +74,8 @@
               running-indicator-dominant-color = true;
               custom-background-color = true;
               background-color = "rgb(36,31,49)";
-              dash-max-icon-size = lib.gvariant.mkInt32 30;
+              dash-max-icon-size = lib.gvariant.mkInt32 26;
+              multi-monitor = true;
               custom-theme-shrink = true;
               click-action = "minimize-or-previews";
               intellihide-mode = "ALL_WINDOWS";
