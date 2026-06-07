@@ -168,9 +168,23 @@
               ### Other custom command here
             esac
 
-            # fix argument order: ".#host switch" -> "switch .#host"
-            if (( $# >= 2 )) && looks_like_flake "$1" && is_build_action "$2"; then
-              set -- "$2" "$1" "''${@:3}"
+            # fix argument order: ".#host switch [flags]" -> "switch .#host [flags]"
+            if looks_like_flake "''${1:-}"; then
+              flake="$1"; shift
+              action=""
+              remaining=()
+              for arg in "$@"; do
+                if [[ -z "$action" ]] && is_build_action "$arg"; then
+                  action="$arg"
+                else
+                  remaining+=( "$arg" )
+                fi
+              done
+              if [[ -n "$action" ]]; then
+                set -- "$action" --flake "$flake" "''${remaining[@]}"
+              else
+                set -- --flake "$flake" "$@"
+              fi
             fi
 
             # auto-inject --flake for build actions
