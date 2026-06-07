@@ -30,9 +30,9 @@
       in
       if config.hostProfile == "desktop" then
         # Use "helpers.kernelModuleLLVMOverride" with lto variant bcause lto use clang as compiler
-        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-bore
+        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto
       else
-        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-server;
+        helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-server-lto;
     kernelPatches = [
       #{
       #  # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f4c50a4034e6
