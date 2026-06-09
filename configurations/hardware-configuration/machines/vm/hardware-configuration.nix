@@ -33,5 +33,8 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   ### host marker
-  marker.hostProfile = "server";
+  marker = {
+    hostProfile = "server";
+    archProfile = "x86-64-v1";
+  };
 }
