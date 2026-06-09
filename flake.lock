@@ -71,11 +71,11 @@
     "blocklist": {
       "flake": false,
       "locked": {
-        "lastModified": 1780509803,
-        "narHash": "sha256-R/Q5obcebCN/YPjtuo+Fh1EVgNiGFPajJm8V4s7UQRo=",
+        "lastModified": 1780856344,
+        "narHash": "sha256-DIZ3RamVKfsX4USVildsoKdUnCy6HjeW97FL6+zIwvk=",
         "owner": "StevenBlack",
         "repo": "hosts",
-        "rev": "9db3052ff028f5ee3e0d30c01d8dd8162395f575",
+        "rev": "0e7dd7596d100be329789c10c23ab3a21073a9ba",
         "type": "github"
       },
       "original": {
@@ -87,11 +87,11 @@
     "cachyos-kernel": {
       "flake": false,
       "locked": {
-        "lastModified": 1779959490,
-        "narHash": "sha256-FS/SbuYuRt5biCp1ja0Se12V2q3Y3p+O+rAdFQvuJT4=",
+        "lastModified": 1780413908,
+        "narHash": "sha256-T15bnskj20rdc4vJ55bFF2lVCVR8edilWn0hiYR7vVs=",
         "owner": "CachyOS",
         "repo": "linux-cachyos",
-        "rev": "1d38a1c83db0cddff4963516eb3f6838981cb6ae",
+        "rev": "a61f943f5e94b75c5600a2968cb699d0e37945b3",
         "type": "github"
       },
       "original": {
@@ -103,11 +103,11 @@
     "cachyos-kernel-patches": {
       "flake": false,
       "locked": {
-        "lastModified": 1779996637,
-        "narHash": "sha256-DcA59mHfCUfbr7EtH9YJUb3t62TcyXwC/I0QMyUs1bo=",
+        "lastModified": 1780462466,
+        "narHash": "sha256-t6c7FTqMB0skEz+4tei5v8GEyL4fRDgx24oW3LrnYiE=",
         "owner": "CachyOS",
         "repo": "kernel-patches",
-        "rev": "b87558b7c865628c48c1d6ff5c827b9df40e9281",
+        "rev": "bb41330bd4372672f552beda66712fb70b17f0fa",
         "type": "github"
       },
       "original": {
@@ -177,6 +177,23 @@
         "owner": "minegameYTB",
         "repo": "dotfiles",
         "type": "github"
+      }
+    },
+    "faugus-launcher": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779825676,
+        "narHash": "sha256-pmvxdIF/1Gaq91UTdPS1u53FIb/CJotE2f2kIJhScH4=",
+        "ref": "refs/tags/v1.20.3",
+        "rev": "6120659e765ddf4da12b9a976dc704387f8f86ee",
+        "revCount": 6,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/faugus-launcher.git"
+      },
+      "original": {
+        "ref": "refs/tags/v1.20.3",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/faugus-launcher.git"
       }
     },
     "firefox-gnome-theme": {
@@ -343,20 +360,44 @@
         "type": "github"
       }
     },
-    "glfOS-modules": {
+    "glf-apps": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs-main"
-        ],
-        "nixpkgs-unstable": "nixpkgs-unstable",
+        "faugus-launcher": "faugus-launcher",
+        "logitech-rpm-indicator": "logitech-rpm-indicator",
+        "lutris": "lutris",
+        "nix-disk": "nix-disk",
+        "nix-firewall-mngt": "nix-firewall-mngt",
+        "nixpkgs": "nixpkgs",
+        "proton-cachyos-bin": "proton-cachyos-bin",
+        "proton-ge-bin": "proton-ge-bin",
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1777324008,
-        "narHash": "sha256-M2mrzvXyI2SRntXw9AzOJGyKhZSVnnYKSYqmvhNW8Zo=",
+        "path": "./modules/default/glf-apps",
+        "type": "path"
+      },
+      "original": {
+        "path": "./modules/default/glf-apps",
+        "type": "path"
+      },
+      "parent": [
+        "glfOS-modules"
+      ]
+    },
+    "glfOS-modules": {
+      "inputs": {
+        "glf-apps": "glf-apps",
+        "nixpkgs": [
+          "nixpkgs-main"
+        ],
+        "nixpkgs-unstable": "nixpkgs-unstable"
+      },
+      "locked": {
+        "lastModified": 1780994647,
+        "narHash": "sha256-mPA/tswHYjC6T1O0ccIEGfeP1HArn8fd7DxxPwvx5b4=",
         "ref": "main",
-        "rev": "ffda83a0af24db6eb87863df7a3bcab9bb5543c1",
-        "revCount": 530,
+        "rev": "384400605e62ac9601a662df62b8f275807931c6",
+        "revCount": 818,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       },
@@ -471,20 +512,54 @@
         "type": "github"
       }
     },
+    "logitech-rpm-indicator": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780562666,
+        "narHash": "sha256-V30Nw3z7HE16hZTdvwfvA4FOy7bxpKPqoPmP7Qp6Wsk=",
+        "ref": "main",
+        "rev": "13f08f4c2674884e46d1004f536352b12f434f91",
+        "revCount": 7,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/logitech-rpm-indicator.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/logitech-rpm-indicator.git"
+      }
+    },
+    "lutris": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779262723,
+        "narHash": "sha256-0nFcuP6Zh0K7OPgPP54UZzIvfq8Kfjg/8uc9tLHIG+E=",
+        "ref": "refs/tags/v0.5.22",
+        "rev": "b99f9ab54e781f09c63f0d7a5f91fc5ad80b647e",
+        "revCount": 3,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/lutris.git"
+      },
+      "original": {
+        "ref": "refs/tags/v0.5.22",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/lutris.git"
+      }
+    },
     "nix-cachyos-kernel": {
       "inputs": {
         "cachyos-kernel": "cachyos-kernel",
         "cachyos-kernel-patches": "cachyos-kernel-patches",
         "flake-compat": "flake-compat_2",
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1780253365,
-        "narHash": "sha256-wcJ+6+Z+mfzBjClI0XsjOoGSW6o1RldVj6UETLzK+GQ=",
+        "lastModified": 1780771919,
+        "narHash": "sha256-cbace1ZTWYFG0luPL7OFlUxDh/t9lmPj+Isvg9hLN0k=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "236462fb93cb56e26e6a6801ba5edb6dad66be0d",
+        "rev": "3d940a534da0ba6bce60e345ff2c9c7b062087fb",
         "type": "github"
       },
       "original": {
@@ -494,6 +569,40 @@
         "type": "github"
       }
     },
+    "nix-disk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777728314,
+        "narHash": "sha256-bwS1tPn/k0q7G1U6Y+DDlaxgWsWVxwqYQPCQxASn9Vs=",
+        "ref": "refs/tags/v2.3.4",
+        "rev": "db4018f9c322a1f87db6bdfa62b1b298e0d23357",
+        "revCount": 29,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/nix-disk.git"
+      },
+      "original": {
+        "ref": "refs/tags/v2.3.4",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/nix-disk.git"
+      }
+    },
+    "nix-firewall-mngt": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780926139,
+        "narHash": "sha256-hP6dvWprD4e6g7bZGSzrTBmlX1fR9LADsaQyjPf1/4U=",
+        "ref": "main",
+        "rev": "34615c431bab972c7aea92bf5f90fa5449995e7d",
+        "revCount": 37,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/nix-firewall-mngt.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/nix-firewall-mngt.git"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -501,11 +610,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780210899,
-        "narHash": "sha256-4axz3OBPTKa6LIkXV8n0lc63MQU+et2CB5DGobEAi6k=",
+        "lastModified": 1780816331,
+        "narHash": "sha256-0BYqs8yKWkOz2Q7+SP18N5E5gmDKSo6LSxIVIa0wWes=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "97df9dc0b7c924344b793a15c1e8e4522ebb854e",
+        "rev": "1a2ea89c917781e88508d9fd2b507f2d2a0e173c",
         "type": "github"
       },
       "original": {
@@ -516,16 +625,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1780206209,
-        "narHash": "sha256-33WNQ5sssy+8+xhUz953aEnjR1Oh828j0DgLU1TfMqE=",
+        "lastModified": 1780902259,
+        "narHash": "sha256-q8yYEC5f1mFlQO9RGna4LTc9QrcvWunX6FYp83munkQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "45cf63e030188dd38532669b2450182bfc2d4653",
+        "rev": "bd0ff2d3eac24699c3664d5966b9ef36f388e2ca",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable-small",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -547,11 +656,11 @@
     },
     "nixpkgs-main": {
       "locked": {
-        "lastModified": 1780453794,
-        "narHash": "sha256-bXMRa9VTsHSPXL4Cw8R6JJLQeY3Y/IP4+YJCYVmQ7FY=",
+        "lastModified": 1780902259,
+        "narHash": "sha256-q8yYEC5f1mFlQO9RGna4LTc9QrcvWunX6FYp83munkQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6b316287bae2ee04c9b93c8c858d930fd07d7338",
+        "rev": "bd0ff2d3eac24699c3664d5966b9ef36f388e2ca",
         "type": "github"
       },
       "original": {
@@ -563,11 +672,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1772963539,
-        "narHash": "sha256-9jVDGZnvCckTGdYT53d/EfznygLskyLQXYwJLKMPsZs=",
+        "lastModified": 1780749050,
+        "narHash": "sha256-3av0pIjlOWQ6rDbNOmpUSvbNnJkGORQKKjb4LtCZsIY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9dcb002ca1690658be4a04645215baea8b95f31d",
+        "rev": "a799d3e3886da994fa307f817a6bc705ae538eeb",
         "type": "github"
       },
       "original": {
@@ -579,11 +688,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1780243769,
-        "narHash": "sha256-x5UQuRsH3MqI0U9afaXSNqzTPSeZlRLvFAav2Ux1pNw=",
+        "lastModified": 1780749050,
+        "narHash": "sha256-3av0pIjlOWQ6rDbNOmpUSvbNnJkGORQKKjb4LtCZsIY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "331800de5053fcebacf6813adb5db9c9dca22a0c",
+        "rev": "a799d3e3886da994fa307f817a6bc705ae538eeb",
         "type": "github"
       },
       "original": {
@@ -594,6 +703,22 @@
       }
     },
     "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1780751787,
+        "narHash": "sha256-nWR7F46SyrLvN8Ot39XJDpVCswekGakXlOD4KsTYKW0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "00fa9a692bafc08a86061886f888b843bf7fbdb0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable-small",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1779560665,
         "narHash": "sha256-tpyBcxPpcQb8ukyNF7DoCwfSY3VPsxHoYwj00Cayv5o=",
@@ -617,11 +742,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780756981,
-        "narHash": "sha256-E+ZMm3WA7pIhVv+w2fefzldIYyMHGN9IYecmO8YDZAU=",
+        "lastModified": 1781043144,
+        "narHash": "sha256-bET+2RW7PPXZMPE65bi3bnVh9HJ7sM/eenHlNdQnihI=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "fa3bc2d797992ab89a73783b82b1fec3a0708a6f",
+        "rev": "e26e533b993a738dc7c0107c3f70bc8ca385108c",
         "type": "github"
       },
       "original": {
@@ -678,6 +803,40 @@
         "type": "github"
       }
     },
+    "proton-cachyos-bin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780304695,
+        "narHash": "sha256-nIfkVZrRaFIe5qBjCvjOOjnx4T+aarwnWNob+vOJpoI=",
+        "ref": "main",
+        "rev": "1846ca7f90ef0fd920aef58624dca7920be7aca5",
+        "revCount": 14,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/proton-cachyos-bin.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/proton-cachyos-bin.git"
+      }
+    },
+    "proton-ge-bin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780304914,
+        "narHash": "sha256-IxttVN6cpKESlLgpWBlWt+zcd/AjdWXRU+2nSbqU8p0=",
+        "ref": "main",
+        "rev": "3b219547038b018f2e9a69657975232feb36dcfa",
+        "revCount": 8,
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/proton-ge-bin-glf.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "https://framagit.org/gaming-linux-fr/glf-os/app-glf-os/proton-ge-bin-glf.git"
+      }
+    },
     "root": {
       "inputs": {
         "blocklist": "blocklist",
@@ -727,7 +886,7 @@
         "firefox-gnome-theme": "firefox-gnome-theme",
         "flake-parts": "flake-parts_3",
         "gnome-shell": "gnome-shell",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "nur": "nur_2",
         "systems": "systems_3",
         "tinted-kitty": "tinted-kitty",
@@ -885,11 +1044,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780567926,
-        "narHash": "sha256-LVaiAnBwgr2YotaIlrcwCgmbwHsE2ccegRztLjur/d4=",
+        "lastModified": 1780957638,
+        "narHash": "sha256-NQ0WpkNDRR79BWGNmh1dpgchGJnALW7De71kaXD87nc=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "eea9ae34eb9011aee9b8ce8ee2bc2dd111ee8285",
+        "rev": "fc9b27eb5585548282004fac3f0d34fcf2f06467",
         "type": "github"
       },
       "original": {
