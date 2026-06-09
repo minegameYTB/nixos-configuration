@@ -74,5 +74,8 @@
   };
 
   ### host marker
-  marker.hostProfile = "desktop";
+  marker = {
+    hostProfile = "desktop";
+    archProfile = "x86-64-v3";
+  };
 }
