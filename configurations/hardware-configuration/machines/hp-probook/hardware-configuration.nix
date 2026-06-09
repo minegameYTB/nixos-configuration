@@ -74,5 +74,5 @@
   };
 
   ### host marker
-  hostProfile = "desktop";
+  marker.hostProfile = "desktop";
 }

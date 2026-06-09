@@ -28,7 +28,7 @@
         # Customise CachyOS kernel to use helper expression
         helpers = pkgs.callPackage "${inputs.nix-cachyos-kernel.outPath}/helpers.nix" { };
       in
-      if config.hostProfile == "desktop" then
+      if config.marker.hostProfile == "desktop" then
         # Use "helpers.kernelModuleLLVMOverride" with lto variant bcause lto use clang as compiler
         helpers.kernelModuleLLVMOverride pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto
       else

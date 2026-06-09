@@ -1,7 +1,7 @@
 { lib, config, ... }:
 
 let
-  cfg = config.hostProfile;
+  cfg = config.marker;
   validValues = [
     "desktop"
     "server"
@@ -9,7 +9,7 @@ let
 in
 {
   ### Declare (blank) option
-  options.hostProfile = lib.mkOption {
+  options.marker.hostProfile = lib.mkOption {
     type = lib.types.nullOr (lib.types.enum validValues);
     default = null;
     description = "Add a marker if it's a desktop or a server (for some action and specific option, does not effect, only for condition)";
