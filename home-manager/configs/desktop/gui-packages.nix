@@ -18,7 +18,6 @@ in
       amberol
       pika-backup
       github-desktop
-      tagainijisho
       warp
 
       ### Libreoffice (and langpack)
