@@ -8,7 +8,6 @@ let
   ];
   archValidValues = [
     # Default micro-arch
-    "generic"
     "x86-64-v1"
 
     ### Other micro-arch

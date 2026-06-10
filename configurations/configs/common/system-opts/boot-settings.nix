@@ -116,7 +116,7 @@
       if isArm then
         # no CachyOS on ARM → use stock NixOS kernel
         pkgs.linuxPackages_latest
-      else if host == "server" && arch != "x86-64-v1" && arch != "generic" then
+      else if host == "server" && arch != "x86-64-v1" then
         # explicit guard: server kernel exists only as v1
         throw "kernelPackages: CachyOS server kernel only provides x86-64-v1, got ${arch}"
       else if useCustomKernel || usePinnedKernel then
