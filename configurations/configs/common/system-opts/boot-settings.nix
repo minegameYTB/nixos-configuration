@@ -48,6 +48,70 @@
 
         cachyName = base + suffix;
         cachyKernel = pkgs.cachyosKernels.${cachyName} or null;
+
+        kernelBase = if host == "desktop" then "linux-cachyos-bore-lto" else "linux-cachyos-server-lto";
+        kernelName = kernelBase + suffix;
+        kernelDrv = pkgs.cachyosKernels.${kernelName} or null;
+
+        # ── Pinned version ───────────────────────────────────────────────────
+        # false → use whatever version the flake currently provides
+        # true  → pin to a specific kernel version via pname/version/src
+        # Note: usePinnedKernel and useCustomKernel can be combined;
+        #       pinnedKernelArgs is merged into customKernelArgs if both are true
+        usePinnedKernel = false;
+        pinnedKernelArgs = {
+          pname = "linux-cachyos-pinned";
+          version = "6.12.34";
+          src = pkgs.fetchurl {
+            url = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.34.tar.xz";
+            hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+          };
+        };
+        # ────────────────────────────────────────────────────────────────────
+
+        # ── Custom kernel ────────────────────────────────────────────────────
+        # false → unmodified CachyOS kernel, binary cache intact
+        # true  → override with customKernelArgs below, builds from source
+        useCustomKernel = false;
+        customKernelArgs = {
+          # Compiler & Optimization
+          #lto = "thin"; # "none" | "thin" | "full"
+          #processorOpt = "x86_64-v3"; # "x86_64-v1" | "x86_64-v2" | "x86_64-v3" | "x86_64-v4" | "zen4" | "native"
+          #autofdo = false; # false | true | ./path/to/profile
+
+          # CachyOS Fine Tuning
+          #cpusched = "bore"; # "eevdf" | "bore" | "bmq" | "rt" | "rt-bore" | null
+          #hzTicks = "1000"; # "250" | "300" | "500" | "750" | "1000" | null
+          #tickrate = "full"; # "full" | "periodic" | "idle" | "nohz_full" | null
+          #preemptType = "full"; # "full" | "voluntary" | "none" | null
+          #performanceGovernor = false;
+          #ccHarder = true;
+          #bbr3 = false;
+          #hugepage = "always"; # "always" | "madvise" | "never" | null
+          #kcfi = false;
+
+          # Additional Patches
+          #hardened = false;
+          #rt = false;
+          #acpiCall = false;
+          #handheld = false;
+
+          # Extra patches
+          patches = [ ];
+          prePatch = "";
+          postPatch = "";
+        };
+        # ────────────────────────────────────────────────────────────────────
+
+        # Merge pinnedKernelArgs into overrideArgs if both switches are active,
+        # pinned args (pname/version/src) always take precedence
+        overrideArgs =
+          if usePinnedKernel && useCustomKernel then
+            customKernelArgs // pinnedKernelArgs
+          else if usePinnedKernel then
+            pinnedKernelArgs
+          else
+            customKernelArgs;
       in
       if isArm then
         # no CachyOS on ARM → use stock NixOS kernel
@@ -55,6 +119,11 @@
       else if host == "server" && arch != "x86-64-v1" && arch != "generic" then
         # explicit guard: server kernel exists only as v1
         throw "kernelPackages: CachyOS server kernel only provides x86-64-v1, got ${arch}"
+      else if useCustomKernel || usePinnedKernel then
+        if kernelDrv != null then
+          helpers.kernelModuleLLVMOverride (pkgs.linuxKernel.packagesFor (kernelDrv.override overrideArgs))
+        else
+          throw "kernelPackages: ${kernelName} not found for ${arch}"
       else if cachyKernel != null then
         helpers.kernelModuleLLVMOverride cachyKernel
       else
