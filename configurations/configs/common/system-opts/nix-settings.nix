@@ -157,7 +157,7 @@
                 ;;
               status)
                 info "host: $(hostname)"
-                info "flake: ''${DEFAULT_FLAKE:-$(pwd)}"
+                info "flake: ''${DEFAULT_FLAKE:-$(pwd)#$(hostname | tr '[:upper:]' '[:lower:]')}"
                 "$REAL_NRB" list-generations | tail -5
                 exit 0
                 ;;
@@ -181,8 +181,10 @@
                 fi
               done
               if [[ -n "$action" ]]; then
+                info "reordering args + injecting --flake $flake"
                 set -- "$action" --flake "$flake" "''${remaining[@]}"
               else
+                info "injecting --flake $flake"
                 set -- --flake "$flake" "$@"
               fi
             fi
@@ -193,18 +195,25 @@
                 info "injecting --flake $2"
                 set -- "$1" --flake "$2" "''${@:3}"
               else
-                info "injecting --flake"
-                set -- "$1" --flake "''${@:2}"
+                _injected_flake="''${DEFAULT_FLAKE:-$(pwd)#$(hostname | tr '[:upper:]' '[:lower:]')}"
+                if [[ -z "$_injected_flake" ]]; then
+                  warn "no flake specified and NRB_FLAKE is unset, passing through"
+                  exec "$REAL_NRB" "$@"
+                fi
+                info "injecting --flake $_injected_flake"
+                set -- "$1" --flake "$_injected_flake" "''${@:2}"
               fi
             fi
+
+            exec "$REAL_NRB" "$@"
           '';
         in
         {
           nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
-          postFixup = (oldAttrs.postFixup or "") + ''
-            wrapProgram $out/bin/nixos-rebuild \
-              --set NIX_REAL_NRB "$out/bin/nixos-rebuild" \
-              --run 'source ${flakeWrapper}'
+          postInstall = (oldAttrs.postInstall or "") + ''
+            mv $out/bin/nixos-rebuild $out/bin/.nixos-rebuild-wrapped
+            makeWrapper ${flakeWrapper} $out/bin/nixos-rebuild \
+              --set NIX_REAL_NRB "$out/bin/.nixos-rebuild-wrapped"
           '';
         }
       );
