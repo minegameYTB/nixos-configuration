@@ -8,7 +8,7 @@
   boot.loader = {
     systemd-boot = {
       enable = true;
-      configurationLimit = 30;
+      configurationLimit = 25;
     };
     ### Enable EFI editable variable
     efi.canTouchEfiVariables = true;
