@@ -27,7 +27,7 @@ in
     ])
     ### All arch (pkgs from unstable branch)
     ++ (with pkgs.pkgsUnstable; [
-      #bitwarden-desktop
+      bitwarden-desktop
       #rpi-imager
     ])
     ### Packages specific to x86_64-linux (main pkgs branch)
