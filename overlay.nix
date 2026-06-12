@@ -12,6 +12,7 @@ with inputs;
   nixpkgs.overlays = [
     ### Kernel
     nix-cachyos-kernel.overlays.pinned
+    glfOS-modules.overlays.default # For GLFOS-APPS
 
     ### Custom extend of pkgs or replacing pkgs by other
     (self: super: rec {
