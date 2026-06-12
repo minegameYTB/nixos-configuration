@@ -15,8 +15,9 @@
           SDL2
         ];
     };
-    extraCompatPackages = [
-      pkgs.pkgsUnstable.proton-ge-bin
+    extraCompatPackages = with pkgs; [
+      pkgsUnstable.proton-ge-bin
+      proton-cachyos-bin # GLF-OS apps
     ];
   };
 }
