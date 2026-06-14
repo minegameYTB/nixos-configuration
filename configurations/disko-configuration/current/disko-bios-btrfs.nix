@@ -48,6 +48,20 @@
                       "noatime"
                     ];
                   };
+                  "@log" = {
+                    mountpoint = "/var/log";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                    ];
+                  };
+                  "@cache" = {
+                    mountpoint = "/var/cache";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                    ];
+                  };
                 };
               };
             }

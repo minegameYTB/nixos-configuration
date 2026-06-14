@@ -40,4 +40,22 @@
       "noatime"
     ];
   };
+  fileSystems."/var/log" = {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@log"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
+  fileSystems."/var/cache" = {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@cache"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
 }
