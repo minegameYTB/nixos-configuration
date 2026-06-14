@@ -55,4 +55,22 @@
       "noatime"
     ];
   };
+  fileSystems."/var/log" = {
+    device = "/dev/mapper/luks-encrypted";
+    fsType = "btrfs";
+    options = [
+      "subvol=@log"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
+  fileSystems."/var/cache" = {
+    device = "/dev/mapper/luks-encrypted";
+    fsType = "btrfs";
+    options = [
+      "subvol=@cache"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
 }
