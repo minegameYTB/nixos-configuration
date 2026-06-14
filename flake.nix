@@ -174,7 +174,6 @@
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
         inherit inputs users description;
-        inherit (inputs) zen-browser;
       };
 
       ### Declare Home-manager function (for desktop and full CLI)

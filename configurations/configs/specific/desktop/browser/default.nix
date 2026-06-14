@@ -4,6 +4,6 @@
   ### Import all expr for the browser
   imports = [
     ./firefox
-    ./zen-browser
+    #./zen-browser # Now enabled in HM (symlinked here)
   ];
 }
