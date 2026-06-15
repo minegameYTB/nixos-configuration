@@ -17,7 +17,6 @@ in
       vlc
       amberol
       pika-backup
-      github-desktop
       warp
 
       ### Libreoffice (and langpack)
