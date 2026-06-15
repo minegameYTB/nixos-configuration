@@ -32,32 +32,55 @@
       pkgs.firefoxpwa
     ];
     profiles = {
-      default.search = {
-        force = true; # Enforce declared search engines on each rebuild
-        default = "ddg";
-        engines = {
-          mynixos = {
-            name = "NixOS Search";
-            urls =
-              let
-                knownReleases = [
-                  "25.11"
-                  "26.05"
-                ];
-                mm = lib.versions.majorMinor lib.version;
-
-                # If not found, fallback to "unstable" value on url
-                channelVersion = if builtins.elem mm knownReleases then mm else "unstable";
-              in
-              [
-                {
-                  template = "https://search.nixos.org/packages?channel=${channelVersion}&query={searchTerms}";
-                }
+      default = {
+        extensions.packages =
+          let
+            firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
+          in
+          with firefox-addons;
+          [
+            ublock-origin
+            sponsorblock
+            privacy-badger
+            pwas-for-firefox
+          ];
+        search = {
+          force = true; # Enforce declared search engines on each rebuild
+          default = "ddg";
+          engines =
+            let
+              knownReleases = [
+                "25.11"
+                "26.05"
               ];
-            icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-            definedAliases = [ "@nx" ];
-          };
-          ### Other search engine here ↓
+              mm = lib.versions.majorMinor lib.version;
+
+              # If not found, fallback to "unstable" value on url
+              channelVersion = if builtins.elem mm knownReleases then mm else "unstable";
+            in
+            {
+              nixosPkgSearch = {
+                name = "NixOS Packages Search";
+                urls = [
+                  {
+                    template = "https://search.nixos.org/packages?channel=${channelVersion}&query={searchTerms}";
+                  }
+                ];
+                icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                definedAliases = [ "@nx" ];
+              };
+              nixosOptSearch = {
+                name = "NixOS Options Search";
+                urls = [
+                  {
+                    template = "https://search.nixos.org/options?channel=${channelVersion}&query={searchTerms}";
+                  }
+                ];
+                icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                definedAliases = [ "@nxOpt" ];
+              };
+              ### Other search engine here ↓
+            };
         };
       };
     };
