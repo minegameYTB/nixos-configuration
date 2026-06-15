@@ -44,12 +44,12 @@
         suffix = if host == "desktop" && !isArm then desktopSuffix else "";
 
         base =
-          if host == "desktop" then "linuxPackages-cachyos-bore-lto" else "linuxPackages-cachyos-server-lto";
+          if host == "desktop" then "linuxPackages-cachyos-bore-lto" else "linuxPackages-cachyos-server";
 
         cachyName = base + suffix;
         cachyKernel = pkgs.cachyosKernels.${cachyName} or null;
 
-        kernelBase = if host == "desktop" then "linux-cachyos-bore-lto" else "linux-cachyos-server-lto";
+        kernelBase = if host == "desktop" then "linux-cachyos-bore-lto" else "linux-cachyos-server";
         kernelName = kernelBase + suffix;
         kernelDrv = pkgs.cachyosKernels.${kernelName} or null;
 
