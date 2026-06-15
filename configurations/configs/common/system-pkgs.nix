@@ -39,7 +39,6 @@
           gparted
           gearlever
           onlyoffice-desktopeditors
-          github-desktop
           rpi-imager
           easyeffects
           upscayl
