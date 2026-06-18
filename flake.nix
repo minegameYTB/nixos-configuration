@@ -86,7 +86,7 @@
     };
 
     glfOS-modules = {
-      url = "git+https://framagit.org/gaming-linux-fr/glf-os/glf-os.git?ref=main"; # For nvidia settings module
+      url = "git+https://framagit.org/gaming-linux-fr/glf-os/glf-os.git?ref=main&shallow=1";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
   };
