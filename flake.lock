@@ -397,12 +397,13 @@
         "narHash": "sha256-mPA/tswHYjC6T1O0ccIEGfeP1HArn8fd7DxxPwvx5b4=",
         "ref": "main",
         "rev": "384400605e62ac9601a662df62b8f275807931c6",
-        "revCount": 818,
+        "shallow": true,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       },
       "original": {
         "ref": "main",
+        "shallow": true,
         "type": "git",
         "url": "https://framagit.org/gaming-linux-fr/glf-os/glf-os.git"
       }
