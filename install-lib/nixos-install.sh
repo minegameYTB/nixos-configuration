@@ -164,7 +164,7 @@ addLuksPassphrase() {
       --key-file "$keyFile" \
       --keyfile-size="$keySize" \
       "$luksPartition"; then
-    printf '%s\n' "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
+    printf '%b\n' "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
   else
     warn "Failed to add passphrase — continuing with key file only"
   fi
@@ -176,6 +176,7 @@ addLuksPassphrase() {
 
 nixosInstallFn() {
   sleep 1
+  trap 'teardownTempSwap' EXIT
 
   # --- Root check (must happen before anything else) ----------------------
   if [[ $EUID -ne 0 ]]; then
@@ -246,12 +247,12 @@ nixosInstallFn() {
     echo -e "\n${nixosProfile} selected"
 
     # Countdown before the point of no return
-    printf '%s\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
+    printf '%b\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
     for i in {5..1}; do
-      printf '\r  %s seconds... (Ctrl+C to cancel) ' "${CYAN}${i}${RESET}"
+      printf '%b' "\r  ${CYAN}${i}${RESET} seconds... (Ctrl+C to cancel) "
       sleep 1
     done
-    printf '\r  %s                    \n\n' "${GREEN}Installing NixOS…${RESET}"
+    printf '%b\n' "\r  ${GREEN}Installing NixOS…${RESET}                    "
 
     # Persist all interactive answers so they survive a crash
     checkpoint_set "VAR_DEVICE"          "$deviceDisk"
@@ -352,6 +353,7 @@ nixosInstallFn() {
   fi
 
   # --- All steps completed — clean up state --------------------------------
-  checkpoint_clear
+    checkpoint_clear
+    trap - EXIT
   info "Installation complete! Please reboot to use NixOS."
 }
