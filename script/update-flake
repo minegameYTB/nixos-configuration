@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 update_repo(){
   echo -e "\nUpdate local repository\n"
@@ -11,9 +12,9 @@ update_flake(){
 }
 
 check_rev_change(){
-  if [[ -n $(git status --porcelain) ]]; then
+  if [[ -n "$(git status --porcelain)" ]]; then
     ### Initialize variable to get version and hash commit
-    NIXPKGS_VERSION=$(nix eval --raw "github:NixOS/nixpkgs/$(cat flake.lock | jq -r '.nodes."nixpkgs-main".locked.rev')#lib.version")
+    NIXPKGS_VERSION=$(nix eval --raw "github:NixOS/nixpkgs/$(jq -r '.nodes."nixpkgs-main".locked.rev' flake.lock)#lib.version")
     echo -e "New revision\n"
     git add flake.lock
     git commit -m "[nixpkgs/${NIXPKGS_VERSION}] flake.lock: update to the new rev"

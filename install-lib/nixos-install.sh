@@ -1,5 +1,6 @@
 ### nixos-install.sh — NixOS installation on a bare machine
 ### Sourced by install.sh; requires lib.sh to be sourced first.
+# shellcheck shell=bash
 
 # ---------------------------------------------------------------------------
 # Disk helpers
@@ -163,7 +164,7 @@ addLuksPassphrase() {
       --key-file "$keyFile" \
       --keyfile-size="$keySize" \
       "$luksPartition"; then
-    printf "${GREEN}Passphrase successfully added to LUKS slot.${RESET}\n"
+    printf '%s\n' "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
   else
     warn "Failed to add passphrase — continuing with key file only"
   fi
@@ -245,12 +246,12 @@ nixosInstallFn() {
     echo -e "\n${nixosProfile} selected"
 
     # Countdown before the point of no return
-    printf "${YELLOW}/!\\ Starting installation in:${RESET}\n"
+    printf '%s\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
     for i in {5..1}; do
-      printf "\r  ${CYAN}%d${RESET} seconds... (Ctrl+C to cancel) " "$i"
+      printf '\r  %s seconds... (Ctrl+C to cancel) ' "${CYAN}${i}${RESET}"
       sleep 1
     done
-    printf "\r  ${GREEN}Installing NixOS…${RESET}                    \n\n"
+    printf '\r  %s                    \n\n' "${GREEN}Installing NixOS…${RESET}"
 
     # Persist all interactive answers so they survive a crash
     checkpoint_set "VAR_DEVICE"          "$deviceDisk"

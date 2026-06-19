@@ -1,12 +1,13 @@
 #! /usr/bin/env bash
+set -euo pipefail
 
 ### Use "." as a relative path 
 TARGET_DIR="."
 
 ### Use realpath to have relative path to create symlink
 RELATIVE_PATH=$(realpath --relative-to="$HOME" "$TARGET_DIR")
+TARGET_NAME=$(basename -- "$TARGET_DIR")
 
-ln -sv "$RELATIVE_PATH" "$HOME/$(basename $TARGET_DIR)"
+ln -sv "$RELATIVE_PATH" "$HOME/$TARGET_NAME"
 
-echo "Symlink created: $HOME/$(basename $TARGET_DIR) -> $RELATIVE_PATH"
-
+echo "Symlink created: $HOME/$TARGET_NAME -> $RELATIVE_PATH"
