@@ -306,7 +306,12 @@ nixosInstallFn() {
   # Created on /mnt (now mounted by disko) when RAM is below the threshold.
   # nixos-install can be memory-hungry during flake evaluation.
   if (( needSwap )); then
-    if ! checkpoint_skip "STEP_SWAP"; then
+    if checkpoint_skip "STEP_SWAP"; then
+      if [[ ! -f "/mnt/.swapfile-install" ]]; then
+        info "Temporary swap was removed during the previous session — recreating it"
+        setupTempSwap
+      fi
+    else
       setupTempSwap
       checkpoint_done "STEP_SWAP"
     fi
