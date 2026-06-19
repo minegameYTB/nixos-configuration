@@ -1,5 +1,6 @@
 ### hm-standalone-install.sh — Home Manager standalone install on non-NixOS systems
 ### Sourced by install.sh; requires lib.sh to be sourced first.
+# shellcheck shell=bash
 
 hmInstallFn() {
 
@@ -123,7 +124,7 @@ hmInstallFn() {
   # --- Step: install Nix via Determinate Systems installer -----------------
   if ! checkpoint_skip "STEP_INSTALL_NIX"; then
     info "Installing Nix via nix-installer (Determinate Systems)"
-    printf "\n${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}\n\n" >&2
+    printf '%s\n' "${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}" >&2
     curl -fsSL \
       https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
       | sh -s -- install --prefer-upstream-nix

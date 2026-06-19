@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+set -euo pipefail
+
+### Run shellcheck on the executable Bash entrypoints in this repository
+shellcheck -x \
+  install.sh \
+  build.sh \
+  script/update-flake \
+  script/mksymlink \
+  script/run-deadnix

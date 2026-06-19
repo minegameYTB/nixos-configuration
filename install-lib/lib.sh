@@ -1,5 +1,6 @@
 ### lib.sh — Common variables and reusable functions
 ### Sourced by install.sh before any install script
+# shellcheck shell=bash
 
 # ---------------------------------------------------------------------------
 # Nix settings
@@ -48,8 +49,8 @@ info() {
 
 # Print the command before running it so the user can see what is happening.
 run_command() {
-  printf "\n${BLUE}▶ Run command:${RESET}"
-  printf "  ${YELLOW}%s${RESET}\n\n" "$*"
+  printf '\n%s\n' "${BLUE}▶ Run command:${RESET}"
+  printf '  %s\n\n' "${YELLOW}$*${RESET}"
   "$@"
 }
 
