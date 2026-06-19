@@ -124,7 +124,7 @@ hmInstallFn() {
   # --- Step: install Nix via Determinate Systems installer -----------------
   if ! checkpoint_skip "STEP_INSTALL_NIX"; then
     info "Installing Nix via nix-installer (Determinate Systems)"
-    printf '%s\n' "${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}" >&2
+    printf '%b\n' "${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}" >&2
     curl -fsSL \
       https://github.com/DeterminateSystems/nix-installer/releases/download/v3.15.2/nix-installer.sh \
       | sh -s -- install --prefer-upstream-nix
