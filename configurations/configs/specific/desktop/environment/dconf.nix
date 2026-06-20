@@ -87,6 +87,7 @@
               menu-button-icon-image = lib.gvariant.mkInt32 23;
               menu-button-terminal = "ghostty";
               menu-button-extensions-app = "com.mattjakeman.ExtensionManager.desktop";
+              menu-button-system-monitor = "missioncenter";
               symbolic-icon = true;
             };
 
