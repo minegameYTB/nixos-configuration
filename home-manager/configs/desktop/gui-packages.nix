@@ -66,7 +66,4 @@ in
   #++ lib.optionals isX86_64 (with pkgs.pkgsMaster; [
   #  deezer-enhanced
   #]);
-
-  ### Fix gtk4.theme warning (move this later)
-  gtk.gtk4.theme = config.gtk.theme;
 }
