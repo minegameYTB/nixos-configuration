@@ -14,7 +14,7 @@
       wget
       file
       efibootmgr
-      ntfs3g
+      ntfsprogs-plus
       nvd
       mdcat
 
