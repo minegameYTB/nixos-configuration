@@ -38,6 +38,7 @@ let
     "jffs2"
     "hfs"
     "hfsplus"
+    "ntfs3" # Force new NTFS module (nammed NTFSPLUS)
   ];
 
   unusedAllModulesCategories = unusedNetModules ++ unusedAdvModules ++ unusedFilesystemModules;
