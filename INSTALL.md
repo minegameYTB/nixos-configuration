@@ -145,6 +145,7 @@ btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 **ext4, xfs, and others** — `fallocate` is used directly, which is near-instant.
 
 After `nixos-install` completes, the swapfile is deactivated (`swapoff`) and deleted. The teardown function is a no-op if swap was never created.
+If the installer is interrupted with `Ctrl+C`, the swapfile is recreated automatically on the next resume when the swap step is marked done but the file is missing.
 
 ---
 
