@@ -36,6 +36,7 @@
               center-new-windows = true;
               dynamic-workspaces = true;
               edge-tiling = true;
+              check-alive-timeout = lib.gvariant.mkUint32 60000; # Timeout of 60s bfor show quit app pop-up
             };
 
             "org/gnome/desktop/interface" = {
