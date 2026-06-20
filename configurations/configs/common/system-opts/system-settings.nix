@@ -27,6 +27,7 @@
     name = "openssh-libressl-${pkgs.openssh.version}";
     paths = [
       (pkgs.openssh.override {
+        stdenv = pkgs.llvmPackages.stdenv;
         openssl = pkgs.libressl;
       })
     ];
