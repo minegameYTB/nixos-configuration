@@ -45,18 +45,18 @@
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6";
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
-    # Home-manager - release-26.05 (25 May 2026)
+    # Home-manager - release-26.05 (8 Jun 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/b179bde238977f7d4454fc770b1a727eaf55111c";
+      url = "github:nix-community/home-manager/4eb4fec41674d5b059aa2eedf0f98453890546fa";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-26.05 (2 Jun 2026)
-    stylix.url = "github:danth/stylix/45b51150627b28b1d4a4ab4e5d645af8cb7c2ef6";
+    # Stylix - release-26.05 (6 Jun 2026)
+    stylix.url = "github:danth/stylix/54fa19702f4f2c7f6a981a92850678933588af9a";
 
-    # Lazyvim-nix - main (2 Apr 2026)
+    # Lazyvim-nix - main
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix/c1c27d9b3fd74d243a34985c5440a14aa0c2a169";
+      url = "github:pfassina/lazyvim-nix/v16.0.0";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
