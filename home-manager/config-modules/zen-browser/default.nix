@@ -53,9 +53,12 @@
                 "25.11"
                 "26.05"
               ];
-              mm = lib.versions.majorMinor lib.version;
 
-              # If not found, fallback to "unstable" value on url
+              # lib.trivial.release returns the current nixpkgs release as "YY.MM"
+              # e.g. "25.11" on both stable and unstable tracking that release
+              mm = lib.trivial.release;
+
+              # If the release is not in the known list, fall back to "unstable"
               channelVersion = if builtins.elem mm knownReleases then mm else "unstable";
             in
             {
