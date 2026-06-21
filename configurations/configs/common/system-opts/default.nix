@@ -11,5 +11,6 @@
     ./system-settings.nix
     ./fonts.nix
     ./shell.nix
+    ./version.nix
   ];
 }
