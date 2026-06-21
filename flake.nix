@@ -105,6 +105,11 @@
       ### User for user configuration and home manager standalone, please change this username when you fork this repo, thanks !
       users = [ "minegame" ];
       description = "Minegame YTB";
+      properties = {
+        i18n = "fr_FR.UTF-8";
+        keyMap = "fr";
+        x11KeyMap = "fr";
+      };
 
       ### System supported for this config (to use on home-manager for example)
       systems = [
@@ -173,7 +178,12 @@
 
       ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
       specialArgs = system: {
-        inherit inputs users description;
+        inherit
+          inputs
+          users
+          description
+          properties
+          ;
       };
 
       ### Declare Home-manager function (for desktop and full CLI)

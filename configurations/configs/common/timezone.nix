@@ -1,24 +1,25 @@
-{ config, ... }:
+{ config, properties, ... }:
 
 {
   # Set your time zone.
   time.timeZone = "Europe/Paris";
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "fr_FR.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
+  # Select internationalisation properties. (change properties.[...] value in flake.nix
+  i18n = {
+    defaultLocale = properties.i18n;
+    extraLocaleSettings = {
+      LC_ADDRESS = properties.i18n;
+      LC_IDENTIFICATION = properties.i18n;
+      LC_MEASUREMENT = properties.i18n;
+      LC_MONETARY = properties.i18n;
+      LC_NAME = properties.i18n;
+      LC_NUMERIC = properties.i18n;
+      LC_PAPER = properties.i18n;
+      LC_TELEPHONE = properties.i18n;
+      LC_TIME = properties.i18n;
+    };
   };
 
   # Configure console keymap
-  console.keyMap = "fr";
+  console.keyMap = properties.keyMap;
 }
