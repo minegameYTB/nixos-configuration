@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  properties,
+  ...
+}:
 
 {
   # Enable the X11 windowing system.
@@ -6,7 +11,7 @@
 
   # Configure keymap in X11
   services.xserver.xkb = {
-    layout = "fr";
+    layout = properties.x11KeyMap;
     variant = "";
   };
 
