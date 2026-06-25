@@ -52,7 +52,10 @@
     };
 
     # Stylix - release-26.05 (6 Jun 2026)
-    stylix.url = "github:danth/stylix/54fa19702f4f2c7f6a981a92850678933588af9a";
+    stylix = {
+      url = "github:danth/stylix/54fa19702f4f2c7f6a981a92850678933588af9a";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
 
     # Lazyvim-nix - main
     lazyvim = {
