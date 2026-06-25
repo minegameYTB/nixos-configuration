@@ -12,15 +12,19 @@ with inputs;
   nixpkgs.overlays = [
     ### Kernel
     nix-cachyos-kernel.overlays.pinned
-    glfOS-modules.overlays.default # For GLFOS-APPS
+
+    ### For GLFOS-APPS
+    glfOS-modules.overlays.default
+
+    ### Extend pkgs with nur namespace
+    nur.overlays.default
 
     ### Custom extend of pkgs or replacing pkgs by other
     (self: super: rec {
-      ### Extend pkgs with nur namespace
-      nur = import inputs.nur {
-        nurpkgs = pkgsUnstable;
-        pkgs = pkgsUnstable;
-      };
+      #nur = import inputs.nur {
+      #  nurpkgs = pkgsUnstable;
+      #  pkgs = pkgsUnstable;
+      #};
 
       ### Extend pkgs namespace here
       # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
