@@ -13,6 +13,10 @@
     # or inputs.zen-browser.homeModules.twilight-official
   ];
 
+  # zen mods update script dependancy
+  home.packages = [ pkgs.gettext ];
+
+  ### Zen browser settings
   programs.zen-browser = {
     enable = true;
     setAsDefaultBrowser = true;
