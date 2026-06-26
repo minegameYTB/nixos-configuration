@@ -19,7 +19,7 @@
       ### Argument order (to see commit, do "flatpak info software")
       ### Search package with this command (for all used info)
       # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
-      "flathub:app/app.zen_browser.zen//stable"
+      #"flathub:app/app.zen_browser.zen//stable"
     ];
   };
 }
