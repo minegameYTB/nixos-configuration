@@ -33,6 +33,11 @@
     ];
     profiles = {
       default = {
+        mods = [
+          "906c6915-5677-48ff-9bfc-096a02a72379" # Floating Status Bar
+          "253a3a74-0cc4-47b7-8b82-996a64f030d5" # Floating History
+          "3ff55ba7-4690-4f74-96a8-9e4416685e4e" # Colored container tab
+        ];
         extensions.packages =
           let
             firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
