@@ -20,7 +20,7 @@
     ../configurations/configs/specific/desktop/browser
 
     ### Services
-    ../configurations/configs/system/services/nix-channel-rm-dirs.nix
+    #../configurations/configs/system/services/nix-channel-rm-dirs.nix
 
     ### Vm specific option
     #../configurations/configs/specific/vm/host/qemu-kvm-host.nix
