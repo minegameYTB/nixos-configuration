@@ -42,7 +42,7 @@
     };
 
     ### Distant flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.6";
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.7";
 
     ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
     # Home-manager - release-26.05 (8 Jun 2026)
