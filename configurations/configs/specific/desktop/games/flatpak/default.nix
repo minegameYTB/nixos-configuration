@@ -21,7 +21,7 @@
       # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
 
       "flathub:app/io.mrarm.mcpelauncher//stable"
-      ":${./hytale-launcher-2026-01-24.flatpak}"
+      ":${./hytale-launcher-2026-06-27.flatpak}"
       #"flathub:app/it.mq1.TinyWiiBackupManager//stable"
       #"com.usebottles.bottles"
     ];
