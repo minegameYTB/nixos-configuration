@@ -22,9 +22,7 @@
       ### Search package with this command (for all used info)
       # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
 
-      "flatpak:app/com.github.tchx84.Flatseal//stable"
       "flathub:app/io.github.shiftey.Desktop//stable"
-      "flathub:app/io.github.qwersyk.Newelle//stable"
       #"flathub:app/it.mq1.TinyWiiBackupManager//stable"
       #"com.usebottles.bottles"
     ];
