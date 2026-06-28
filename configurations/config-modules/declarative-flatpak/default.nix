@@ -24,6 +24,8 @@
 
       "flathub:app/io.github.shiftey.Desktop//stable"
       "flathub:app/it.mijorus.gearlever//stable"
+      "flathub:app/com.github.tchx84.Flatseal//stable"
+      "flathub:app/io.github.qwersyk.Newelle//stable"
       #"flathub:app/it.mq1.TinyWiiBackupManager//stable"
       #"com.usebottles.bottles"
     ];
