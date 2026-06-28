@@ -13,9 +13,6 @@
     # or inputs.zen-browser.homeModules.twilight-official
   ];
 
-  # zen mods update script dependancy
-  home.packages = [ pkgs.gettext ];
-
   ### Zen browser settings
   programs.zen-browser = {
     enable = true;
@@ -24,14 +21,6 @@
       "fr"
       "en-US"
     ];
-    policies.preferences = {
-      "intl.accept_languages" = {
-        Value = "fr-fr,en-us,en";
-      };
-      "intl.locale.requested" = {
-        Value = "fr,en-US";
-      };
-    };
     nativeMessagingHosts = [
       pkgs.firefoxpwa
     ];
