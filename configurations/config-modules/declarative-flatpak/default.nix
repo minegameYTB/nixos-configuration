@@ -23,6 +23,7 @@
       # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
 
       "flathub:app/io.github.shiftey.Desktop//stable"
+      "flathub:app/it.mijorus.gearlever//stable"
       #"flathub:app/it.mq1.TinyWiiBackupManager//stable"
       #"com.usebottles.bottles"
     ];
