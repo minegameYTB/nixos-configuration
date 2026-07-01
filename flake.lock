@@ -671,6 +671,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-pr": {
+      "locked": {
+        "lastModified": 1782862285,
+        "narHash": "sha256-fCON/bgFbJcRJfr64DxOnM5SzfG+Ma2i37RlRgRvqo8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "72d3971d46b722d06121bc56c4956134bd07addf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "pull/537215/head",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1780749050,
@@ -835,6 +851,7 @@
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nix-index-database": "nix-index-database",
         "nixpkgs-main": "nixpkgs-main",
+        "nixpkgs-pr": "nixpkgs-pr",
         "nixpkgs-unstable": "nixpkgs-unstable_2",
         "nur": "nur",
         "stylix": "stylix",
