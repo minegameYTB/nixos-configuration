@@ -41,10 +41,10 @@ with inputs;
       #  inherit system;
       #  config = nixpkgsConfig;
       #};
-      #pkgsPr = import nixpkgs-pr {
-      #  inherit system;
-      #  config = nixpkgsConfig;
-      #};
+      pkgsPr = import nixpkgs-pr {
+        inherit system;
+        config = nixpkgsConfig;
+      };
 
       ### Replace packages here
       ### Force use gh from unstable (on system level)
