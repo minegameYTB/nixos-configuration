@@ -65,23 +65,18 @@ in
       "module.sig_enforce=1"
       "random.trust_cpu=off"
     ]
-    ++ (
-      if (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) then
-        [
-          "intel_iommu=on"
-          "iommu=pt"
-        ]
-      else if (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) then
-        [
-          "amd_iommu=on"
-          "iommu=pt"
-        ]
-      else
-        [
-          "init_on_alloc=1"
-          "init_on_free=1"
-        ]
-    );
+    ++ lib.optionals (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) [
+      "intel_iommu=on"
+      "iommu=pt"
+    ]
+    ++ lib.optionals (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) [
+      "amd_iommu=on"
+      "iommu=pt"
+    ]
+    ++ lib.optionals (!config.virtualisation.libvirtd.enable) [
+      "init_on_alloc=1"
+      "init_on_free=1"
+    ];
     # initrd.blacklistedKernelModules = unusedAllModulesCategories;
     kernel.sysctl = {
       "kernel.panic" = 10;
