@@ -62,8 +62,10 @@ in
     ++ lib.optionals isX86_64 (
       with pkgs.pkgsPr;
       [
-        ## Temporairy add pkgs-pr repo here
+        # Temporairy add pkgs-pr repo here
+        # Add new "AI" nix expression to disable it easely
         claude-desktop
+        mcp-nixos
       ]
     );
   #++ lib.optionals isX86_64 (with pkgs.pkgsMaster; [
