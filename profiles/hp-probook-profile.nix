@@ -30,6 +30,7 @@
     ### Other
     ../configurations/configs/specific/container/podman.nix
     ../configurations/hardware-configuration/specific/swap.nix
+    ../configurations/configs/specific/ai
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
