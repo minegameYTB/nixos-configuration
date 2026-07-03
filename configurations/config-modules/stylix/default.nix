@@ -6,10 +6,10 @@
 }:
 
 {
-  ### Import stylix modules like a expression
+  ### Import stylix module
   imports = [ inputs.stylix.nixosModules.stylix ];
 
-  ### Stylix config
+  ### Stylix config (enable follows GNOME activation)
   stylix = {
     enable = config.services.desktopManager.gnome.enable;
     image = "${inputs.dotfiles-minegameYTB}/wallpapers/Wierschem.jpeg";
@@ -31,7 +31,6 @@
     };
     #base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     cursor = {
-      ### Use nixpkgs stable for this package
       package = pkgs.catppuccin-cursors.mochaDark;
       name = "catppuccin-mocha-dark-cursors";
       size = 24;
@@ -54,7 +53,7 @@
     };
   };
 
-  ### Patch for gnome-shell (disable dark mode option)
+  ### Patch gnome-shell (disable dark mode option)
   nixpkgs.overlays = [
     (self: super: {
       gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
