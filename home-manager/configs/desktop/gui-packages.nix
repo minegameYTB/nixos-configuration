@@ -12,61 +12,41 @@ let
 in
 {
   home.packages =
-    ### All arch
+    ### All architectures (stable)
     (with pkgs; [
       vlc
       amberol
       pika-backup
       warp
-
-      ### Libreoffice (and langpack)
       #libreoffice-fresh
       #hunspellDicts.fr-any
     ])
-    ### All arch (pkgs from unstable branch)
+    ### All architectures (unstable)
     ++ (with pkgs.pkgsUnstable; [
       bitwarden-desktop
       #rpi-imager
     ])
-    ### Packages specific to x86_64-linux (main pkgs branch)
+    ### x86_64 only
     ++ lib.optionals isX86_64 (
-      with pkgs;
-      [
+      (with pkgs; [
         discord
         #spotify
-      ]
+      ])
+      ++ (with pkgs.pkgsUnstable; [
+        deezer-enhanced
+      ])
+      ### disable in flake.nix for the moment
+      #++ (with pkgs.pkgsPr; [
+      #  claude-desktop
+      #])
+      #++ (with pkgs.pkgsMaster; [
+      #  deezer-enhanced
+      #])
     )
-    ### Packages specific to aarch64-linux (main pkgs branch)
+    ### aarch64 only
     ++ lib.optionals isAarch64 (
-      with pkgs;
-      [
+      with pkgs; [
         legcord
       ]
-    )
-    ### Packages from pkgs-unstable for x86_64-linux only
-    ++ lib.optionals isX86_64 (
-      with pkgs.pkgsUnstable;
-      [
-        ### unstable pkgs here
-        deezer-enhanced
-      ]
-    )
-    ### Packages from pkgs-unstable for aarch64-linux
-    ++ lib.optionals isAarch64 (
-      with pkgs.pkgsUnstable;
-      [
-        ### unstable pkgs here
-      ]
     );
-  ### disable in flake.nix for the moment
-  #++ lib.optionals isX86_64 (
-  #  with pkgs.pkgsPr;
-  #  [
-  # Temporairy add pkgs-pr repo here
-  #claude-desktop
-  #  ]
-  #);
-  #++ lib.optionals isX86_64 (with pkgs.pkgsMaster; [
-  #  deezer-enhanced
-  #]);
 }
