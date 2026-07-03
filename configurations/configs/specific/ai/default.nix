@@ -8,7 +8,7 @@
 {
   ### Install specific package for AI tools (for desktop and CLI)
   environment.systemPackages =
-    with pkgs.pkgsPr;
+    with pkgs.pkgsUnstable;
     [
       opencode
       mcp-nixos
