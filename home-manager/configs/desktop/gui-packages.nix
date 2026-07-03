@@ -57,17 +57,15 @@ in
       [
         ### unstable pkgs here
       ]
-    ) # ;
-    ### disable in flake.nix for the moment
-    ++ lib.optionals isX86_64 (
-      with pkgs.pkgsPr;
-      [
-        # Temporairy add pkgs-pr repo here
-        # Add new "AI" nix expression to disable it easely
-        claude-desktop
-        mcp-nixos
-      ]
     );
+  ### disable in flake.nix for the moment
+  #++ lib.optionals isX86_64 (
+  #  with pkgs.pkgsPr;
+  #  [
+  # Temporairy add pkgs-pr repo here
+  #claude-desktop
+  #  ]
+  #);
   #++ lib.optionals isX86_64 (with pkgs.pkgsMaster; [
   #  deezer-enhanced
   #]);

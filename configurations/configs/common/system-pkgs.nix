@@ -41,7 +41,6 @@
           rpi-imager
           easyeffects
           upscayl
-          opencode
 
           ### Chromium based browser
           vivaldi
