@@ -22,5 +22,6 @@
 
     ### Other
     ../../configurations/hardware-configuration/specific/swap.nix
+    ../../configurations/config-modules/declarative-flatpak
   ];
 }

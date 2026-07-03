@@ -15,183 +15,95 @@
   ...
 }:
 
+let
+  ### Helper function to create a NixOS system configuration
+  ### (avoid repeating common boilerplate for each machine)
+  mkMachine =
+    { hostname, profile, fs, homeManagerType ? "desktop", extraModules ? [ ], arch ? defaultArch }:
+    let
+      ### Select home-manager config based on machine type (desktop or server)
+      hmConfig = if homeManagerType == "server" then homeManagerServerConfig else homeManagerDesktopConfig;
+    in
+    lib.nixosSystem {
+      system = arch;
+      pkgs = pkgsFor arch;
+      specialArgs = specialArgs arch;
+      modules =
+        [
+          ./configurations/configuration.nix
+
+          profile
+          fs
+
+          (overlay arch)
+
+          { networking.hostName = hostname; }
+
+          home-manager.nixosModules.home-manager
+          (hmConfig arch)
+        ]
+        ++ extraModules;
+    };
+in
 {
-  ### Theses entry is imported by nixosConfiguration (when i split flake.nix)
+  ### --- Physical machines ---
 
   # HP-probook
-  hp-probook = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/hp-probook-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/luks-btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "HP-probook"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  hp-probook = mkMachine {
+    hostname = "HP-probook";
+    profile = ./profiles/hp-probook-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs;
   };
 
   # HP-240
-  hp-240 = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/hp-240-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "UTILISA-0SK6G4E"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  hp-240 = mkMachine {
+    hostname = "UTILISA-0SK6G4E";
+    profile = ./profiles/hp-240-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
+
+  ### --- Desktop VMs (EFI) ---
 
   # VM preset (desktop efi)
-  vm-desktop-efi = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-desktop-efi-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-desktop"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  vm-desktop-efi = mkMachine {
+    hostname = "nixos-kvm-desktop";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
 
-  # VM preset (desktop efi)
-  vm-desktop-efi-luks = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-desktop-efi-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-desktop"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  # VM preset (desktop efi) (LUKS encrypted)
+  vm-desktop-efi-luks = mkMachine {
+    hostname = "nixos-kvm-desktop";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix;
   };
+
+  ### --- Desktop VMs (BIOS) ---
 
   # VM preset (desktop bios)
-  vm-desktop-bios = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-desktop-bios-novio-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-desktop-bios"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  vm-desktop-bios = mkMachine {
+    hostname = "nixos-kvm-desktop-bios";
+    profile = ./profiles/vm-desktop-bios-novio-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
 
   # VM preset (desktop bios (no virtio disk))
-  vm-desktop-bios-virtio = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-desktop-bios-vio-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerDesktopConfig defaultArch)
-    ];
+  vm-desktop-bios-virtio = mkMachine {
+    hostname = "nixos-kvm-desktop-bios-virtio";
+    profile = ./profiles/vm-desktop-bios-vio-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
 
+  ### --- Headless / server VMs ---
+
   # VM preset (CLI efi)
-  vm-no-gui-efi = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-no-gui-efi-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-srv"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerServerConfig defaultArch)
-
-      ### Add wrapper expression module
+  vm-no-gui-efi = mkMachine {
+    hostname = "nixos-kvm-srv";
+    profile = ./profiles/vm-no-gui-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    homeManagerType = "server";
+    ### Add wrapper expression module
+    extraModules = [
       (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
         extraModules = [
           #./configurations/configs/specific/vm/guest/nextcloud.nix
@@ -201,53 +113,18 @@
   };
 
   # VM preset (CLI bios)
-  vm-no-gui-bios = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-no-gui-bios-novio-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-srv-bios"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerServerConfig defaultArch)
-    ];
+  vm-no-gui-bios = mkMachine {
+    hostname = "nixos-kvm-srv-bios";
+    profile = ./profiles/vm-no-gui-bios-novio-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    homeManagerType = "server";
   };
 
   # VM preset (CLI bios (no virtio disk))
-  vm-no-gui-bios-virtio = lib.nixosSystem {
-    system = defaultArch;
-    ### Inject pkgs attr with options
-    pkgs = pkgsFor defaultArch;
-    specialArgs = specialArgs defaultArch;
-    modules = [
-      ./configurations/configuration.nix
-      ./profiles/vm-no-gui-bios-vio-profile.nix
-
-      ### Import fs configuration
-      ./configurations/hardware-configuration/filesystem/btrfs
-
-      ### Global overlay settings
-      (overlay defaultArch)
-
-      ### Hostname config
-      { networking.hostName = "nixos-kvm-desktop-bios-virtio"; }
-
-      ### Home-manager module
-      home-manager.nixosModules.home-manager
-      (homeManagerServerConfig defaultArch)
-    ];
+  vm-no-gui-bios-virtio = mkMachine {
+    hostname = "nixos-kvm-desktop-bios-virtio";
+    profile = ./profiles/vm-no-gui-bios-vio-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    homeManagerType = "server";
   };
-
 }

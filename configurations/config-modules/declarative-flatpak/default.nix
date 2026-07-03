@@ -11,23 +11,18 @@
   ### Import nix-flatpak like an expression
   imports = [ inputs.declarative-flatpak.nixosModules.default ];
 
-  ### Declarative flatpak settings (add condition for some settings if games/flatpak is enable)
-  services.flatpak = {
-    enable = lib.mkDefault true;
-    remotes = lib.mkDefault {
+  ### Declarative flatpak settings (only enable when GNOME is active)
+  services.flatpak = lib.mkIf config.services.desktopManager.gnome.enable {
+    enable = true;
+    remotes = {
       "flathub" = "https://flathub.org/repo/flathub.flatpakrepo";
     };
     packages = [
-      ### Argument order (to see commit, do "flatpak info software")
-      ### Search package with this command (for all used info)
-      # {remote}:{type}/{ref}/[{arch}]/{branch}[:{commit}]
-
       "flathub:app/io.github.shiftey.Desktop//stable"
       "flathub:app/it.mijorus.gearlever//stable"
       "flathub:app/com.github.tchx84.Flatseal//stable"
       "flathub:app/io.github.qwersyk.Newelle//stable"
       #"flathub:app/it.mq1.TinyWiiBackupManager//stable"
-      #"com.usebottles.bottles"
     ];
   };
 }
