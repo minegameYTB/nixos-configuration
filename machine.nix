@@ -27,12 +27,27 @@ let
   ###   usePatched      : if true, use pkgsPatched (with custom nixpkgs patches) instead of pkgsFor
   ###   extraModules    : list of additional NixOS modules to inject
   ###
+  ### Available filesystem configs:
+  ###   ./configurations/hardware-configuration/filesystem/btrfs          — EFI/BIOS btrfs
+  ###   ./configurations/hardware-configuration/filesystem/luks-btrfs     — EFI LUKS + btrfs
+  ###   ./configurations/hardware-configuration/filesystem/zfs            — EFI ZFS (zroot)
+  ###   ./configurations/hardware-configuration/filesystem/luks-zfs       — EFI LUKS + ZFS
+  ###
+  ### Install with: sudo ./install.sh  (prompts for filesystem choice)
+  ###
   ### Examples:
-  ###   Standard desktop machine:
+  ###   Standard desktop (btrfs):
   ###     mkMachine {
   ###       hostname = "my-machine";
   ###       profile  = ./profiles/my-profile.nix;
   ###       fs       = ./configurations/hardware-configuration/filesystem/btrfs;
+  ###     }
+  ###
+  ###   ZFS encrypted machine:
+  ###     mkMachine {
+  ###       hostname = "my-zfs-box";
+  ###       profile  = ./profiles/my-profile.nix;
+  ###       fs       = ./configurations/hardware-configuration/filesystem/luks-zfs;
   ###     }
   ###
   ###   Server on aarch64 with a custom nixpkgs patch:
@@ -100,13 +115,6 @@ in
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
 
-  # VM preset (desktop efi) (LUKS encrypted)
-  vm-desktop-efi-luks = mkMachine {
-    hostname = "nixos-kvm-desktop";
-    profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix;
-  };
-
   ### --- Desktop VMs (BIOS) ---
 
   # VM preset (desktop bios)
@@ -155,5 +163,28 @@ in
     profile = ./profiles/vm-no-gui-bios-vio-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
     homeManagerType = "server";
+  };
+
+  ### --- Test VMs ---
+
+  # VM preset (desktop efi LUKS btrfs)
+  vm-desktop-efi-luks = mkMachine {
+    hostname = "nixos-kvm-desktop";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix;
+  };
+
+  # VM preset (desktop efi ZFS)
+  vm-desktop-efi-zfs = mkMachine {
+    hostname = "nixos-kvm-desktop-zfs";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/zfs;
+  };
+
+  # VM preset (desktop efi LUKS+ZFS)
+  vm-desktop-efi-luks-zfs = mkMachine {
+    hostname = "nixos-kvm-desktop-zfs";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/luks-zfs;
   };
 }

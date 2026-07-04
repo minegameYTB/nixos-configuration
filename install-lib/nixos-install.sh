@@ -72,6 +72,10 @@ setupTempSwap() {
   if [[ "$mountFs" == "btrfs" ]]; then
     # btrfs mkswapfile handles COW disable + mkswap in one step (btrfs-progs >= 6.1)
     run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
+  elif [[ "$mountFs" == "zfs" ]]; then
+    warn "ZFS does not support swapfiles — skipping temporary swap"
+    warn "If you run out of memory during install, set FORCE_SWAP=0 and ensure enough RAM"
+    return 1
   else
     run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
     run_command chmod 600 "$swapFile"
@@ -199,6 +203,7 @@ nixosInstallFn() {
     sizeDisk="$(checkpoint_get     "VAR_SIZE")"
     nixosProfile="$(checkpoint_get "VAR_PROFILE")"
     diskoFile="$(checkpoint_get    "VAR_DISKO_FILE")"
+    diskoFs="$(checkpoint_get       "VAR_DISKO_FS")"
     diskoEncrypted="$(checkpoint_get "VAR_DISKO_ENCRYPTED")"
     keyFile="$(checkpoint_get      "VAR_KEY_FILE")"
     addPassphrase="$(checkpoint_get "VAR_ADD_PASSPHRASE")"
@@ -217,19 +222,30 @@ nixosInstallFn() {
     # Initialise diskoEncrypted to a safe default before the UEFI/BIOS branch
     # so it is never unset when referenced later (guards against set -u).
     diskoEncrypted="N"
+    diskoFs="btrfs"
 
     if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
-      echo "UEFI boot detected — using disko-efi-btrfs configuration"
+      echo "UEFI boot detected"
+
+      read -r -p "Filesystem — [b]trfs or [z]fs? [B/z]: " fsChoice
+      fsChoice="${fsChoice:-B}"
+      if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
+        diskoFs="zfs"
+        echo "Using ZFS filesystem"
+      else
+        diskoFs="btrfs"
+        echo "Using btrfs filesystem"
+      fi
 
       read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
       diskoEncrypted="${diskoEncrypted:-N}"
 
       if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix"
-        echo "Using encrypted LUKS configuration"
+        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-${diskoFs}.nix"
+        echo "Using encrypted LUKS configuration (${diskoFs})"
       else
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-btrfs.nix"
-        echo "Using standard (non-encrypted) configuration"
+        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-${diskoFs}.nix"
+        echo "Using standard (non-encrypted) configuration (${diskoFs})"
       fi
     else
       echo "BIOS boot detected — using disko-bios-btrfs configuration"
@@ -259,7 +275,8 @@ nixosInstallFn() {
     checkpoint_set "VAR_SIZE"            "$sizeDisk"
     checkpoint_set "VAR_PROFILE"         "$nixosProfile"
     checkpoint_set "VAR_DISKO_FILE"      "$diskoFile"
-    checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
+      checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
+      checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
 
     checkpoint_done "STEP_INTERACTIVE_SETUP"
   fi
