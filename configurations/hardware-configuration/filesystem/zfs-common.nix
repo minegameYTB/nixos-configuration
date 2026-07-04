@@ -29,6 +29,10 @@
       else pkgs.zfs
     );
     forceImportRoot = false;
+    ### Use /dev/disk/by-partuuid instead of default /dev/disk/by-id
+    ### because by-id is often empty in VM initrd (virtio disks lack serial/WWN),
+    ### while by-partuuid works on both VMs (GPT partitions) and real hardware.
+    devNodes = "/dev/disk/by-partuuid";
   };
 
   ### ZFS auto-scrub
