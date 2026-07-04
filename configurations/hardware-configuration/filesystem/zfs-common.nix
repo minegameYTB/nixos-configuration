@@ -1,28 +1,35 @@
 { config, lib, pkgs, ... }:
 
 {
-  ### Enable ZFS support
+  ### ZFS support at boot level
   boot.supportedFilesystems = {
     zfs = true;
   };
+
+  ### Kernel parameters tuning ZFS behaviour
   boot.kernelParams = [
     "nohibernate"
+
     ### 2 GiB max ARC (default, conservative for all RAM sizes)
     ### Calcul: 2 * 1024 * 1024 * 1024 = 2147483648
     "zfs.zfs_arc_max=2147483648"
+
     ### Explicit hostId for initrd (avoids hostId mismatch with pool label)
     "spl.spl_hostid=0xb08dfa60"
+
     ### Reduce device timeout (VM firmware is slow)
     "systemd.device-timeout=30"
+
     ### Alternative for high-RAM machines (4 GiB):
     ### 4 * 1024 * 1024 * 1024 = 4294967296
     #"zfs.zfs_arc_max=4294967296"
   ];
 
-  ### ZFS requires a unique hostId (first 8 chars of machine-id from hardening.nix)
+  ### Unique hostId required by ZFS
+  ### (first 8 chars of machine-id from hardening.nix)
   networking.hostId = lib.mkDefault "b08dfa60";
 
-  ### Use CachyOS-patched ZFS (available in cachyosKernels kernel packages)
+  ### ZFS package: prefer CachyOS-patched version when available
   ### Falls back to upstream ZFS for non-CachyOS kernels
   boot.zfs = {
     package = lib.mkDefault (
@@ -30,20 +37,23 @@
       then config.boot.kernelPackages.zfs_cachyos
       else pkgs.zfs
     );
+
+    ### Safe mode — never force import (manual intervention required)
     forceImportRoot = false;
+
     ### Use /dev/disk/by-partuuid instead of default /dev/disk/by-id
     ### because by-id is often empty in VM initrd (virtio disks lack serial/WWN),
     ### while by-partuuid works on both VMs (GPT partitions) and real hardware.
     devNodes = "/dev/disk/by-partuuid";
   };
 
-  ### ZFS auto-scrub
+  ### Monthly ZFS pool scrub
   services.zfs.autoScrub = {
     enable = true;
     interval = "monthly";
   };
 
-  ### ZFS auto-trim
+  ### Monthly ZFS TRIM (SSD optimisation)
   services.zfs.trim = {
     enable = true;
     interval = "monthly";
