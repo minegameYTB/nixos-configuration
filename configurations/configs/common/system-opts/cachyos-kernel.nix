@@ -127,14 +127,13 @@
     ];
   };
 
-  ### Add substituer from CachyOS 3th part source (binary)
+  ### Add substituer from CachyOS 3rd part source (binary)
   nix.settings = {
-    substituters = [
+    extra-substituters = [
       "https://attic.xuyh0120.win/lantian"
     ];
-    trusted-public-keys = [
+    extra-trusted-public-keys = [
       "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
     ];
-
   };
 }

@@ -108,6 +108,13 @@
               compression = "zstd";
             };
           };
+          "swap" = {
+            type = "zfs_volume";
+            size = "8G";
+            content = {
+              type = "swap";
+            };
+          };
           "reserved" = {
             type = "zfs_fs";
             options = {

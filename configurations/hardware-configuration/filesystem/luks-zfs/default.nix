@@ -7,6 +7,11 @@
 {
   imports = [ ../zfs-common.nix ];
 
+  ### Persistent swap zvol (created by disko)
+  swapDevices = [
+    { device = "/dev/zvol/zroot/swap"; }
+  ];
+
   ### LUKS initrd setup for encrypted ZFS
   boot.initrd.kernelModules = [
     "mmc_block"

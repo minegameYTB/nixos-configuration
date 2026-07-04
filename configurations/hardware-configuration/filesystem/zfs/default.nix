@@ -8,6 +8,11 @@
 {
   imports = [ ../zfs-common.nix ];
 
+  ### Persistent swap zvol (created by disko)
+  swapDevices = [
+    { device = "/dev/zvol/zroot/swap"; }
+  ];
+
   ### Disko-generated mountpoints (zroot datasets)
   fileSystems."/" = {
     device = "zroot/ROOT/nixos";
