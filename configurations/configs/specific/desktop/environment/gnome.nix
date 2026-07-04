@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  users,
   ...
 }:
 
@@ -18,6 +19,12 @@
 
   # Default session for GDM (required for autologin to work)
   services.displayManager.defaultSession = "gnome";
+
+  ### Autologin
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = lib.head users;
+  };
 
   ### KDE connect integration
   programs.kdeconnect = {
