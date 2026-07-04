@@ -67,6 +67,80 @@ run_command() {
 }
 
 # ---------------------------------------------------------------------------
+# Flag parsing & usage
+# ---------------------------------------------------------------------------
+
+# Central help text — add new flags here AND in the case below.
+showUsage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTION]...
+
+Options:
+  --dont-check  Skip the git repository version check
+  --help, -h    Show this help message and exit
+EOF
+}
+
+# Parse all known flags from "$@" and set globals accordingly.
+# Add new flags here (case branch) AND in showUsage() above.
+# shellcheck disable=SC2034 # SKIP_VERSION_CHECK is set here, read by install.sh
+parseFlags() {
+  while (( $# )); do
+    case "$1" in
+      --dont-check) SKIP_VERSION_CHECK=1 ;;
+      --help|-h)    showUsage; exit 0 ;;
+      *)
+        echo "Unknown flag: $1"
+        showUsage
+        exit 1
+        ;;
+    esac
+    shift
+  done
+}
+
+# ---------------------------------------------------------------------------
+# Version check
+# ---------------------------------------------------------------------------
+
+# Check whether the local repo has uncommitted changes or is behind its
+# upstream branch.  Warn the user so they don't install from a stale state.
+checkRepoVersion() {
+  local repoRoot
+  repoRoot="$(git rev-parse --show-toplevel 2>/dev/null)" || return 0
+
+  local dirty=0 behind_count=0
+
+  # ── uncommitted changes ───────────────────────────────────────────────────
+  if ! git -C "$repoRoot" diff --quiet 2>/dev/null; then
+    dirty=1
+    warn "You have uncommitted changes in ${repoRoot}"
+  fi
+
+  # ── behind upstream ───────────────────────────────────────────────────────
+  if git -C "$repoRoot" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' &>/dev/null; then
+    git -C "$repoRoot" fetch --quiet 2>/dev/null || true
+    behind_count=$(git -C "$repoRoot" rev-list --count 'HEAD..@{upstream}' 2>/dev/null || echo 0)
+    if (( behind_count > 0 )); then
+      warn "Local branch is ${behind_count} commit(s) behind upstream — consider pulling first"
+    fi
+  fi
+
+  # ── prompt ────────────────────────────────────────────────────────────────
+  if (( dirty || behind_count > 0 )); then
+    echo ""
+    read -r -p "Continue anyway? [y/N]: " _cont
+    _cont="${_cont:-N}"
+    if ! [[ "$_cont" =~ ^[yY]$ ]]; then
+      info "Aborted by user"
+      exit 0
+    fi
+  else
+    info "Repository is up to date"
+  fi
+}
+
+# ---------------------------------------------------------------------------
 # Username helper
 # ---------------------------------------------------------------------------
 
