@@ -16,6 +16,9 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  # Default session for GDM (required for autologin to work)
+  services.displayManager.defaultSession = "gnome";
+
   ### KDE connect integration
   programs.kdeconnect = {
     enable = true;
