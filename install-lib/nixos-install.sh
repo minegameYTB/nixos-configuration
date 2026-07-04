@@ -94,17 +94,15 @@ setupTempSwap() {
 }
 
 # Deactivate and delete the temporary swap (file or zvol).
-# No-op when nothing was set up.
+# No-op when nothing was set up.  Resilient to ^C (dataset busy).
 teardownTempSwap() {
   if [[ -n "${swapFile:-}" && -f "${swapFile}" ]]; then
-    info "Removing temporary swap file: ${swapFile}"
-    run_command swapoff "$swapFile"
-    run_command rm -f "$swapFile"
+    swapoff "$swapFile" 2>/dev/null || true
+    rm -f "$swapFile" 2>/dev/null || true
   fi
   if [[ -n "${swapZvol:-}" ]] && zfs list -H "$swapZvol" &>/dev/null; then
-    info "Removing temporary swap zvol: ${swapZvol}"
-    run_command swapoff "/dev/zvol/$swapZvol"
-    run_command zfs destroy "$swapZvol"
+    swapoff "/dev/zvol/$swapZvol" 2>/dev/null || true
+    zfs destroy "$swapZvol" 2>/dev/null || true
   fi
 }
 
