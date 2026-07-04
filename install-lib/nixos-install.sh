@@ -361,6 +361,11 @@ nixosInstallFn() {
     fi
   fi
 
+  # --- Reactivate persistent swap ------------------------------------------
+  # zroot/swap (from disko) may have been swapped off by ^C → trap.
+  # Always reactivate it regardless of needSwap — it exists after STEP_PARTITION.
+  swapon "/dev/zvol/zroot/swap" 2>/dev/null || true
+
   # --- Step: temporary swap ------------------------------------------------
   # Created on /mnt (now mounted by disko) when RAM is below the threshold.
   # nixos-install can be memory-hungry during flake evaluation.
