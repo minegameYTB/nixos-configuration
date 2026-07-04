@@ -32,8 +32,8 @@
       "vm.dirty_writeback_centisecs" = 1500;
     };
   };
-  ### Mesa
-  hardware.graphics = {
+  ### Mesa (Intel GPU packages are x86_64 only)
+  hardware.graphics = lib.mkIf pkgs.stdenvNoCC.hostPlatform.isx86_64 {
     extraPackages = with pkgs; [
       intel-gpu-tools
       intel-media-driver

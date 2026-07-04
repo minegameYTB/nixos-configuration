@@ -37,10 +37,8 @@
         [
           # GUI Packages (only if X11 is enabled)
           gparted
-          onlyoffice-desktopeditors
           rpi-imager
           easyeffects
-          upscayl
 
           ### Chromium based browser
           vivaldi
@@ -49,6 +47,11 @@
           # Ghostty
           #ghostty.packages.${pkgs.stdenvNoCC.hostPlatform.system}.default
           ghostty
+        ]
+        ### x86_64 only GUI packages
+        ++ lib.optionals pkgs.stdenvNoCC.hostPlatform.isx86_64 [
+          onlyoffice-desktopeditors
+          upscayl
         ]
       )
       ++ (with pkgs.pkgsUnstable; [
