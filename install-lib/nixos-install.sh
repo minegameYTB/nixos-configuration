@@ -77,7 +77,7 @@ setupTempSwap() {
     run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
     run_command swapon "$swapFile"
   elif [[ "$mountFs" == "zfs" ]]; then
-    run_command zfs create -V "${swapSizeMiB}M" -b 4096 "$swapZvol"
+    run_command zfs create -V "${swapSizeMiB}M" -o volblocksize=4096 "$swapZvol"
     run_command udevadm settle
     run_command mkswap "/dev/zvol/$swapZvol"
     run_command swapon "/dev/zvol/$swapZvol"
