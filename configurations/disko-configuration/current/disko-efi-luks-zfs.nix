@@ -59,6 +59,10 @@
             options = {
               mountpoint = "none";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "ROOT/nixos" = {
@@ -67,6 +71,10 @@
             options = {
               mountpoint = "legacy";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "home" = {
@@ -75,6 +83,10 @@
             options = {
               mountpoint = "legacy";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "nix" = {
@@ -83,6 +95,10 @@
             options = {
               mountpoint = "legacy";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              primarycache = "metadata";
             };
           };
           "var" = {
@@ -90,6 +106,10 @@
             options = {
               mountpoint = "none";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "var/log" = {
@@ -98,6 +118,10 @@
             options = {
               mountpoint = "legacy";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "var/cache" = {
@@ -106,6 +130,10 @@
             options = {
               mountpoint = "legacy";
               compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
           "swap" = {
@@ -123,6 +151,10 @@
             options = {
               mountpoint = "none";
               refreservation = "10G";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
             };
           };
         };
