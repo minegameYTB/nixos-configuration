@@ -120,6 +120,50 @@ test_swap_type zfs   zvol
 test_swap_type ext4  fallocate
 
 echo
+echo -e "${CYAN}Swap cleanup functions${RESET}"
+
+test_swap_cleanup() {
+  if grep -q "^deactivateSwap()" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "deactivateSwap function exists"
+  else
+    fail "deactivateSwap missing"
+  fi
+  if grep -q "^destroyTempSwap()" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "destroyTempSwap function exists"
+  else
+    fail "destroyTempSwap missing"
+  fi
+  if grep -q "swapoff.*zroot/swap" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "deactivateSwap covers persistent zvol (zroot/swap)"
+  else
+    fail "deactivateSwap does not cover persistent zvol"
+  fi
+  if grep -q "volblocksize=16384" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "Temp swap zvol uses volblocksize=16384"
+  else
+    fail "Temp swap zvol volblocksize not 16384"
+  fi
+  if grep -q "rm -f.*swapFile.*2>/dev/null || true" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "setupTempSwap cleans up pre-existing temp file"
+  else
+    fail "setupTempSwap does not clean pre-existing temp file"
+  fi
+  if grep -q "zfs destroy.*swapZvol" "$SCRIPT_DIR/install-lib/nixos-install.sh" && \
+     grep -q "rm -f.*swapFile" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "setupTempSwap cleans up pre-existing zvol before creation"
+  else
+    fail "setupTempSwap does not clean pre-existing zvol"
+  fi
+  if grep -q "command -v btrfs" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "setupTempSwap checks btrfs command availability"
+  else
+    fail "setupTempSwap does not check btrfs command"
+  fi
+}
+
+test_swap_cleanup
+
+echo
 echo -e "${CYAN}ZFS ARC tuning${RESET}"
 
 test_arc_tuning() {
@@ -172,6 +216,40 @@ test_checkpoint_var VAR_DISKO_FS
 test_checkpoint_var VAR_DISKO_FILE
 test_checkpoint_var VAR_DISKO_ENCRYPTED
 test_checkpoint_var VAR_PROFILE
+
+echo
+echo -e "${CYAN}Flag parsing / version check${RESET}"
+
+test_flag_parsing() {
+  if grep -q "^parseFlags()" "$SCRIPT_DIR/install-lib/lib.sh"; then
+    ok "parseFlags function exists in lib.sh"
+  else
+    fail "parseFlags missing in lib.sh"
+  fi
+  if grep -q "parseFlags \"\$@\"" "$SCRIPT_DIR/install.sh"; then
+    ok "install.sh calls parseFlags"
+  else
+    fail "install.sh does not call parseFlags"
+  fi
+  if grep -q "^checkRepoVersion()" "$SCRIPT_DIR/install-lib/lib.sh"; then
+    ok "checkRepoVersion function exists"
+  else
+    fail "checkRepoVersion missing"
+  fi
+  if grep -q "checkRepoVersion" "$SCRIPT_DIR/install.sh"; then
+    ok "install.sh calls checkRepoVersion"
+  else
+    fail "install.sh does not call checkRepoVersion"
+  fi
+  if grep -q "SKIP_VERSION_CHECK" "$SCRIPT_DIR/install-lib/lib.sh" && \
+     grep -q "SKIP_VERSION_CHECK" "$SCRIPT_DIR/install.sh"; then
+    ok "SKIP_VERSION_CHECK variable is shared between lib.sh and install.sh"
+  else
+    fail "SKIP_VERSION_CHECK not properly shared"
+  fi
+}
+
+test_flag_parsing
 
 echo
 # ---------------------------------------------------------------------------

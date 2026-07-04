@@ -71,9 +71,20 @@ setupTempSwap() {
     return 1
   fi
 
+  # Remove any stale temp swap from a prior failed run (file or zvol)
+  rm -f "$swapFile" 2>/dev/null || true
+  if zfs list -H "$swapZvol" &>/dev/null; then
+    swapoff "/dev/zvol/$swapZvol" 2>/dev/null || true
+    zfs destroy "$swapZvol" 2>/dev/null || true
+  fi
+
   info "Filesystem on /mnt: ${mountFs} — creating ${swapSizeMiB} MiB swap"
 
   if [[ "$mountFs" == "btrfs" ]]; then
+    if ! command -v btrfs &>/dev/null; then
+      warn "btrfs command not found — cannot create swapfile, skipping"
+      return 1
+    fi
     run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
     run_command swapon "$swapFile"
   elif [[ "$mountFs" == "zfs" ]]; then
@@ -93,16 +104,24 @@ setupTempSwap() {
   info "Swap activated — active swap: ${swapTotal}"
 }
 
-# Deactivate and delete the temporary swap (file or zvol).
-# No-op when nothing was set up.  Resilient to ^C (dataset busy).
-teardownTempSwap() {
-  if [[ -n "${swapFile:-}" && -f "${swapFile}" ]]; then
-    swapoff "$swapFile" 2>/dev/null || true
-    rm -f "$swapFile" 2>/dev/null || true
+# swapoff all known swap devices (persistent zvol + temp file / zvol).
+# Always safe — does not destroy anything.
+# Used by EXIT trap (resilient to ^C).
+deactivateSwap() {
+  swapoff "/dev/zvol/zroot/swap"         2>/dev/null || true
+  swapoff "/dev/zvol/zroot/swap-install" 2>/dev/null || true
+  swapoff "/mnt/.swapfile-install"       2>/dev/null || true
+}
+
+# Destroy only the temporary swap devices (file + temp zvol).
+# Only acts on devices that exist and are not persistent.
+# Called after deactivateSwap, before nixos-enter.
+destroyTempSwap() {
+  if [[ -f "/mnt/.swapfile-install" ]]; then
+    rm -f "/mnt/.swapfile-install" 2>/dev/null || true
   fi
-  if [[ -n "${swapZvol:-}" ]] && zfs list -H "$swapZvol" &>/dev/null; then
-    swapoff "/dev/zvol/$swapZvol" 2>/dev/null || true
-    zfs destroy "$swapZvol" 2>/dev/null || true
+  if zfs list -H "zroot/swap-install" &>/dev/null; then
+    zfs destroy "zroot/swap-install" 2>/dev/null || true
   fi
 }
 
@@ -187,7 +206,7 @@ addLuksPassphrase() {
 
 nixosInstallFn() {
   sleep 1
-  trap 'teardownTempSwap' EXIT
+  trap 'deactivateSwap' EXIT
 
   # --- Root check (must happen before anything else) ----------------------
   if [[ $EUID -ne 0 ]]; then
@@ -368,9 +387,9 @@ nixosInstallFn() {
     checkpoint_done "STEP_NIXOS_INSTALL"
   fi
 
-  # Always attempt swap teardown — idempotent, safe to call even if swap was
-  # not set up (the function checks for the file before acting).
-  teardownTempSwap
+  # Deactivate all swap, then destroy only the temporary devices.
+  deactivateSwap
+  destroyTempSwap
 
   # --- Step: user password -------------------------------------------------
   if ! checkpoint_skip "STEP_PASSWORD"; then
