@@ -9,18 +9,18 @@
 ### autocomplete with inputs in early step here to avoid repeat "inputs.[...].args"
 with inputs;
 {
-  nixpkgs.overlays = [
-    ### Kernel
-    nix-cachyos-kernel.overlays.pinned
-
-    ### For GLFOS-APPS
-    glfOS-modules.overlays.default
-
+  nixpkgs.overlays =
     ### Extend pkgs with nur namespace
-    nur.overlays.default
+    [ nur.overlays.default ]
+
+    ### CachyOS kernel & glfOS apps (x86_64 only)
+    ++ lib.optionals (system == "x86_64-linux") [
+      nix-cachyos-kernel.overlays.pinned
+      glfOS-modules.overlays.default
+    ]
 
     ### Custom extend of pkgs or replacing pkgs by other
-    (self: super: rec {
+    ++ [ (self: super: rec {
       #nur = import inputs.nur {
       #  nurpkgs = pkgsUnstable;
       #  pkgs = pkgsUnstable;
@@ -49,6 +49,5 @@ with inputs;
       ### Replace packages here
       ### Force use gh from unstable (on system level)
       #gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
-    })
-  ];
+    }) ];
 }

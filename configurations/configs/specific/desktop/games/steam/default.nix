@@ -1,12 +1,13 @@
 {
+  lib,
   config,
   pkgs,
   ...
 }:
 
 {
-  ### Steam (already provide steam-run (unfree))
-  programs.steam = {
+  ### Steam (already provide steam-run (unfree)) (x86_64 only)
+  programs.steam = lib.mkIf pkgs.stdenvNoCC.hostPlatform.isx86_64 {
     enable = true;
     package = pkgs.steam.override {
       extraLibraries =
