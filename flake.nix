@@ -247,8 +247,8 @@
 
     in
     {
-      ### Formatter
-      formatter.x86_64-linux = nixpkgs-main.legacyPackages.x86_64-linux.nixfmt-tree;
+      ### Formatter (unified for all architectures)
+      formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
       ### Import NixOS configurtion in a file called machine.nix (with needed argument defined as a funtion in "let [...] in" section)
       nixosConfigurations = import ./machine.nix {
