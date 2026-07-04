@@ -5,7 +5,10 @@
   boot.supportedFilesystems = {
     zfs = true;
   };
-  boot.kernelParams = [ "nohibernate" ];
+  boot.kernelParams = [
+    "nohibernate"
+    "zfs.zfs_arc_max=4294967296"  ### 4 GiB max ARC
+  ];
 
   ### ZFS requires a unique hostId (first 8 chars of machine-id from hardening.nix)
   networking.hostId = lib.mkDefault "b08dfa60";

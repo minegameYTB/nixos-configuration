@@ -108,6 +108,13 @@
               compression = "zstd";
             };
           };
+          "reserved" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              refreservation = "10G";
+            };
+          };
         };
       };
     };
