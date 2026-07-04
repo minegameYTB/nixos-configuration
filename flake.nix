@@ -153,8 +153,8 @@
           patches = [
             (builtins.fetchurl {
               ### Add ".patch" to get this link for a PR
-              url = "https://github.com/NixOS/nixpkgs/commit/3b4a0798b7c01d90ef25015e2dbdb47fe2a83fc2.patch";
-              sha256 = "07hm2y2b39p85a7p8yyyxmidv5jzxxrvj4bl36l3nmq4z2cp5hpj";
+              url = "https://github.com/NixOS/nixpkgs/pull/537215.patch";
+              sha256 = "0q8rzbrch578krfkpr16j9j48pyhd0angypqbb4flgkyzfigg70c";
             })
 
             ### Local patch
