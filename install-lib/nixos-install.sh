@@ -426,6 +426,16 @@ nixosInstallFn() {
     checkpoint_done "STEP_COPY_CONFIG"
   fi
 
+  # --- Step: export ZFS pool (for clean reboot) ---------------------------
+  # The pool was imported by disko during partitioning. If left imported when
+  # the system reboots, the initrd will refuse to import it with
+  # forceImportRoot = false because it appears "busy" from the live CD.
+  if [[ "${diskoFs:-}" == "zfs" ]] && ! checkpoint_skip "STEP_ZFS_EXPORT"; then
+    info "Exporting ZFS pool zroot for clean reboot"
+    zpool export zroot 2>/dev/null || warn "Could not export zroot — continuing anyway"
+    checkpoint_done "STEP_ZFS_EXPORT"
+  fi
+
   # --- All steps completed — clean up state --------------------------------
   checkpoint_clear
   trap - EXIT
