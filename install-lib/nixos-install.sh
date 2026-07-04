@@ -1,6 +1,7 @@
 ### nixos-install.sh — NixOS installation on a bare machine
-### Sourced by install.sh; requires lib.sh to be sourced first.
+### Sourced by install.sh; requires lib.sh (and thus checkpoint.sh / defaults.sh) to be sourced first.
 # shellcheck shell=bash
+# shellcheck disable=SC2154 # nixFlags, nixpkgsRev set by lib.sh sourced earlier
 
 # ---------------------------------------------------------------------------
 # Disk helpers
@@ -54,11 +55,14 @@ detectRam() {
 # Swap helpers
 # ---------------------------------------------------------------------------
 
-# Create a temporary swap file on /mnt (already mounted by disko).
-# btrfs needs btrfs filesystem mkswapfile; all other filesystems use fallocate.
-# Exports: swapFile
+# Create a temporary swap on /mnt (already mounted by disko).
+# - btrfs : uses mkswapfile (handles COW + mkswap in one step)
+# - zfs   : creates a temporary zvol, mkswap + swapon
+# - other : fallocate + mkswap
+# Exports: swapFile (file path) or swapZvol (zvol name)
 setupTempSwap() {
   swapFile="/mnt/.swapfile-install"
+  swapZvol="zroot/swap-install"
   local mountFs
   mountFs=$(findmnt -n -o FSTYPE /mnt 2>/dev/null || true)
 
@@ -67,35 +71,40 @@ setupTempSwap() {
     return 1
   fi
 
-  info "Filesystem on /mnt: ${mountFs} — creating ${swapSizeMiB} MiB swap at ${swapFile}"
+  info "Filesystem on /mnt: ${mountFs} — creating ${swapSizeMiB} MiB swap"
 
   if [[ "$mountFs" == "btrfs" ]]; then
-    # btrfs mkswapfile handles COW disable + mkswap in one step (btrfs-progs >= 6.1)
     run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
+    run_command swapon "$swapFile"
   elif [[ "$mountFs" == "zfs" ]]; then
-    warn "ZFS does not support swapfiles — skipping temporary swap"
-    warn "If you run out of memory during install, set FORCE_SWAP=0 and ensure enough RAM"
-    return 0
+    run_command zfs create -V "${swapSizeMiB}M" -b 4096 "$swapZvol"
+    run_command udevadm settle
+    run_command mkswap "/dev/zvol/$swapZvol"
+    run_command swapon "/dev/zvol/$swapZvol"
   else
     run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
     run_command chmod 600 "$swapFile"
     run_command mkswap "$swapFile"
+    run_command swapon "$swapFile"
   fi
-
-  run_command swapon "$swapFile"
 
   local swapTotal
   swapTotal=$(swapon --show=SIZE --noheadings | tr -d ' ' | paste -sd '+' || true)
   info "Swap activated — active swap: ${swapTotal}"
 }
 
-# Deactivate and delete the temporary swap file.
-# No-op when swapFile is unset or the file no longer exists.
+# Deactivate and delete the temporary swap (file or zvol).
+# No-op when nothing was set up.
 teardownTempSwap() {
   if [[ -n "${swapFile:-}" && -f "${swapFile}" ]]; then
     info "Removing temporary swap file: ${swapFile}"
     run_command swapoff "$swapFile"
     run_command rm -f "$swapFile"
+  fi
+  if [[ -n "${swapZvol:-}" ]] && zfs list -H "$swapZvol" &>/dev/null; then
+    info "Removing temporary swap zvol: ${swapZvol}"
+    run_command swapoff "/dev/zvol/$swapZvol"
+    run_command zfs destroy "$swapZvol"
   fi
 }
 

@@ -103,6 +103,7 @@ checkpoint_resume_prompt() {
     checkpoint_clear
   else
     info "Resuming — completed steps will be skipped automatically"
+    # shellcheck disable=SC2034 # set for caller to detect resume
     RESUMING=1
   fi
 }

@@ -1,10 +1,13 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
-### Run shellcheck on the executable Bash entrypoints in this repository
+### Run shellcheck on the executable Bash files in this repository
 shellcheck -x \
   install.sh \
   build.sh \
+  install-lib/lib.sh \
+  install-lib/checkpoint.sh \
+  install-lib/nixos-install.sh \
   script/update-flake \
   script/mksymlink \
   script/run-deadnix

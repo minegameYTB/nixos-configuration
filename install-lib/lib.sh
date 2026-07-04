@@ -16,6 +16,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/checkpoint.sh"
 # Nix settings
 # ---------------------------------------------------------------------------
 
+# shellcheck disable=SC2034 # used by sourced install scripts
 nixFlags=(--extra-experimental-features "nix-command flakes")
 
 # Read the pinned nixpkgs-main revision from flake.lock, fall back to a known
@@ -32,6 +33,7 @@ fi
 # Disabled when: NO_COLOR is set, TERM=dumb, or stdout is not a terminal.
 # ---------------------------------------------------------------------------
 
+# shellcheck disable=SC2034 # used by sourced install scripts for formatted output
 if [[ -n "${NO_COLOR:-}" ]] || [[ "${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
   BOLD="" RED="" GREEN="" YELLOW="" BLUE="" MAGENTA="" CYAN="" RESET=""
 else
