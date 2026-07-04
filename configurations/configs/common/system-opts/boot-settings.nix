@@ -21,7 +21,7 @@
       ];
     };
     initrd.systemd = {
-      #enable = true; # Now default in NixOS 26.05
+      #enable = true;
       emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
     };
     consoleLogLevel = 0;

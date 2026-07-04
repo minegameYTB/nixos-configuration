@@ -2,7 +2,6 @@
   lib,
   config,
   pkgs,
-  users,
   ...
 }:
 
@@ -17,14 +16,14 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  # Enable gnome-keyring (required for autologin + password management)
+  services.gnome.gnome-keyring.enable = true;
+
+  # Enable pam_gnome_keyring.so in login and gdm-autologin PAM stacks
+  security.pam.services.login.enableGnomeKeyring = true;
+
   # Default session for GDM (required for autologin to work)
   services.displayManager.defaultSession = "gnome";
-
-  ### Autologin
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = lib.head users;
-  };
 
   ### KDE connect integration
   programs.kdeconnect = {
