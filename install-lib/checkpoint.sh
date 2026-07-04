@@ -34,7 +34,7 @@
 # INSTALL_STATE_FILE=/mnt/nixos-install-state
 # ---------------------------------------------------------------------------
 
-STATE_FILE="${INSTALL_STATE_FILE:-/tmp/nixos-install-state}"
+STATE_FILE="${INSTALL_STATE_FILE}"
 
 # Mark a step as successfully completed.
 # Usage: checkpoint_done <step_name>

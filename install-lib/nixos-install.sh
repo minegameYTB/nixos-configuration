@@ -284,8 +284,8 @@ nixosInstallFn() {
     checkpoint_set "VAR_SIZE"            "$sizeDisk"
     checkpoint_set "VAR_PROFILE"         "$nixosProfile"
     checkpoint_set "VAR_DISKO_FILE"      "$diskoFile"
-      checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
-      checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
+    checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
+    checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
 
     checkpoint_done "STEP_INTERACTIVE_SETUP"
   fi
@@ -400,7 +400,7 @@ nixosInstallFn() {
   fi
 
   # --- All steps completed — clean up state --------------------------------
-    checkpoint_clear
-    trap - EXIT
+  checkpoint_clear
+  trap - EXIT
   info "Installation complete! Please reboot to use NixOS."
 }
