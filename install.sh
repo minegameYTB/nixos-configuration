@@ -24,7 +24,7 @@ source "$installLib/hm-standalone-install.sh"
 SKIP_VERSION_CHECK=0
 parseFlags "$@"
 
-echo "$name v1.1"
+echo "$name v2.0"
 sleep 2
 
 # ---------------------------------------------------------------------------
