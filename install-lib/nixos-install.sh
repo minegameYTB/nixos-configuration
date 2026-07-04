@@ -75,7 +75,7 @@ setupTempSwap() {
   elif [[ "$mountFs" == "zfs" ]]; then
     warn "ZFS does not support swapfiles — skipping temporary swap"
     warn "If you run out of memory during install, set FORCE_SWAP=0 and ensure enough RAM"
-    return 1
+    return 0
   else
     run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
     run_command chmod 600 "$swapFile"
