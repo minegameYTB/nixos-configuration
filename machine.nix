@@ -174,14 +174,14 @@ in
     fs = ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix;
   };
 
-  # VM preset (desktop efi ZFS)
+  # VM preset (desktop efi ZFS) — requires at least 16 GiB RAM (8 GiB bare minimum, tight during nixos-rebuild)
   vm-desktop-efi-zfs = mkMachine {
     hostname = "nixos-kvm-desktop-zfs";
     profile = ./profiles/vm-desktop-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
   };
 
-  # VM preset (desktop efi LUKS+ZFS)
+  # VM preset (desktop efi LUKS+ZFS) — requires at least 16 GiB RAM
   vm-desktop-efi-luks-zfs = mkMachine {
     hostname = "nixos-kvm-desktop-zfs";
     profile = ./profiles/vm-desktop-efi-profile.nix;

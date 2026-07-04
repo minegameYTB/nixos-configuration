@@ -193,6 +193,8 @@ ZFS_ARC_MAX_GiB=4 sudo ./install.sh
 
 After installation, the system ARC is configured via `kernelParams` in `zfs-common.nix` (default 2 GiB on the installed system as well).
 
+> **RAM note:** ZFS with ARC eats 2 GiB before anything else runs. For a comfortable `nixos-rebuild` experience, **16 GiB RAM is recommended**. 8 GiB is the bare minimum but may be tight (reduce ARC with `ZFS_ARC_MAX_GiB=1` during install).
+
 ---
 
 ## Home Manager standalone path
