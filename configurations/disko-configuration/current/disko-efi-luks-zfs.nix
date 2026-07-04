@@ -111,6 +111,9 @@
           "swap" = {
             type = "zfs_volume";
             size = "8G";
+            options = {
+              volblocksize = "16384";
+            };
             content = {
               type = "swap";
             };
