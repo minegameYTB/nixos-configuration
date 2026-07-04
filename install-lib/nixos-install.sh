@@ -366,8 +366,12 @@ nixosInstallFn() {
   # nixos-install can be memory-hungry during flake evaluation.
   if (( needSwap )); then
     if checkpoint_skip "STEP_SWAP"; then
-      # Check if the swap device (file or zvol) still exists
-      if [[ ! -f "/mnt/.swapfile-install" ]] && ! zfs list -H "zroot/swap-install" &>/dev/null; then
+      # Reactivate if the device still exists (was swapped off by ^C → trap)
+      if [[ -f "/mnt/.swapfile-install" ]]; then
+        swapon "/mnt/.swapfile-install" 2>/dev/null || true
+      elif zfs list -H "zroot/swap-install" &>/dev/null; then
+        swapon "/dev/zvol/zroot/swap-install" 2>/dev/null || true
+      else
         info "Temporary swap was removed during the previous session — recreating it"
         setupTempSwap
       fi
