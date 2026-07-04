@@ -45,36 +45,57 @@
         datasets = {
           "ROOT" = {
             type = "zfs_fs";
-            options.mountpoint = "none";
+            options = {
+              mountpoint = "none";
+              compression = "zstd";
+            };
           };
           "ROOT/nixos" = {
             type = "zfs_fs";
             mountpoint = "/";
-            options.mountpoint = "legacy";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+            };
           };
           "home" = {
             type = "zfs_fs";
             mountpoint = "/home";
-            options.mountpoint = "legacy";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+            };
           };
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options.mountpoint = "legacy";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+            };
           };
           "var" = {
             type = "zfs_fs";
-            options.mountpoint = "none";
+            options = {
+              mountpoint = "none";
+              compression = "zstd";
+            };
           };
           "var/log" = {
             type = "zfs_fs";
             mountpoint = "/var/log";
-            options.mountpoint = "legacy";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+            };
           };
           "var/cache" = {
             type = "zfs_fs";
             mountpoint = "/var/cache";
-            options.mountpoint = "legacy";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+            };
           };
         };
       };
