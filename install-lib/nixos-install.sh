@@ -320,6 +320,22 @@ nixosInstallFn() {
     checkpoint_done "STEP_PARTITION"
   fi
 
+  # --- Step: ZFS tuning (after pool import) ---------------------------------
+  # Restrict ARC to 2 GiB by default so the live environment doesn't eat all RAM.
+  # Override with ZFS_ARC_MAX_GiB environment variable (in GiB), e.g.:
+  #   ZFS_ARC_MAX_GiB=4 ./install.sh   # 4 GiB ARC
+  if [[ "${diskoFs:-}" == "zfs" ]] && ! checkpoint_skip "STEP_ZFS_TUNE"; then
+    local arcMaxGiB=${ZFS_ARC_MAX_GiB:-2}
+    local arcMax=$(( arcMaxGiB * 1073741824 ))
+    if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
+      info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
+      echo "$arcMax" > /sys/module/zfs/parameters/zfs_arc_max
+    else
+      warn "Cannot tune ZFS ARC — /sys/module/zfs/parameters/zfs_arc_max not writable"
+    fi
+    checkpoint_done "STEP_ZFS_TUNE"
+  fi
+
   # --- Step: optional LUKS passphrase slot ---------------------------------
   if [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]] && [[ "${addPassphrase:-N}" =~ ^[yY]$ ]]; then
     if ! checkpoint_skip "STEP_LUKS_PASSPHRASE"; then

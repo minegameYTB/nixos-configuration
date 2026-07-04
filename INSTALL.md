@@ -70,6 +70,19 @@ FORCE_SWAP=0 sudo ./install.sh
 SWAP_THRESHOLD_GiB=8 sudo ./install.sh
 ```
 
+### ZFS ARC
+
+| Variable | Default | Description |
+|---|---|---|
+| `ZFS_ARC_MAX_GiB` | `2` | Max ARC size in GiB during install (ZFS only) |
+
+**Examples:**
+
+```bash
+# 4 GiB ARC during install (for high-RAM machines)
+ZFS_ARC_MAX_GiB=4 sudo ./install.sh
+```
+
 ### Output
 
 | Variable | Default | Description |
@@ -85,25 +98,31 @@ Triggered when `/etc/NIXOS` and `/run/current-system` are both present.
 1. **Root check** — exits if not run as root.
 2. **RAM detection** — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
 3. **Boot method detection** — checks `/sys/firmware/efi/fw_platform_size` to pick UEFI or BIOS disko configuration.
-4. **Encryption prompt** — UEFI only: asks whether to use a LUKS-encrypted layout.
-5. **Disk selection** — lists available block devices, prompts for target device then size (accepts formats like `100%` or `50G`).
-6. **Profile selection** — runs `nix flake show` and prompts for the NixOS profile name.
-7. **5-second countdown** — last chance to abort before destructive operations begin.
-8. **Disko** — partitions, formats and mounts the target disk according to the selected `.nix` configuration.
-9. **LUKS passphrase** (optional) — if encryption was chosen and a passphrase was requested, adds it as a second LUKS key slot.
-10. **Temporary swap** — if `needSwap` is set, creates a swapfile on `/mnt` sized to total RAM. Filesystem-aware (see below).
-11. **`nixos-install`** — installs the flake configuration onto the mounted disk.
-12. **Swap teardown** — deactivates and removes the temporary swapfile.
+4. **Filesystem choice** — UEFI only: asks whether to use **btrfs** or **ZFS**.
+5. **Encryption prompt** — UEFI only: asks whether to use a LUKS-encrypted layout.
+6. **Disk selection** — lists available block devices, prompts for target device then size (accepts formats like `100%` or `50G`).
+7. **Profile selection** — runs `nix flake show` and prompts for the NixOS profile name.
+8. **5-second countdown** — last chance to abort before destructive operations begin.
+9. **Disko** — partitions, formats and mounts the target disk according to the selected `.nix` configuration.
+10. **ZFS ARC tuning** — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 2 GiB) to save RAM during install.
+11. **LUKS passphrase** (optional) — if encryption was chosen and a passphrase was requested, adds it as a second LUKS key slot.
+12. **Temporary swap** — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
+13. **`nixos-install`** — installs the flake configuration onto the mounted disk.
+14. **Swap teardown** — deactivates and removes the temporary swap.
 
 ### Disko configuration files
 
 Located in `configurations/disko-configuration/current/`:
 
-| File | Boot | Encryption |
-|---|---|---|
-| `disko-efi-btrfs.nix` | UEFI | None |
-| `disko-efi-luks-btrfs.nix` | UEFI | LUKS |
-| `disko-bios-btrfs.nix` | BIOS | None |
+| File | Boot | Encryption | FS |
+|---|---|---|---|
+| `disko-efi-btrfs.nix` | UEFI | None | btrfs |
+| `disko-efi-luks-btrfs.nix` | UEFI | LUKS | btrfs |
+| `disko-efi-zfs.nix` | UEFI | None | ZFS (zroot) |
+| `disko-efi-luks-zfs.nix` | UEFI | LUKS | ZFS (zroot) |
+| `disko-bios-btrfs.nix` | BIOS | None | btrfs |
+
+> BIOS path only supports btrfs. UEFI path supports both btrfs and ZFS.
 
 ---
 
@@ -134,18 +153,37 @@ RAM ≥ SWAP_THRESHOLD_GiB  →  swap skipped
 
 ### Filesystem handling
 
-The swapfile is created at `/mnt/.swapfile-install` with a fixed size of 8 GiB — large enough for flake evaluation regardless of how much RAM the machine has.
-
-**btrfs** — `fallocate` cannot be used because btrfs Copy-on-Write does not guarantee contiguous blocks, which the kernel requires for swap. Instead, `btrfs filesystem mkswapfile` is used — it handles COW disabling, block allocation, and swap initialisation in a single command. Requires btrfs-progs ≥ 6.1 (available on any recent NixOS ISO).
+**btrfs** — `btrfs filesystem mkswapfile` is used (handles COW disabling, block allocation, and swap initialisation in a single command). Requires btrfs-progs ≥ 6.1.
 
 ```bash
 btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 ```
 
-**ext4, xfs, and others** — `fallocate` is used directly, which is near-instant.
+**ZFS** — swapfiles are not supported on ZFS. Instead, a temporary zvol is created, formatted as swap, and activated:
 
-After `nixos-install` completes, the swapfile is deactivated (`swapoff`) and deleted. The teardown function is a no-op if swap was never created.
-If the installer is interrupted with `Ctrl+C`, the swapfile is recreated automatically on the next resume when the swap step is marked done but the file is missing.
+```bash
+zfs create -V <size>M -b 4096 zroot/swap-install
+mkswap /dev/zvol/zroot/swap-install
+swapon /dev/zvol/zroot/swap-install
+```
+
+The zvol is destroyed automatically after install.
+
+**ext4, xfs, and others** — `fallocate` is used directly.
+
+---
+
+## ZFS ARC tuning
+
+ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 2 GiB so the live environment doesn't run out of memory.
+
+Override with `ZFS_ARC_MAX_GiB`:
+
+```bash
+ZFS_ARC_MAX_GiB=4 sudo ./install.sh
+```
+
+After installation, the system ARC is configured via `kernelParams` in `zfs-common.nix` (default 2 GiB on the installed system as well).
 
 ---
 

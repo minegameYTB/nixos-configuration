@@ -3,6 +3,20 @@
 This configuration use a stable version of NixOS
 
 ---
+### Minimum requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| **RAM (btrfs)** | 4 GiB + swap (detected automatically if < 8 GiB) |
+| **RAM (ZFS)** | 8 GiB (ZFS does not support swapfiles; zvol swap is created during install) |
+| **Disk** | 50 GiB+ (more for games/large packages) |
+| **Boot** | UEFI (BIOS only for btrfs VMs) |
+
+> The install script detects RAM and creates temporary swap automatically on btrfs.
+> On ZFS, a temporary zvol is used instead and ARC is capped at 2 GiB during install
+> — compatible with all RAM sizes but 8 GiB+ is recommended.
+
+---
 ### Installation
 
 clone this repository (preferably in your home directory) on your NixOS installation
