@@ -34,7 +34,7 @@ sleep 2
 if (( SKIP_VERSION_CHECK )); then
   info "Version check skipped (--dont-check)"
 else
-  checkRepoVersion
+  checkRepoVersion "$@"
 fi
 
 # ---------------------------------------------------------------------------

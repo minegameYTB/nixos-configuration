@@ -104,9 +104,9 @@ parseFlags() {
 # ---------------------------------------------------------------------------
 
 # Check whether the local repo has uncommitted changes or is behind its
-# upstream branch.  Warn the user so they don't install from a stale state.
+# upstream branch.  If behind, propose to auto-update and re-exec.
 checkRepoVersion() {
-  local repoRoot
+  local repoRoot scriptArgs=("$@")
   repoRoot="$(git rev-parse --show-toplevel 2>/dev/null)" || return 0
 
   local dirty=0 behind_count=0
@@ -122,13 +122,28 @@ checkRepoVersion() {
     git -C "$repoRoot" fetch --quiet 2>/dev/null || true
     behind_count=$(git -C "$repoRoot" rev-list --count 'HEAD..@{upstream}' 2>/dev/null || echo 0)
     if (( behind_count > 0 )); then
-      warn "Local branch is ${behind_count} commit(s) behind upstream — consider pulling first"
+      warn "Local branch is ${behind_count} commit(s) behind upstream"
     fi
   fi
 
   # ── prompt ────────────────────────────────────────────────────────────────
   if (( dirty || behind_count > 0 )); then
     echo ""
+
+    if (( behind_count > 0 )) && (( ! dirty )); then
+      read -r -p "Pull latest changes and re-run? [Y/n]: " _pull
+      _pull="${_pull:-Y}"
+      if [[ "$_pull" =~ ^[yY]$ ]]; then
+        info "Pulling latest changes..."
+        if git -C "$repoRoot" pull --ff-only; then
+          info "Re-executing script"
+          exec "$0" "${scriptArgs[@]}"
+        else
+          warn "Pull failed — falling back to manual choice"
+        fi
+      fi
+    fi
+
     read -r -p "Continue anyway? [y/N]: " _cont
     _cont="${_cont:-N}"
     if ! [[ "$_cont" =~ ^[yY]$ ]]; then
