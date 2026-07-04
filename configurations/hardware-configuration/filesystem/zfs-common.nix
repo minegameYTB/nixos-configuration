@@ -12,6 +12,8 @@
     "zfs.zfs_arc_max=2147483648"
     ### Explicit hostId for initrd (avoids hostId mismatch with pool label)
     "spl.spl_hostid=0xb08dfa60"
+    ### Reduce device timeout (VM firmware is slow)
+    "systemd.device-timeout=30"
     ### Alternative for high-RAM machines (4 GiB):
     ### 4 * 1024 * 1024 * 1024 = 4294967296
     #"zfs.zfs_arc_max=4294967296"
