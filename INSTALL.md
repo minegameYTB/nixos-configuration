@@ -31,8 +31,13 @@ install-lib/
 ## Usage
 
 ```bash
-sudo ./install.sh
+sudo ./install.sh [--dont-check]
 ```
+
+| Flag | Description |
+|---|---|
+| `--dont-check` | Skip the git repository version check |
+| `--help`, `-h` | Show usage and exit |
 
 The script auto-detects the environment:
 
@@ -159,15 +164,18 @@ RAM ≥ SWAP_THRESHOLD_GiB  →  swap skipped
 btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 ```
 
-**ZFS** — swapfiles are not supported on ZFS. Instead, a temporary zvol is created, formatted as swap, and activated:
+### ZFS
+
+ZFS swapfiles are not supported. Instead:
+
+1. **Persistent zvol** (`zroot/swap`, 8 GiB, `volblocksize=16384`) — created by disko during partitioning, activated automatically, survives reboot via `swapDevices` in the hardware config.
+2. **Temporary zvol** (`zroot/swap-install`, `volblocksize=16384`) — created during install if extra RAM is needed, destroyed after a successful install.
 
 ```bash
-zfs create -V <size>M -b 4096 zroot/swap-install
+zfs create -V <size>M -o volblocksize=16384 zroot/swap-install
 mkswap /dev/zvol/zroot/swap-install
 swapon /dev/zvol/zroot/swap-install
 ```
-
-The zvol is destroyed automatically after install.
 
 **ext4, xfs, and others** — `fallocate` is used directly.
 
@@ -199,6 +207,33 @@ Triggered on any non-NixOS Linux system.
 6. Detects system architecture (`x86_64-linux` or `aarch64-linux`).
 7. Reads the default username from `flake.nix` (`users = [ "..." ]`) and prompts for confirmation.
 8. Runs `home-manager switch` with the resolved `username@arch` flake target.
+
+---
+
+## Version check
+
+Before running any install logic, the script checks whether the local repository is up to date:
+
+1. **Uncommitted changes** — warns if the working tree is dirty.
+2. **Behind upstream** — fetches the remote and compares commit counts.
+3. **Auto-update** — if behind and **not** dirty, proposes to pull (`git pull --ff-only`) and re-execute the script via `exec`, preserving all flags and arguments.
+4. **Manual choice** — if auto-update is declined, or if the working tree is dirty, prompts "Continue anyway?".
+5. **`--dont-check`** — skips the entire version check.
+
+---
+
+## Cleanup & resume safety
+
+| Function | Called by | Effect |
+|---|---|---|
+| `deactivateSwap` | `trap EXIT` (C-c, crash), also explicitly before password | `swapoff` on all known devices (persistent zvol + temp file/zvol) — always safe, no destruction |
+| `destroyTempSwap` | Explicitly before password step | Removes temp swap file and temp zvol only — persistent `zroot/swap` is left intact |
+
+On **resume** after a crash or C-c:
+- `STEP_SWAP` is skipped (already done)
+- If the temp device exists → `swapon` (reactivates)
+- If it was destroyed → `setupTempSwap` (recreates)
+- `zroot/swap` is also unconditionally reactivated via `swapon` before the temp swap step
 
 ---
 
