@@ -27,7 +27,8 @@ STEPS=(
 #   STEP_FOO_BAR → step_foo_bar
 step_func() {
   local checkpoint="$1"
-  echo "step_${checkpoint,,}"
+  local name="${checkpoint#STEP_}"
+  echo "step_${name,,}"
 }
 
 # List all known steps with a short description.
