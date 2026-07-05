@@ -127,6 +127,18 @@
               recordsize = "1M";
             };
           };
+          "var/lib/libvirt" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/libvirt";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
+            };
+          };
           "var/log" = {
             type = "zfs_fs";
             mountpoint = "/var/log";

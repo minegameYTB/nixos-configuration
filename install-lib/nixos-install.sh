@@ -367,7 +367,7 @@ step_zfs_tune() {
   if checkpoint_skip "STEP_ZFS_TUNE"; then
     return
   fi
-  local arcMaxGiB=${ZFS_ARC_MAX_GiB:-2}
+  local arcMaxGiB=${ZFS_ARC_MAX_GiB:-4}
   local arcMax=$(( arcMaxGiB * 1073741824 ))
   if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
     info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
@@ -456,6 +456,10 @@ step_zfs_export() {
     return
   fi
   info "Exporting ZFS pool zroot for clean reboot"
+
+  # Swap zvol must be off or zpool export fails (device busy)
+  deactivateSwap
+
   cd /
 
   # Retry loop with escalating measures
@@ -470,15 +474,16 @@ step_zfs_export() {
     (( attempt++ )) || true
     case "$attempt" in
       1)
-        warn "Could not export zroot — trying recursive unmount of /mnt"
+        warn "Could not export zroot — deactivating swap and unmounting /mnt"
+        swapoff "/dev/zvol/zroot/swap"         2>/dev/null || true
+        swapoff "/dev/zvol/zroot/swap-install" 2>/dev/null || true
         umount -R /mnt 2>/dev/null || true
         sleep 1
         ;;
       2)
-        warn "Recursive unmount failed — killing processes using /mnt"
+        warn "Still blocked — killing processes and using lazy unmount"
         fuser -km /mnt 2>/dev/null || true
         sleep 1
-        warn "Trying lazy unmount of /mnt"
         umount -l /mnt 2>/dev/null || true
         sleep 1
         ;;

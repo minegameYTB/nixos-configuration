@@ -49,4 +49,9 @@
     device = "zroot/var/cache";
     fsType = "zfs";
   };
+
+  fileSystems."/var/lib/libvirt" = lib.mkIf config.virtualisation.libvirtd.enable {
+    device = "zroot/var/lib/libvirt";
+    fsType = "zfs";
+  };
 }
