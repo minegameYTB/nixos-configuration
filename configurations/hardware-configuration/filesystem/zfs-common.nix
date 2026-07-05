@@ -61,4 +61,19 @@
     enable = true;
     interval = "monthly";
   };
+
+  ### Reset ZFS pool state after suspend/resume
+  ### ZFS can leave the pool suspended when the underlying disk disappears
+  ### during sleep (especially on VMs). This service clears error state
+  ### and re-onlines devices after resume.
+  systemd.services."zfs-resume" = {
+    description = "Reset ZFS pool state after resume";
+    after = [ "post-resume.target" ];
+    wantedBy = [ "post-resume.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      ${pkgs.zfs}/bin/zpool clear -f zroot 2>/dev/null || true
+      ${pkgs.zfs}/bin/zpool online -e zroot 2>/dev/null || true
+    '';
+  };
 }
