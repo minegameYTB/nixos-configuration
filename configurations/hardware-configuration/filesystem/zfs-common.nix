@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   ### ZFS support at boot level
@@ -36,9 +41,10 @@
   ### Falls back to upstream ZFS for non-CachyOS kernels
   boot.zfs = {
     package = lib.mkDefault (
-      if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages
-      then config.boot.kernelPackages.zfs_cachyos
-      else pkgs.zfs
+      if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages then
+        config.boot.kernelPackages.zfs_cachyos
+      else
+        pkgs.zfs
     );
 
     ### Safe mode — never force import (manual intervention required)
