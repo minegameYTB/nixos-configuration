@@ -58,6 +58,9 @@
       zroot = {
         type = "zpool";
         mode = "";
+        rootFsOptions = {
+          mountpoint = "none";
+        };
         datasets = {
           ### System datasets
           "ROOT" = {
