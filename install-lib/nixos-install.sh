@@ -63,12 +63,6 @@ validate_step() {
     listSteps
     exit 1
   fi
-  local func
-  func="$(step_func "$step")"
-  if ! declare -F "$func" &>/dev/null; then
-    warn "Function '${func}()' not found for step '${step}'"
-    exit 1
-  fi
 }
 
 # ---------------------------------------------------------------------------
