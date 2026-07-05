@@ -9,6 +9,8 @@
   ### ZFS support at boot level
   boot.supportedFilesystems = {
     zfs = true;
+    btrfs = true;
+    ext4 = true;
   };
 
   ### Kernel parameters tuning ZFS behaviour
