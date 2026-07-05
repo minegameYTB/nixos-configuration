@@ -67,7 +67,7 @@
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -79,7 +79,7 @@
             mountpoint = "/";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -93,7 +93,7 @@
             mountpoint = "/home";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -107,7 +107,7 @@
             mountpoint = "/nix";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -120,7 +120,7 @@
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -132,7 +132,7 @@
             mountpoint = "/var/lib/libvirt";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -144,7 +144,8 @@
             mountpoint = "/var/log";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              quota = "2G";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -156,7 +157,8 @@
             mountpoint = "/var/cache";
             options = {
               mountpoint = "legacy";
-              compression = "zstd";
+              quota = "5G";
+              compression = "zstd-5";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
