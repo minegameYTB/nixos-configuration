@@ -458,20 +458,40 @@ step_zfs_export() {
   info "Exporting ZFS pool zroot for clean reboot"
   cd /
 
-  if zpool export -f zroot; then
-    info "Pool zroot exported successfully — initrd will import it on first boot"
-  else
-    warn "Could not export zroot — trying recursive unmount of /mnt first"
-    if umount -R /mnt 2>/dev/null && zpool export -f zroot; then
-      info "Pool zroot exported after unmount"
-    else
-      warn "Still could not export zroot — first boot may fail to import the pool"
-      warn "Recovery: reboot the live CD, then run:"
-      warn "  zpool export -f zroot"
-      warn "  reboot"
+  # Retry loop with escalating measures
+  local attempt=0
+  while (( attempt < 3 )); do
+    if zpool export -f zroot; then
+      info "Pool zroot exported successfully — initrd will import it on first boot"
+      checkpoint_done "STEP_ZFS_EXPORT"
+      return
     fi
-  fi
-  checkpoint_done "STEP_ZFS_EXPORT"
+
+    (( attempt++ )) || true
+    case "$attempt" in
+      1)
+        warn "Could not export zroot — trying recursive unmount of /mnt"
+        umount -R /mnt 2>/dev/null || true
+        sleep 1
+        ;;
+      2)
+        warn "Recursive unmount failed — killing processes using /mnt"
+        fuser -km /mnt 2>/dev/null || true
+        sleep 1
+        warn "Trying lazy unmount of /mnt"
+        umount -l /mnt 2>/dev/null || true
+        sleep 1
+        ;;
+    esac
+  done
+
+  warn "Still could not export zroot — first boot may fail to import the pool"
+  warn "Recovery from the live CD:"
+  warn "  fuser -km /mnt"
+  warn "  umount -R /mnt"
+  warn "  zpool export -f zroot"
+  warn "  reboot"
+  # Not marking done so the user can retry with --step ZFS_EXPORT
 }
 
 # ---------------------------------------------------------------------------
