@@ -57,14 +57,14 @@ These variables can be set before running the script to adjust its behaviour wit
 
 | Variable | Default | Description |
 |---|---|---|
-| `SWAP_THRESHOLD_GiB` | `4` | RAM threshold in GiB below which a temporary swap is created |
+| `SWAP_THRESHOLD_GiB` | `8` | RAM threshold in GiB below which a temporary swap is created |
 | `SWAP_SIZE_MiB` | `8192` | Swap size in MiB |
 | `FORCE_SWAP` | *(unset)* | `1` = always create swap · `0` = never create swap |
 
 **Examples:**
 
 ```bash
-# Default behaviour: swap created only if RAM < 4 GiB
+# Default behaviour: swap created only if RAM < 8 GiB
 sudo ./install.sh
 
 # Always create swap (useful on machines with fast but limited RAM)
@@ -81,13 +81,13 @@ SWAP_THRESHOLD_GiB=8 sudo ./install.sh
 
 | Variable | Default | Description |
 |---|---|---|
-| `ZFS_ARC_MAX_GiB` | `2` | Max ARC size in GiB during install (ZFS only) |
+| `ZFS_ARC_MAX_GiB` | `4` | Max ARC size in GiB during install (ZFS only) |
 
 **Examples:**
 
 ```bash
-# 4 GiB ARC during install (for high-RAM machines)
-ZFS_ARC_MAX_GiB=4 sudo ./install.sh
+# Override: 8 GiB ARC during install (for high-RAM machines)
+ZFS_ARC_MAX_GiB=8 sudo ./install.sh
 ```
 
 ### Output
@@ -109,7 +109,7 @@ Checkpoint names (usable with `--step`) are shown in parentheses.
 3. **Interactive setup** (`STEP_INTERACTIVE_SETUP`) — boot method detection, filesystem choice (btrfs/ZFS), encryption prompt, disk selection, profile selection, 5-second countdown.
 4. **LUKS key setup** (`STEP_LUKS_SETUP`) — key generation or path, optional passphrase choice. Skipped when encryption was declined.
 5. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
-6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 2 GiB).
+6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 4 GiB).
 7. **LUKS passphrase** (`STEP_LUKS_PASSPHRASE`) — if a passphrase was requested, adds it as a second LUKS key slot.
 8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
 9. **`nixos-install`** (`STEP_NIXOS_INSTALL`) — installs the flake configuration onto the mounted disk, then tears down the temporary swap.
@@ -224,17 +224,17 @@ swapon /dev/zvol/zroot/swap-install
 
 ## ZFS ARC tuning
 
-ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 2 GiB so the live environment doesn't run out of memory.
+ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 4 GiB so the live environment doesn't run out of memory.
 
 Override with `ZFS_ARC_MAX_GiB`:
 
 ```bash
-ZFS_ARC_MAX_GiB=4 sudo ./install.sh
+ZFS_ARC_MAX_GiB=8 sudo ./install.sh
 ```
 
-After installation, the system ARC is configured via `kernelParams` in `zfs-common.nix` (default 2 GiB on the installed system as well).
+After installation, the system ARC is configured via `kernelParams` in `zfs-common.nix` (default 4 GiB on the installed system as well).
 
-> **RAM note:** ZFS with ARC eats 2 GiB before anything else runs. For a comfortable `nixos-rebuild` experience, **16 GiB RAM is recommended**. 8 GiB is the bare minimum but may be tight (reduce ARC with `ZFS_ARC_MAX_GiB=1` during install).
+> **RAM note:** ZFS with ARC eats 4 GiB before anything else runs. For a comfortable `nixos-rebuild` experience, **16 GiB RAM is recommended**. 8 GiB is the bare minimum but may be tight (reduce ARC with `ZFS_ARC_MAX_GiB=2` during install).
 
 ---
 
@@ -269,8 +269,8 @@ Before running any install logic, the script checks whether the local repository
 
 | Function | Called by | Effect |
 |---|---|---|
-| `deactivateSwap` | `trap EXIT` (C-c, crash), also explicitly before password | `swapoff` on all known devices (persistent zvol + temp file/zvol) — always safe, no destruction |
-| `destroyTempSwap` | Explicitly before password step | Removes temp swap file and temp zvol only — persistent `zroot/swap` is left intact |
+| `deactivateSwap` | `trap EXIT` (C-c, crash), also at end of `step_nixos_install` | `swapoff` on all known devices (persistent zvol + temp file/zvol) — always safe, no destruction |
+| `destroyTempSwap` | End of `step_nixos_install` | Removes temp swap file and temp zvol only — persistent `zroot/swap` is left intact |
 
 On **resume** after a crash or C-c:
 - `STEP_SWAP` is skipped (already done)
