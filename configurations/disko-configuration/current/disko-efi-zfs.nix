@@ -13,6 +13,7 @@
         content = {
           type = "gpt";
           partitions = {
+            ### ESP partition
             ESP = {
               size = "512M";
               type = "EF00";
@@ -27,6 +28,8 @@
                 ];
               };
             };
+
+            ### ZFS partition
             zroot = {
               inherit size;
               content = {
@@ -38,11 +41,14 @@
         };
       };
     };
+
+    ### ZFS pool
     zpool = {
       zroot = {
         type = "zpool";
         mode = "";
         datasets = {
+          ### System datasets
           "ROOT" = {
             type = "zfs_fs";
             options = {
@@ -66,6 +72,8 @@
               recordsize = "1M";
             };
           };
+
+          ### Home dataset
           "home" = {
             type = "zfs_fs";
             mountpoint = "/home";
@@ -78,6 +86,8 @@
               recordsize = "1M";
             };
           };
+
+          ### Nix dataset (primarycache=metadata for /nix)
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
@@ -90,6 +100,8 @@
               primarycache = "metadata";
             };
           };
+
+          ### Var datasets
           "var" = {
             type = "zfs_fs";
             options = {
@@ -125,6 +137,8 @@
               recordsize = "1M";
             };
           };
+
+          ### Swap volume
           "swap" = {
             type = "zfs_volume";
             size = "8G";
@@ -135,6 +149,8 @@
               type = "swap";
             };
           };
+
+          ### Reserved space
           "reserved" = {
             type = "zfs_fs";
             options = {
