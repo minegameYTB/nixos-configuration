@@ -76,19 +76,23 @@ showUsage() {
 Usage: $(basename "$0") [OPTION]...
 
 Options:
-  --dont-check  Skip the git repository version check
-  --help, -h    Show this help message and exit
+  --dont-check      Skip the git repository version check
+  --help, -h        Show this help message and exit
+  --list-steps      List all available installation steps and exit
+  --step STEP_NAME  Run only the specified installation step
 EOF
 }
 
 # Parse all known flags from "$@" and set globals accordingly.
 # Add new flags here (case branch) AND in showUsage() above.
-# shellcheck disable=SC2034 # SKIP_VERSION_CHECK is set here, read by install.sh
+# shellcheck disable=SC2034 # globals set here, read by install.sh / nixos-install.sh
 parseFlags() {
   while (( $# )); do
     case "$1" in
       --dont-check) SKIP_VERSION_CHECK=1 ;;
       --help|-h)    showUsage; exit 0 ;;
+      --list-steps) LIST_STEPS=1 ;;
+      --step)       shift; ONLY_STEP="$1" ;;
       *)
         echo "Unknown flag: $1"
         showUsage

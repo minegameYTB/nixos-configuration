@@ -3,6 +3,74 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2154 # nixFlags, nixpkgsRev set by lib.sh sourced earlier
 
+# ── Steps ──────────────────────────────────────────────────
+# Single source of truth for all installation steps.
+# To add a new step:
+#   1. Write step_foo_bar() { ... }
+#   2. Add "STEP_FOO_BAR" to this array
+#   3. The dispatch loop and --step mode pick it up automatically
+# ────────────────────────────────────────────────────────────
+STEPS=(
+  "STEP_INTERACTIVE_SETUP"
+  "STEP_LUKS_SETUP"
+  "STEP_PARTITION"
+  "STEP_ZFS_TUNE"
+  "STEP_LUKS_PASSPHRASE"
+  "STEP_SWAP"
+  "STEP_NIXOS_INSTALL"
+  "STEP_PASSWORD"
+  "STEP_COPY_CONFIG"
+  "STEP_ZFS_EXPORT"
+)
+
+# Derive the step function name from a checkpoint name.
+#   STEP_FOO_BAR → step_foo_bar
+step_func() {
+  local checkpoint="$1"
+  echo "step_${checkpoint,,}"
+}
+
+# List all known steps with a short description.
+listSteps() {
+  info "Available installation steps:"
+  for s in "${STEPS[@]}"; do
+    echo "  ${s}"
+  done
+  echo ""
+  info "Usage: ./install.sh --step STEP_NAME"
+}
+
+# Load persisted variables from the checkpoint state file.
+# Called when RESUMING=1 or when --step is used.
+load_step_state() {
+  deviceDisk="$(checkpoint_get   "VAR_DEVICE")"
+  sizeDisk="$(checkpoint_get     "VAR_SIZE")"
+  nixosProfile="$(checkpoint_get "VAR_PROFILE")"
+  diskoFile="$(checkpoint_get    "VAR_DISKO_FILE")"
+  diskoFs="$(checkpoint_get      "VAR_DISKO_FS")"
+  diskoEncrypted="$(checkpoint_get "VAR_DISKO_ENCRYPTED")"
+  keyFile="$(checkpoint_get      "VAR_KEY_FILE")"
+  addPassphrase="$(checkpoint_get "VAR_ADD_PASSPHRASE")"
+  luksKeySize="$(checkpoint_get  "VAR_LUKS_KEY_SIZE")"
+  userName="$(checkpoint_get     "VAR_USERNAME")"
+}
+
+# Validate that a step name is known and its function exists.
+validate_step() {
+  local step="$1"
+  if ! printf '%s\n' "${STEPS[@]}" | grep -qx "$step"; then
+    warn "Unknown step: ${step}"
+    listSteps
+    exit 1
+  fi
+  local func
+  func="$(step_func "$step")"
+  if ! declare -F "$func" &>/dev/null; then
+    warn "Function '${func}()' not found for step '${step}'"
+    exit 1
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # Disk helpers
 # ---------------------------------------------------------------------------
@@ -201,6 +269,217 @@ addLuksPassphrase() {
 }
 
 # ---------------------------------------------------------------------------
+# Step functions — each corresponds to one entry in the STEPS array
+# ---------------------------------------------------------------------------
+
+step_interactive_setup() {
+  if checkpoint_skip "STEP_INTERACTIVE_SETUP"; then
+    return
+  fi
+
+  diskoEncrypted="N"
+  diskoFs="btrfs"
+
+  if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
+    echo "UEFI boot detected"
+
+    read -r -p "Filesystem — [b]trfs or [z]fs? [B/z]: " fsChoice
+    fsChoice="${fsChoice:-B}"
+    if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
+      diskoFs="zfs"
+      echo "Using ZFS filesystem"
+    else
+      diskoFs="btrfs"
+      echo "Using btrfs filesystem"
+    fi
+
+    read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
+    diskoEncrypted="${diskoEncrypted:-N}"
+
+    if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
+      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-${diskoFs}.nix"
+      echo "Using encrypted LUKS configuration (${diskoFs})"
+    else
+      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-${diskoFs}.nix"
+      echo "Using standard (non-encrypted) configuration (${diskoFs})"
+    fi
+  else
+    echo "BIOS boot detected — using disko-bios-btrfs configuration"
+    diskoFile="$(pwd)/configurations/disko-configuration/current/disko-bios-btrfs.nix"
+  fi
+
+  showDiskLsblk
+  echo ""
+  read -r -e -p "Enter device to install NixOS on (e.g. /dev/sda, /dev/vda): " deviceDisk
+  read -r -e -p "Enter size for the installation (e.g. 100% or 50G): "          sizeDisk
+
+  echo -e "\nAvailable profiles:"
+  nix "${nixFlags[@]}" flake show
+  read -r -e -p "Enter the profile name to install: " nixosProfile
+  echo -e "\n${nixosProfile} selected"
+
+  printf '%b\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
+  for i in {5..1}; do
+    printf '%b' "\r  ${CYAN}${i}${RESET} seconds... (Ctrl+C to cancel) "
+    sleep 1
+  done
+  printf '%b\n' "\r  ${GREEN}Installing NixOS…${RESET}                    "
+
+  checkpoint_set "VAR_DEVICE"          "$deviceDisk"
+  checkpoint_set "VAR_SIZE"            "$sizeDisk"
+  checkpoint_set "VAR_PROFILE"         "$nixosProfile"
+  checkpoint_set "VAR_DISKO_FILE"      "$diskoFile"
+  checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
+  checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
+
+  checkpoint_done "STEP_INTERACTIVE_SETUP"
+}
+
+step_luks_setup() {
+  if [[ ! "${diskoEncrypted:-N}" =~ ^[yY]$ ]]; then
+    return
+  fi
+  if checkpoint_skip "STEP_LUKS_SETUP"; then
+    return
+  fi
+  setupLuksEncryption
+  checkpoint_set "VAR_KEY_FILE"       "$keyFile"
+  checkpoint_set "VAR_ADD_PASSPHRASE" "${addPassphrase:-N}"
+  checkpoint_set "VAR_LUKS_KEY_SIZE"  "${luksKeySize:-4096}"
+  checkpoint_done "STEP_LUKS_SETUP"
+}
+
+step_partition() {
+  if checkpoint_skip "STEP_PARTITION"; then
+    return
+  fi
+  info "Partitioning disk: ${deviceDisk}"
+  local diskoArgs
+  diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk")
+  [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]] && diskoArgs+=(--argstr keyFile "$keyFile")
+
+  run_command nix "${nixFlags[@]}" run \
+    "nixpkgs/${nixpkgsRev}#disko" -- -m destroy,format,mount "$diskoFile" \
+    "${diskoArgs[@]}"
+
+  checkpoint_done "STEP_PARTITION"
+}
+
+step_zfs_tune() {
+  if [[ "${diskoFs:-}" != "zfs" ]]; then
+    return
+  fi
+  if checkpoint_skip "STEP_ZFS_TUNE"; then
+    return
+  fi
+  local arcMaxGiB=${ZFS_ARC_MAX_GiB:-2}
+  local arcMax=$(( arcMaxGiB * 1073741824 ))
+  if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
+    info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
+    echo "$arcMax" > /sys/module/zfs/parameters/zfs_arc_max
+  else
+    warn "Cannot tune ZFS ARC — /sys/module/zfs/parameters/zfs_arc_max not writable"
+  fi
+  checkpoint_done "STEP_ZFS_TUNE"
+}
+
+step_luks_passphrase() {
+  if [[ ! "${diskoEncrypted:-N}" =~ ^[yY]$ ]] || [[ ! "${addPassphrase:-N}" =~ ^[yY]$ ]]; then
+    return
+  fi
+  if checkpoint_skip "STEP_LUKS_PASSPHRASE"; then
+    return
+  fi
+  addLuksPassphrase "$deviceDisk" "$keyFile" "${luksKeySize:-4096}"
+  checkpoint_done "STEP_LUKS_PASSPHRASE"
+}
+
+step_swap() {
+  swapon "/dev/zvol/zroot/swap" 2>/dev/null || true
+
+  if (( needSwap )); then
+    if checkpoint_skip "STEP_SWAP"; then
+      if [[ -f "/mnt/.swapfile-install" ]]; then
+        swapon "/mnt/.swapfile-install" 2>/dev/null || true
+      elif zfs list -H "zroot/swap-install" &>/dev/null; then
+        swapon "/dev/zvol/zroot/swap-install" 2>/dev/null || true
+      else
+        info "Temporary swap was removed during the previous session — recreating it"
+        setupTempSwap
+      fi
+    else
+      setupTempSwap
+      checkpoint_done "STEP_SWAP"
+    fi
+  fi
+}
+
+step_nixos_install() {
+  if ! checkpoint_skip "STEP_NIXOS_INSTALL"; then
+    info "Installing NixOS configuration: '${nixosProfile}'"
+    run_command nixos-install --no-channel-copy --flake ".#${nixosProfile}" \
+      --option extra-substituters        "https://attic.xuyh0120.win/lantian" \
+      --option extra-trusted-public-keys "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+    checkpoint_done "STEP_NIXOS_INSTALL"
+  fi
+
+  deactivateSwap
+  destroyTempSwap
+}
+
+step_password() {
+  if checkpoint_skip "STEP_PASSWORD"; then
+    return
+  fi
+  if [[ -z "${userName:-}" ]]; then
+    getDefaultUser 6
+  fi
+  checkpoint_set "VAR_USERNAME" "$userName"
+  run_command nixos-enter --root /mnt -- passwd "$userName"
+  checkpoint_done "STEP_PASSWORD"
+}
+
+step_copy_config() {
+  if checkpoint_skip "STEP_COPY_CONFIG"; then
+    return
+  fi
+  userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
+  cd .. || exit 1
+  run_command cp -r nixos-configuration "/mnt/home/${userName}"
+  info "Changing owner of nixos-configuration to ${userName}"
+  run_command chown -R 1000:100 "/mnt/home/${userName}/nixos-configuration"
+  run_command git -C "/mnt/home/${userName}/nixos-configuration" config pull.rebase true
+
+  checkpoint_done "STEP_COPY_CONFIG"
+}
+
+step_zfs_export() {
+  if [[ "${diskoFs:-}" != "zfs" ]]; then
+    return
+  fi
+  if checkpoint_skip "STEP_ZFS_EXPORT"; then
+    return
+  fi
+  info "Exporting ZFS pool zroot for clean reboot"
+  cd /
+
+  if zpool export -f zroot; then
+    info "Pool zroot exported successfully — initrd will import it on first boot"
+  else
+    warn "Could not export zroot — trying recursive unmount of /mnt first"
+    if umount -R /mnt 2>/dev/null && zpool export -f zroot; then
+      info "Pool zroot exported after unmount"
+    else
+      warn "Still could not export zroot — first boot may fail to import the pool"
+      warn "Recovery: reboot the live CD, then run:"
+      warn "  zpool export -f zroot"
+      warn "  reboot"
+    fi
+  fi
+  checkpoint_done "STEP_ZFS_EXPORT"
+}
+
+# ---------------------------------------------------------------------------
 # Main install function
 # ---------------------------------------------------------------------------
 
@@ -216,249 +495,34 @@ nixosInstallFn() {
     exit 1
   fi
 
-  # --- Resume prompt -------------------------------------------------------
-  # If STATE_FILE exists the user is offered to resume where they left off.
-  # RESUMING=1 means we reload persisted variables and skip completed steps.
+  # --- Standalone step mode ------------------------------------------------
+  if [[ -n "${ONLY_STEP:-}" ]]; then
+    if [[ ! -f "$STATE_FILE" ]]; then
+      warn "State file not found at ${STATE_FILE}"
+      warn "A full install must complete at least STEP_INTERACTIVE_SETUP first"
+      exit 1
+    fi
+    validate_step "$ONLY_STEP"
+    load_step_state
+    detectRam
+    "$(step_func "$ONLY_STEP")"
+    trap - EXIT
+    return
+  fi
+
+  # --- Normal flow ----------------------------------------------------------
   checkpoint_resume_prompt
 
-  # --- Restore persisted variables on resume -------------------------------
-  # These are only populated when RESUMING=1; on a fresh run they stay empty
-  # until the interactive-setup step fills and saves them.
   if [[ "${RESUMING:-0}" == "1" ]]; then
-    deviceDisk="$(checkpoint_get   "VAR_DEVICE")"
-    sizeDisk="$(checkpoint_get     "VAR_SIZE")"
-    nixosProfile="$(checkpoint_get "VAR_PROFILE")"
-    diskoFile="$(checkpoint_get    "VAR_DISKO_FILE")"
-    diskoFs="$(checkpoint_get       "VAR_DISKO_FS")"
-    diskoEncrypted="$(checkpoint_get "VAR_DISKO_ENCRYPTED")"
-    keyFile="$(checkpoint_get      "VAR_KEY_FILE")"
-    addPassphrase="$(checkpoint_get "VAR_ADD_PASSPHRASE")"
-    luksKeySize="$(checkpoint_get  "VAR_LUKS_KEY_SIZE")"
-    userName="$(checkpoint_get     "VAR_USERNAME")"
+    load_step_state
   fi
 
-  # --- RAM detection (fast, always run) ------------------------------------
   detectRam
 
-  # --- Step: interactive setup ---------------------------------------------
-  # Asks the user for boot mode, encryption, disk, size, and profile.
-  # On resume this whole block is skipped because all answers were saved.
-  if ! checkpoint_skip "STEP_INTERACTIVE_SETUP"; then
+  for step in "${STEPS[@]}"; do
+    "$(step_func "$step")"
+  done
 
-    # Initialise diskoEncrypted to a safe default before the UEFI/BIOS branch
-    # so it is never unset when referenced later (guards against set -u).
-    diskoEncrypted="N"
-    diskoFs="btrfs"
-
-    if [[ -e "/sys/firmware/efi/fw_platform_size" ]]; then
-      echo "UEFI boot detected"
-
-      read -r -p "Filesystem — [b]trfs or [z]fs? [B/z]: " fsChoice
-      fsChoice="${fsChoice:-B}"
-      if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
-        diskoFs="zfs"
-        echo "Using ZFS filesystem"
-      else
-        diskoFs="btrfs"
-        echo "Using btrfs filesystem"
-      fi
-
-      read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
-      diskoEncrypted="${diskoEncrypted:-N}"
-
-      if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-${diskoFs}.nix"
-        echo "Using encrypted LUKS configuration (${diskoFs})"
-      else
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-${diskoFs}.nix"
-        echo "Using standard (non-encrypted) configuration (${diskoFs})"
-      fi
-    else
-      echo "BIOS boot detected — using disko-bios-btrfs configuration"
-      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-bios-btrfs.nix"
-    fi
-
-    showDiskLsblk
-    echo ""
-    read -r -e -p "Enter device to install NixOS on (e.g. /dev/sda, /dev/vda): " deviceDisk
-    read -r -e -p "Enter size for the installation (e.g. 100% or 50G): "          sizeDisk
-
-    echo -e "\nAvailable profiles:"
-    nix "${nixFlags[@]}" flake show
-    read -r -e -p "Enter the profile name to install: " nixosProfile
-    echo -e "\n${nixosProfile} selected"
-
-    # Countdown before the point of no return
-    printf '%b\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
-    for i in {5..1}; do
-      printf '%b' "\r  ${CYAN}${i}${RESET} seconds... (Ctrl+C to cancel) "
-      sleep 1
-    done
-    printf '%b\n' "\r  ${GREEN}Installing NixOS…${RESET}                    "
-
-    # Persist all interactive answers so they survive a crash
-    checkpoint_set "VAR_DEVICE"          "$deviceDisk"
-    checkpoint_set "VAR_SIZE"            "$sizeDisk"
-    checkpoint_set "VAR_PROFILE"         "$nixosProfile"
-    checkpoint_set "VAR_DISKO_FILE"      "$diskoFile"
-    checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
-    checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
-
-    checkpoint_done "STEP_INTERACTIVE_SETUP"
-  fi
-
-  # --- Step: LUKS key setup ------------------------------------------------
-  # Only entered when the user chose encryption during interactive setup.
-  # On resume the key path and passphrase choice are restored from state.
-  if [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]]; then
-    if ! checkpoint_skip "STEP_LUKS_SETUP"; then
-      setupLuksEncryption
-      # Persist LUKS variables so the partition step can use them on resume
-      checkpoint_set "VAR_KEY_FILE"      "$keyFile"
-      checkpoint_set "VAR_ADD_PASSPHRASE" "${addPassphrase:-N}"
-      checkpoint_set "VAR_LUKS_KEY_SIZE"  "${luksKeySize:-4096}"
-      checkpoint_done "STEP_LUKS_SETUP"
-    fi
-  fi
-
-  # --- Step: disk partitioning with disko ----------------------------------
-  # This is destructive — it formats the target disk.
-  # Skipped on resume if it completed successfully before the crash.
-  if ! checkpoint_skip "STEP_PARTITION"; then
-    info "Partitioning disk: ${deviceDisk}"
-    local diskoArgs
-    diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk")
-    [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]] && diskoArgs+=(--argstr keyFile "$keyFile")
-
-    run_command nix "${nixFlags[@]}" run \
-      "nixpkgs/${nixpkgsRev}#disko" -- -m destroy,format,mount "$diskoFile" \
-      "${diskoArgs[@]}"
-
-    checkpoint_done "STEP_PARTITION"
-  fi
-
-  # --- Step: ZFS tuning (after pool import) ---------------------------------
-  # Restrict ARC to 2 GiB by default so the live environment doesn't eat all RAM.
-  # Override with ZFS_ARC_MAX_GiB environment variable (in GiB), e.g.:
-  #   ZFS_ARC_MAX_GiB=4 ./install.sh   # 4 GiB ARC
-  if [[ "${diskoFs:-}" == "zfs" ]] && ! checkpoint_skip "STEP_ZFS_TUNE"; then
-    local arcMaxGiB=${ZFS_ARC_MAX_GiB:-2}
-    local arcMax=$(( arcMaxGiB * 1073741824 ))
-    if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
-      info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
-      echo "$arcMax" > /sys/module/zfs/parameters/zfs_arc_max
-    else
-      warn "Cannot tune ZFS ARC — /sys/module/zfs/parameters/zfs_arc_max not writable"
-    fi
-    checkpoint_done "STEP_ZFS_TUNE"
-  fi
-
-  # --- Step: optional LUKS passphrase slot ---------------------------------
-  if [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]] && [[ "${addPassphrase:-N}" =~ ^[yY]$ ]]; then
-    if ! checkpoint_skip "STEP_LUKS_PASSPHRASE"; then
-      addLuksPassphrase "$deviceDisk" "$keyFile" "${luksKeySize:-4096}"
-      checkpoint_done "STEP_LUKS_PASSPHRASE"
-    fi
-  fi
-
-  # --- Reactivate persistent swap ------------------------------------------
-  # zroot/swap (from disko) may have been swapped off by ^C → trap.
-  # Always reactivate it regardless of needSwap — it exists after STEP_PARTITION.
-  swapon "/dev/zvol/zroot/swap" 2>/dev/null || true
-
-  # --- Step: temporary swap ------------------------------------------------
-  # Created on /mnt (now mounted by disko) when RAM is below the threshold.
-  # nixos-install can be memory-hungry during flake evaluation.
-  if (( needSwap )); then
-    if checkpoint_skip "STEP_SWAP"; then
-      # Reactivate if the device still exists (was swapped off by ^C → trap)
-      if [[ -f "/mnt/.swapfile-install" ]]; then
-        swapon "/mnt/.swapfile-install" 2>/dev/null || true
-      elif zfs list -H "zroot/swap-install" &>/dev/null; then
-        swapon "/dev/zvol/zroot/swap-install" 2>/dev/null || true
-      else
-        info "Temporary swap was removed during the previous session — recreating it"
-        setupTempSwap
-      fi
-    else
-      setupTempSwap
-      checkpoint_done "STEP_SWAP"
-    fi
-  fi
-
-  # --- Step: nixos-install -------------------------------------------------
-  # The main installation step — most likely place for a failure.
-  if ! checkpoint_skip "STEP_NIXOS_INSTALL"; then
-    info "Installing NixOS configuration: '${nixosProfile}'"
-    run_command nixos-install --no-channel-copy --flake ".#${nixosProfile}" \
-      --option extra-substituters        "https://attic.xuyh0120.win/lantian" \
-      --option extra-trusted-public-keys "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
-    checkpoint_done "STEP_NIXOS_INSTALL"
-  fi
-
-  # Deactivate all swap, then destroy only the temporary devices.
-  deactivateSwap
-  destroyTempSwap
-
-  # --- Step: user password -------------------------------------------------
-  if ! checkpoint_skip "STEP_PASSWORD"; then
-    # Restore userName from state if we are resuming and it was already set
-    if [[ -z "${userName:-}" ]]; then
-      getDefaultUser 6
-    fi
-    checkpoint_set "VAR_USERNAME" "$userName"
-    run_command nixos-enter --root /mnt -- passwd "$userName"
-    checkpoint_done "STEP_PASSWORD"
-  fi
-
-  # --- Step: copy configuration into the new system's home -----------------
-  if ! checkpoint_skip "STEP_COPY_CONFIG"; then
-    # Make sure userName is set even on a partial resume where STEP_PASSWORD
-    # was already done but STEP_COPY_CONFIG was not.
-    userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
-
-    cd .. || exit 1
-    run_command cp -r nixos-configuration "/mnt/home/${userName}"
-    info "Changing owner of nixos-configuration to ${userName}"
-    run_command chown -R 1000:100 "/mnt/home/${userName}/nixos-configuration"
-    run_command git -C "/mnt/home/${userName}/nixos-configuration" config pull.rebase true
-
-    checkpoint_done "STEP_COPY_CONFIG"
-  fi
-
-  # --- Step: export ZFS pool (for clean reboot) ---------------------------
-  # The pool was imported by disko during partitioning. If left imported when
-  # the system reboots, the initrd will refuse to import it with
-  # forceImportRoot = false because it appears "busy" from the live CD.
-  #
-  # -f is required because datasets under /mnt are still mounted; without it
-  # zpool export fails silently, the pool stays imported, and the first boot
-  # hangs waiting for the ZFS pool that the initrd cannot import.
-  #
-  # We cd / first because if the shell's CWD is anywhere on the ZFS pool
-  # (e.g. /mnt/home/…) even zpool export -f will refuse with
-  # "cannot unmount /mnt: pool or dataset is busy".
-  if [[ "${diskoFs:-}" == "zfs" ]] && ! checkpoint_skip "STEP_ZFS_EXPORT"; then
-    info "Exporting ZFS pool zroot for clean reboot"
-    cd /
-
-    if zpool export -f zroot; then
-      info "Pool zroot exported successfully — initrd will import it on first boot"
-    else
-      warn "Could not export zroot — trying recursive unmount of /mnt first"
-      if umount -R /mnt 2>/dev/null && zpool export -f zroot; then
-        info "Pool zroot exported after unmount"
-      else
-        warn "Still could not export zroot — first boot may fail to import the pool"
-        warn "Recovery: reboot the live CD, then run:"
-        warn "  zpool export -f zroot"
-        warn "  reboot"
-      fi
-    fi
-    checkpoint_done "STEP_ZFS_EXPORT"
-  fi
-
-  # --- All steps completed — clean up state --------------------------------
   checkpoint_clear
   trap - EXIT
   info "Installation complete! Please reboot to use NixOS."

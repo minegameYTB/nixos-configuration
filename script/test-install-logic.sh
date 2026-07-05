@@ -181,8 +181,8 @@ test_arc_tuning() {
   fi
   if [[ "$diskoFs" == "btrfs" ]]; then
     if [[ "$expect_skip" == "true" ]]; then
-      # Check that the ARC step is guarded by "${diskoFs:-}" == "zfs"
-      if grep -q 'diskoFs:-.*== "zfs"' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+      # Check that the ARC step is guarded by "${diskoFs:-}" != "zfs" (early return)
+      if grep -q 'diskoFs:-.*!= "zfs"' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
         ok "btrfs → ARC step skipped (guard present)"
       else
         fail "btrfs → guard missing"
@@ -250,6 +250,115 @@ test_flag_parsing() {
 }
 
 test_flag_parsing
+
+echo
+echo -e "${CYAN}Step system (STEPS array + step functions)${RESET}"
+
+test_step_system() {
+  # STEPS array must contain all expected checkpoints
+  local nixFile="$SCRIPT_DIR/install-lib/nixos-install.sh"
+
+  # Check that STEPS array line exists
+  if ! grep -q '^STEPS=(' "$nixFile"; then
+    fail "STEPS array not found at top level"
+  fi
+  # Read the array lines and check each step is present
+  local steps_text
+  steps_text=$(sed -n '/^STEPS=(/,/^)/p' "$nixFile")
+  for expected in \
+    STEP_INTERACTIVE_SETUP \
+    STEP_LUKS_SETUP \
+    STEP_PARTITION \
+    STEP_ZFS_TUNE \
+    STEP_LUKS_PASSPHRASE \
+    STEP_SWAP \
+    STEP_NIXOS_INSTALL \
+    STEP_PASSWORD \
+    STEP_COPY_CONFIG \
+    STEP_ZFS_EXPORT; do
+    if echo "$steps_text" | grep -q "\"${expected}\""; then
+      ok "${expected} in STEPS array"
+    else
+      fail "${expected} MISSING from STEPS array"
+    fi
+  done
+
+  # Each step must have a matching step_ function
+  for func in \
+    step_interactive_setup \
+    step_luks_setup \
+    step_partition \
+    step_zfs_tune \
+    step_luks_passphrase \
+    step_swap \
+    step_nixos_install \
+    step_password \
+    step_copy_config \
+    step_zfs_export; do
+    if grep -q "^${func}()" "$nixFile"; then
+      ok "${func} exists"
+    else
+      fail "${func} MISSING"
+    fi
+  done
+
+  # Helper functions must exist
+  if grep -q "^step_func()" "$nixFile"; then
+    ok "step_func exists"
+  else
+    fail "step_func MISSING"
+  fi
+  if grep -q "^listSteps()" "$nixFile"; then
+    ok "listSteps exists"
+  else
+    fail "listSteps MISSING"
+  fi
+  if grep -q "^load_step_state()" "$nixFile"; then
+    ok "load_step_state exists"
+  else
+    fail "load_step_state MISSING"
+  fi
+  if grep -q "^validate_step()" "$nixFile"; then
+    ok "validate_step exists"
+  else
+    fail "validate_step MISSING"
+  fi
+}
+
+test_step_system
+
+echo
+echo -e "${CYAN}--step / --list-steps flag parsing${RESET}"
+
+test_step_flags() {
+  if grep -q -- "--list-steps)" "$SCRIPT_DIR/install-lib/lib.sh"; then
+    ok "--list-steps flag in parseFlags"
+  else
+    fail "--list-steps flag MISSING in parseFlags"
+  fi
+  if grep -q -- "--step)" "$SCRIPT_DIR/install-lib/lib.sh"; then
+    ok "--step flag in parseFlags"
+  else
+    fail "--step flag MISSING in parseFlags"
+  fi
+  if grep -q "listSteps" "$SCRIPT_DIR/install.sh"; then
+    ok "install.sh calls listSteps"
+  else
+    fail "install.sh does not call listSteps"
+  fi
+  if grep -q "ONLY_STEP" "$SCRIPT_DIR/install-lib/lib.sh"; then
+    ok "lib.sh references ONLY_STEP"
+  else
+    fail "lib.sh does not reference ONLY_STEP"
+  fi
+  if grep -q "ONLY_STEP" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "nixos-install.sh uses ONLY_STEP"
+  else
+    fail "nixos-install.sh does not use ONLY_STEP"
+  fi
+}
+
+test_step_flags
 
 echo
 # ---------------------------------------------------------------------------

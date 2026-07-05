@@ -31,13 +31,15 @@ install-lib/
 ## Usage
 
 ```bash
-sudo ./install.sh [--dont-check]
+sudo ./install.sh [OPTION]...
 ```
 
 | Flag | Description |
 |---|---|
 | `--dont-check` | Skip the git repository version check |
 | `--help`, `-h` | Show usage and exit |
+| `--list-steps` | List all available installation steps and exit |
+| `--step STEP_NAME` | Run only the specified installation step |
 
 The script auto-detects the environment:
 
@@ -100,20 +102,20 @@ ZFS_ARC_MAX_GiB=4 sudo ./install.sh
 
 Triggered when `/etc/NIXOS` and `/run/current-system` are both present.
 
+Checkpoint names (usable with `--step`) are shown in parentheses.
+
 1. **Root check** — exits if not run as root.
-2. **RAM detection** — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
-3. **Boot method detection** — checks `/sys/firmware/efi/fw_platform_size` to pick UEFI or BIOS disko configuration.
-4. **Filesystem choice** — UEFI only: asks whether to use **btrfs** or **ZFS**.
-5. **Encryption prompt** — UEFI only: asks whether to use a LUKS-encrypted layout.
-6. **Disk selection** — lists available block devices, prompts for target device then size (accepts formats like `100%` or `50G`).
-7. **Profile selection** — runs `nix flake show` and prompts for the NixOS profile name.
-8. **5-second countdown** — last chance to abort before destructive operations begin.
-9. **Disko** — partitions, formats and mounts the target disk according to the selected `.nix` configuration.
-10. **ZFS ARC tuning** — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 2 GiB) to save RAM during install.
-11. **LUKS passphrase** (optional) — if encryption was chosen and a passphrase was requested, adds it as a second LUKS key slot.
-12. **Temporary swap** — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
-13. **`nixos-install`** — installs the flake configuration onto the mounted disk.
-14. **Swap teardown** — deactivates and removes the temporary swap.
+2. **RAM detection** (`detectRam`) — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
+3. **Interactive setup** (`STEP_INTERACTIVE_SETUP`) — boot method detection, filesystem choice (btrfs/ZFS), encryption prompt, disk selection, profile selection, 5-second countdown.
+4. **LUKS key setup** (`STEP_LUKS_SETUP`) — key generation or path, optional passphrase choice. Skipped when encryption was declined.
+5. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
+6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 2 GiB).
+7. **LUKS passphrase** (`STEP_LUKS_PASSPHRASE`) — if a passphrase was requested, adds it as a second LUKS key slot.
+8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
+9. **`nixos-install`** (`STEP_NIXOS_INSTALL`) — installs the flake configuration onto the mounted disk, then tears down the temporary swap.
+10. **User password** (`STEP_PASSWORD`) — prompts for the user password via `nixos-enter passwd`.
+11. **Copy config** (`STEP_COPY_CONFIG`) — copies the nixos-configuration directory into the new system's home.
+12. **ZFS pool export** (`STEP_ZFS_EXPORT`) — ZFS only: exports `zroot` so the initrd can import it on first boot.
 
 ### Disko configuration files
 
@@ -128,6 +130,45 @@ Located in `configurations/disko-configuration/current/`:
 | `disko-bios-btrfs.nix` | BIOS | None | btrfs |
 
 > BIOS path only supports btrfs. UEFI path supports both btrfs and ZFS.
+
+---
+
+## Modular step system
+
+Each installation step is defined as a standalone function backed by a single `STEPS` array in `nixos-install.sh`. This makes the script modular and extensible.
+
+### Run a single step
+
+```bash
+# Re-export the ZFS pool (after a failed export on first boot)
+sudo ./install.sh --step ZFS_EXPORT
+
+# Re-run partitioning (destructive — formats the disk)
+sudo ./install.sh --step PARTITION
+
+# Set the user password again
+sudo ./install.sh --step PASSWORD
+
+# Copy the config into the new system
+sudo ./install.sh --step COPY_CONFIG
+```
+
+Requirements for `--step`:
+- The checkpoint state file (`/tmp/nixos-install-state` by default) must exist — a full install must have completed at least `STEP_INTERACTIVE_SETUP`.
+- All required variables are loaded from the state file automatically.
+- The state file is **not** cleared after a standalone step (the install is not complete).
+
+### List available steps
+
+```bash
+./install.sh --list-steps
+```
+
+### Add a new step
+
+1. Write `step_my_new_step() { ... }` following the existing style in `nixos-install.sh`.
+2. Add `"STEP_MY_NEW_STEP"` to the `STEPS` array.
+3. The dispatch loop and `--step` mode pick it up automatically — no wiring needed.
 
 ---
 
