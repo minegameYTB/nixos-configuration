@@ -49,6 +49,7 @@
         mode = "";
         rootFsOptions = {
           mountpoint = "none";
+          acltype = "posixacl";
         };
         datasets = {
           ### System datasets
@@ -138,7 +139,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "16K";
             };
           };
           "var/cache" = {
@@ -151,7 +152,8 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              sync = "disabled";
+              recordsize = "128K";
             };
           };
 
@@ -173,10 +175,6 @@
             options = {
               mountpoint = "none";
               refreservation = "10G";
-              atime = "off";
-              xattr = "sa";
-              dnodesize = "auto";
-              recordsize = "1M";
             };
           };
         };
