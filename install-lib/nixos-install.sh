@@ -430,9 +430,31 @@ nixosInstallFn() {
   # The pool was imported by disko during partitioning. If left imported when
   # the system reboots, the initrd will refuse to import it with
   # forceImportRoot = false because it appears "busy" from the live CD.
+  #
+  # -f is required because datasets under /mnt are still mounted; without it
+  # zpool export fails silently, the pool stays imported, and the first boot
+  # hangs waiting for the ZFS pool that the initrd cannot import.
+  #
+  # We cd / first because if the shell's CWD is anywhere on the ZFS pool
+  # (e.g. /mnt/home/…) even zpool export -f will refuse with
+  # "cannot unmount /mnt: pool or dataset is busy".
   if [[ "${diskoFs:-}" == "zfs" ]] && ! checkpoint_skip "STEP_ZFS_EXPORT"; then
     info "Exporting ZFS pool zroot for clean reboot"
-    zpool export zroot 2>/dev/null || warn "Could not export zroot — continuing anyway"
+    cd /
+
+    if zpool export -f zroot; then
+      info "Pool zroot exported successfully — initrd will import it on first boot"
+    else
+      warn "Could not export zroot — trying recursive unmount of /mnt first"
+      if umount -R /mnt 2>/dev/null && zpool export -f zroot; then
+        info "Pool zroot exported after unmount"
+      else
+        warn "Still could not export zroot — first boot may fail to import the pool"
+        warn "Recovery: reboot the live CD, then run:"
+        warn "  zpool export -f zroot"
+        warn "  reboot"
+      fi
+    fi
     checkpoint_done "STEP_ZFS_EXPORT"
   fi
 
