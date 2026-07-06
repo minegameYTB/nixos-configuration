@@ -15,6 +15,10 @@
   ### ZFS pool is inside the LUKS mapper — scan /dev/mapper/
   boot.zfs.devNodes = "/dev/mapper";
 
+  ### Forcer l'import (-f) pour les pools derrière LUKS
+  ### (contrebalance le forceImportRoot = false de zfs-common.nix)
+  boot.zfs.forceImportRoot = true;
+
   ### LUKS initrd setup for encrypted ZFS
   boot.initrd.kernelModules = [
     "mmc_block"
