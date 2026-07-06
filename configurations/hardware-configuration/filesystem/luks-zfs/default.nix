@@ -17,7 +17,7 @@
 
   ### Forcer l'import (-f) pour les pools derrière LUKS
   ### (contrebalance le forceImportRoot = false de zfs-common.nix)
-  boot.zfs.forceImportRoot = true;
+  boot.zfs.forceImportRoot = lib.mkDefault true;
 
   ### LUKS initrd setup for encrypted ZFS
   boot.initrd.kernelModules = [
