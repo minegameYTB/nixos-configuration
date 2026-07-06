@@ -61,32 +61,40 @@ let
   ###     }
   ### ---------------------------------------------------------------------------
   mkMachine =
-    { hostname, profile, fs, homeManagerType ? "desktop", extraModules ? [ ], arch ? defaultArch, usePatched ? false }:
+    {
+      hostname,
+      profile,
+      fs,
+      homeManagerType ? "desktop",
+      extraModules ? [ ],
+      arch ? defaultArch,
+      usePatched ? false,
+    }:
     let
       ### Select pkgs set (optionally use patched nixpkgs for testing PRs/patches)
       machinePkgs = if usePatched then pkgsPatched arch else pkgsFor arch;
       ### Select home-manager config based on machine type (desktop or server)
-      hmConfig = if homeManagerType == "server" then homeManagerServerConfig else homeManagerDesktopConfig;
+      hmConfig =
+        if homeManagerType == "server" then homeManagerServerConfig else homeManagerDesktopConfig;
     in
     lib.nixosSystem {
       system = arch;
       pkgs = machinePkgs;
       specialArgs = specialArgs arch;
-      modules =
-        [
-          ./configurations/configuration.nix
+      modules = [
+        ./configurations/configuration.nix
 
-          profile
-          fs
+        profile
+        fs
 
-          (overlay arch)
+        (overlay arch)
 
-          { networking.hostName = hostname; }
+        { networking.hostName = hostname; }
 
-          home-manager.nixosModules.home-manager
-          (hmConfig arch)
-        ]
-        ++ extraModules;
+        home-manager.nixosModules.home-manager
+        (hmConfig arch)
+      ]
+      ++ extraModules;
     };
 in
 {
@@ -185,6 +193,6 @@ in
   vm-desktop-efi-luks-zfs = mkMachine {
     hostname = "nixos-kvm-desktop-zfs";
     profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/luks-zfs;
+    fs = ./configurations/hardware-configuration/filesystem/luks-zfs/vm.nix;
   };
 }

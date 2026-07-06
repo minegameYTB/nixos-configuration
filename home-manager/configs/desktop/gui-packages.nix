@@ -45,7 +45,8 @@ in
     )
     ### aarch64 only
     ++ lib.optionals isAarch64 (
-      with pkgs; [
+      with pkgs;
+      [
         legcord
       ]
     );

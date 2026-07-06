@@ -22,13 +22,13 @@
     ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
     ../../configurations/configs/specific/vm/guest/openssh.nix
 
-  ### Other
-  ../../configurations/hardware-configuration/specific/swap.nix
+    ### Other
+    ../../configurations/hardware-configuration/specific/swap.nix
 
-  ### NixOS configuration module (distant flake)
-  ### import default.nix from this directory ↓
-  ../../configurations/config-modules
-];
+    ### NixOS configuration module (distant flake)
+    ### import default.nix from this directory ↓
+    ../../configurations/config-modules
+  ];
 
   ### Disable sleep states on VMs
   ### The guest has no control over host suspend — when the host suspends,

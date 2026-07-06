@@ -20,10 +20,10 @@
     ../../configurations/configs/specific/vm/guest/openssh.nix
     #../../configurations/configs/specific/vm/guest/tailscale.nix
 
-  ### Other
-  ../../configurations/hardware-configuration/specific/swap.nix
-  ../../configurations/config-modules/declarative-flatpak
-];
+    ### Other
+    ../../configurations/hardware-configuration/specific/swap.nix
+    ../../configurations/config-modules/declarative-flatpak
+  ];
 
   ### Disable sleep states on VMs
   ### The guest has no control over host suspend — when the host suspends,
@@ -35,5 +35,4 @@
     AllowHybridSleep = "no";
     AllowSuspendThenHibernate = "no";
   };
-}
 }
