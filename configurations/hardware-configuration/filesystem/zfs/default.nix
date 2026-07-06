@@ -13,6 +13,9 @@
     { device = "/dev/zvol/zroot/swap"; }
   ];
 
+  ### ZFS pool is directly on the partition — scan by partuuid
+  boot.zfs.devNodes = "/dev/disk/by-partuuid";
+
   ### Disko-generated mountpoints (zroot datasets)
   fileSystems."/" = {
     device = "zroot/ROOT/nixos";

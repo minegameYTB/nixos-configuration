@@ -12,6 +12,9 @@
     { device = "/dev/zvol/zroot/swap"; }
   ];
 
+  ### ZFS pool is inside the LUKS mapper — scan /dev/mapper/
+  boot.zfs.devNodes = "/dev/mapper";
+
   ### LUKS initrd setup for encrypted ZFS
   boot.initrd.kernelModules = [
     "mmc_block"
