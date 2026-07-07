@@ -40,17 +40,22 @@ mock_disko() {
 # ---------------------------------------------------------------------------
 # Helper: test a single combination
 # ---------------------------------------------------------------------------
-# Args: boot_mode (efi|bios) fs (btrfs|zfs) encrypted (y|N)
+# Args: boot_mode (efi|bios) fs (btrfs|zfs) encrypted (y|N) enc_type (luks|native)
 test_combination() {
   local boot="$1" fs="$2" encrypted="$3"
+  local enc_type="${4:-luks}"
   local expected_file=""
   local label=""
 
-  # Simulate the logic from nixos-install.sh lines 221-250
   if [[ "$boot" == "efi" ]]; then
     if [[ "$encrypted" =~ ^[yY]$ ]]; then
-      expected_file="$SCRIPT_DIR/configurations/disko-configuration/current/disko-efi-luks-${fs}.nix"
-      label="UEFI + LUKS + ${fs}"
+      if [[ "$enc_type" == "native" ]]; then
+        expected_file="$SCRIPT_DIR/configurations/disko-configuration/current/disko-efi-${fs}-encrypted.nix"
+        label="UEFI + native encrypt + ${fs}"
+      else
+        expected_file="$SCRIPT_DIR/configurations/disko-configuration/current/disko-efi-luks-${fs}.nix"
+        label="UEFI + LUKS + ${fs}"
+      fi
     else
       expected_file="$SCRIPT_DIR/configurations/disko-configuration/current/disko-efi-${fs}.nix"
       label="UEFI + noLUKS + ${fs}"
@@ -75,6 +80,7 @@ echo -e "${CYAN}Disko config selection${RESET}"
 test_combination efi   btrfs  N
 test_combination efi   btrfs  Y
 test_combination efi   zfs    N
+test_combination efi   zfs    Y  native
 test_combination bios  btrfs  N
 
 echo
@@ -267,6 +273,7 @@ test_step_system() {
   for expected in \
     STEP_INTERACTIVE_SETUP \
     STEP_LUKS_SETUP \
+    STEP_ZFS_KEY_SETUP \
     STEP_PARTITION \
     STEP_ZFS_TUNE \
     STEP_LUKS_PASSPHRASE \
@@ -286,6 +293,7 @@ test_step_system() {
   for func in \
     step_interactive_setup \
     step_luks_setup \
+    step_zfs_key_setup \
     step_partition \
     step_zfs_tune \
     step_luks_passphrase \
@@ -369,7 +377,7 @@ echo -e "${CYAN}Results: ${PASS} passed, ${FAIL} failed${RESET}"
 echo
 echo -e "${CYAN}Disko file existence check${RESET}"
 for f in disko-efi-btrfs.nix disko-efi-luks-btrfs.nix \
-         disko-efi-zfs.nix \
+         disko-efi-zfs.nix disko-efi-zfs-encrypted.nix \
          disko-bios-btrfs.nix; do
   if [[ -f "$SCRIPT_DIR/configurations/disko-configuration/current/$f" ]]; then
     ok "$f exists"

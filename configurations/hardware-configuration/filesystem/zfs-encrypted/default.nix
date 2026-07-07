@@ -8,13 +8,22 @@
 {
   imports = [ ../zfs-common.nix ];
 
+  ### Load the MMC/SD block driver in initrd so the key device is available
+  boot.initrd.kernelModules = [
+    "mmc_block"
+  ];
+
+  ### Enable ZFS encryption key loading at boot
+  ### Datasets have keylocation pointing to the raw key device (set by disko)
+  boot.zfs.requestEncryptionCredentials = true;
+
+  ### ZFS pool is directly on the partition — scan by partuuid
+  boot.zfs.devNodes = "/dev/disk/by-partuuid";
+
   ### Persistent swap zvol (created by disko)
   swapDevices = [
     { device = "/dev/zvol/zroot/swap"; }
   ];
-
-  ### ZFS pool is directly on the partition — scan by partuuid
-  boot.zfs.devNodes = "/dev/disk/by-partuuid";
 
   ### Disko-generated mountpoints (zroot datasets)
   fileSystems."/" = {

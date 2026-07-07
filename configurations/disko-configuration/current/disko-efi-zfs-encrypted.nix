@@ -1,8 +1,19 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
-  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixe value or 100% for the disk size",
+  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixed value or 100% for the disk size",
+  keyFile ? throw "Set path to the raw partition holding the ZFS encryption key, e.g. /dev/disk/by-id/mmc-APPSD_0x00000354-part1 or /dev/sdb1",
   ...
 }:
+
+let
+  inherit keyFile;
+
+  encryptedOpts = {
+    encryption = "aes-256-gcm";
+    keyformat = "raw";
+    keylocation = "file:///tmp/zfs-key";
+  };
+in
 
 {
   disko.devices = {
@@ -52,10 +63,12 @@
           acltype = "posixacl";
         };
         datasets = {
-          ### System datasets
+          ### --- Encrypted datasets ---
+
+          ### Root dataset (encrypted, parent of ROOT/nixos)
           "ROOT" = {
             type = "zfs_fs";
-            options = {
+            options = encryptedOpts // {
               mountpoint = "none";
               compression = "zstd-5";
               atime = "off";
@@ -63,6 +76,9 @@
               dnodesize = "auto";
               recordsize = "1M";
             };
+            postCreateHook = ''
+              zfs set keylocation="file://${keyFile}" "zroot/ROOT"
+            '';
           };
           "ROOT/nixos" = {
             type = "zfs_fs";
@@ -77,11 +93,11 @@
             };
           };
 
-          ### Home dataset
+          ### Home dataset (encrypted)
           "home" = {
             type = "zfs_fs";
             mountpoint = "/home";
-            options = {
+            options = encryptedOpts // {
               mountpoint = "legacy";
               compression = "zstd-5";
               atime = "off";
@@ -89,9 +105,14 @@
               dnodesize = "auto";
               recordsize = "1M";
             };
+            postCreateHook = ''
+              zfs set keylocation="file://${keyFile}" "zroot/home"
+            '';
           };
 
-          ### Nix dataset (primarycache=metadata for /nix)
+          ### --- Unencrypted datasets ---
+
+          ### Nix dataset (unencrypted for performance)
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
@@ -107,9 +128,10 @@
 
           ### Var datasets — each FHS directory under /var gets its own dataset
           ### (inspired by FreeBSD's default ZFS layout)
+          ### var parent is encrypted; children inherit encryption automatically.
           "var" = {
             type = "zfs_fs";
-            options = {
+            options = encryptedOpts // {
               mountpoint = "none";
               compression = "zstd-5";
               atime = "off";
@@ -117,6 +139,9 @@
               dnodesize = "auto";
               recordsize = "1M";
             };
+            postCreateHook = ''
+              zfs set keylocation="file://${keyFile}" "zroot/var"
+            '';
           };
           "var/db" = {
             type = "zfs_fs";
@@ -216,7 +241,7 @@
             };
           };
 
-          ### Swap volume
+          ### Swap volume (unencrypted)
           "swap" = {
             type = "zfs_volume";
             size = "8G";
@@ -228,7 +253,7 @@
             };
           };
 
-          ### Reserved space
+          ### Reserved space (unencrypted)
           "reserved" = {
             type = "zfs_fs";
             options = {

@@ -52,15 +52,25 @@ configurations/
 
 ## Install System (`install-lib/`)
 - **`install.sh`** — auto-detects NixOS vs standalone Linux
-- **`nixos-install.sh`** — 10-step system with checkpoint/resume
-  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
+- **`nixos-install.sh`** — 11-step system with checkpoint/resume
+  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → ZFS_KEY_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
   - Temp swap: btrfs (mkswapfile), ZFS (zvol), ext4/other (fallocate)
+  - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file
 - **`hm-standalone-install.sh`** — standalone HM install on any Linux
 - **Checkpoint system** (`checkpoint.sh`): state file in `/tmp/nixos-install-state`, persists interactive answers, survives crashes
-- LUKS+ZFS removed — ZFS selection silently skips LUKS prompt in `step_interactive_setup`
+- ZFS with native encryption uses `disko-efi-zfs-encrypted.nix` and `zfs-encrypted/` filesystem module
+
+### ZFS Native Encryption
+- Datasets are encrypted with `aes-256-gcm` + `keyformat = "raw"` (32-byte key)
+- `boot.zfs.requestEncryptionCredentials = true` triggers `zfs load-key -a` in initrd
+- Key stored on a raw partition (e.g. SD card) at install time — read directly by initrd at boot
+- `boot.initrd.kernelModules = [ "mmc_block" ]` ensures the key device is available
+- Encrypted datasets: `ROOT` (covers `/`), `home`, `var` (covers `/var/log`, `/var/cache`, `/var/lib/libvirt`)
+- Unencrypted: `nix` (performance), `swap`, `reserved`
+- The disko config's `postCreateHook` switches `keylocation` from the install-time temp path to the permanent raw device path
 
 ## Testing
-- `script/test-install-logic.sh` — 64 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
+- `script/test-install-logic.sh` — 68 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
 - Run: `bash script/test-install-logic.sh`
 
 ## Development Workflow

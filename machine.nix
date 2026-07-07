@@ -28,9 +28,10 @@ let
   ###   extraModules    : list of additional NixOS modules to inject
   ###
   ### Available filesystem configs:
-  ###   ./configurations/hardware-configuration/filesystem/btrfs          — EFI/BIOS btrfs
-  ###   ./configurations/hardware-configuration/filesystem/luks-btrfs     — EFI LUKS + btrfs
-  ###   ./configurations/hardware-configuration/filesystem/zfs            — EFI ZFS (zroot)
+  ###   ./configurations/hardware-configuration/filesystem/btrfs              — EFI/BIOS btrfs
+  ###   ./configurations/hardware-configuration/filesystem/luks-btrfs         — EFI LUKS + btrfs
+  ###   ./configurations/hardware-configuration/filesystem/zfs                — EFI ZFS (zroot)
+  ###   ./configurations/hardware-configuration/filesystem/zfs-encrypted      — EFI ZFS (zroot) + native encryption
   ###
   ### Install with: sudo ./install.sh  (prompts for filesystem choice)
   ###
@@ -180,6 +181,13 @@ in
     hostname = "nixos-kvm-desktop-zfs";
     profile = ./profiles/vm-desktop-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
+  };
+
+  # VM preset (desktop efi ZFS encrypted) — same RAM requirements as ZFS
+  vm-desktop-efi-zfs-encrypted = mkMachine {
+    hostname = "nixos-kvm-desktop-zfs-crypt";
+    profile = ./profiles/vm-desktop-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/zfs-encrypted/vm.nix;
   };
 
 }
