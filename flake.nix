@@ -16,6 +16,7 @@
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-25-11.url = "github:NixOS/nixpkgs/nixos-25.11";
     #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
