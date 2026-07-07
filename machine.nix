@@ -31,7 +31,6 @@ let
   ###   ./configurations/hardware-configuration/filesystem/btrfs          — EFI/BIOS btrfs
   ###   ./configurations/hardware-configuration/filesystem/luks-btrfs     — EFI LUKS + btrfs
   ###   ./configurations/hardware-configuration/filesystem/zfs            — EFI ZFS (zroot)
-  ###   ./configurations/hardware-configuration/filesystem/luks-zfs       — EFI LUKS + ZFS
   ###
   ### Install with: sudo ./install.sh  (prompts for filesystem choice)
   ###
@@ -43,12 +42,6 @@ let
   ###       fs       = ./configurations/hardware-configuration/filesystem/btrfs;
   ###     }
   ###
-  ###   ZFS encrypted machine:
-  ###     mkMachine {
-  ###       hostname = "my-zfs-box";
-  ###       profile  = ./profiles/my-profile.nix;
-  ###       fs       = ./configurations/hardware-configuration/filesystem/luks-zfs;
-  ###     }
   ###
   ###   Server on aarch64 with a custom nixpkgs patch:
   ###     mkMachine {
@@ -189,10 +182,4 @@ in
     fs = ./configurations/hardware-configuration/filesystem/zfs;
   };
 
-  # VM preset (desktop efi LUKS+ZFS) — requires at least 16 GiB RAM
-  vm-desktop-efi-luks-zfs = mkMachine {
-    hostname = "nixos-kvm-desktop-zfs";
-    profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/luks-zfs/vm.nix;
-  };
 }

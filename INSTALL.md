@@ -126,10 +126,9 @@ Located in `configurations/disko-configuration/current/`:
 | `disko-efi-btrfs.nix` | UEFI | None | btrfs |
 | `disko-efi-luks-btrfs.nix` | UEFI | LUKS | btrfs |
 | `disko-efi-zfs.nix` | UEFI | None | ZFS (zroot) |
-| `disko-efi-luks-zfs.nix` | UEFI | LUKS | ZFS (zroot) |
 | `disko-bios-btrfs.nix` | BIOS | None | btrfs |
 
-> BIOS path only supports btrfs. UEFI path supports both btrfs and ZFS.
+> BIOS path only supports btrfs. UEFI path supports btrfs and ZFS.
 
 ---
 

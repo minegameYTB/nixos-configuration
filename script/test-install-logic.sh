@@ -75,7 +75,6 @@ echo -e "${CYAN}Disko config selection${RESET}"
 test_combination efi   btrfs  N
 test_combination efi   btrfs  Y
 test_combination efi   zfs    N
-test_combination efi   zfs    Y
 test_combination bios  btrfs  N
 
 echo
@@ -370,7 +369,7 @@ echo -e "${CYAN}Results: ${PASS} passed, ${FAIL} failed${RESET}"
 echo
 echo -e "${CYAN}Disko file existence check${RESET}"
 for f in disko-efi-btrfs.nix disko-efi-luks-btrfs.nix \
-         disko-efi-zfs.nix disko-efi-luks-zfs.nix \
+         disko-efi-zfs.nix \
          disko-bios-btrfs.nix; do
   if [[ -f "$SCRIPT_DIR/configurations/disko-configuration/current/$f" ]]; then
     ok "$f exists"

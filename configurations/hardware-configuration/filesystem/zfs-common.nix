@@ -49,11 +49,10 @@
         pkgs.zfs
     );
 
-    ### Safe mode — never force import (manual intervention required)
-    forceImportRoot = false;
+    ### devNodes is set per-filesystem config (zfs vs btrfs)
 
-    ### devNodes is set per-filesystem config (zfs vs luks-zfs)
-    ### because LUKS+ZFS needs /dev/mapper, not /dev/disk/by-partuuid.
+    ### Do not force-import pools with -f
+    forceImportRoot = false;
   };
 
   ### Monthly ZFS pool scrub
