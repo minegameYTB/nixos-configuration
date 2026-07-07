@@ -23,7 +23,7 @@ in
     ])
     ### All architectures (unstable)
     ++ (with pkgs.pkgsUnstable; [
-      bitwarden-desktop
+      #bitwarden-desktop # Temporary disable bitwarden-desktop bcause of electron-39 in nixpkgs (compile package instead of use cache (unsecure package))
       #rpi-imager
     ])
     ### x86_64 only
