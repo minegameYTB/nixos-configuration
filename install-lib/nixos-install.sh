@@ -282,28 +282,21 @@ step_interactive_setup() {
     fsChoice="${fsChoice:-B}"
     if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
       diskoFs="zfs"
-      echo "Using ZFS filesystem"
+      diskoEncrypted="N"
+      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs.nix"
+      echo "Using ZFS filesystem (non-encrypted)"
     else
       diskoFs="btrfs"
       echo "Using btrfs filesystem"
-    fi
-
-    read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
-    diskoEncrypted="${diskoEncrypted:-N}"
-
-    if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-      if [[ "$diskoFs" == "zfs" ]]; then
-        warn "LUKS+ZFS is temporarily unavailable — falling back to unencrypted ZFS"
-        diskoEncrypted="N"
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs.nix"
-        echo "Using standard (non-encrypted) ZFS configuration"
+      read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
+      diskoEncrypted="${diskoEncrypted:-N}"
+      if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
+        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix"
+        echo "Using encrypted LUKS configuration (btrfs)"
       else
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-${diskoFs}.nix"
-        echo "Using encrypted LUKS configuration (${diskoFs})"
+        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-btrfs.nix"
+        echo "Using standard (non-encrypted) btrfs configuration"
       fi
-    else
-      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-${diskoFs}.nix"
-      echo "Using standard (non-encrypted) configuration (${diskoFs})"
     fi
   else
     echo "BIOS boot detected — using disko-bios-btrfs configuration"
