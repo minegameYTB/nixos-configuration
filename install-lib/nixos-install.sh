@@ -469,7 +469,10 @@ step_zfs_export() {
 
   cd /
 
-  # Retry loop with escalating measures
+  # Unmount everything under /mnt so the pool can be exported cleanly.
+  umount -R /mnt 2>/dev/null || true
+
+  # Retry loop with escalating measures (safety net if umount wasn't enough)
   local attempt=0
   while (( attempt < 3 )); do
     if zpool export -f zroot; then
@@ -481,10 +484,8 @@ step_zfs_export() {
     (( attempt++ )) || true
     case "$attempt" in
       1)
-        warn "Could not export zroot — deactivating swap and unmounting /mnt"
         swapoff "/dev/zvol/zroot/swap"         2>/dev/null || true
         swapoff "/dev/zvol/zroot/swap-install" 2>/dev/null || true
-        umount -R /mnt 2>/dev/null || true
         sleep 1
         ;;
       2)
