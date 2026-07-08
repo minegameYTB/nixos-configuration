@@ -58,7 +58,7 @@ configurations/
   - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file
 - **`hm-standalone-install.sh`** — standalone HM install on any Linux
 - **Checkpoint system** (`checkpoint.sh`): state file in `/tmp/nixos-install-state`, persists interactive answers, survives crashes
-- ZFS with native encryption uses `disko-efi-zfs-encrypted.nix` and `zfs-encrypted/` filesystem module
+- ZFS native encryption support was removed (see git history for `disko-efi-zfs-encrypted.nix` and `zfs-encrypted/` filesystem module)
 
 ### ZFS Native Encryption
 - Datasets are encrypted with `aes-256-gcm` + `keyformat = "raw"` (32-byte key)

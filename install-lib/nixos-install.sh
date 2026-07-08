@@ -13,7 +13,6 @@
 STEPS=(
   "STEP_INTERACTIVE_SETUP"
   "STEP_LUKS_SETUP"
-  "STEP_ZFS_KEY_SETUP"
   "STEP_PARTITION"
   "STEP_ZFS_TUNE"
   "STEP_LUKS_PASSPHRASE"
@@ -52,7 +51,6 @@ load_step_state() {
   diskoFs="$(checkpoint_get      "VAR_DISKO_FS")"
   diskoEncrypted="$(checkpoint_get "VAR_DISKO_ENCRYPTED")"
   keyFile="$(checkpoint_get      "VAR_KEY_FILE")"
-  zfsKeyFile="$(checkpoint_get   "VAR_ZFS_KEY_FILE")"
   addPassphrase="$(checkpoint_get "VAR_ADD_PASSPHRASE")"
   luksKeySize="$(checkpoint_get  "VAR_LUKS_KEY_SIZE")"
   userName="$(checkpoint_get     "VAR_USERNAME")"
@@ -284,18 +282,9 @@ step_interactive_setup() {
     fsChoice="${fsChoice:-B}"
     if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
       diskoFs="zfs"
+      diskoEncrypted="N"
+      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs.nix"
       echo "Using ZFS filesystem"
-      read -r -p "Encrypt data with ZFS native encryption? [y/N]: " zfsEncryptChoice
-      zfsEncryptChoice="${zfsEncryptChoice:-N}"
-      if [[ "$zfsEncryptChoice" =~ ^[yY]$ ]]; then
-        diskoEncrypted="ZFS"
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs-encrypted.nix"
-        echo "Using encrypted ZFS configuration (native encryption)"
-      else
-        diskoEncrypted="N"
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs.nix"
-        echo "Using ZFS filesystem (non-encrypted)"
-      fi
     else
       diskoFs="btrfs"
       echo "Using btrfs filesystem"
@@ -355,39 +344,6 @@ step_luks_setup() {
   checkpoint_done "STEP_LUKS_SETUP"
 }
 
-step_zfs_key_setup() {
-  if [[ "${diskoEncrypted:-N}" != "ZFS" ]]; then
-    return
-  fi
-  if checkpoint_skip "STEP_ZFS_KEY_SETUP"; then
-    return
-  fi
-
-  local zfsKeyTemp="/tmp/zfs-key"
-  info "Generating 32-byte ZFS encryption key"
-  run_command dd if=/dev/urandom of="$zfsKeyTemp" bs=32 count=1
-  run_command chmod 400 "$zfsKeyTemp"
-
-  read -r -p "Store the key on a [f]ile or a raw [p]artition? [F/p]: " keyStorage
-  keyStorage="${keyStorage:-F}"
-
-  if [[ "$keyStorage" =~ ^[pP]$ ]]; then
-    showDiskLsblk
-    read -r -e -p "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
-    info "Writing key to ${keyFile}"
-    warn "This will overwrite the first 32 bytes of the device — save the key ASAP"
-    sleep 5
-    run_command dd if="$zfsKeyTemp" of="$keyFile" bs=32 count=1
-  else
-    keyFile="/tmp/zfs-key"
-    info "Key file at ${keyFile}"
-  fi
-
-  checkpoint_set "VAR_KEY_FILE" "$keyFile"
-  checkpoint_set "VAR_ZFS_KEY_FILE" "$keyFile"
-  checkpoint_done "STEP_ZFS_KEY_SETUP"
-}
-
 step_partition() {
   if checkpoint_skip "STEP_PARTITION"; then
     return
@@ -395,7 +351,7 @@ step_partition() {
   info "Partitioning disk: ${deviceDisk}"
   local diskoArgs
   diskoArgs=(--argstr device "$deviceDisk" --argstr size "$sizeDisk")
-  if [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]] || [[ "${diskoEncrypted:-N}" == "ZFS" ]]; then
+  if [[ "${diskoEncrypted:-N}" =~ ^[yY]$ ]]; then
     diskoArgs+=(--argstr keyFile "$keyFile")
   fi
 
