@@ -242,19 +242,6 @@ in
               exec = "off";
             };
           };
-          "var/crash" = {
-            type = "zfs_fs";
-            mountpoint = "/var/crash";
-            options = {
-              mountpoint = "legacy";
-              compression = "zstd-5";
-              atime = "off";
-              xattr = "sa";
-              dnodesize = "auto";
-              quota = "2G";
-            };
-          };
-
           ### Swap volume (unencrypted)
           "swap" = {
             type = "zfs_volume";
