@@ -101,6 +101,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "1M";
               primarycache = "metadata";
             };
           };
@@ -115,6 +116,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "128K";
               refquota = "30G";
             };
           };
@@ -141,6 +143,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "64K";
             };
           };
           "var/lib" = {
@@ -152,6 +155,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "128K";
             };
           };
           "var/lib/libvirt" = {
@@ -202,6 +206,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "64K";
             };
           };
           "var/tmp" = {
@@ -213,6 +218,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
+              recordsize = "64K";
               setuid = "off";
               exec = "off";
             };
