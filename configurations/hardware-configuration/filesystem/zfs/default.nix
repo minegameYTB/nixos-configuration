@@ -8,6 +8,9 @@
 {
   imports = [ ../zfs-common.nix ];
 
+  ### No encryption on datasets — skip zfs load-key -a in initrd (speeds boot)
+  boot.zfs.requestEncryptionCredentials = false;
+
   ### Persistent swap zvol (created by disko)
   swapDevices = [
     { device = "/dev/zvol/zroot/swap"; }

@@ -32,9 +32,6 @@
     #"zfs.zfs_arc_max=8589934592"
   ];
 
-  ### No encryption on datasets — skip zfs load-key -a in initrd (speeds boot)
-  boot.zfs.requestEncryptionCredentials = false;
-
   ### Unique hostId required by ZFS
   ### (first 8 chars of machine-id from hardening.nix)
   networking.hostId = lib.mkDefault "b08dfa60";
