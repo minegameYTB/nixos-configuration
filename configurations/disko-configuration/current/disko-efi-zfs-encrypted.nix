@@ -70,7 +70,7 @@ in
             type = "zfs_fs";
             options = encryptedOpts // {
               mountpoint = "none";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -85,7 +85,7 @@ in
             mountpoint = "/";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -100,7 +100,7 @@ in
             mountpoint = "/home";
             options = encryptedOpts // {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -119,7 +119,7 @@ in
             mountpoint = "/nix";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -134,7 +134,7 @@ in
             mountpoint = "/nix/var";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -150,7 +150,7 @@ in
             type = "zfs_fs";
             options = encryptedOpts // {
               mountpoint = "none";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -165,7 +165,7 @@ in
             mountpoint = "/var/db";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -177,7 +177,7 @@ in
             mountpoint = "/var/lib";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -189,7 +189,7 @@ in
             mountpoint = "/var/lib/libvirt";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -202,7 +202,7 @@ in
             options = {
               mountpoint = "legacy";
               quota = "2G";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -215,7 +215,7 @@ in
             options = {
               mountpoint = "legacy";
               quota = "5G";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -228,7 +228,7 @@ in
             mountpoint = "/var/spool";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
@@ -240,7 +240,7 @@ in
             mountpoint = "/var/tmp";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
