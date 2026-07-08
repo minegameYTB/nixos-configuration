@@ -74,6 +74,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "1M";
+              quota = "3G";
             };
           };
 
