@@ -105,6 +105,20 @@
             };
           };
 
+          ### Nix var dataset (build artefacts, DB — refquota protects store)
+          "nix/var" = {
+            type = "zfs_fs";
+            mountpoint = "/nix/var";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-5";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              refquota = "30G";
+            };
+          };
+
           ### Var datasets — each FHS directory under /var gets its own dataset
           ### (inspired by FreeBSD's default ZFS layout)
           "var" = {

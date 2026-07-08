@@ -32,6 +32,11 @@
     fsType = "zfs";
   };
 
+  fileSystems."/nix/var" = {
+    device = "zroot/nix/var";
+    fsType = "zfs";
+  };
+
   fileSystems."/var/db" = {
     device = "zroot/var/db";
     fsType = "zfs";
