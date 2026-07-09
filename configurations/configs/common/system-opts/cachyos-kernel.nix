@@ -28,7 +28,8 @@
 
         suffix = if host == "desktop" && !isArm then desktopSuffix else "";
 
-        base = if host == "desktop" then "linuxPackages-cachyos-lts-lto" else "linuxPackages-cachyos-lts";
+        base =
+          if host == "desktop" then "linuxPackages-cachyos-bore-lto" else "linuxPackages-cachyos-server";
 
         cachyName = base + suffix;
         cachyKernel = pkgs.cachyosKernels.${cachyName} or null;
