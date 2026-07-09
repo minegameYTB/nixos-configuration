@@ -2,14 +2,18 @@
 
 {
   ### Unused for the moment
-  home.packages = with pkgs; [
-    ### Theme
-    adw-gtk3
+  home.packages =
+    with pkgs;
+    [
+      ### Theme
+      adw-gtk3
+    ]
+    ++ (with pkgs2511; [
 
-    ### Cursor
-    ### same for cursor (move this to stylix configuration too)
-    catppuccin-cursors.mochaDark
-  ];
+      ### Cursor
+      ### same for cursor (move this to stylix configuration too)
+      catppuccin-cursors.mochaDark
+    ]);
 
   ### Install theme on home directory
   home.file = {

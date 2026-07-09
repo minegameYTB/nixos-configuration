@@ -12,7 +12,6 @@
     ### X11 and desktop environment
     ../../configurations/configs/specific/desktop/environment/gnome.nix
     ../../configurations/configs/specific/desktop/sound.nix
-    ../../configurations/configs/specific/desktop/autologin.nix
     #../../configurations/configs/specific/desktop/printer.nix
     ../../configurations/configs/specific/desktop/browser
 
@@ -30,4 +29,15 @@
     ### import default.nix from this directory ↓
     ../../configurations/config-modules
   ];
+
+  ### Disable sleep states on VMs
+  ### The guest has no control over host suspend — when the host suspends,
+  ### virtual disks freeze mid-I/O. ZFS is especially sensitive to this
+  ### (pool gets suspended, requires reboot). Override per-host if needed.
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "no";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "no";
+  };
 }

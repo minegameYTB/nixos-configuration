@@ -30,10 +30,10 @@
       max-jobs = 2;
       cores = 2;
       substituters = [
-        "https://cache.nixos.org/"
+        #"https://cache.nixos.org/"
       ];
       trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
     };
     gc = {

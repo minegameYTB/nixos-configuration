@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   ...
 }:
 
@@ -69,6 +68,16 @@
     fsType = "btrfs";
     options = [
       "subvol=@cache"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
+
+  fileSystems."/var/lib/libvirt" = lib.mkIf config.virtualisation.libvirtd.enable {
+    device = "/dev/mapper/luks-encrypted";
+    fsType = "btrfs";
+    options = [
+      "subvol=@libvirt"
       "compress=zstd:5"
       "noatime"
     ];

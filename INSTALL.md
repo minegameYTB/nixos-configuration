@@ -31,8 +31,15 @@ install-lib/
 ## Usage
 
 ```bash
-sudo ./install.sh
+sudo ./install.sh [OPTION]...
 ```
+
+| Flag | Description |
+|---|---|
+| `--dont-check` | Skip the git repository version check |
+| `--help`, `-h` | Show usage and exit |
+| `--list-steps` | List all available installation steps and exit |
+| `--step STEP_NAME` | Run only the specified installation step |
 
 The script auto-detects the environment:
 
@@ -50,14 +57,14 @@ These variables can be set before running the script to adjust its behaviour wit
 
 | Variable | Default | Description |
 |---|---|---|
-| `SWAP_THRESHOLD_GiB` | `4` | RAM threshold in GiB below which a temporary swap is created |
+| `SWAP_THRESHOLD_GiB` | `8` | RAM threshold in GiB below which a temporary swap is created |
 | `SWAP_SIZE_MiB` | `8192` | Swap size in MiB |
 | `FORCE_SWAP` | *(unset)* | `1` = always create swap · `0` = never create swap |
 
 **Examples:**
 
 ```bash
-# Default behaviour: swap created only if RAM < 4 GiB
+# Default behaviour: swap created only if RAM < 8 GiB
 sudo ./install.sh
 
 # Always create swap (useful on machines with fast but limited RAM)
@@ -68,6 +75,19 @@ FORCE_SWAP=0 sudo ./install.sh
 
 # Raise the threshold to 8 GiB
 SWAP_THRESHOLD_GiB=8 sudo ./install.sh
+```
+
+### ZFS ARC
+
+| Variable | Default | Description |
+|---|---|---|
+| `ZFS_ARC_MAX_GiB` | `4` | Max ARC size in GiB during install (ZFS only) |
+
+**Examples:**
+
+```bash
+# Override: 8 GiB ARC during install (for high-RAM machines)
+ZFS_ARC_MAX_GiB=8 sudo ./install.sh
 ```
 
 ### Output
@@ -82,28 +102,72 @@ SWAP_THRESHOLD_GiB=8 sudo ./install.sh
 
 Triggered when `/etc/NIXOS` and `/run/current-system` are both present.
 
+Checkpoint names (usable with `--step`) are shown in parentheses.
+
 1. **Root check** — exits if not run as root.
-2. **RAM detection** — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
-3. **Boot method detection** — checks `/sys/firmware/efi/fw_platform_size` to pick UEFI or BIOS disko configuration.
-4. **Encryption prompt** — UEFI only: asks whether to use a LUKS-encrypted layout.
-5. **Disk selection** — lists available block devices, prompts for target device then size (accepts formats like `100%` or `50G`).
-6. **Profile selection** — runs `nix flake show` and prompts for the NixOS profile name.
-7. **5-second countdown** — last chance to abort before destructive operations begin.
-8. **Disko** — partitions, formats and mounts the target disk according to the selected `.nix` configuration.
-9. **LUKS passphrase** (optional) — if encryption was chosen and a passphrase was requested, adds it as a second LUKS key slot.
-10. **Temporary swap** — if `needSwap` is set, creates a swapfile on `/mnt` sized to total RAM. Filesystem-aware (see below).
-11. **`nixos-install`** — installs the flake configuration onto the mounted disk.
-12. **Swap teardown** — deactivates and removes the temporary swapfile.
+2. **RAM detection** (`detectRam`) — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
+3. **Interactive setup** (`STEP_INTERACTIVE_SETUP`) — boot method detection, filesystem choice (btrfs/ZFS), encryption prompt, disk selection, profile selection, 5-second countdown.
+4. **LUKS key setup** (`STEP_LUKS_SETUP`) — key generation or path, optional passphrase choice. Skipped when encryption was declined.
+5. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
+6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 4 GiB).
+7. **LUKS passphrase** (`STEP_LUKS_PASSPHRASE`) — if a passphrase was requested, adds it as a second LUKS key slot.
+8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
+9. **`nixos-install`** (`STEP_NIXOS_INSTALL`) — installs the flake configuration onto the mounted disk, then tears down the temporary swap.
+10. **User password** (`STEP_PASSWORD`) — prompts for the user password via `nixos-enter passwd`.
+11. **Copy config** (`STEP_COPY_CONFIG`) — copies the nixos-configuration directory into the new system's home.
+12. **ZFS pool export** (`STEP_ZFS_EXPORT`) — ZFS only: exports `zroot` so the initrd can import it on first boot.
 
 ### Disko configuration files
 
 Located in `configurations/disko-configuration/current/`:
 
-| File | Boot | Encryption |
-|---|---|---|
-| `disko-efi-btrfs.nix` | UEFI | None |
-| `disko-efi-luks-btrfs.nix` | UEFI | LUKS |
-| `disko-bios-btrfs.nix` | BIOS | None |
+| File | Boot | Encryption | FS |
+|---|---|---|---|
+| `disko-efi-btrfs.nix` | UEFI | None | btrfs |
+| `disko-efi-luks-btrfs.nix` | UEFI | LUKS | btrfs |
+| `disko-efi-zfs.nix` | UEFI | None | ZFS (zroot) |
+| `disko-bios-btrfs.nix` | BIOS | None | btrfs |
+
+> BIOS path only supports btrfs. UEFI path supports btrfs and ZFS.
+
+---
+
+## Modular step system
+
+Each installation step is defined as a standalone function backed by a single `STEPS` array in `nixos-install.sh`. This makes the script modular and extensible.
+
+### Run a single step
+
+```bash
+# Re-export the ZFS pool (after a failed export on first boot)
+sudo ./install.sh --step ZFS_EXPORT
+
+# Re-run partitioning (destructive — formats the disk)
+sudo ./install.sh --step PARTITION
+
+# Set the user password again
+sudo ./install.sh --step PASSWORD
+
+# Copy the config into the new system
+sudo ./install.sh --step COPY_CONFIG
+```
+
+Requirements for `--step`:
+- The checkpoint state file (`/tmp/nixos-install-state` by default) must exist — a full install must have completed at least `STEP_INTERACTIVE_SETUP`.
+- All required variables are loaded from the state file automatically.
+- The state file is **not** cleared after a standalone step (the install is not complete).
+
+### List available steps
+
+```bash
+./install.sh --list-steps
+```
+
+### Add a new step
+
+1. Write `step_my_new_step() { ... }` following the existing style in `nixos-install.sh`.
+2. Add `"STEP_MY_NEW_STEP"` to the `STEPS` array.
+3. The dispatch loop and `--step` mode pick it up automatically — no wiring needed.
 
 ---
 
@@ -134,18 +198,42 @@ RAM ≥ SWAP_THRESHOLD_GiB  →  swap skipped
 
 ### Filesystem handling
 
-The swapfile is created at `/mnt/.swapfile-install` with a fixed size of 8 GiB — large enough for flake evaluation regardless of how much RAM the machine has.
-
-**btrfs** — `fallocate` cannot be used because btrfs Copy-on-Write does not guarantee contiguous blocks, which the kernel requires for swap. Instead, `btrfs filesystem mkswapfile` is used — it handles COW disabling, block allocation, and swap initialisation in a single command. Requires btrfs-progs ≥ 6.1 (available on any recent NixOS ISO).
+**btrfs** — `btrfs filesystem mkswapfile` is used (handles COW disabling, block allocation, and swap initialisation in a single command). Requires btrfs-progs ≥ 6.1.
 
 ```bash
 btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 ```
 
-**ext4, xfs, and others** — `fallocate` is used directly, which is near-instant.
+### ZFS
 
-After `nixos-install` completes, the swapfile is deactivated (`swapoff`) and deleted. The teardown function is a no-op if swap was never created.
-If the installer is interrupted with `Ctrl+C`, the swapfile is recreated automatically on the next resume when the swap step is marked done but the file is missing.
+ZFS swapfiles are not supported. Instead:
+
+1. **Persistent zvol** (`zroot/swap`, 8 GiB, `volblocksize=16384`) — created by disko during partitioning, activated automatically, survives reboot via `swapDevices` in the hardware config.
+2. **Temporary zvol** (`zroot/swap-install`, `volblocksize=16384`) — created during install if extra RAM is needed, destroyed after a successful install.
+
+```bash
+zfs create -V <size>M -o volblocksize=16384 zroot/swap-install
+mkswap /dev/zvol/zroot/swap-install
+swapon /dev/zvol/zroot/swap-install
+```
+
+**ext4, xfs, and others** — `fallocate` is used directly.
+
+---
+
+## ZFS ARC tuning
+
+ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 4 GiB so the live environment doesn't run out of memory.
+
+Override with `ZFS_ARC_MAX_GiB`:
+
+```bash
+ZFS_ARC_MAX_GiB=8 sudo ./install.sh
+```
+
+After installation, the system ARC is configured via `kernelParams` in `zfs-common.nix` (default 4 GiB on the installed system as well).
+
+> **RAM note:** ZFS with ARC eats 4 GiB before anything else runs. For a comfortable `nixos-rebuild` experience, **16 GiB RAM is recommended**. 8 GiB is the bare minimum but may be tight (reduce ARC with `ZFS_ARC_MAX_GiB=2` during install).
 
 ---
 
@@ -161,6 +249,33 @@ Triggered on any non-NixOS Linux system.
 6. Detects system architecture (`x86_64-linux` or `aarch64-linux`).
 7. Reads the default username from `flake.nix` (`users = [ "..." ]`) and prompts for confirmation.
 8. Runs `home-manager switch` with the resolved `username@arch` flake target.
+
+---
+
+## Version check
+
+Before running any install logic, the script checks whether the local repository is up to date:
+
+1. **Uncommitted changes** — warns if the working tree is dirty.
+2. **Behind upstream** — fetches the remote and compares commit counts.
+3. **Auto-update** — if behind and **not** dirty, proposes to pull (`git pull --ff-only`) and re-execute the script via `exec`, preserving all flags and arguments.
+4. **Manual choice** — if auto-update is declined, or if the working tree is dirty, prompts "Continue anyway?".
+5. **`--dont-check`** — skips the entire version check.
+
+---
+
+## Cleanup & resume safety
+
+| Function | Called by | Effect |
+|---|---|---|
+| `deactivateSwap` | `trap EXIT` (C-c, crash), also at end of `step_nixos_install` | `swapoff` on all known devices (persistent zvol + temp file/zvol) — always safe, no destruction |
+| `destroyTempSwap` | End of `step_nixos_install` | Removes temp swap file and temp zvol only — persistent `zroot/swap` is left intact |
+
+On **resume** after a crash or C-c:
+- `STEP_SWAP` is skipped (already done)
+- If the temp device exists → `swapon` (reactivates)
+- If it was destroyed → `setupTempSwap` (recreates)
+- `zroot/swap` is also unconditionally reactivated via `swapon` before the temp swap step
 
 ---
 

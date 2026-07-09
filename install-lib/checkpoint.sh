@@ -34,7 +34,7 @@
 # INSTALL_STATE_FILE=/mnt/nixos-install-state
 # ---------------------------------------------------------------------------
 
-STATE_FILE="${INSTALL_STATE_FILE:-/tmp/nixos-install-state}"
+STATE_FILE="${INSTALL_STATE_FILE}"
 
 # Mark a step as successfully completed.
 # Usage: checkpoint_done <step_name>
@@ -103,6 +103,7 @@ checkpoint_resume_prompt() {
     checkpoint_clear
   else
     info "Resuming — completed steps will be skipped automatically"
+    # shellcheck disable=SC2034 # set for caller to detect resume
     RESUMING=1
   fi
 }

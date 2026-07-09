@@ -65,14 +65,18 @@ in
       "module.sig_enforce=1"
       "random.trust_cpu=off"
     ]
-    ++ lib.optionals (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable) [
-      "intel_iommu=on"
-      "iommu=pt"
-    ]
-    ++ lib.optionals (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable) [
-      "amd_iommu=on"
-      "iommu=pt"
-    ]
+    ++
+      lib.optionals (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable)
+        [
+          "intel_iommu=on"
+          "iommu=pt"
+        ]
+    ++
+      lib.optionals (config.hardware.cpu.amd.updateMicrocode && config.virtualisation.libvirtd.enable)
+        [
+          "amd_iommu=on"
+          "iommu=pt"
+        ]
     ++ lib.optionals (!config.virtualisation.libvirtd.enable) [
       "init_on_alloc=1"
       "init_on_free=1"

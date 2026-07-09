@@ -62,6 +62,13 @@
                       "noatime"
                     ];
                   };
+                  "@libvirt" = {
+                    mountpoint = "/var/lib/libvirt";
+                    mountOptions = [
+                      "compress=zstd:5"
+                      "noatime"
+                    ];
+                  };
                 };
               };
             }

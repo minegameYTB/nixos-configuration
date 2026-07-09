@@ -19,8 +19,35 @@ source "$installLib/nixos-install.sh"
 # shellcheck source=install-lib/hm-standalone-install.sh
 source "$installLib/hm-standalone-install.sh"
 
-echo "$name v1.1"
+# Parse flags (--dont-check, --help, --list-steps, --step, ...).
+# Must come after source since parseFlags / showUsage are defined in lib.sh.
+SKIP_VERSION_CHECK=0
+LIST_STEPS=""
+ONLY_STEP=""
+parseFlags "$@"
+
+# Handle --list-steps (exits immediately, no version check needed)
+if [[ -n "${LIST_STEPS:-}" ]]; then
+  listSteps
+  exit 0
+fi
+
+if [[ -n "${ONLY_STEP:-}" ]]; then
+  info "Running only step: ${ONLY_STEP}"
+fi
+
+echo "$name v2.1"
 sleep 2
+
+# ---------------------------------------------------------------------------
+# Version check — warn if repo is dirty or behind upstream
+# ---------------------------------------------------------------------------
+
+if (( SKIP_VERSION_CHECK )); then
+  info "Version check skipped (--dont-check)"
+else
+  checkRepoVersion "$@"
+fi
 
 # ---------------------------------------------------------------------------
 # Detect whether we are running on NixOS or a generic Linux system.

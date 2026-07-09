@@ -3,9 +3,23 @@
 This configuration use a stable version of NixOS
 
 ---
+### Minimum requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| **RAM (btrfs)** | 4 GiB + swap (detected automatically if < 8 GiB) |
+| **RAM (ZFS)** | 16 GiB recommended (ZFS does not support swapfiles; zvol swap is created during install). 8 GiB minimum but may be tight during nixos-rebuild |
+| **Disk** | 50 GiB+ (more for games/large packages) |
+| **Boot** | UEFI (BIOS only for btrfs VMs) |
+
+> The install script detects RAM and creates temporary swap automatically on btrfs.
+> On ZFS, a temporary zvol is used instead and ARC is capped at 2 GiB during install.
+> ARC can be reduced further with `ZFS_ARC_MAX_GiB=1 ./install.sh` on low-RAM machines.
+
+---
 ### Installation
 
-clone this repository (preferably in your home directory) on your NixOS installation
+Clone this repository (preferably in your home directory) on your NixOS installation media
 `git clone https://github.com/minegameytb/nixos-configuration`
 
 How to install this flake with nixos-install ?
@@ -17,16 +31,17 @@ The documentation of install script is [here](INSTALL.md)
 ```bash
 ### With the flake on local
 #> nix-shell -p disko
-#> disko -m destroy,format,mount nixos-configuration/configurations/disko-configuration/current/<configuration type>.nix --arg device '"/dev/<device>"'
+#> disko -m destroy,format,mount nixos-configuration/configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device> --argstr size <size (fixed or %)> (eventually --argstr keyFile </path/to/keyfile>)
 #> nixos-install --flake .#<host>
 
 ### Distant flake
 #> nix-shell -p disko
 #> wget https://raw.githubusercontent.com/minegameYTB/nixos-configuration/refs/heads/flake/configurations/disko-configuration/current/<configuration type>.nix
-#> disko -m destroy,format,mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device> --argstr size <size (fixed or %)> (eventually --argstr keyFile </path/to/keyfile (or /dev/<device1-..9>)
+#> disko -m destroy,format,mount ./<configuration type>.nix --argstr device /dev/<device> --argstr size <size (fixed or %)> (eventually --argstr keyFile </path/to/keyfile>)
 #> nixos-install --flake github:minegameYTB/nixos-configuration#<host>
 
-### To only mount with disko (run nix command to obtain disko before):
+### To only mount with disko (without clobbering existing data):
+#> nix-shell -p disko
 #> disko -m mount ./configurations/disko-configuration/current/<configuration type>.nix --argstr device /dev/<device>
 ```
 
@@ -35,30 +50,55 @@ The documentation of install script is [here](INSTALL.md)
 ### with root for NixOS
 #> ./install.sh
 
-### Without root (home manager (on traditional linux distribution))
+### Without root (home manager on traditional Linux distribution)
 $> ./install.sh
 ```
 ---
-## flake structure
-
-this flake as a structure with mutiple directory
+## Flake structure
 
 ```
-* nixos-configuration root 
-|
- \_ configurations (all configuration that describe settings for NixOS (include flake specific modules and custom modules for this configuration))
-|
- \_ home-manager (related to home-manager settings (to add package to user level))
-|
- \_ pkgs (local nix expression for local packages)
-|
- \_ profiles (a set of local expression to be used for a host (e.g: hp-probook will have "hp-probook" hostname while hp-240 will have "UTILISA-0SK6G4E" hostname))
-|
- \_ flake.nix (local expression to describe this flake (nixpkgs version management uses flake.lock (which “fixes” package versions)))
-|
-\_ script (script folder)
- |
- \_ mksymlink (a simple script shell which will create a symlink into the root of home directory)
- |
- \_ update-flake (a shell script that will update the flake.lock file and create a git commit automatically)
+nixos-configuration/
+├── flake.nix              # Entrypoint: inputs, overlays, specialArgs, mkMachine, mkHome
+├── machine.nix            # Defines 10 NixOS configurations via mkMachine
+├── overlay.nix            # Global overlays (NUR, CachyOS, unstable/PR packages)
+├── install.sh             # Auto-detecting install script (NixOS / HM standalone)
+├── Makefile / build.sh    # Automation + nix-shell wrapper
+│
+├── configurations/        # Complete NixOS configuration
+│   ├── configuration.nix  # Core NixOS module (imports common configs)
+│   ├── config-modules/    # Distant flake modules (stylix, lanzaboote, flatpak, nix-index-db)
+│   ├── modules/           # Custom modules (programs, marker, caches, vmware)
+│   ├── configs/
+│   │   ├── common/        # Shared: users, pkgs, timezone, security, system-opts
+│   │   ├── specific/      # Desktop (GNOME, games, browser), VM guest/host, AI, container
+│   │   ├── overlays/      # Package overrides (mutter, coreutils, gnome-control-center)
+│   │   ├── bootloader/    # systemd-boot, GRUB2 (EFI/BIOS)
+│   │   └── system/        # Services (flatpak, channel cleanup), /tmp modes
+│   ├── hardware-configuration/
+│   │   ├── filesystem/    # btrfs, zfs, luks-btrfs mount/config
+│   │   ├── machines/      # hp-probook, hp-240, vm
+│   │   └── specific/      # intel-firmware, nvidia, swap
+│   ├── disko-configuration/  # 4 active + 4 unused configs
+│   └── patch/nixpkgs/     # Out-of-tree patches (libvirt, qemu)
+│
+├── profiles/              # Machine profiles
+│   ├── hp-probook-profile.nix
+│   ├── hp-240-profile.nix
+│   ├── vm-*-profile.nix   (6 VM profiles)
+│   └── base-profiles/     # Shared VM bases (desktop, server)
+│
+├── hm-profiles/           # Home Manager profiles (desktop, server)
+│
+├── home-manager/          # Home Manager configuration
+│   ├── home.nix           # Core HM module
+│   ├── config-modules/    # lazyvim, zen-browser
+│   └── configs/           # common, customization, desktop, specific (nixos/standalone)
+│
+├── install-lib/           # Install scripts (defaults, checkpoint, lib, nixos-install, hm-standalone)
+│
+├── pkgs/                  # Local packages (fhsEnv, rm-only, sshrm)
+│
+├── script/                # Utility scripts (mksymlink, update-flake, deadnix, shellcheck, tests)
+│
+└── example/               # Packaging examples
 ```

@@ -148,19 +148,19 @@
             "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
               binding = "<Shift><Control>Escape";
               command = "missioncenter";
-              name = "Gestionnaire de tâche";
+              name = "Task Manager";
             };
 
             "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
               binding = "<Super>e";
               command = "nautilus -w";
-              name = "Gestionnaire de fichier";
+              name = "File Manager";
             };
 
             "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
               binding = "<Super>i";
               command = "gnome-control-center";
-              name = "Paramètres";
+              name = "Settings";
             };
 
             ### App Folders configuration

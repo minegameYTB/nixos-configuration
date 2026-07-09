@@ -58,4 +58,14 @@
       "noatime"
     ];
   };
+
+  fileSystems."/var/lib/libvirt" = lib.mkIf config.virtualisation.libvirtd.enable {
+    label = "nixos-root";
+    fsType = "btrfs";
+    options = [
+      "subvol=@libvirt"
+      "compress=zstd:5"
+      "noatime"
+    ];
+  };
 }
