@@ -16,6 +16,7 @@
 
     ### Other nixpkgs repos
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-25-11.url = "github:NixOS/nixpkgs/nixos-25.11";
     #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
 
     ### Specific nixpkgs branch (staging or master (or even PR branch))
@@ -123,7 +124,7 @@
       ### Nixpkgs specific configuration (allow non-free app and software)
       nixpkgsConfig = {
         allowUnfree = true;
-        permittedInsecurePackages = [ "electron-39.8.10" ];
+        #permittedInsecurePackages = [ "electron-39.8.10" ];
       };
 
       ### Lib from nixpkgs-main
@@ -247,8 +248,8 @@
 
     in
     {
-      ### Formatter
-      formatter.x86_64-linux = nixpkgs-main.legacyPackages.x86_64-linux.nixfmt-tree;
+      ### Formatter (unified for all architectures)
+      formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
       ### Import NixOS configurtion in a file called machine.nix (with needed argument defined as a funtion in "let [...] in" section)
       nixosConfigurations = import ./machine.nix {

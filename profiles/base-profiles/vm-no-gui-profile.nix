@@ -24,4 +24,15 @@
     ../../configurations/hardware-configuration/specific/swap.nix
     ../../configurations/config-modules/declarative-flatpak
   ];
+
+  ### Disable sleep states on VMs
+  ### The guest has no control over host suspend — when the host suspends,
+  ### virtual disks freeze mid-I/O. ZFS is especially sensitive to this
+  ### (pool gets suspended, requires reboot). Override per-host if needed.
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "no";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "no";
+  };
 }

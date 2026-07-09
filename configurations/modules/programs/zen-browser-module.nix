@@ -33,7 +33,7 @@ in
   ### -- Implementation --
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
-      # Bloc principal : ajout du navigateur au système
+      # Main block: add the browser to the system
       {
         environment.systemPackages = [ cfg.package ];
       }

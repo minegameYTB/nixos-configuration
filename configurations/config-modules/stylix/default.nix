@@ -31,7 +31,7 @@
     };
     #base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     cursor = {
-      package = pkgs.catppuccin-cursors.mochaDark;
+      package = pkgs.pkgs2511.catppuccin-cursors.mochaDark;
       name = "catppuccin-mocha-dark-cursors";
       size = 24;
     };

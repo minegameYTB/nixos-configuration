@@ -6,7 +6,7 @@
 }:
 
 {
-  ### Include original luks partitionning and override keyFile option
+  ### Include original luks partitioning and override keyFile option
   imports = [ ./default.nix ];
 
   boot.initrd.luks.devices."luks-encrypted" = {
