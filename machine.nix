@@ -140,14 +140,6 @@ in
     profile = ./profiles/vm-no-gui-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
     homeManagerType = "server";
-    ### Add wrapper expression module
-    extraModules = [
-      (import ./profiles/base-profiles/vm-no-gui-wrapped.nix {
-        extraModules = [
-          #./configurations/configs/specific/vm/guest/nextcloud.nix
-        ];
-      })
-    ];
   };
 
   # VM preset (CLI bios)
@@ -180,6 +172,16 @@ in
     hostname = "nixos-kvm-desktop-zfs";
     profile = ./profiles/vm-desktop-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
+  };
+
+  ### --- Headless / server VMs (ZFS) ---
+
+  # VM preset (CLI efi ZFS)
+  vm-no-gui-efi-zfs = mkMachine {
+    hostname = "nixos-kvm-srv-zfs";
+    profile = ./profiles/vm-no-gui-efi-profile.nix;
+    fs = ./configurations/hardware-configuration/filesystem/zfs;
+    homeManagerType = "server";
   };
 
 }
