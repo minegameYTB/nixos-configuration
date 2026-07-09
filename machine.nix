@@ -97,7 +97,7 @@ in
   hp-probook = mkMachine {
     hostname = "HP-probook";
     profile = ./profiles/hp-probook-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs;
+    fs = ./configurations/hardware-configuration/filesystem/zfs;
   };
 
   # HP-240

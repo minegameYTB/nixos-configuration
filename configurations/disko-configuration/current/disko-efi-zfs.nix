@@ -89,10 +89,11 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "1M";
+              refquota = "50G";
             };
           };
 
-          ### Nix dataset (primarycache=metadata for /nix)
+          ### Nix dataset
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
@@ -103,7 +104,6 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "1M";
-              primarycache = "metadata";
             };
           };
 

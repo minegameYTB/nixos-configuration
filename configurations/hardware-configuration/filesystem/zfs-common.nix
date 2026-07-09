@@ -19,7 +19,7 @@
 
     ### 4 GiB max ARC (conservative for 16 GiB VMs)
     ### Calcul: 4 * 1024 * 1024 * 1024 = 4294967296
-    "zfs.zfs_arc_max=4294967296"
+    #"zfs.zfs_arc_max=4294967296"
 
     ### Explicit hostId for initrd (avoids hostId mismatch with pool label)
     "spl.spl_hostid=0xb08dfa60"
@@ -29,7 +29,7 @@
 
     ### Alternative for high-RAM machines (8 GiB):
     ### 8 * 1024 * 1024 * 1024 = 8589934592
-    #"zfs.zfs_arc_max=8589934592"
+    "zfs.zfs_arc_max=8589934592"
   ];
 
   ### Unique hostId required by ZFS
