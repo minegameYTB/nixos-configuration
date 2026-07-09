@@ -57,7 +57,6 @@
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
