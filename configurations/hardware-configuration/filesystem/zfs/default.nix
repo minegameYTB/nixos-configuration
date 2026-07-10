@@ -11,11 +11,6 @@
   ### No encryption on datasets — skip zfs load-key -a in initrd (speeds boot)
   boot.zfs.requestEncryptionCredentials = false;
 
-  ### Persistent swap zvol (created by disko)
-  swapDevices = [
-    { device = "/dev/zvol/zroot/swap"; }
-  ];
-
   ### ZFS pool is directly on the partition — scan by partuuid
   boot.zfs.devNodes = "/dev/disk/by-partuuid";
 

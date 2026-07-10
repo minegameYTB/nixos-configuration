@@ -84,25 +84,12 @@ test_swap_type() {
   local mountFs="$fstype"
   # shellcheck disable=SC2034 # used by the real script, placeholder for testing
   local swapFile="/mnt/.swapfile-install"
-  # shellcheck disable=SC2034
-  local swapZvol="zroot/swap-install"
 
   if [[ "$mountFs" == "btrfs" ]]; then
     if [[ "$expected" == "mkswapfile" ]]; then
       ok "btrfs → btrfs filesystem mkswapfile"
     else
       fail "btrfs → expected ${expected}"
-    fi
-  elif [[ "$mountFs" == "zfs" ]]; then
-    if [[ "$expected" == "zvol" ]]; then
-      # Check the script actually uses zfs create -V
-      if grep -q "zfs create -V" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
-        ok "zfs → zfs create -V (zvol)"
-      else
-        fail "zfs → expected zvol path in script"
-      fi
-    else
-      fail "zfs → expected ${expected}"
     fi
   else
     if [[ "$expected" == "fallocate" ]]; then
@@ -114,7 +101,6 @@ test_swap_type() {
 }
 
 test_swap_type btrfs mkswapfile
-test_swap_type zfs   zvol
 test_swap_type ext4  fallocate
 
 echo
@@ -131,26 +117,10 @@ test_swap_cleanup() {
   else
     fail "destroyTempSwap missing"
   fi
-  if grep -q "swapoff.*zroot/swap" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
-    ok "deactivateSwap covers persistent zvol (zroot/swap)"
-  else
-    fail "deactivateSwap does not cover persistent zvol"
-  fi
-  if grep -q "volblocksize=16384" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
-    ok "Temp swap zvol uses volblocksize=16384"
-  else
-    fail "Temp swap zvol volblocksize not 16384"
-  fi
   if grep -q "rm -f.*swapFile.*2>/dev/null || true" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
     ok "setupTempSwap cleans up pre-existing temp file"
   else
     fail "setupTempSwap does not clean pre-existing temp file"
-  fi
-  if grep -q "zfs destroy.*swapZvol" "$SCRIPT_DIR/install-lib/nixos-install.sh" && \
-     grep -q "rm -f.*swapFile" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
-    ok "setupTempSwap cleans up pre-existing zvol before creation"
-  else
-    fail "setupTempSwap does not clean pre-existing zvol"
   fi
   if grep -q "command -v btrfs" "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
     ok "setupTempSwap checks btrfs command availability"

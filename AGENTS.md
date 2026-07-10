@@ -54,7 +54,7 @@ configurations/
 - **`install.sh`** — auto-detects NixOS vs standalone Linux
 - **`nixos-install.sh`** — 11-step system with checkpoint/resume
   - Steps: INTERACTIVE_SETUP → LUKS_SETUP → ZFS_KEY_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
-  - Temp swap: btrfs (mkswapfile), ZFS (zvol), ext4/other (fallocate)
+  - Temp swap: btrfs (mkswapfile), ext4/other (fallocate)
   - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file
 - **`hm-standalone-install.sh`** — standalone HM install on any Linux
 - **Checkpoint system** (`checkpoint.sh`): state file in `/tmp/nixos-install-state`, persists interactive answers, survives crashes
@@ -66,7 +66,7 @@ configurations/
 - Key stored on a raw partition (e.g. SD card) at install time — read directly by initrd at boot
 - `boot.initrd.kernelModules = [ "mmc_block" ]` ensures the key device is available
 - Encrypted datasets: `ROOT` (covers `/`), `home`, `var` (covers `/var/log`, `/var/cache`, `/var/lib/libvirt`)
-- Unencrypted: `nix` (performance), `swap`, `reserved`
+- Unencrypted: `nix` (performance), `reserved`
 - The disko config's `postCreateHook` switches `keylocation` from the install-time temp path to the permanent raw device path
 
 ## Testing
