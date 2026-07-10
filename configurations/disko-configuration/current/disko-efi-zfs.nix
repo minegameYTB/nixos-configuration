@@ -260,18 +260,6 @@
               exec = "off";
             };
           };
-          ### Swap volume
-          "swap" = {
-            type = "zfs_volume";
-            size = "8G";
-            options = {
-              volblocksize = "16384";
-              compression = "off";
-            };
-            content = {
-              type = "swap";
-            };
-          };
 
           ### Reserved space
           "reserved" = {

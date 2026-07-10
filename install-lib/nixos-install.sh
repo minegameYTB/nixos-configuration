@@ -120,12 +120,9 @@ detectRam() {
 
 # Create a temporary swap on /mnt (already mounted by disko).
 # - btrfs : uses mkswapfile (handles COW + mkswap in one step)
-# - zfs   : creates a temporary zvol, mkswap + swapon
 # - other : fallocate + mkswap
-# Exports: swapFile (file path) or swapZvol (zvol name)
 setupTempSwap() {
   swapFile="/mnt/.swapfile-install"
-  swapZvol="zroot/swap-install"
   local mountFs
   mountFs=$(findmnt -n -o FSTYPE /mnt 2>/dev/null || true)
 
@@ -134,12 +131,8 @@ setupTempSwap() {
     return 1
   fi
 
-  # Remove any stale temp swap from a prior failed run (file or zvol)
+  # Remove any stale temp swap file from a prior failed run
   rm -f "$swapFile" 2>/dev/null || true
-  if zfs list -H "$swapZvol" &>/dev/null; then
-    swapoff "/dev/zvol/$swapZvol" 2>/dev/null || true
-    zfs destroy "$swapZvol" 2>/dev/null || true
-  fi
 
   info "Filesystem on /mnt: ${mountFs} — creating ${swapSizeMiB} MiB swap"
 
@@ -150,11 +143,6 @@ setupTempSwap() {
     fi
     run_command btrfs filesystem mkswapfile --size "${swapSizeMiB}M" "$swapFile"
     run_command swapon "$swapFile"
-  elif [[ "$mountFs" == "zfs" ]]; then
-    run_command zfs create -V "${swapSizeMiB}M" -o volblocksize=16384 "$swapZvol"
-    run_command udevadm settle
-    run_command mkswap "/dev/zvol/$swapZvol"
-    run_command swapon "/dev/zvol/$swapZvol"
   else
     run_command fallocate -l "${swapSizeMiB}M" "$swapFile"
     run_command chmod 600 "$swapFile"
@@ -167,24 +155,19 @@ setupTempSwap() {
   info "Swap activated — active swap: ${swapTotal}"
 }
 
-# swapoff all known swap devices (persistent zvol + temp file / zvol).
+# swapoff all known swap devices.
 # Always safe — does not destroy anything.
 # Used by EXIT trap (resilient to ^C).
 deactivateSwap() {
-  swapoff "/dev/zvol/zroot/swap"         2>/dev/null || true
-  swapoff "/dev/zvol/zroot/swap-install" 2>/dev/null || true
-  swapoff "/mnt/.swapfile-install"       2>/dev/null || true
+  swapoff "/mnt/.swapfile-install" 2>/dev/null || true
 }
 
-# Destroy only the temporary swap devices (file + temp zvol).
-# Only acts on devices that exist and are not persistent.
+# Destroy only the temporary swap file.
+# Only acts if the file exists.
 # Called after deactivateSwap, before nixos-enter.
 destroyTempSwap() {
   if [[ -f "/mnt/.swapfile-install" ]]; then
     rm -f "/mnt/.swapfile-install" 2>/dev/null || true
-  fi
-  if zfs list -H "zroot/swap-install" &>/dev/null; then
-    zfs destroy "zroot/swap-install" 2>/dev/null || true
   fi
 }
 
@@ -392,14 +375,10 @@ step_luks_passphrase() {
 }
 
 step_swap() {
-  swapon "/dev/zvol/zroot/swap" 2>/dev/null || true
-
   if (( needSwap )); then
     if checkpoint_skip "STEP_SWAP"; then
       if [[ -f "/mnt/.swapfile-install" ]]; then
         swapon "/mnt/.swapfile-install" 2>/dev/null || true
-      elif zfs list -H "zroot/swap-install" &>/dev/null; then
-        swapon "/dev/zvol/zroot/swap-install" 2>/dev/null || true
       else
         info "Temporary swap was removed during the previous session — recreating it"
         setupTempSwap
@@ -459,9 +438,6 @@ step_zfs_export() {
   fi
   info "Exporting ZFS pool zroot for clean reboot"
 
-  # Swap zvol must be off or zpool export fails (device busy)
-  deactivateSwap
-
   cd /
 
   # Unmount everything under /mnt so the pool can be exported cleanly.
@@ -479,12 +455,13 @@ step_zfs_export() {
     (( attempt++ )) || true
     case "$attempt" in
       1)
-        swapoff "/dev/zvol/zroot/swap"         2>/dev/null || true
-        swapoff "/dev/zvol/zroot/swap-install" 2>/dev/null || true
+        warn "Still blocked — killing processes and using lazy unmount"
+        fuser -km /mnt 2>/dev/null || true
+        sleep 1
+        umount -l /mnt 2>/dev/null || true
         sleep 1
         ;;
       2)
-        warn "Still blocked — killing processes and using lazy unmount"
         fuser -km /mnt 2>/dev/null || true
         sleep 1
         umount -l /mnt 2>/dev/null || true

@@ -111,7 +111,7 @@ Checkpoint names (usable with `--step`) are shown in parentheses.
 5. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
 6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 4 GiB).
 7. **LUKS passphrase** (`STEP_LUKS_PASSPHRASE`) — if a passphrase was requested, adds it as a second LUKS key slot.
-8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`. Filesystem-aware (see below).
+8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`.
 9. **`nixos-install`** (`STEP_NIXOS_INSTALL`) — installs the flake configuration onto the mounted disk, then tears down the temporary swap.
 10. **User password** (`STEP_PASSWORD`) — prompts for the user password via `nixos-enter passwd`.
 11. **Copy config** (`STEP_COPY_CONFIG`) — copies the nixos-configuration directory into the new system's home.
@@ -204,19 +204,6 @@ RAM ≥ SWAP_THRESHOLD_GiB  →  swap skipped
 btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 ```
 
-### ZFS
-
-ZFS swapfiles are not supported. Instead:
-
-1. **Persistent zvol** (`zroot/swap`, 8 GiB, `volblocksize=16384`) — created by disko during partitioning, activated automatically, survives reboot via `swapDevices` in the hardware config.
-2. **Temporary zvol** (`zroot/swap-install`, `volblocksize=16384`) — created during install if extra RAM is needed, destroyed after a successful install.
-
-```bash
-zfs create -V <size>M -o volblocksize=16384 zroot/swap-install
-mkswap /dev/zvol/zroot/swap-install
-swapon /dev/zvol/zroot/swap-install
-```
-
 **ext4, xfs, and others** — `fallocate` is used directly.
 
 ---
@@ -268,14 +255,13 @@ Before running any install logic, the script checks whether the local repository
 
 | Function | Called by | Effect |
 |---|---|---|
-| `deactivateSwap` | `trap EXIT` (C-c, crash), also at end of `step_nixos_install` | `swapoff` on all known devices (persistent zvol + temp file/zvol) — always safe, no destruction |
-| `destroyTempSwap` | End of `step_nixos_install` | Removes temp swap file and temp zvol only — persistent `zroot/swap` is left intact |
+| `deactivateSwap` | `trap EXIT` (C-c, crash), also at end of `step_nixos_install` | `swapoff` on all known devices — always safe, no destruction |
+| `destroyTempSwap` | End of `step_nixos_install` | Removes temp swap file only |
 
 On **resume** after a crash or C-c:
 - `STEP_SWAP` is skipped (already done)
-- If the temp device exists → `swapon` (reactivates)
+- If the temp file exists → `swapon` (reactivates)
 - If it was destroyed → `setupTempSwap` (recreates)
-- `zroot/swap` is also unconditionally reactivated via `swapon` before the temp swap step
 
 ---
 
