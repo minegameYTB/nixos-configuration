@@ -46,6 +46,10 @@ in
     archProfile = "x86-64-v1";
   };
 
+  ### Default locale and keyboard — French (fr)
+  i18n.defaultLocale = "fr_FR.UTF-8";
+  console.keyMap = "fr";
+
   ### Fix conflict between boot-settings.nix (hash) and iso-image.nix (true)
   boot.initrd.systemd.emergencyAccess = lib.mkForce true;
 
