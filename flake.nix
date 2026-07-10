@@ -120,7 +120,7 @@
         x11KeyMap = "fr";
       };
 
-      ### Version dynamique : 26.05.nixos-configuration.hash
+      ### Dynamic version : 26.05.nixos-configuration.hash
       configVersion = "${lib.trivial.release}.nixos-configuration.${self.shortRev or self.dirtyShortRev or "unknown"}";
 
       ### System supported for this config (to use on home-manager for example)
