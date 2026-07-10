@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------------
 
 # shellcheck source=install-lib/defaults.sh
-source "$(dirname "${BASH_SOURCE[0]}")/defaults.sh"
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/defaults.sh"
 
 # shellcheck source=install-lib/checkpoint.sh
-source "$(dirname "${BASH_SOURCE[0]}")/checkpoint.sh"
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/checkpoint.sh"
 
 # ---------------------------------------------------------------------------
 # Nix settings

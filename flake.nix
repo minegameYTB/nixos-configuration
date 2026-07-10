@@ -93,6 +93,11 @@
       url = "git+https://framagit.org/gaming-linux-fr/glf-os/glf-os.git?ref=main&shallow=1";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
+
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs-main";
+    };
   };
 
   ### Declare outputs for configuration (inputs attr is inject here)
@@ -115,6 +120,9 @@
         x11KeyMap = "fr";
       };
 
+      ### Version dynamique : 26.05.nixos-configuration.hash
+      configVersion = "${lib.trivial.release}.nixos-configuration.${self.shortRev or self.dirtyShortRev or "unknown"}";
+
       ### System supported for this config (to use on home-manager for example)
       systems = [
         "x86_64-linux"
@@ -135,6 +143,7 @@
         system:
         import ./overlay.nix {
           inherit
+            self
             system
             inputs
             lib
@@ -250,6 +259,17 @@
     {
       ### Formatter (unified for all architectures)
       formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
+
+      ### Packages du flake
+      packages = lib.genAttrs systems (system: {
+        nixos-config = (pkgsFor system).callPackage ./pkgs/config/nixos-config.nix {
+          src = self.outPath;
+          inherit configVersion;
+        };
+      } // lib.optionalAttrs (system == "x86_64-linux") {
+        iso-gnome = self.nixosConfigurations.iso-gnome.config.formats.iso;
+        iso-minimal = self.nixosConfigurations.iso-minimal.config.formats.iso;
+      });
 
       ### Import NixOS configurtion in a file called machine.nix (with needed argument defined as a funtion in "let [...] in" section)
       nixosConfigurations = import ./machine.nix {

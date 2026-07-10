@@ -3,6 +3,7 @@
   system,
   inputs,
   nixpkgsConfig,
+  self,
   ...
 }:
 
@@ -20,7 +21,10 @@ with inputs;
     ]
 
     ### Custom extend of pkgs or replacing pkgs by other
-    ++ [
+    ++ (let
+      ### Capture flake self before inner overlay shadows it
+      flake = self;
+    in [
       (self: super: rec {
         #nur = import inputs.nur {
         #  nurpkgs = pkgsUnstable;
@@ -51,9 +55,14 @@ with inputs;
           config = nixpkgsConfig;
         };
 
+        ### Config packages namespace (references flake packages)
+        pkgsConfig = {
+          nixos-config = flake.packages.${system}.nixos-config;
+        };
+
         ### Replace packages here
         ### Force use gh from unstable (on system level)
         #gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
       })
-    ];
+    ]);
 }
