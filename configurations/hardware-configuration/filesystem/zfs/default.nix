@@ -70,8 +70,23 @@
     fsType = "zfs";
   };
 
+  fileSystems."/nix/var/nix" = {
+    device = "zroot/nix/var/nix";
+    fsType = "zfs";
+  };
+
+  fileSystems."/nix/var/nix/db" = {
+    device = "zroot/nix/var/nix/db";
+    fsType = "zfs";
+  };
+
   fileSystems."/var/lib/libvirt" = lib.mkIf config.virtualisation.libvirtd.enable {
     device = "zroot/var/lib/libvirt";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var/lib/libvirt/images" = lib.mkIf config.virtualisation.libvirtd.enable {
+    device = "zroot/var/lib/libvirt/images";
     fsType = "zfs";
   };
 }

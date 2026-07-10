@@ -60,7 +60,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "128K";
             };
           };
           "ROOT/nixos" = {
@@ -72,8 +72,8 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
-              quota = "3G";
+              recordsize = "128K";
+              refquota = "3G";
             };
           };
 
@@ -87,7 +87,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "128K";
               refquota = "50G";
             };
           };
@@ -102,7 +102,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "128K";
             };
           };
 
@@ -118,6 +118,30 @@
               dnodesize = "auto";
               recordsize = "128K";
               refquota = "30G";
+            };
+          };
+          "nix/var/nix" = {
+            type = "zfs_fs";
+            mountpoint = "/nix/var/nix";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+            };
+          };
+          "nix/var/nix/db" = {
+            type = "zfs_fs";
+            mountpoint = "/nix/var/nix/db";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
             };
           };
 
@@ -170,12 +194,24 @@
               recordsize = "1M";
             };
           };
+          "var/lib/libvirt/images" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/libvirt/images";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "1M";
+            };
+          };
           "var/log" = {
             type = "zfs_fs";
             mountpoint = "/var/log";
             options = {
               mountpoint = "legacy";
-              quota = "2G";
+              refquota = "2G";
               compression = "zstd-3";
               atime = "off";
               xattr = "sa";
@@ -188,7 +224,7 @@
             mountpoint = "/var/cache";
             options = {
               mountpoint = "legacy";
-              quota = "5G";
+              refquota = "5G";
               compression = "lz4";
               atime = "off";
               xattr = "sa";
@@ -215,6 +251,7 @@
             options = {
               mountpoint = "legacy";
               compression = "lz4";
+              refquota = "30G";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
