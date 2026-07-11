@@ -134,7 +134,8 @@ in
   iso-gnome = let
     i = helpers.iso;
     isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript keyboardSessionScript;
+      inherit (i) mkKeyboardSpec keyboardSetupScript keyboardSessionScript layouts;
+      welcomeMessage = i.mkWelcomeMessage "GNOME";
     };
   in lib.nixosSystem {
     system = i.isoArch;
@@ -168,7 +169,8 @@ in
   iso-minimal = let
     i = helpers.iso;
     isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript;
+      inherit (i) mkKeyboardSpec keyboardSetupScript layouts;
+      welcomeMessage = i.mkWelcomeMessage "Minimal CLI";
     };
   in lib.nixosSystem {
     system = i.isoArch;

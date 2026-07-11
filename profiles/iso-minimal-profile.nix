@@ -4,24 +4,10 @@
   config,
   mkKeyboardSpec,
   keyboardSetupScript,
+  layouts,
+  welcomeMessage,
   ...
 }:
-
-let
-  ### 10 keyboard layouts: us, de, es, it, pt, gb, be, ch, ca + default fr
-  layouts = [
-    { layout = "us"; keymap = "us";  locale = "en_US.UTF-8";  label = "US English"; }
-    { layout = "de"; keymap = "de";  locale = "de_DE.UTF-8";  label = "German"; }
-    { layout = "es"; keymap = "es";  locale = "es_ES.UTF-8";  label = "Spanish"; }
-    { layout = "it"; keymap = "it";  locale = "it_IT.UTF-8";  label = "Italian"; }
-    { layout = "pt"; keymap = "pt";  locale = "pt_PT.UTF-8";  label = "Portuguese"; }
-    { layout = "gb"; keymap = "gb";  locale = "en_GB.UTF-8";  label = "British English"; }
-    { layout = "be"; keymap = "be";  locale = "fr_BE.UTF-8";  label = "Belgian"; }
-    { layout = "ch"; keymap = "ch";  locale = "de_CH.UTF-8";  label = "Swiss"; }
-    { layout = "ca"; keymap = "ca";  locale = "en_CA.UTF-8";  label = "Canadian"; }
-    { layout = "fr"; keymap = "fr";  locale = "fr_FR.UTF-8";  label = "French (default)"; }
-  ];
-in
 {
   ### Import same base modules as a regular machine
   imports = [
@@ -53,8 +39,12 @@ in
   ### Fix conflict between boot-settings.nix (hash) and iso-image.nix (true)
   boot.initrd.systemd.emergencyAccess = lib.mkForce true;
 
+  ### ZFS kernel module incompatible with CachyOS kernel — not needed on live ISO
+  boot.supportedFilesystems.zfs = lib.mkForce false;
+
   ### Override nixos user to have an empty password for the live ISO
   users.users.nixos.initialPassword = lib.mkForce "";
+  users.users.nixos.initialHashedPassword = lib.mkForce null;
 
   ### (CLI ISO: no autologin since there's no display manager)
 
@@ -76,8 +66,10 @@ in
   systemd.services.keyboard-setup = {
     description = "Apply keyboard layout from kernel cmdline";
     wantedBy = [ "multi-user.target" ];
+    after = [ "local-fs.target" "systemd-vconsole-setup.service" ];
     serviceConfig = {
       Type = "oneshot";
+      RemainAfterExit = true;
       ExecStart = "${lib.getExe keyboardSetupScript}";
     };
   };
@@ -88,20 +80,5 @@ in
   ];
 
   ### Welcome message
-  environment.interactiveShellInit = ''
-    if [ -z "$_NIXOS_ISO_WELCOME" ]; then
-      _NIXOS_ISO_WELCOME=1
-      cat <<'WELCOME'
-    ╔══════════════════════════════════════════════╗
-    ║    NixOS Live ISO — Minimal CLI Edition      ║
-    ║                                              ║
-    ║  Type: sudo nixos-install                    ║
-    ║  Or:   install-nixos                         ║
-    ║                                              ║
-    ║  Keyboard: select at GRUB menu (e.g. us, de) ║
-    ║  User: nixos (no password)                   ║
-    ╚══════════════════════════════════════════════╝
-    WELCOME
-    fi
-  '';
+  environment.interactiveShellInit = welcomeMessage;
 }

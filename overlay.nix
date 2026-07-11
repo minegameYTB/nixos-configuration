@@ -3,6 +3,8 @@
   system,
   inputs,
   nixpkgsConfig,
+  rev,
+  branch,
   self,
   ...
 }:
@@ -55,9 +57,12 @@ with inputs;
           config = nixpkgsConfig;
         };
 
-        ### Config packages namespace (references flake packages)
+        ### Config packages namespace (builds directly in overlay)
         pkgsConfig = {
-          nixos-config = flake.packages.${system}.nixos-config;
+          nixos-config = super.callPackage ./pkgs/nixos-config/default.nix {
+            src = flake.outPath;
+            inherit rev branch;
+          };
         };
 
         ### Replace packages here

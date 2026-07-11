@@ -19,7 +19,21 @@ in
     description = "NixOS Live User";
   };
 
-  isoModule = inputs.nixos-generators.nixosModules.all-formats;
+  isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
+
+  ### 10 keyboard layouts (shared between iso-profile and iso-minimal-profile)
+  layouts = [
+    { layout = "us"; keymap = "us"; locale = "en_US.UTF-8"; label = "US English"; }
+    { layout = "de"; keymap = "de"; locale = "de_DE.UTF-8"; label = "German"; }
+    { layout = "es"; keymap = "es"; locale = "es_ES.UTF-8"; label = "Spanish"; }
+    { layout = "it"; keymap = "it"; locale = "it_IT.UTF-8"; label = "Italian"; }
+    { layout = "pt"; keymap = "pt"; locale = "pt_PT.UTF-8"; label = "Portuguese"; }
+    { layout = "gb"; keymap = "gb"; locale = "en_GB.UTF-8"; label = "British English"; }
+    { layout = "be"; keymap = "be"; locale = "fr_BE.UTF-8"; label = "Belgian"; }
+    { layout = "ch"; keymap = "ch"; locale = "de_CH.UTF-8"; label = "Swiss"; }
+    { layout = "ca"; keymap = "ca"; locale = "en_CA.UTF-8"; label = "Canadian"; }
+    { layout = "fr"; keymap = "fr"; locale = "fr_FR.UTF-8"; label = "French (default)"; }
+  ];
 
   ### Keyboard specialisation helper — one spec per layout
   mkKeyboardSpec = { layout, keymap, locale, label }: {
@@ -34,6 +48,24 @@ in
       };
     };
   };
+
+  ### Welcome message — shared by both ISO profiles
+  mkWelcomeMessage = edition: ''
+    if [ -z "$_NIXOS_ISO_WELCOME" ]; then
+      _NIXOS_ISO_WELCOME=1
+      cat <<'WELCOME'
+    ╔══════════════════════════════════════════════╗
+    ║      NixOS Live ISO — ${edition} Edition      ║
+    ║                                              ║
+    ║  Run the following command to install:        ║
+    ║  nixos-config-install                        ║
+    ║                                              ║
+    ║  Keyboard: select at GRUB menu (e.g. us, de) ║
+    ║  User: nixos (no password)                   ║
+    ╚══════════════════════════════════════════════╝
+    WELCOME
+    fi
+  '';
 
   ### System service script — runs before display-manager
   keyboardSetupScript = pkgs.writeShellApplication {

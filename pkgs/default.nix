@@ -1,5 +1,7 @@
-{ callPackage, ... }:
+{ callPackage, src, rev, branch, ... }:
 
 {
-  nixos-config = callPackage ./config/nixos-config.nix { };
+  nixos-config = callPackage ./nixos-config/default.nix {
+    inherit src rev branch;
+  };
 }

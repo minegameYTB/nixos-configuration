@@ -1,32 +1,31 @@
-### (Flake created with https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users#org81dbd1d)
-### Remade to split machine configuration to ./machine.nix nix expression
+### Flake originally based on https://librephoenix.com/2023-10-21-intro-flake-config-setup-for-new-nixos-users
+### Refactored to split machine configuration into ./machine.nix
 
 ### (Minegame YTB 2025)
 
 {
   description = "A flake with my configuration !";
 
-  ### Declare inputs (nixpkgs-main, unstable, hm, stylix...)
+  ### Inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
-    ### Main repo
+    ### Main nixpkgs channel
     nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    ### Note: to test PR (with a flake configuration):
-    ### github:username/<repo-name>?ref=pull/<PR number>/head
+    ### To test a PR: github:username/repo?ref=pull/<PR number>/head
 
-    ### Other nixpkgs repos
+    ### Additional nixpkgs channels
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-25-11.url = "github:NixOS/nixpkgs/nixos-25.11";
     #ctrl-os.url = "https://channels.ctrl-os.com/channel/ctrlos-24.05.tar.xz";
 
-    ### Specific nixpkgs branch (staging or master (or even PR branch))
+    ### Specific nixpkgs revisions (staging, master, or PR branches)
     #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
     nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/537215/head";
 
     ### Kernel
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
 
-    ### Other repos (non-nixpkgs but specific for a software or distant overlays) (pass this repos with specialArgs (with inputs in it))
+    ### External non-nixpkgs repos (overlays, software) — passed via specialArgs
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-main";
@@ -42,10 +41,10 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    ### Distant flake modules
+    ### Remote flake modules
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.7";
 
-    ### Pinned repo (to ensure overall consistency of the flake) (manually update this (to test if works correctly btw))
+    ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
     # Home-manager - release-26.05 (8 Jun 2026)
     home-manager = {
       url = "github:nix-community/home-manager/4eb4fec41674d5b059aa2eedf0f98453890546fa";
@@ -64,9 +63,7 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    ### End of pinned repos
-
-    ### Non flake repos (for rice and dotfiles)
+    ### Non-flake repos (theming, dotfiles)
     catppuccin-wallpapers = {
       url = "github:zhichaoh/catppuccin-wallpapers";
       flake = false;
@@ -77,8 +74,8 @@
       flake = false;
     };
 
-    ### Utilities (flake and non flake repos)
-    ### Import blocklist as non-flake for /etc/hosts
+    ### Utility inputs (both flake and non-flake)
+    ### StevenBlack/hosts imported as non-flake for /etc/hosts management
     blocklist = {
       url = "github:StevenBlack/hosts";
       flake = false;
@@ -94,24 +91,18 @@
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs-main";
-    };
   };
 
-  ### Declare outputs for configuration (inputs attr is inject here)
+  ### Outputs
   outputs =
     {
-      ### Core (include self to auto-refere eventually use local packages with an overlay)
       self,
       nixpkgs-main,
       ...
     }@inputs:
 
-    ### Declare function here
     let
-      ### User for user configuration and home manager standalone, please change this username when you fork this repo, thanks !
+      ### Username for user config and home-manager standalone (change when forking)
       users = [ "minegame" ];
       description = "Minegame YTB";
       properties = {
@@ -120,25 +111,46 @@
         x11KeyMap = "fr";
       };
 
-      ### Dynamic version : 26.05.nixos-configuration.hash
-      configVersion = "${lib.trivial.release}.nixos-configuration.${self.shortRev or self.dirtyShortRev or "unknown"}";
+      ### Git revision (short hash) for versioning
+      rev = self.shortRev or self.dirtyShortRev or "unknown";
 
-      ### System supported for this config (to use on home-manager for example)
+      ### Branch detection: tries CI env vars, then local git HEAD (requires --impure)
+      branch = let
+        envBranch = builtins.getEnv "BRANCH";
+        ghBranch = builtins.getEnv "GITHUB_REF_NAME";
+        ciBranch = builtins.getEnv "CI_COMMIT_REF_NAME";
+        pwd = builtins.getEnv "PWD";
+        gitHead = pwd + "/.git/HEAD";
+        fromGit =
+          if pwd != "" && builtins.pathExists gitHead then
+            let
+              content = builtins.readFile gitHead;
+              match = builtins.match "ref: refs/heads/(.+)\n" content;
+            in
+              if match != null then builtins.head match else null
+          else null;
+      in
+        if envBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] envBranch
+        else if ghBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] ghBranch
+        else if ciBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] ciBranch
+        else if fromGit != null then builtins.replaceStrings ["/" "#"] ["-" "-"] fromGit
+        else null;
+
+      ### Supported systems (also used by home-manager standalone)
       systems = [
         "x86_64-linux"
         "aarch64-linux"
       ];
 
-      ### Nixpkgs specific configuration (allow non-free app and software)
+      ### Allow unfree packages
       nixpkgsConfig = {
         allowUnfree = true;
         #permittedInsecurePackages = [ "electron-39.8.10" ];
       };
 
-      ### Lib from nixpkgs-main
       inherit (nixpkgs-main) lib;
 
-      ### Global overlay configuration (import global overlay in ./overlay.nix)
+      ### Global overlay (imported from ./overlay.nix)
       overlay =
         system:
         import ./overlay.nix {
@@ -147,33 +159,33 @@
             system
             inputs
             lib
+            rev
+            branch
 
             ### Nixpkgs option variable
             nixpkgsConfig
             ;
         };
 
-      ### Setup nixpkgs-patched (nixpkgs with custom patch)
+      ### nixpkgs with out-of-tree patches applied
       nixpkgs-patched =
-        ### "system:" receive arch from argument (for example, pkgsPatched "arch" become pkgsPatched "system = "arch" in evaluation, same logic for function that use defined attribute)
         system:
         nixpkgs-main.legacyPackages.${system}.applyPatches {
           name = "nixpkgs-patched";
           src = nixpkgs-main;
           patches = [
             (builtins.fetchurl {
-              ### Add ".patch" to get this link for a PR
+              ### Append ".patch" to the PR URL to get the patch
               url = "https://github.com/NixOS/nixpkgs/pull/537215.patch";
               sha256 = "0q8rzbrch578krfkpr16j9j48pyhd0angypqbb4flgkyzfigg70c";
             })
 
-            ### Local patch
+            ### Local patches (uncomment as needed)
             #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
             #./configurations/patch/nixpkgs/0000-libvirt-update.patch
           ];
         };
 
-      ### Declare pkgsPatched as a usable pkgs arg
       pkgsPatched =
         system:
         import (nixpkgs-patched system) {
@@ -181,7 +193,6 @@
           config = nixpkgsConfig;
         };
 
-      ### Same for pkgsFor (normal nixpkgs-main w/out patches)
       pkgsFor =
         system:
         import nixpkgs-main {
@@ -189,7 +200,7 @@
           config = nixpkgsConfig;
         };
 
-      ### Declare specialArgs globally (pass inputs and other info through this function/attribute)
+      ### Global specialArgs (passed to all NixOS and home-manager modules)
       specialArgs = system: {
         inherit
           inputs
@@ -199,7 +210,7 @@
           ;
       };
 
-      ### Declare Home-manager function (for desktop and full CLI)
+      ### Desktop home-manager config (GNOME)
       homeManagerDesktopConfig =
         system:
         { config, pkgs, ... }:
@@ -207,7 +218,6 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            ### Same logic for "users:" and "users" function
             users = lib.genAttrs users (
               username:
               import ./hm-profiles/desktop-profile-wrapped.nix {
@@ -219,6 +229,7 @@
           };
         };
 
+      ### Server home-manager config (headless)
       homeManagerServerConfig =
         system:
         { config, pkgs, ... }:
@@ -233,7 +244,7 @@
           };
         };
 
-      ### Declare mkHome function (home manager standard configuration on homeConfigurations attribute on hm standalone setup)
+      ### Standalone home-manager (for non-NixOS Linux)
       mkHome =
         system: username:
         inputs.home-manager.lib.homeManagerConfiguration {
@@ -244,7 +255,7 @@
 
             (overlay system)
 
-            ### Import specific expression for standalone hm (move futur function here)
+            ### Standalone-specific configuration
             ./home-manager/configs/specific/standalone
           ];
           extraSpecialArgs = specialArgs system;
@@ -257,25 +268,23 @@
 
     in
     {
-      ### Formatter (unified for all architectures)
+      ### Formatter (unified across all architectures)
       formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
-      ### Packages du flake
-      packages = lib.genAttrs systems (system: {
-        nixos-config = (pkgsFor system).callPackage ./pkgs/config/nixos-config.nix {
+      ### Flake packages (imports pkgs/default.nix for derivations)
+      packages = lib.genAttrs systems (system:
+        ((pkgsFor system).callPackage ./pkgs/default.nix {
           src = self.outPath;
-          inherit configVersion;
-        };
-      } // lib.optionalAttrs (system == "x86_64-linux") {
-        iso-gnome = self.nixosConfigurations.iso-gnome.config.formats.iso;
-        iso-minimal = self.nixosConfigurations.iso-minimal.config.formats.iso;
+          inherit rev branch;
+        })
+        // lib.optionalAttrs (system == "x86_64-linux") {
+        iso-gnome = self.nixosConfigurations.iso-gnome.config.system.build.isoImage;
+        iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
       });
 
-      ### Import NixOS configurtion in a file called machine.nix (with needed argument defined as a funtion in "let [...] in" section)
+      ### NixOS configurations (defined in machine.nix)
       nixosConfigurations = import ./machine.nix {
-        ### Pass attribute from this flake directly on the expression
         inherit
-          ### Core
           lib
           overlay
           inputs
@@ -286,11 +295,10 @@
           homeManagerServerConfig
           ;
 
-        ### Import home-manager variable as inputs.home-manager... internally
         inherit (inputs) home-manager;
       };
 
-      ### Declare home-manager standalone configuration
+      ### Home-manager standalone configurations (one per user/system)
       homeConfigurations = lib.listToAttrs (
         lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) users
       );
