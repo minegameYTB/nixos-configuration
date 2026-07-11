@@ -114,26 +114,38 @@
       ### Git revision (short hash) for versioning
       rev = self.shortRev or self.dirtyShortRev or "unknown";
 
-      ### Branch detection: tries CI env vars, then local git HEAD (requires --impure)
+      ### Replace problematic chars in branch names
+      cleanBranchName = builtins.replaceStrings ["/" "#"] ["-" "-"];
+
+      ### Branch detection: CI env vars → .branch file (pure) → .git/HEAD from PWD (impure)
       branch = let
         envBranch = builtins.getEnv "BRANCH";
         ghBranch = builtins.getEnv "GITHUB_REF_NAME";
         ciBranch = builtins.getEnv "CI_COMMIT_REF_NAME";
+
+        ### For pure eval: read committed .branch file from flake source
+        branchFile = ./. + "/.branch";
+        fromBranchFile =
+          if builtins.pathExists branchFile then
+            builtins.readFile branchFile
+          else null;
+
+        ### For impure eval: read .git/HEAD via PWD env
         pwd = builtins.getEnv "PWD";
-        gitHead = pwd + "/.git/HEAD";
         fromGit =
-          if pwd != "" && builtins.pathExists gitHead then
+          if pwd != "" && builtins.pathExists (pwd + "/.git/HEAD") then
             let
-              content = builtins.readFile gitHead;
+              content = builtins.readFile (pwd + "/.git/HEAD");
               match = builtins.match "ref: refs/heads/(.+)\n" content;
             in
               if match != null then builtins.head match else null
           else null;
       in
-        if envBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] envBranch
-        else if ghBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] ghBranch
-        else if ciBranch != "" then builtins.replaceStrings ["/" "#"] ["-" "-"] ciBranch
-        else if fromGit != null then builtins.replaceStrings ["/" "#"] ["-" "-"] fromGit
+        if envBranch != "" then cleanBranchName envBranch
+        else if ghBranch != "" then cleanBranchName ghBranch
+        else if ciBranch != "" then cleanBranchName ciBranch
+        else if fromBranchFile != null then cleanBranchName fromBranchFile
+        else if fromGit != null then cleanBranchName fromGit
         else null;
 
       ### Supported systems (also used by home-manager standalone)

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "$(git branch --show-current)" > .branch
+git add .branch
