@@ -16,85 +16,139 @@ let
   pkgs = pkgsFor isoArch;
 
   layouts = [
-    { layout = "us"; keymap = "us"; locale = "en_US.UTF-8"; label = "US English"; }
-    { layout = "fr"; keymap = "fr"; locale = "fr_FR.UTF-8"; label = "French (default)"; }
+    {
+      layout = "us";
+      keymap = "us";
+      locale = "en_US.UTF-8";
+      label = "US English";
+    }
+    {
+      layout = "fr";
+      keymap = "fr";
+      locale = "fr_FR.UTF-8";
+      label = "French (default)";
+    }
   ];
 
-  mkKeyboardSpec = edition: branch: { layout, keymap, locale, label }: {
-    specialisation."keyboard-${layout}" = {
-      configuration = {
-        isoImage.appendToMenuLabel = " ${edition} (${branch}) - ${label}";
-        boot.kernelParams = [
-          "kbd.layout=${layout}"
-          "kbd.keymap=${keymap}"
-          "kbd.locale=${locale}"
+  mkKeyboardSpec =
+    edition: branch:
+    {
+      layout,
+      keymap,
+      locale,
+      label,
+    }:
+    {
+      specialisation."keyboard-${layout}" = {
+        configuration = {
+          isoImage.appendToMenuLabel = " ${edition} (${branch}) - ${label}";
+          boot.kernelParams = [
+            "kbd.layout=${layout}"
+            "kbd.keymap=${keymap}"
+            "kbd.locale=${locale}"
+          ];
+        };
+      };
+    };
+
+  mkIsoConfig =
+    {
+      edition,
+      rev,
+      branch,
+      welcomeMessage,
+      keyboardSetupScript,
+      keyboardSessionScript ? null,
+    }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
+    {
+      imports = [
+        ../configurations/configuration.nix
+        ../configurations/configs/networking
+        ../configurations/config-modules
+        ../configurations/configs/system/tmp-on-tmpfs.nix
+      ]
+      ++ map (mkKeyboardSpec edition branch) layouts;
+
+      image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${lib.substring 0 7 rev}.${branch}-${edition}";
+      image.fileName = "${config.image.baseName}.iso";
+      isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
+      isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch})";
+      isoImage.squashfsCompression = "zstd";
+
+      i18n.defaultLocale = "fr_FR.UTF-8";
+      boot.initrd.systemd.emergencyAccess = lib.mkForce true;
+      boot.zfs = {
+        forceImportRoot = false;
+        package = config.boot.kernelPackages.zfs_cachyos;
+      };
+
+      users.users.nixos.initialPassword = lib.mkForce "";
+      users.users.nixos.initialHashedPassword = lib.mkForce null;
+
+      systemd.sleep.settings.Sleep = {
+        AllowSuspend = "no";
+        AllowHibernation = "no";
+        AllowHybridSleep = "no";
+        AllowSuspendThenHibernate = "no";
+      };
+
+      networking.networkmanager.enable = true;
+      services.openssh.enable = true;
+
+      systemd.services.keyboard-setup = {
+        description = "Apply keyboard layout from kernel cmdline";
+        wantedBy = [ "multi-user.target" ];
+        before = [ "display-manager.service" ];
+        after = [
+          "local-fs.target"
+          "systemd-vconsole-setup.service"
         ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${lib.getExe keyboardSetupScript}";
+        };
       };
-    };
-  };
 
-  mkIsoConfig = { edition, rev, branch, welcomeMessage, keyboardSetupScript, keyboardSessionScript ? null }: { config, pkgs, lib, ... }: {
-    imports = [
-      ../configurations/configuration.nix
-      ../configurations/configs/networking
-      ../configurations/config-modules
-      ../configurations/configs/system/tmp-on-tmpfs.nix
-    ] ++ map (mkKeyboardSpec edition branch) layouts;
-
-    image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${lib.substring 0 7 rev}.${branch}-${edition}";
-    image.fileName = "${config.image.baseName}.iso";
-    isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
-    isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch})";
-
-    i18n.defaultLocale = "fr_FR.UTF-8";
-    boot.initrd.systemd.emergencyAccess = lib.mkForce true;
-    boot.zfs = {
-      forceImportRoot = false;
-      package = config.boot.kernelPackages.zfs_cachyos;
-    };
-
-    users.users.nixos.initialPassword = lib.mkForce "";
-    users.users.nixos.initialHashedPassword = lib.mkForce null;
-
-    systemd.sleep.settings.Sleep = {
-      AllowSuspend = "no";
-      AllowHibernation = "no";
-      AllowHybridSleep = "no";
-      AllowSuspendThenHibernate = "no";
-    };
-
-    networking.networkmanager.enable = true;
-    services.openssh.enable = true;
-
-    systemd.services.keyboard-setup = {
-      description = "Apply keyboard layout from kernel cmdline";
-      wantedBy = [ "multi-user.target" ];
-      before = [ "display-manager.service" ];
-      after = [ "local-fs.target" "systemd-vconsole-setup.service" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${lib.getExe keyboardSetupScript}";
-      };
-    };
-
-    environment.systemPackages = [ pkgs.pkgsConfig.nixos-config ]
+      environment.systemPackages = [
+        pkgs.pkgsConfig.nixos-config
+      ]
       ++ lib.optional (keyboardSessionScript != null) keyboardSessionScript;
 
-    environment.interactiveShellInit = welcomeMessage;
-  };
+      environment.interactiveShellInit = welcomeMessage;
+    };
 
   ### ISO nixosSystem builder — facto of the boilerplate shared by all variants
-  mkIso = { edition, profile, hostname, hmProfile, hmExtraModules ? [ ], keyboardSession ? false }:
+  mkIso =
+    {
+      edition,
+      profile,
+      hostname,
+      hmProfile,
+      hmExtraModules ? [ ],
+      keyboardSession ? false,
+    }:
     let
       iSpecialArgs = isoSpecialArgs isoArch // {
-        inherit mkKeyboardSpec keyboardSetupScript layouts mkIsoConfig;
+        inherit
+          mkKeyboardSpec
+          keyboardSetupScript
+          layouts
+          mkIsoConfig
+          ;
         keyboardSessionScript = if keyboardSession then keyboardSessionScript else null;
         inherit rev branch;
         edition = edition;
         welcomeMessage = mkWelcomeMessage edition;
       };
-    in lib.nixosSystem {
+    in
+    lib.nixosSystem {
       system = isoArch;
       pkgs = pkgsFor isoArch;
       specialArgs = iSpecialArgs;
@@ -118,10 +172,13 @@ let
       ];
     };
 
-  isoSpecialArgs = system: (specialArgs system) // {
-    users = [ "nixos" ];
-    description = "NixOS Live User";
-  };
+  isoSpecialArgs =
+    system:
+    (specialArgs system)
+    // {
+      users = [ "nixos" ];
+      description = "NixOS Live User";
+    };
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
 
@@ -144,7 +201,13 @@ let
 
   keyboardSetupScript = pkgs.writeShellApplication {
     name = "keyboard-setup";
-    runtimeInputs = with pkgs; [ coreutils gnused gawk kbd dconf ];
+    runtimeInputs = with pkgs; [
+      coreutils
+      gnused
+      gawk
+      kbd
+      dconf
+    ];
     text = ''
       CMDLINE=$(cat /proc/cmdline)
 
@@ -216,7 +279,12 @@ let
 
   keyboardSessionScript = pkgs.writeShellApplication {
     name = "keyboard-session-apply";
-    runtimeInputs = with pkgs; [ coreutils gnused glib dconf ];
+    runtimeInputs = with pkgs; [
+      coreutils
+      gnused
+      glib
+      dconf
+    ];
     text = ''
       CMDLINE=$(cat /proc/cmdline)
       KBD_LAYOUT=$(echo "$CMDLINE" | sed -n 's/.*kbd\.layout=\([^ ]*\).*/\1/p')
@@ -249,6 +317,16 @@ let
 
 in
 {
-  inherit isoArch isoSpecialArgs isoModule layouts mkKeyboardSpec mkIsoConfig mkIso
-          mkWelcomeMessage keyboardSetupScript keyboardSessionScript;
+  inherit
+    isoArch
+    isoSpecialArgs
+    isoModule
+    layouts
+    mkKeyboardSpec
+    mkIsoConfig
+    mkIso
+    mkWelcomeMessage
+    keyboardSetupScript
+    keyboardSessionScript
+    ;
 }

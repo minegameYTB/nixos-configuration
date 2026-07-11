@@ -86,6 +86,17 @@ Both ISOs include `nixos-config` (the installer package with `nixos-config-insta
 
 GNOME ISO additionally includes `keyboard-session-apply` (GNOME session keyboard re-apply script).
 
+## Build speed
+
+The bottleneck is squashfs compression. This config uses `zstd` instead of the default `xz` — ~3× faster for ~5% larger image. To tune further, change `isoImage.squashfsCompression` in `iso/common.nix`:
+
+| Compression | Time (relative) | Size |
+|---|---|---|
+| `lz4` | ×1 | 59% |
+| `zstd` | ×1.5 | 48% |
+| `gzip` | ×2.1 | 49% |
+| `xz -Xdict-size 100%` (nixpkgs default) | ×4.5 | 43% |
+
 ## Kernel
 
 Both ISOs use the CachyOS kernel:
@@ -175,6 +186,7 @@ iso-<name> = helpers.iso.mkIso {
 ```
 
 No `specialArgs`, no `nixosSystem`, no `overlay`, no `home-manager` wiring — all handled by `mkIso`.
+Option relative to iso is here "https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/installer/cd-dvd/iso-image.nix#L558"
 
 Key differences between the existing two:
 

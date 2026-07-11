@@ -20,20 +20,19 @@
 let
   helpers = import ./lib/default.nix {
     inherit
-
-    lib
-    overlay
-    home-manager
-    inputs
-    defaultArch
-    pkgsFor
-    pkgsPatched
-    specialArgs
-    homeManagerDesktopConfig
-    homeManagerServerConfig
-    rev
-    branch
-    ;
+      lib
+      overlay
+      home-manager
+      inputs
+      defaultArch
+      pkgsFor
+      pkgsPatched
+      specialArgs
+      homeManagerDesktopConfig
+      homeManagerServerConfig
+      rev
+      branch
+      ;
   };
   inherit (helpers.machine) mkMachine;
 
