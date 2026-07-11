@@ -49,7 +49,7 @@ nix build '.#iso-minimal'            # Minimal CLI ISO
 The resulting image is at `result/iso/nixos-*.iso`:
 
 ```bash
-cp result/iso/*.iso /dev/sdX && sync
+sudo dd if=result/iso/nixos-*.iso of=/dev/sdX bs=4M status=progress conv=fsync
 ```
 
 ## Naming convention
