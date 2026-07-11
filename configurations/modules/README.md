@@ -1,17 +1,17 @@
-# This directory is for modules
+# Modules
 
-to use declared modules, when you created a new profile (configuration) for a new machine
+Custom NixOS modules (programs, markers, caches, vmware).
 
-add this line to (nixos-configuration root)/profiles/<machine name>-profiles.nix : 
-`../configurations/modules` or `../../configurations/modules`
+## Usage
 
-(you can add this module to configuration.nix (common configuration to all machine for this configuration)):
-`./modules`
+In a machine profile, add:
+```
+../configurations/modules
+```
 
-if the targeted machine profiles is in (nixos-configuration root)/profiles/base-profiles
+In `configuration.nix` (shared across all machines):
+```
+./modules
+```
 
-(see flake.nix for more details for implementing new profiles)
-
-# How it's work ?
-
-by doing this, nix will import all expression declared in modules/default.nix, the modules will be imported following import of default.nix (see /configurations/modules/default.nix implementation)
+This imports `default.nix` which collects all sub-modules automatically. See `configurations/modules/default.nix` for the full list.
