@@ -70,11 +70,9 @@ let
       imports = [
         ../configurations/configuration.nix
         ../configurations/configs/networking
-        ../configurations/config-modules
+        ../configurations/config-modules/nix-index-db
+        ../configurations/config-modules/stylix
         ../configurations/configs/system/tmp-on-tmpfs.nix
-
-        ### NVIDIA configuration
-        ../configurations/hardware-configuration/specific/nvidia.nix
       ]
       ++ map (mkKeyboardSpec edition branch) layouts;
 
@@ -82,7 +80,7 @@ let
       image.fileName = "${config.image.baseName}.iso";
       isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
       isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch})";
-      isoImage.squashfsCompression = "zstd";
+      isoImage.squashfsCompression = "zstd -Xcompression-level 9";
 
       i18n.defaultLocale = "fr_FR.UTF-8";
       boot.initrd.systemd.emergencyAccess = lib.mkForce true;

@@ -137,6 +137,7 @@ in
     edition = "GNOME";
     profile = ./iso/gnome.nix;
     hostname = "nixos-iso";
+    extraModules = [ ./configurations/hardware-configuration/specific/nvidia.nix ];
     hmProfile = ./hm-profiles/desktop-profile-wrapped.nix;
     hmExtraModules = [ ./home-manager/configs/specific/nixos ];
     keyboardSession = true;
