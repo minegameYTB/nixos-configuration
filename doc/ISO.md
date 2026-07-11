@@ -182,6 +182,7 @@ iso-<name> = helpers.iso.mkIso {
   hmProfile = ./hm-profiles/<profile>.nix;
   hmExtraModules = [ ./home-manager/configs/specific/nixos ];  # desktop only
   keyboardSession = false;  # set true for DEs needing post-session keyboard re-apply
+  extraModules = [ ];  # optional extra NixOS modules (e.g. cuda.nix, vm-host.nix)
 };
 ```
 
@@ -196,6 +197,7 @@ Key differences between the existing two:
 | HM profile | `desktop-profile-wrapped.nix` | `server-profile.nix` |
 | `hmExtraModules` | `[ ./home-manager/configs/specific/nixos ]` | omitted |
 | `keyboardSession` | `true` | omitted (defaults to `false`) |
+| `extraModules` | omitted | omitted |
 | `hostname` | `nixos-iso` | `nixos-iso-minimal` |
 
 ### 3. `flake.nix` — auto-discovery

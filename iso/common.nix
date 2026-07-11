@@ -72,6 +72,9 @@ let
         ../configurations/configs/networking
         ../configurations/config-modules
         ../configurations/configs/system/tmp-on-tmpfs.nix
+
+        ### NVIDIA configuration
+        ../configurations/hardware-configuration/specific/nvidia.nix
       ]
       ++ map (mkKeyboardSpec edition branch) layouts;
 
@@ -133,6 +136,7 @@ let
       hmProfile,
       hmExtraModules ? [ ],
       keyboardSession ? false,
+      extraModules ? [ ],
     }:
     let
       iSpecialArgs = isoSpecialArgs isoArch // {
@@ -169,7 +173,8 @@ let
           };
         }
         isoModule
-      ];
+      ]
+      ++ extraModules;
     };
 
   isoSpecialArgs =
