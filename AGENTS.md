@@ -61,6 +61,10 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - **Auto-discovery** — every config starting with `iso-` in `machine.nix` is automatically exposed as a flake package via `filterAttrs` + `mapAttrs'` in `flake.nix`
 - See `doc/ISO.md` for full docs
 
+## Documentation
+- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `modules.md`, `config-modules.md`
+- `AGENTS.md` (this file) stays at the project root for agent discovery
+
 ### Repo URL — `lib/repo.nix`
 - Single source for `repoUrl`, imported by `flake.nix` (packaging), `version.nix` (`CONFIG_URL` in `/etc/os-release`), and `install-lib/nixos-install.sh` (config clone into installed system)
 - `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
