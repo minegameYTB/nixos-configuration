@@ -59,7 +59,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - **`iso/cli.nix`** — Minimal CLI variant (only shared config + console keymap)
 - **`machine.nix`** — ISO configs registered via `helpers.iso.mkIso { edition, profile, hostname, hmProfile, ... }`
 - **Auto-discovery** — every config starting with `iso-` in `machine.nix` is automatically exposed as a flake package via `filterAttrs` + `mapAttrs'` in `flake.nix`
-- See `iso/ISO.md` for full docs
+- See `doc/ISO.md` for full docs
 
 ### Repo URL — `lib/repo.nix`
 - Single source for `repoUrl`, imported by `flake.nix` (packaging), `version.nix` (`CONFIG_URL` in `/etc/os-release`), and `install-lib/nixos-install.sh` (config clone into installed system)

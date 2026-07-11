@@ -22,7 +22,7 @@ nix build 'github:minegameYTB/nixos-configuration#nixos-config'
 ./result/bin/nixos-config-install
 ```
 
-The install script detects NixOS vs other Linux and runs the appropriate path. See [INSTALL.md](INSTALL.md) for full documentation.
+The install script detects NixOS vs other Linux and runs the appropriate path. See [doc/INSTALL.md](doc/INSTALL.md) for full documentation.
 
 ### Requirements
 
@@ -44,7 +44,7 @@ nix build '.#iso-gnome'              # GNOME desktop
 nix build '.#iso-minimal'            # Minimal CLI (headless)
 ```
 
-Both include `nixos-config-install`. CachyOS kernel, ZFS support, dual keyboard layouts (US / FR). See [iso/ISO.md](iso/ISO.md) for architecture and creating new variants.
+Both include `nixos-config-install`. CachyOS kernel, ZFS support, dual keyboard layouts (US / FR). See [doc/ISO.md](doc/ISO.md) for architecture and creating new variants.
 
 ---
 
@@ -68,6 +68,7 @@ nixos-configuration/
 ├── pkgs/                  # Local packages (nixos-config, fhsEnv, rm-only, sshrm)
 ├── install-lib/           # Install script modules
 ├── script/                # Utility scripts (tests, linting)
+├── doc/                   # Documentation (INSTALL, AGENTS, ISO, modules)
 └── example/               # Packaging examples
 ```
 
