@@ -146,7 +146,7 @@ in
     pkgs = pkgsFor i.isoArch;
     specialArgs = isoSpecialArgs;
     modules = [
-      ./profiles/iso-profile.nix
+      ./iso/gnome.nix
 
       (overlay i.isoArch)
 
@@ -183,7 +183,7 @@ in
     pkgs = pkgsFor i.isoArch;
     specialArgs = isoSpecialArgs;
     modules = [
-      ./profiles/iso-minimal-profile.nix
+      ./iso/cli.nix
 
       (overlay i.isoArch)
 

@@ -11,13 +11,11 @@ let
   isoArch = defaultArch;
   pkgs = pkgsFor isoArch;
 
-  ### 2 keyboard layouts (shared between iso-profile and iso-minimal-profile)
   layouts = [
     { layout = "us"; keymap = "us"; locale = "en_US.UTF-8"; label = "US English"; }
     { layout = "fr"; keymap = "fr"; locale = "fr_FR.UTF-8"; label = "French (default)"; }
   ];
 
-  ### Keyboard specialisation helper — one spec per layout
   mkKeyboardSpec = edition: branch: { layout, keymap, locale, label }: {
     specialisation."keyboard-${layout}" = {
       configuration = {
@@ -31,9 +29,13 @@ let
     };
   };
 
-  ### Shared ISO config builder — reduces duplication between GNOME and CLI profiles
   mkIsoConfig = { edition, rev, branch, welcomeMessage, keyboardSetupScript, keyboardSessionScript ? null }: { config, pkgs, lib, ... }: {
-    imports = map (mkKeyboardSpec edition branch) layouts;
+    imports = [
+      ../configurations/configuration.nix
+      ../configurations/configs/networking
+      ../configurations/config-modules
+      ../configurations/configs/system/tmp-on-tmpfs.nix
+    ] ++ map (mkKeyboardSpec edition branch) layouts;
 
     image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${lib.substring 0 7 rev}.${branch}-${edition}";
     image.fileName = "${config.image.baseName}.iso";
@@ -91,7 +93,6 @@ in
 
   inherit layouts mkKeyboardSpec mkIsoConfig;
 
-  ### Welcome message — shared by both ISO profiles
   mkWelcomeMessage = edition: ''
     if [ -z "$_NIXOS_ISO_WELCOME" ]; then
       _NIXOS_ISO_WELCOME=1
@@ -109,7 +110,6 @@ in
     fi
   '';
 
-  ### System service script — runs before display-manager
   keyboardSetupScript = pkgs.writeShellApplication {
     name = "keyboard-setup";
     runtimeInputs = with pkgs; [ coreutils gnused gawk kbd dconf ];
@@ -124,24 +124,20 @@ in
       KBD_KEYMAP=$(get_param kbd.keymap)
       KBD_LOCALE=$(get_param kbd.locale)
 
-      # French default when no kbd.* params
       if [ -z "$KBD_LAYOUT" ]; then
         KBD_LAYOUT="fr"
         KBD_KEYMAP="fr"
         KBD_LOCALE="fr_FR.UTF-8"
       fi
 
-      # 1. Console
       if [ -n "$KBD_KEYMAP" ]; then
         loadkeys "$KBD_KEYMAP" 2>/dev/null || true
       fi
 
-      # 2. Locale
       if [ -n "$KBD_LOCALE" ]; then
         export LANG="$KBD_LOCALE"
       fi
 
-      # 3. X11
       if mkdir -p /etc/X11/xorg.conf.d 2>/dev/null; then
         rm -f /etc/X11/xorg.conf.d/00-keyboard.conf
         cat > /etc/X11/xorg.conf.d/00-keyboard.conf << XEOF
@@ -153,7 +149,6 @@ in
       XEOF
       fi
 
-      # 4. GDM dconf
       {
         DCONF_KEYFILE=$(mktemp -d)/input-sources
         mkdir -p "$(dirname "$DCONF_KEYFILE")"
@@ -187,7 +182,6 @@ in
     '';
   };
 
-  ### User session script — re-applies layout after GNOME session init
   keyboardSessionScript = pkgs.writeShellApplication {
     name = "keyboard-session-apply";
     runtimeInputs = with pkgs; [ coreutils gnused glib dconf ];
@@ -201,7 +195,6 @@ in
 
       TARGET="[('xkb', '$KBD_LAYOUT')]"
 
-      # Toggle via dummy to force GNOME to apply the change
       if [ "$KBD_LAYOUT" = "us" ]; then
         DUMMY="fr"
       else
