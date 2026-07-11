@@ -17,7 +17,16 @@
     ../configurations/configs/specific/desktop/sound.nix
     ../configurations/configs/specific/desktop/browser
 
-    (mkIsoConfig { inherit edition rev branch welcomeMessage keyboardSetupScript keyboardSessionScript; })
+    (mkIsoConfig {
+      inherit
+        edition
+        rev
+        branch
+        welcomeMessage
+        keyboardSetupScript
+        keyboardSessionScript
+        ;
+    })
   ];
 
   marker = {

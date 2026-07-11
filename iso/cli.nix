@@ -12,7 +12,15 @@
 }:
 {
   imports = [
-    (mkIsoConfig { inherit edition rev branch welcomeMessage keyboardSetupScript; })
+    (mkIsoConfig {
+      inherit
+        edition
+        rev
+        branch
+        welcomeMessage
+        keyboardSetupScript
+        ;
+    })
   ];
 
   marker = {

@@ -24,49 +24,52 @@ with inputs;
     ]
 
     ### Custom extend of pkgs or replacing pkgs by other
-    ++ (let
-      ### Capture flake self before inner overlay shadows it
-      flake = self;
-    in [
-      (self: super: rec {
-        #nur = import inputs.nur {
-        #  nurpkgs = pkgsUnstable;
-        #  pkgs = pkgsUnstable;
-        #};
+    ++ (
+      let
+        ### Capture flake self before inner overlay shadows it
+        flake = self;
+      in
+      [
+        (self: super: rec {
+          #nur = import inputs.nur {
+          #  nurpkgs = pkgsUnstable;
+          #  pkgs = pkgsUnstable;
+          #};
 
-        ### Extend pkgs namespace here
-        # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
-        pkgsUnstable = import nixpkgs-unstable {
-          inherit system;
-          config = nixpkgsConfig;
-          overlays = [ ];
-        };
-        pkgs2511 = import nixpkgs-25-11 {
-          inherit system;
-          config = nixpkgsConfig;
-        };
-        #pkgsLts = import ctrl-os {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-        #pkgsMaster = import nixpkgs-master {
-        #  inherit system;
-        #  config = nixpkgsConfig;
-        #};
-        pkgsPr = import nixpkgs-pr {
-          inherit system;
-          config = nixpkgsConfig;
-        };
+          ### Extend pkgs namespace here
+          # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
+          pkgsUnstable = import nixpkgs-unstable {
+            inherit system;
+            config = nixpkgsConfig;
+            overlays = [ ];
+          };
+          pkgs2511 = import nixpkgs-25-11 {
+            inherit system;
+            config = nixpkgsConfig;
+          };
+          #pkgsLts = import ctrl-os {
+          #  inherit system;
+          #  config = nixpkgsConfig;
+          #};
+          #pkgsMaster = import nixpkgs-master {
+          #  inherit system;
+          #  config = nixpkgsConfig;
+          #};
+          pkgsPr = import nixpkgs-pr {
+            inherit system;
+            config = nixpkgsConfig;
+          };
 
-        ### Config packages namespace — delegates to pkgs/default.nix
-        pkgsConfig = super.callPackage ./pkgs/default.nix {
-          src = flake.outPath;
-          inherit rev branch repoUrl;
-        };
+          ### Config packages namespace — delegates to pkgs/default.nix
+          pkgsConfig = super.callPackage ./pkgs/default.nix {
+            src = flake.outPath;
+            inherit rev branch repoUrl;
+          };
 
-        ### Replace packages here
-        ### Force use gh from unstable (on system level)
-        #gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
-      })
-    ]);
+          ### Replace packages here
+          ### Force use gh from unstable (on system level)
+          #gh = inputs.nixpkgs-unstable.legacyPackages.${super.stdenv.hostPlatform.system}.gh;
+        })
+      ]
+    );
 }

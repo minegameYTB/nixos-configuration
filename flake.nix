@@ -115,38 +115,47 @@
       rev = self.shortRev or self.dirtyShortRev or "unknown";
 
       ### Replace problematic chars in branch names
-      cleanBranchName = builtins.replaceStrings ["/" "#"] ["-" "-"];
+      cleanBranchName = builtins.replaceStrings [ "/" "#" ] [ "-" "-" ];
 
       ### Branch detection: CI env vars → .branch file (pure) → .git/HEAD from PWD (impure)
-      branch = let
-        envBranch = builtins.getEnv "BRANCH";
-        ghBranch = builtins.getEnv "GITHUB_REF_NAME";
-        ciBranch = builtins.getEnv "CI_COMMIT_REF_NAME";
+      branch =
+        let
+          envBranch = builtins.getEnv "BRANCH";
+          ghBranch = builtins.getEnv "GITHUB_REF_NAME";
+          ciBranch = builtins.getEnv "CI_COMMIT_REF_NAME";
 
-        ### For pure eval: read committed .branch file from flake source
-        branchFile = ./. + "/.branch";
-        fromBranchFile =
-          if builtins.pathExists branchFile then
-            lib.removeSuffix "\n" (builtins.readFile branchFile)
-          else null;
+          ### For pure eval: read committed .branch file from flake source
+          branchFile = ./. + "/.branch";
+          fromBranchFile =
+            if builtins.pathExists branchFile then
+              lib.removeSuffix "\n" (builtins.readFile branchFile)
+            else
+              null;
 
-        ### For impure eval: read .git/HEAD via PWD env
-        pwd = builtins.getEnv "PWD";
-        fromGit =
-          if pwd != "" && builtins.pathExists (pwd + "/.git/HEAD") then
-            let
-              content = builtins.readFile (pwd + "/.git/HEAD");
-              match = builtins.match "ref: refs/heads/(.+)\n" content;
-            in
+          ### For impure eval: read .git/HEAD via PWD env
+          pwd = builtins.getEnv "PWD";
+          fromGit =
+            if pwd != "" && builtins.pathExists (pwd + "/.git/HEAD") then
+              let
+                content = builtins.readFile (pwd + "/.git/HEAD");
+                match = builtins.match "ref: refs/heads/(.+)\n" content;
+              in
               if match != null then builtins.head match else null
-          else null;
-      in
-        if envBranch != "" then cleanBranchName envBranch
-        else if ghBranch != "" then cleanBranchName ghBranch
-        else if ciBranch != "" then cleanBranchName ciBranch
-        else if fromBranchFile != null then cleanBranchName fromBranchFile
-        else if fromGit != null then cleanBranchName fromGit
-        else null;
+            else
+              null;
+        in
+        if envBranch != "" then
+          cleanBranchName envBranch
+        else if ghBranch != "" then
+          cleanBranchName ghBranch
+        else if ciBranch != "" then
+          cleanBranchName ciBranch
+        else if fromBranchFile != null then
+          cleanBranchName fromBranchFile
+        else if fromGit != null then
+          cleanBranchName fromGit
+        else
+          null;
 
       ### Repo URL — single source of truth for packaging and /etc/os-release
       repoUrl = (import ./lib/repo.nix).url;
@@ -288,28 +297,39 @@
       formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
       ### Flake packages — uses overlay (which delegates to pkgs/default.nix)
-      packages = lib.genAttrs systems (system:
+      packages = lib.genAttrs systems (
+        system:
         let
           pkgsWithOverlay = import nixpkgs-main {
             inherit system;
             config = nixpkgsConfig;
-            overlays = (import ./overlay.nix {
-              inherit self system inputs lib rev branch repoUrl nixpkgsConfig;
-            }).nixpkgs.overlays;
+            overlays =
+              (import ./overlay.nix {
+                inherit
+                  self
+                  system
+                  inputs
+                  lib
+                  rev
+                  branch
+                  repoUrl
+                  nixpkgsConfig
+                  ;
+              }).nixpkgs.overlays;
           };
         in
-          pkgsWithOverlay.pkgsConfig
+        pkgsWithOverlay.pkgsConfig
 
-          ### ISO images auto-discovery
-          # Every nixosConfig starting with "iso-" gets picked up automatically
-          # and exposed as a flake package. mapAttrs' + filterAttrs does the job
-          # — no more manual listing when adding a new variant.
-          // lib.optionalAttrs (system == "x86_64-linux") (
-            lib.mapAttrs' (name: config:
-              lib.nameValuePair name config.config.system.build.isoImage
-            ) (lib.filterAttrs (n: _: lib.hasPrefix "iso-" n) self.nixosConfigurations)
+        ### ISO images auto-discovery
+        # Every nixosConfig starting with "iso-" gets picked up automatically
+        # and exposed as a flake package. mapAttrs' + filterAttrs does the job
+        # — no more manual listing when adding a new variant.
+        // lib.optionalAttrs (system == "x86_64-linux") (
+          lib.mapAttrs' (name: config: lib.nameValuePair name config.config.system.build.isoImage) (
+            lib.filterAttrs (n: _: lib.hasPrefix "iso-" n) self.nixosConfigurations
           )
-        );
+        )
+      );
 
       ### NixOS configurations (defined in machine.nix)
       nixosConfigurations = import ./machine.nix {
