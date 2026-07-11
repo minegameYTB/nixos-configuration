@@ -83,3 +83,15 @@ nixos-configuration/
 | `iso-minimal` | CLI ISO |
 
 Every NixOS config starting with `iso-` in `machine.nix` is auto-discovered as a flake package. No manual listing needed.
+
+---
+
+## Documentation
+
+| File | Description |
+|---|---|
+| [doc/INSTALL.md](doc/INSTALL.md) | Install script — usage, flags, steps, environment variables |
+| [doc/ISO.md](doc/ISO.md) | ISO profiles — architecture, building, keyboard specialisations, creating variants |
+| [doc/modules.md](doc/modules.md) | Custom NixOS modules — usage and structure |
+| [doc/config-modules.md](doc/config-modules.md) | Wrapper modules for external flake inputs |
+| [AGENTS.md](AGENTS.md) | Agent guide — project overview for AI assistants |
