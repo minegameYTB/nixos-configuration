@@ -16,6 +16,8 @@ stdenvNoCC.mkDerivation rec {
       set -euo pipefail
       SELF=$(readlink -f "$0")
       SRC=$(dirname "$SELF")/../share/nixos-config
+      WORKDIR="/tmp/nixos-config-install"
+      VERSION_FILE="$WORKDIR/.config-version"
 
       echo ""
       echo "═══════════════════════════════════════════════════════════════"
@@ -27,10 +29,17 @@ stdenvNoCC.mkDerivation rec {
       echo "═══════════════════════════════════════════════════════════════"
       echo ""
 
-      WORKDIR=$(mktemp -d /tmp/nixos-config-install-XXXX)
-      echo "Copying configuration to $WORKDIR ..."
-      cp -r "$SRC"/* "$WORKDIR/"
-      chmod -R +w "$WORKDIR"
+      if [ -d "$WORKDIR" ] && [ -f "$VERSION_FILE" ] && [ "$(cat "$VERSION_FILE")" = "${version}" ]; then
+        echo "Configuration unchanged, reusing $WORKDIR ..."
+      else
+        echo "Setting up configuration in $WORKDIR ..."
+        rm -rf "$WORKDIR"
+        mkdir -p "$WORKDIR"
+        cp -r "$SRC"/* "$WORKDIR/"
+        chmod -R +w "$WORKDIR"
+        echo "${version}" > "$VERSION_FILE"
+      fi
+
       cd "$WORKDIR"
       exec ${runtimeShell} "$WORKDIR/install.sh" "$@"
     ''}/bin/nixos-config-install $out/bin/nixos-config-install

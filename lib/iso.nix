@@ -10,6 +10,74 @@
 let
   isoArch = defaultArch;
   pkgs = pkgsFor isoArch;
+
+  ### 2 keyboard layouts (shared between iso-profile and iso-minimal-profile)
+  layouts = [
+    { layout = "us"; keymap = "us"; locale = "en_US.UTF-8"; label = "US English"; }
+    { layout = "fr"; keymap = "fr"; locale = "fr_FR.UTF-8"; label = "French (default)"; }
+  ];
+
+  ### Keyboard specialisation helper — one spec per layout
+  mkKeyboardSpec = edition: branch: { layout, keymap, locale, label }: {
+    specialisation."keyboard-${layout}" = {
+      configuration = {
+        isoImage.appendToMenuLabel = " ${edition} (${branch}) - ${label}";
+        boot.kernelParams = [
+          "kbd.layout=${layout}"
+          "kbd.keymap=${keymap}"
+          "kbd.locale=${locale}"
+        ];
+      };
+    };
+  };
+
+  ### Shared ISO config builder — reduces duplication between GNOME and CLI profiles
+  mkIsoConfig = { edition, rev, branch, welcomeMessage, keyboardSetupScript, keyboardSessionScript ? null }: { config, pkgs, lib, ... }: {
+    imports = map (mkKeyboardSpec edition branch) layouts;
+
+    image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${lib.substring 0 7 rev}.${branch}-${edition}";
+    image.fileName = "${config.image.baseName}.iso";
+    isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
+    isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch})";
+
+    i18n.defaultLocale = "fr_FR.UTF-8";
+    boot.initrd.systemd.emergencyAccess = lib.mkForce true;
+    boot.zfs = {
+      forceImportRoot = false;
+      package = config.boot.kernelPackages.zfs_cachyos;
+    };
+
+    users.users.nixos.initialPassword = lib.mkForce "";
+    users.users.nixos.initialHashedPassword = lib.mkForce null;
+
+    systemd.sleep.settings.Sleep = {
+      AllowSuspend = "no";
+      AllowHibernation = "no";
+      AllowHybridSleep = "no";
+      AllowSuspendThenHibernate = "no";
+    };
+
+    networking.networkmanager.enable = true;
+    services.openssh.enable = true;
+
+    systemd.services.keyboard-setup = {
+      description = "Apply keyboard layout from kernel cmdline";
+      wantedBy = [ "multi-user.target" ];
+      before = [ "display-manager.service" ];
+      after = [ "local-fs.target" "systemd-vconsole-setup.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${lib.getExe keyboardSetupScript}";
+      };
+    };
+
+    environment.systemPackages = [ pkgs.pkgsConfig.nixos-config ]
+      ++ lib.optional (keyboardSessionScript != null) keyboardSessionScript;
+
+    environment.interactiveShellInit = welcomeMessage;
+  };
+
 in
 {
   isoArch = isoArch;
@@ -21,33 +89,7 @@ in
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
 
-  ### 10 keyboard layouts (shared between iso-profile and iso-minimal-profile)
-  layouts = [
-    { layout = "us"; keymap = "us"; locale = "en_US.UTF-8"; label = "US English"; }
-    { layout = "de"; keymap = "de"; locale = "de_DE.UTF-8"; label = "German"; }
-    { layout = "es"; keymap = "es"; locale = "es_ES.UTF-8"; label = "Spanish"; }
-    { layout = "it"; keymap = "it"; locale = "it_IT.UTF-8"; label = "Italian"; }
-    { layout = "pt"; keymap = "pt"; locale = "pt_PT.UTF-8"; label = "Portuguese"; }
-    { layout = "gb"; keymap = "gb"; locale = "en_GB.UTF-8"; label = "British English"; }
-    { layout = "be"; keymap = "be"; locale = "fr_BE.UTF-8"; label = "Belgian"; }
-    { layout = "ch"; keymap = "ch"; locale = "de_CH.UTF-8"; label = "Swiss"; }
-    { layout = "ca"; keymap = "ca"; locale = "en_CA.UTF-8"; label = "Canadian"; }
-    { layout = "fr"; keymap = "fr"; locale = "fr_FR.UTF-8"; label = "French (default)"; }
-  ];
-
-  ### Keyboard specialisation helper — one spec per layout
-  mkKeyboardSpec = { layout, keymap, locale, label }: {
-    specialisation."keyboard-${layout}" = {
-      configuration = {
-        isoImage.appendToMenuLabel = lib.mkForce " - ${label}";
-        boot.kernelParams = [
-          "kbd.layout=${layout}"
-          "kbd.keymap=${keymap}"
-          "kbd.locale=${locale}"
-        ];
-      };
-    };
-  };
+  inherit layouts mkKeyboardSpec mkIsoConfig;
 
   ### Welcome message — shared by both ISO profiles
   mkWelcomeMessage = edition: ''

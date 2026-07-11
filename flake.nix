@@ -283,16 +283,22 @@
       ### Formatter (unified across all architectures)
       formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
-      ### Flake packages (imports pkgs/default.nix for derivations)
+      ### Flake packages — uses overlay (which delegates to pkgs/default.nix)
       packages = lib.genAttrs systems (system:
-        ((pkgsFor system).callPackage ./pkgs/default.nix {
-          src = self.outPath;
-          inherit rev branch;
-        })
-        // lib.optionalAttrs (system == "x86_64-linux") {
-        iso-gnome = self.nixosConfigurations.iso-gnome.config.system.build.isoImage;
-        iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
-      });
+        let
+          pkgsWithOverlay = import nixpkgs-main {
+            inherit system;
+            config = nixpkgsConfig;
+            overlays = (import ./overlay.nix {
+              inherit self system inputs lib rev branch nixpkgsConfig;
+            }).nixpkgs.overlays;
+          };
+        in
+          pkgsWithOverlay.pkgsConfig
+          // lib.optionalAttrs (system == "x86_64-linux") {
+          iso-gnome = self.nixosConfigurations.iso-gnome.config.system.build.isoImage;
+          iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
+        });
 
       ### NixOS configurations (defined in machine.nix)
       nixosConfigurations = import ./machine.nix {
@@ -305,6 +311,8 @@
           specialArgs
           homeManagerDesktopConfig
           homeManagerServerConfig
+          rev
+          branch
           ;
 
         inherit (inputs) home-manager;

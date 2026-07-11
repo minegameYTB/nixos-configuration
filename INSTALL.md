@@ -265,6 +265,44 @@ On **resume** after a crash or C-c:
 
 ---
 
+## ISO images
+
+### Custom ISO (GNOME / Minimal CLI)
+
+Build the ISO image:
+
+```bash
+nix build '.#iso-gnome'              # GNOME desktop ISO
+nix build '.#iso-minimal'            # Minimal CLI ISO
+```
+
+The resulting image will be at `result/iso/nixos-*.iso`. Write it to a USB drive:
+
+```bash
+cp result/iso/*.iso /dev/sdX && sync
+```
+
+On the custom ISO:
+
+- **GNOME** — desktop environment with GNOME, browser, sound, NetworkManager, SSH
+- **Minimal CLI** — headless environment with NetworkManager, SSH
+- **Keyboard** — FR by default, selectable at GRUB (US English / French)
+- **ZFS** — supported (package from CachyOS project, compatible with CachyOS kernel)
+- CachyOS kernel (bore LTO on GNOME ISO, LTS server on minimal ISO)
+
+The `nixos-config-install` command is pre-installed on the ISO — open a terminal and run it to start the installation wizard.
+
+### Vanilla NixOS ISO
+
+The `nixos-config` package can also be built and executed on any vanilla NixOS live ISO:
+
+```bash
+nix build 'github:minegameYTB/nixos-configuration#nixos-config'
+./result/bin/nixos-config-install
+```
+
+---
+
 ## Helper functions (lib.sh)
 
 | Function | Description |

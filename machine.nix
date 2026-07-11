@@ -12,25 +12,27 @@
   specialArgs,
   homeManagerDesktopConfig,
   homeManagerServerConfig,
+  rev,
+  branch,
   ...
 }:
 
 let
   helpers = import ./lib/default.nix {
     inherit
-      lib
-      overlay
-      home-manager
-      inputs
-      defaultArch
-      pkgsFor
-      pkgsPatched
-      specialArgs
-      homeManagerDesktopConfig
-      homeManagerServerConfig
-      ;
-  };
 
+    lib
+    overlay
+    home-manager
+    inputs
+    defaultArch
+    pkgsFor
+    pkgsPatched
+    specialArgs
+    homeManagerDesktopConfig
+    homeManagerServerConfig
+    ;
+  };
   inherit (helpers.machine) mkMachine;
 
 in
@@ -134,7 +136,9 @@ in
   iso-gnome = let
     i = helpers.iso;
     isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript keyboardSessionScript layouts;
+      inherit (i) mkKeyboardSpec keyboardSetupScript keyboardSessionScript layouts mkIsoConfig;
+      inherit rev branch;
+      edition = "GNOME";
       welcomeMessage = i.mkWelcomeMessage "GNOME";
     };
   in lib.nixosSystem {
@@ -169,7 +173,9 @@ in
   iso-minimal = let
     i = helpers.iso;
     isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript layouts;
+      inherit (i) mkKeyboardSpec keyboardSetupScript layouts mkIsoConfig;
+      inherit rev branch;
+      edition = "CLI";
       welcomeMessage = i.mkWelcomeMessage "Minimal CLI";
     };
   in lib.nixosSystem {
