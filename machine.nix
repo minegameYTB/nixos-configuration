@@ -31,6 +31,8 @@ let
     specialArgs
     homeManagerDesktopConfig
     homeManagerServerConfig
+    rev
+    branch
     ;
   };
   inherit (helpers.machine) mkMachine;
@@ -132,76 +134,19 @@ in
 
   ### --- ISO Images ---
 
-  # ISO with GNOME desktop and Home Manager
-  iso-gnome = let
-    i = helpers.iso;
-    isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript keyboardSessionScript layouts mkIsoConfig;
-      inherit rev branch;
-      edition = "GNOME";
-      welcomeMessage = i.mkWelcomeMessage "GNOME";
-    };
-  in lib.nixosSystem {
-    system = i.isoArch;
-    pkgs = pkgsFor i.isoArch;
-    specialArgs = isoSpecialArgs;
-    modules = [
-      ./iso/gnome.nix
-
-      (overlay i.isoArch)
-
-      { networking.hostName = "nixos-iso"; }
-
-      home-manager.nixosModules.home-manager
-      {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          users.nixos = import ./hm-profiles/desktop-profile-wrapped.nix {
-            username = "nixos";
-            extraModules = [ ./home-manager/configs/specific/nixos ];
-          };
-          extraSpecialArgs = isoSpecialArgs;
-        };
-      }
-
-      i.isoModule
-    ];
+  iso-gnome = helpers.iso.mkIso {
+    edition = "GNOME";
+    profile = ./iso/gnome.nix;
+    hostname = "nixos-iso";
+    hmProfile = ./hm-profiles/desktop-profile-wrapped.nix;
+    hmExtraModules = [ ./home-manager/configs/specific/nixos ];
+    keyboardSession = true;
   };
 
-  # ISO minimal (CLI, no GUI) with Home Manager
-  iso-minimal = let
-    i = helpers.iso;
-    isoSpecialArgs = i.isoSpecialArgs i.isoArch // {
-      inherit (i) mkKeyboardSpec keyboardSetupScript layouts mkIsoConfig;
-      inherit rev branch;
-      edition = "CLI";
-      welcomeMessage = i.mkWelcomeMessage "Minimal CLI";
-    };
-  in lib.nixosSystem {
-    system = i.isoArch;
-    pkgs = pkgsFor i.isoArch;
-    specialArgs = isoSpecialArgs;
-    modules = [
-      ./iso/cli.nix
-
-      (overlay i.isoArch)
-
-      { networking.hostName = "nixos-iso-minimal"; }
-
-      home-manager.nixosModules.home-manager
-      {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          users.nixos = import ./hm-profiles/server-profile.nix {
-            username = "nixos";
-          };
-          extraSpecialArgs = isoSpecialArgs;
-        };
-      }
-
-      i.isoModule
-    ];
+  iso-minimal = helpers.iso.mkIso {
+    edition = "CLI";
+    profile = ./iso/cli.nix;
+    hostname = "nixos-iso-minimal";
+    hmProfile = ./hm-profiles/server-profile.nix;
   };
 }

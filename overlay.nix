@@ -5,6 +5,7 @@
   nixpkgsConfig,
   rev,
   branch,
+  repoUrl,
   self,
   ...
 }:
@@ -60,7 +61,7 @@ with inputs;
         ### Config packages namespace — delegates to pkgs/default.nix
         pkgsConfig = super.callPackage ./pkgs/default.nix {
           src = flake.outPath;
-          inherit rev branch;
+          inherit rev branch repoUrl;
         };
 
         ### Replace packages here

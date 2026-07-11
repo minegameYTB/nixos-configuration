@@ -1,4 +1,4 @@
-{ stdenvNoCC, lib, src, rev, writeShellScriptBin, runtimeShell, branch ? null }:
+{ stdenvNoCC, lib, src, rev, writeShellScriptBin, runtimeShell, branch ? null, repoUrl ? null }:
 
 stdenvNoCC.mkDerivation rec {
   pname = "nixos-config";
@@ -12,6 +12,7 @@ stdenvNoCC.mkDerivation rec {
     cp -r . $out/share/nixos-config/
     rm -rf $out/share/nixos-config/.git
     rm -f $out/share/nixos-config/result $out/share/nixos-config/result-*
+    echo "${repoUrl} ${lib.removeSuffix "-dirty" rev}" > $out/share/nixos-config/.config-repo
     cp ${writeShellScriptBin "nixos-config-install" ''
       set -euo pipefail
       SELF=$(readlink -f "$0")

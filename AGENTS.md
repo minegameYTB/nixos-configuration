@@ -44,6 +44,11 @@ configurations/
 - ARM falls back to stock nixpkgs kernel
 - Custom build options via `hardware.cachyos.kernelBuildConfig`
 
+### Repo URL — `lib/repo.nix`
+- Single source for `repoUrl`, imported by `flake.nix` (packaging), `version.nix` (`CONFIG_URL` in `/etc/os-release`), and `install-lib/nixos-install.sh` (config clone into installed system)
+- `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
+- Overridable at runtime via `INSTALL_REPO_URL` (env variable)
+
 ### Home Manager
 - Two modes: **NixOS-managed** (via `home-manager.nixosModule`) and **standalone** (via `nix run home-manager/master -- init`)
 - Desktop profile: `home.nix` + customization (theme, apps, cli) + gui-packages

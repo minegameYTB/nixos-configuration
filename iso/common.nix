@@ -3,6 +3,10 @@
   pkgsFor,
   inputs,
   specialArgs,
+  overlay,
+  home-manager,
+  rev,
+  branch,
   defaultArch ? "x86_64-linux",
   ...
 }:
@@ -80,9 +84,39 @@ let
     environment.interactiveShellInit = welcomeMessage;
   };
 
-in
-{
-  isoArch = isoArch;
+  ### ISO nixosSystem builder — facto of the boilerplate shared by all variants
+  mkIso = { edition, profile, hostname, hmProfile, hmExtraModules ? [ ], keyboardSession ? false }:
+    let
+      iSpecialArgs = isoSpecialArgs isoArch // {
+        inherit mkKeyboardSpec keyboardSetupScript layouts mkIsoConfig;
+        keyboardSessionScript = if keyboardSession then keyboardSessionScript else null;
+        inherit rev branch;
+        edition = edition;
+        welcomeMessage = mkWelcomeMessage edition;
+      };
+    in lib.nixosSystem {
+      system = isoArch;
+      pkgs = pkgsFor isoArch;
+      specialArgs = iSpecialArgs;
+      modules = [
+        profile
+        (overlay isoArch)
+        { networking.hostName = hostname; }
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.nixos = import hmProfile {
+              username = "nixos";
+              extraModules = hmExtraModules;
+            };
+            extraSpecialArgs = iSpecialArgs;
+          };
+        }
+        isoModule
+      ];
+    };
 
   isoSpecialArgs = system: (specialArgs system) // {
     users = [ "nixos" ];
@@ -90,8 +124,6 @@ in
   };
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
-
-  inherit layouts mkKeyboardSpec mkIsoConfig;
 
   mkWelcomeMessage = edition: ''
     if [ -z "$_NIXOS_ISO_WELCOME" ]; then
@@ -214,4 +246,9 @@ in
       fi
     '';
   };
+
+in
+{
+  inherit isoArch isoSpecialArgs isoModule layouts mkKeyboardSpec mkIsoConfig mkIso
+          mkWelcomeMessage keyboardSetupScript keyboardSessionScript;
 }

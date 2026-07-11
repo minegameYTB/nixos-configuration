@@ -148,6 +148,9 @@
         else if fromGit != null then cleanBranchName fromGit
         else null;
 
+      ### Repo URL — single source of truth for packaging and /etc/os-release
+      repoUrl = (import ./lib/repo.nix).url;
+
       ### Supported systems (also used by home-manager standalone)
       systems = [
         "x86_64-linux"
@@ -173,6 +176,7 @@
             lib
             rev
             branch
+            repoUrl
 
             ### Nixpkgs option variable
             nixpkgsConfig
@@ -290,15 +294,22 @@
             inherit system;
             config = nixpkgsConfig;
             overlays = (import ./overlay.nix {
-              inherit self system inputs lib rev branch nixpkgsConfig;
+              inherit self system inputs lib rev branch repoUrl nixpkgsConfig;
             }).nixpkgs.overlays;
           };
         in
           pkgsWithOverlay.pkgsConfig
-          // lib.optionalAttrs (system == "x86_64-linux") {
-          iso-gnome = self.nixosConfigurations.iso-gnome.config.system.build.isoImage;
-          iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
-        });
+
+          ### ISO images auto-discovery
+          # Every nixosConfig starting with "iso-" gets picked up automatically
+          # and exposed as a flake package. mapAttrs' + filterAttrs does the job
+          # — no more manual listing when adding a new variant.
+          // lib.optionalAttrs (system == "x86_64-linux") (
+            lib.mapAttrs' (name: config:
+              lib.nameValuePair name config.config.system.build.isoImage
+            ) (lib.filterAttrs (n: _: lib.hasPrefix "iso-" n) self.nixosConfigurations)
+          )
+        );
 
       ### NixOS configurations (defined in machine.nix)
       nixosConfigurations = import ./machine.nix {

@@ -1,4 +1,4 @@
-{ username, ... }:
+{ username, extraModules ? [ ], ... }:
 
 {
   ### Use the username dynamic attribute (from flake.nix)
