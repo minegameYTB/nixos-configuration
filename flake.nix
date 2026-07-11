@@ -127,7 +127,7 @@
         branchFile = ./. + "/.branch";
         fromBranchFile =
           if builtins.pathExists branchFile then
-            builtins.readFile branchFile
+            lib.removeSuffix "\n" (builtins.readFile branchFile)
           else null;
 
         ### For impure eval: read .git/HEAD via PWD env
