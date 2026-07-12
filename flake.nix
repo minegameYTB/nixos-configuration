@@ -117,7 +117,11 @@
       ### Replace problematic chars in branch names
       cleanBranchName = builtins.replaceStrings [ "/" "#" ] [ "-" "-" ];
 
+      ### Dirty tree detection — true when working tree has uncommitted changes
+      dirty = self ? dirtyShortRev || self ? dirtyRev;
+
       ### Branch detection: CI env vars → .branch file (pure) → .git/HEAD from PWD (impure)
+      ### Appends "-dirty" when the working tree is dirty (traceability during testing).
       branch =
         let
           envBranch = builtins.getEnv "BRANCH";
@@ -143,19 +147,22 @@
               if match != null then builtins.head match else null
             else
               null;
+
+          raw =
+            if envBranch != "" then
+              cleanBranchName envBranch
+            else if ghBranch != "" then
+              cleanBranchName ghBranch
+            else if ciBranch != "" then
+              cleanBranchName ciBranch
+            else if fromBranchFile != null then
+              cleanBranchName fromBranchFile
+            else if fromGit != null then
+              cleanBranchName fromGit
+            else
+              null;
         in
-        if envBranch != "" then
-          cleanBranchName envBranch
-        else if ghBranch != "" then
-          cleanBranchName ghBranch
-        else if ciBranch != "" then
-          cleanBranchName ciBranch
-        else if fromBranchFile != null then
-          cleanBranchName fromBranchFile
-        else if fromGit != null then
-          cleanBranchName fromGit
-        else
-          null;
+        if raw != null && dirty then raw + "-dirty" else raw;
 
       ### Repo URL — single source of truth for packaging and /etc/os-release
       repoUrl = (import ./lib/repo.nix).url;

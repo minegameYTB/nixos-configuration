@@ -86,7 +86,11 @@ let
         lib.substring 0 7 (lib.defaultTo "" rev)
       }${lib.optionalString (branch != null) "-${branch}"}-${edition}";
       image.fileName = "${config.image.baseName}.iso";
-      isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
+      isoImage.volumeID =
+        lib.substring 0 32
+          "nixos-${edition}-${
+            lib.optionalString (branch != null) "${branch}-"
+          }${config.system.nixos.release}";
       isoImage.appendToMenuLabel = lib.mkDefault " ${edition} (${branch}) - AZERTY (Français)";
       isoImage.squashfsCompression = "zstd -Xcompression-level 13";
 
