@@ -66,14 +66,13 @@ The `volumeID` follows: `nixos-<edition>-<branch>-<release>` (max 32 chars).
 
 ## Keyboard specialisations
 
-Two layouts available at the GRUB menu:
+One keyboard specialisation available at the GRUB menu:
 
 | Entry | Layout | Keymap | Locale |
 |---|---|---|---|
 | US English | `us` | `us` | `en_US.UTF-8` |
-| French (default) | `fr` | `fr` | `fr_FR.UTF-8` |
 
-The default (no specialisation selected) boots with French layout.
+The default entry (no specialisation) boots with French layout (AZERTY).
 
 On GNOME ISO, the keyboard layout is re-applied after GNOME session start via `keyboard-session-apply` (gsettings dconf dance). The setup service (`keyboard-setup`) runs before the display manager and configures:
 - Console keymap (`loadkeys`)
@@ -107,13 +106,14 @@ ZFS is supported via the CachyOS kernel package (`zfs_cachyos`).
 
 ## GRUB label
 
-Menu entry format: `NixOS <edition> (<branch>)`
-- `NixOS GNOME (main)`
-- `NixOS CLI (fix-ssh)`
+Menu entry format:
 
-With keyboard specialisation sub-entries:
-- `NixOS GNOME (main) - US English`
-- `NixOS GNOME (main) - French (default)`
+Default (no specialisation): `NixOS <release> <edition> (<branch>) - AZERTY (Français)`
+- `NixOS 26.05.a1b2c3d GNOME (main) - AZERTY (Français)`
+- `NixOS 26.05.e5f6g7h CLI (fix-ssh) - AZERTY (Français)`
+
+Keyboard specialisation:
+- `NixOS 26.05.a1b2c3d GNOME (main) - US English`
 
 ## Creating new variants
 

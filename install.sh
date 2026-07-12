@@ -80,3 +80,5 @@ case "$mode" in
     hmInstallFn
     ;;
 esac
+
+exit $?

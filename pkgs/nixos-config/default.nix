@@ -4,7 +4,7 @@
   src,
   rev,
   writeShellScriptBin,
-  runtimeShell,
+  bashInteractive,
   branch ? null,
   repoUrl ? null,
 }:
@@ -50,7 +50,7 @@ stdenvNoCC.mkDerivation rec {
       fi
 
       cd "$WORKDIR"
-      exec ${runtimeShell} "$WORKDIR/install.sh" "$@"
+      exec ${bashInteractive}/bin/bash -i "$WORKDIR/install.sh" "$@"
     ''}/bin/nixos-config-install $out/bin/nixos-config-install
   '';
 }

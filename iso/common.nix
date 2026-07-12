@@ -22,16 +22,9 @@ let
       locale = "en_US.UTF-8";
       label = "US English";
     }
-    {
-      layout = "fr";
-      keymap = "fr";
-      locale = "fr_FR.UTF-8";
-      label = "French (default)";
-    }
   ];
 
   mkKeyboardSpec =
-    edition: branch:
     {
       layout,
       keymap,
@@ -39,15 +32,13 @@ let
       label,
     }:
     {
-      specialisation."keyboard-${layout}" = {
-        configuration = {
-          isoImage.appendToMenuLabel = " ${edition} (${branch}) - ${label}";
-          boot.kernelParams = [
-            "kbd.layout=${layout}"
-            "kbd.keymap=${keymap}"
-            "kbd.locale=${locale}"
-          ];
-        };
+      configuration = {
+        isoImage.appendToMenuLabel = lib.mkForce " - ${label}";
+        boot.kernelParams = [
+          "kbd.layout=${layout}"
+          "kbd.keymap=${keymap}"
+          "kbd.locale=${locale}"
+        ];
       };
     };
 
@@ -73,13 +64,30 @@ let
         ../configurations/config-modules/nix-index-db
         ../configurations/config-modules/stylix
         ../configurations/configs/system/tmp-on-tmpfs.nix
-      ]
-      ++ map (mkKeyboardSpec edition branch) layouts;
+      ];
 
-      image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${lib.substring 0 7 rev}.${branch}-${edition}";
+      specialisation = builtins.listToAttrs (
+        map (s: {
+          name = "keyboard-${s.layout}";
+          value = {
+            configuration = {
+              isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch}) - ${s.label}";
+              boot.kernelParams = [
+                "kbd.layout=${s.layout}"
+                "kbd.keymap=${s.keymap}"
+                "kbd.locale=${s.locale}"
+              ];
+            };
+          };
+        }) layouts
+      );
+
+      image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${
+        lib.substring 0 7 (lib.defaultTo "" rev)
+      }${lib.optionalString (branch != null) "-${branch}"}-${edition}";
       image.fileName = "${config.image.baseName}.iso";
       isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
-      isoImage.appendToMenuLabel = lib.mkForce " ${edition} (${branch})";
+      isoImage.appendToMenuLabel = lib.mkDefault " ${edition} (${branch}) - AZERTY (Français)";
       isoImage.squashfsCompression = "zstd -Xcompression-level 9";
 
       i18n.defaultLocale = "fr_FR.UTF-8";
@@ -147,7 +155,7 @@ let
         keyboardSessionScript = if keyboardSession then keyboardSessionScript else null;
         inherit rev branch;
         edition = edition;
-        welcomeMessage = mkWelcomeMessage edition;
+        welcomeMessage = mkWelcomeMessage edition rev branch;
       };
     in
     lib.nixosSystem {
@@ -185,19 +193,18 @@ let
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
 
-  mkWelcomeMessage = edition: ''
+  mkWelcomeMessage = edition: rev: branch: ''
     if [ -z "$_NIXOS_ISO_WELCOME" ]; then
       _NIXOS_ISO_WELCOME=1
+      shortRev="${lib.substring 0 7 rev}"
       cat <<'WELCOME'
-    ╔══════════════════════════════════════════════╗
-    ║      NixOS Live ISO — ${edition} Edition      ║
-    ║                                              ║
-    ║  Run the following command to install:        ║
-    ║  nixos-config-install                        ║
-    ║                                              ║
-    ║  Keyboard: select at GRUB menu (e.g. us, de) ║
-    ║  User: nixos (no password)                   ║
-    ╚══════════════════════════════════════════════╝
+    ┌─ NixOS Live — ${edition} ───────────────────────────┐
+    │  version: $shortRev (${branch})                     │
+    │  install: nixos-config-install                      │
+    │  keymap:  FR (AZERTY) default / US (QWERTY) via     │
+    │           GRUB menu                                 │
+    │  user:    nixos (no password)                       │
+    └─────────────────────────────────────────────────────┘
     WELCOME
     fi
   '';
