@@ -16,6 +16,7 @@
     ../configurations/configs/specific/desktop/environment/gnome.nix
     ../configurations/configs/specific/desktop/sound.nix
     ../configurations/configs/specific/desktop/browser
+    ../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
 
     (mkIsoConfig {
       inherit
