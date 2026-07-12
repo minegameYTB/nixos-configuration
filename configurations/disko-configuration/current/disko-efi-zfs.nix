@@ -102,7 +102,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "128K";
+              recordsize = "1M";
             };
           };
 
