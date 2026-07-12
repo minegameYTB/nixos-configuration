@@ -191,7 +191,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "16K";
             };
           };
           "var/lib/libvirt/images" = {
@@ -203,7 +203,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "64K";
             };
           };
           "var/log" = {
