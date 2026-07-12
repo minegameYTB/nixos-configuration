@@ -30,7 +30,7 @@
         ### Alternative for high-RAM machines (8 GiB):
         ### 8 * 1024 * 1024 * 1024 = 8589934592
         "zfs.zfs_arc_min=1073741824" # 1G min
-        "zfs.zfs_arc_max=6442450944" # 6G max
+        "zfs.zfs_arc_max=8589934592" # 8G max
       ]
     else
       [
