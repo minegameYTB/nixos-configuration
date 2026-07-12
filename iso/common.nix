@@ -88,7 +88,7 @@ let
       image.fileName = "${config.image.baseName}.iso";
       isoImage.volumeID = "nixos-${edition}-${branch}-${config.system.nixos.release}";
       isoImage.appendToMenuLabel = lib.mkDefault " ${edition} (${branch}) - AZERTY (Français)";
-      isoImage.squashfsCompression = "zstd -Xcompression-level 9";
+      isoImage.squashfsCompression = "zstd -Xcompression-level 13";
 
       i18n.defaultLocale = "fr_FR.UTF-8";
       boot.initrd.systemd.emergencyAccess = lib.mkForce true;
