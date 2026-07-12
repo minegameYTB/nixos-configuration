@@ -11,9 +11,7 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "nixos-config";
-  version =
-    "${lib.trivial.release}.${rev}"
-    + lib.optionalString (branch != null) ".${branch}";
+  version = "${lib.trivial.release}.${rev}" + lib.optionalString (branch != null) ".${branch}";
   dontBuild = true;
   inherit src;
 

@@ -212,9 +212,7 @@ let
   mkWelcomeMessage =
     edition: rev: branch:
     let
-      versionStr =
-        "${lib.trivial.release}.${rev}"
-        + lib.optionalString (branch != null) ".${branch}";
+      versionStr = "${lib.trivial.release}.${rev}" + lib.optionalString (branch != null) ".${branch}";
     in
     ''
       if [ -z "$_NIXOS_ISO_WELCOME" ]; then
