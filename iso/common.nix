@@ -97,6 +97,15 @@ let
         package = config.boot.kernelPackages.zfs_cachyos;
       };
 
+      ### Create new machine-id
+      environment.etc."machine-id" = lib.mkForce {
+        text = "43b1da0f0a6e4828a5ce286e398402d2";
+        mode = "0444";
+      };
+
+      ### Change zfs hostID for iso
+      networking.hostId = "43b1da0f";
+
       users.users.nixos.initialPassword = lib.mkForce "";
       users.users.nixos.initialHashedPassword = lib.mkForce null;
 
