@@ -89,7 +89,6 @@
               dnodesize = "auto";
               recordsize = "128K";
               refquota = "50G";
-              copies = "2"; # add 2 copies for files
             };
           };
 
