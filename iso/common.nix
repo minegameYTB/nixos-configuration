@@ -82,9 +82,9 @@ let
         }) layouts
       );
 
-      image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${
-        lib.substring 0 7 (lib.defaultTo "" rev)
-      }${lib.optionalString (branch != null) "-${branch}"}-${edition}";
+      image.baseName = lib.mkForce "nixos-${config.system.nixos.release}.${rev}${
+        lib.optionalString (branch != null) "-${branch}"
+      }-${edition}";
       image.fileName = "${config.image.baseName}.iso";
       isoImage.volumeID =
         lib.substring 0 32
@@ -209,21 +209,34 @@ let
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
 
-  mkWelcomeMessage = edition: rev: branch: ''
-    if [ -z "$_NIXOS_ISO_WELCOME" ]; then
-      _NIXOS_ISO_WELCOME=1
-      shortRev="${lib.substring 0 7 rev}"
-      cat <<'WELCOME'
-    ┌─ NixOS Live — ${edition} ───────────────────────────┐
-    │  version: $shortRev (${branch})                     │
-    │  install: nixos-config-install                      │
-    │  keymap:  FR (AZERTY) default / US (QWERTY) via     │
-    │           GRUB menu                                 │
-    │  user:    nixos (no password)                       │
-    └─────────────────────────────────────────────────────┘
-    WELCOME
-    fi
-  '';
+  mkWelcomeMessage =
+    edition: rev: branch:
+    let
+      versionStr =
+        "${lib.trivial.release}.${rev}"
+        + lib.optionalString (branch != null) ".${branch}";
+    in
+    ''
+      if [ -z "$_NIXOS_ISO_WELCOME" ]; then
+        _NIXOS_ISO_WELCOME=1
+
+        _w=72
+        _repeat() { local c="$1" n="$2"; for ((;n>0;n--)); do printf "%s" "$c"; done; }
+        _line() { printf "│  %s" "$1"; _repeat " " $(( _w - 4 - ''${#1} )); printf "│\n"; }
+
+        _p="┌─ NixOS Live — ${edition} "; printf "%s" "$_p"
+        _repeat "─" $(( _w - ''${#_p} - 1 )); printf "┐\n"
+
+        _line "${versionStr}"
+        _line "install: nixos-config-install"
+        _line "keymap:  FR (AZERTY) default / US (QWERTY) via"
+        _line "         GRUB menu"
+        _line "user:    nixos (no password)"
+
+        printf "└"; _repeat "─" $(( _w - 2 )); printf "┘\n"
+        echo ""
+      fi
+    '';
 
   keyboardSetupScript = pkgs.writeShellApplication {
     name = "keyboard-setup";

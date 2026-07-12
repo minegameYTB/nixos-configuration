@@ -121,7 +121,6 @@
       dirty = self ? dirtyShortRev || self ? dirtyRev;
 
       ### Branch detection: CI env vars → .branch file (pure) → .git/HEAD from PWD (impure)
-      ### Appends "-dirty" when the working tree is dirty (traceability during testing).
       branch =
         let
           envBranch = builtins.getEnv "BRANCH";
@@ -162,7 +161,7 @@
             else
               null;
         in
-        if raw != null && dirty then raw + "-dirty" else raw;
+        raw;
 
       ### Repo URL — single source of truth for packaging and /etc/os-release
       repoUrl = (import ./lib/repo.nix).url;
