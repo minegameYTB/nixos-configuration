@@ -106,6 +106,9 @@ let
       ### Change zfs hostID for iso
       networking.hostId = "43b1da0f";
 
+      ### Force installing nixos tool (nixos-install)
+      system.tools.nixos-install.enable = lib.mkForce true;
+
       users.users.nixos.initialPassword = lib.mkForce "";
       users.users.nixos.initialHashedPassword = lib.mkForce null;
 
