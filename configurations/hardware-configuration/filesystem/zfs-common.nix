@@ -35,7 +35,8 @@
       [
         ### 4 GiB max ARC (conservative for 16 GiB VMs)
         ### Calcul: 4 * 1024 * 1024 * 1024 = 4294967296
-        "zfs.zfs_arc_max=4294967296"
+        "zfs.zfs_arc_min=2147483648" # 2G min
+        "zfs.zfs_arc_max=4294967296" # 8G max
       ]
   );
 
@@ -50,10 +51,8 @@
       if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages then
         config.boot.kernelPackages.zfs_cachyos
       else
-        pkgs.zfs
+        config.boot.kernelPackages.zfs
     );
-
-    ### devNodes is set per-filesystem config (zfs vs btrfs)
 
     ### Do not force-import pools with -f
     forceImportRoot = false;
