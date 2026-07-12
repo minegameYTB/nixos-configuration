@@ -20,10 +20,21 @@
         "aarch64-linux"
       ];
     };
-    initrd.systemd = {
-      #enable = true; # Now default in NixOS 26.05
-      emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
+    initrd = {
+      ### Systemd initrd settings
+      systemd = {
+        emergencyAccess = "$y$j9T$CmuNpg/fSyEMO8pehMLwU.$Oe7w2sKzs6teBwP5rU.OOVeGyMAHKL8Pz3JunPlLOv/";
+      };
+
+      ### Disable non used filesystem and tools in initrd
+      services = {
+        lvm.enable = false;
+        bcache.enable = false;
+      };
     };
     consoleLogLevel = 0;
+
+    ### Disable bcache on base system
+    bcache.enable = false;
   };
 }
