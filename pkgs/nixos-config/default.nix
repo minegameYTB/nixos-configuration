@@ -49,6 +49,7 @@ stdenvNoCC.mkDerivation rec {
         echo "${version}" > "$VERSION_FILE"
       fi
 
+      export _NIXOS_ISO_WELCOME=1
       cd "$WORKDIR"
       exec ${bashInteractive}/bin/bash -i "$WORKDIR/install.sh" "$@"
     ''}/bin/nixos-config-install $out/bin/nixos-config-install

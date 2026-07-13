@@ -77,6 +77,7 @@ let
                 "kbd.keymap=${s.keymap}"
                 "kbd.locale=${s.locale}"
               ];
+              i18n.defaultLocale = lib.mkForce s.locale;
             };
           };
         }) layouts
