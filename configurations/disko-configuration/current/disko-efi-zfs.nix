@@ -155,7 +155,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "128K";
             };
           };
           "var/db" = {
