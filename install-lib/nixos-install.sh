@@ -420,12 +420,19 @@ step_copy_config() {
     return
   fi
   userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
-  cd .. || exit 1
-  run_command cp -r nixos-configuration "/mnt/home/${userName}"
-  info "Changing owner of nixos-configuration to ${userName}"
-  run_command chown -R 1000:100 "/mnt/home/${userName}/nixos-configuration"
-  run_command git -C "/mnt/home/${userName}/nixos-configuration" config pull.rebase true
+  local targetDir="/mnt/home/${userName}/nixos-configuration"
+  local sourceDir
+  sourceDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+  if [[ -d "${sourceDir}/.git" ]]; then
+    run_command cp -r "$sourceDir" "$targetDir"
+    run_command chown -R 1000:100 "$targetDir"
+    run_command git -C "$targetDir" config pull.rebase true
+  else
+    warn "No .git found — copying without history"
+    run_command cp -r "${sourceDir}" "$targetDir"
+    run_command chown -R 1000:100 "$targetDir"
+  fi
   checkpoint_done "STEP_COPY_CONFIG"
 }
 

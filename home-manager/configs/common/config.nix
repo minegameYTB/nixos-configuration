@@ -23,6 +23,7 @@
         rebase = true;
       };
       color.ui = true;
+      core.hooksPath = ".githooks";
     };
   };
 

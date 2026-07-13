@@ -20,6 +20,7 @@
   programs.lazyvim = {
     enable = true;
     pluginSource = "nixpkgs";
+    ignoreBuildNotifications = true;
     extras = {
       lang.nix.enable = true;
     };
