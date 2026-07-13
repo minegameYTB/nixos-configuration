@@ -27,10 +27,7 @@
       };
 
       ### Disable non used filesystem and tools in initrd
-      services = {
-        lvm.enable = false;
-        bcache.enable = false;
-      };
+      services.bcache.enable = false;
     };
     consoleLogLevel = 0;
 
