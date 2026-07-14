@@ -429,9 +429,30 @@ step_copy_config() {
     run_command chown -R 1000:100 "$targetDir"
     run_command git -C "$targetDir" config pull.rebase true
   else
-    warn "No .git found — copying without history"
-    run_command cp -r "${sourceDir}" "$targetDir"
-    run_command chown -R 1000:100 "$targetDir"
+    local repoUrl="${INSTALL_REPO_URL:-}"
+    local repoRev=""
+    if [[ -z "$repoUrl" && -f "${sourceDir}/.config-repo" ]]; then
+      read -r repoUrl repoRev < "${sourceDir}/.config-repo"
+    fi
+    if [[ -z "$repoUrl" && -f "${sourceDir}/lib/repo.nix" ]]; then
+      repoUrl=$(sed -n 's/.*url *= *"\(.*\)";/\1/p' "${sourceDir}/lib/repo.nix" | head -1)
+    fi
+    if [[ -n "$repoUrl" && -n "$repoRev" ]]; then
+      info "Cloning repository (full history) from ${repoUrl}"
+      run_command git clone --no-checkout "$repoUrl" "$targetDir"
+      run_command git -C "$targetDir" checkout "$repoRev"
+      run_command chown -R 1000:100 "$targetDir"
+      run_command git -C "$targetDir" config pull.rebase true
+    elif [[ -n "$repoUrl" ]]; then
+      info "Cloning repository (shallow) from ${repoUrl}"
+      run_command git clone --depth 1 "$repoUrl" "$targetDir"
+      run_command chown -R 1000:100 "$targetDir"
+      run_command git -C "$targetDir" config pull.rebase true
+    else
+      warn "No .git or repo URL found — copying without history"
+      run_command cp -r "${sourceDir}" "$targetDir"
+      run_command chown -R 1000:100 "$targetDir"
+    fi
   fi
   checkpoint_done "STEP_COPY_CONFIG"
 }
