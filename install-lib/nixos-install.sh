@@ -422,7 +422,7 @@ step_copy_config() {
   userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
   local targetDir="/mnt/home/${userName}/nixos-configuration"
   local sourceDir
-  sourceDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  sourceDir="$(cd "$(dirname "$0")" && pwd)"
 
   if [[ -d "${sourceDir}/.git" ]]; then
     run_command cp -r "$sourceDir" "$targetDir"
