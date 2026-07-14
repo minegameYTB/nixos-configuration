@@ -98,11 +98,11 @@
             mountpoint = "/nix";
             options = {
               mountpoint = "legacy";
-              compression = "lz4";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "1M";
+              recordsize = "128K";
             };
           };
 
