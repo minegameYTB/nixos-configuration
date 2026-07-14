@@ -32,6 +32,11 @@ configurations/
 └── patch/nixpkgs/             # Out-of-tree patches for libvirt, qemu
 ```
 
+### Repo URL — `lib/repo.nix`
+- Single source for `repoUrl`, imported by `version.nix` (`CONFIG_URL` in `/etc/os-release`) and `install-lib/nixos-install.sh` (config clone into installed system)
+- `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
+- Overridable at runtime via `INSTALL_REPO_URL` (env variable)
+
 ## Key Patterns
 
 ### The `marker` Module
@@ -52,8 +57,9 @@ configurations/
 
 ## Install System (`install-lib/`)
 - **`install.sh`** — auto-detects NixOS vs standalone Linux
-- **`nixos-install.sh`** — 11-step system with checkpoint/resume
-  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → ZFS_KEY_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
+- **`nixos-install.sh`** — 10-step system with checkpoint/resume
+  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
+  - `step_copy_config` supports 4 clone modes: `.git/` → full copy, `.config-repo` → `git clone --no-checkout` + checkout $rev, `lib/repo.nix` → shallow clone, fallback → copy without history
   - Temp swap: btrfs (mkswapfile), ext4/other (fallocate)
   - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file
 - **`hm-standalone-install.sh`** — standalone HM install on any Linux
