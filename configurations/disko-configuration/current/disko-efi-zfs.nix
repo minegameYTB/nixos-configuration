@@ -204,6 +204,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "64K";
+              primarycache = "metadata";
             };
           };
           "var/log" = {
