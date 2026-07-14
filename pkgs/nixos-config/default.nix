@@ -17,6 +17,18 @@ stdenvNoCC.mkDerivation rec {
 
   nixos-config-install = writeShellScriptBin "nixos-config-install" ''
     set -euo pipefail
+
+    ARGS=("$@")
+    case "''${1:-}" in
+      -v|--version)
+        echo "nixos-config-install ${version}"
+        exit 0
+        ;;
+      -h|--help)
+        ARGS=("--help")
+        ;;
+    esac
+
     SELF=$(readlink -f "$0")
     SRC=$(dirname "$SELF")/../share/nixos-config
     WORKDIR="/tmp/nixos-config-install"
@@ -45,7 +57,7 @@ stdenvNoCC.mkDerivation rec {
 
     export _NIXOS_ISO_WELCOME=1
     cd "$WORKDIR"
-    exec ${bashInteractive}/bin/bash -i "$WORKDIR/install.sh" "$@"
+    exec ${bashInteractive}/bin/bash -i "$WORKDIR/install.sh" "''${ARGS[@]}"
   '';
 
   installPhase = ''

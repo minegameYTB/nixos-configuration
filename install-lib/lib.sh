@@ -80,6 +80,7 @@ Options:
   --help, -h        Show this help message and exit
   --list-steps      List all available installation steps and exit
   --step STEP_NAME  Run only the specified installation step
+  --version, -v     Show version information and exit
 EOF
 }
 
@@ -90,8 +91,9 @@ parseFlags() {
   while (( $# )); do
     case "$1" in
       --dont-check) SKIP_VERSION_CHECK=1 ;;
-      --help|-h)    showUsage; exit 0 ;;
-      --list-steps) LIST_STEPS=1 ;;
+    --help|-h)    showUsage; exit 0 ;;
+    --list-steps) LIST_STEPS=1 ;;
+    --version|-v) echo "$(basename "$0") v$INSTALL_SCRIPT_VERSION"; exit 0 ;;
       --step)       shift; ONLY_STEP="$1" ;;
       *)
         echo "Unknown flag: $1"
