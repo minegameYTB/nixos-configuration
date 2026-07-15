@@ -155,6 +155,17 @@ in
     ];
   };
 
+  ### Harden /dev/shm (noexec is missing by default)
+  fileSystems."/dev/shm" = {
+    fsType = "tmpfs";
+    options = [
+      "mode=1777"
+      "nosuid"
+      "nodev"
+      "noexec"
+    ];
+  };
+
   ### Disable systemd-coredump (https://www.linuxtricks.fr/wiki/desactiver-les-core-dumps-sous-linux-systemd-coredump-inclus)
   systemd.coredump.settings.Coredump = {
     Storage = "none";

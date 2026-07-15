@@ -89,6 +89,8 @@
               dnodesize = "auto";
               recordsize = "128K";
               refquota = "50G";
+              setuid = "off";
+              devices = "off";
             };
           };
 
@@ -218,6 +220,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              setuid = "off";
+              devices = "off";
+              exec = "off";
             };
           };
           "var/cache" = {
@@ -258,6 +263,7 @@
               dnodesize = "auto";
               recordsize = "64K";
               setuid = "off";
+              devices = "off";
               exec = "off";
             };
           };
