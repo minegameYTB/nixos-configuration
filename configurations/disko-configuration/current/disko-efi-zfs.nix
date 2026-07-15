@@ -90,7 +90,6 @@
               recordsize = "128K";
               refquota = "50G";
               setuid = "off";
-              devices = "off";
             };
           };
 

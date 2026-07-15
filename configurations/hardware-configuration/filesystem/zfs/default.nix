@@ -23,10 +23,7 @@
   fileSystems."/home" = {
     device = "zroot/home";
     fsType = "zfs";
-    options = [
-      "nodev"
-      "nosuid"
-    ];
+    options = [ "nosuid" ];
   };
 
   fileSystems."/nix" = {
