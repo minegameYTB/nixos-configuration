@@ -85,4 +85,13 @@
       ${pkgs.zfs}/bin/zpool online -e zroot 2>/dev/null || true
     '';
   };
+
+  ### Ignore zfs pool in nautilus with udev
+  services.udev.extraRules = ''
+    # hide zpool partition
+    ENV{ID_FS_TYPE}=="zfs_member", ENV{UDISKS_IGNORE}="1"
+
+    # hide zvol too
+    KERNEL=="zd*", ENV{UDISKS_IGNORE}="1"
+  '';
 }
