@@ -89,6 +89,7 @@
               dnodesize = "auto";
               recordsize = "128K";
               refquota = "50G";
+              setuid = "off";
             };
           };
 
@@ -130,6 +131,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "60G";
             };
           };
           "nix/var/nix/db" = {
@@ -142,6 +144,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "8G";
             };
           };
 
@@ -218,6 +221,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              setuid = "off";
+              devices = "off";
+              exec = "off";
             };
           };
           "var/cache" = {
@@ -258,6 +264,7 @@
               dnodesize = "auto";
               recordsize = "64K";
               setuid = "off";
+              devices = "off";
               exec = "off";
             };
           };

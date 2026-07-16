@@ -36,7 +36,7 @@ if [[ -n "${ONLY_STEP:-}" ]]; then
   info "Running only step: ${ONLY_STEP}"
 fi
 
-echo "$name v2.1"
+echo "$name v$INSTALL_SCRIPT_VERSION"
 sleep 2
 
 # ---------------------------------------------------------------------------
