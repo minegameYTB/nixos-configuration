@@ -131,6 +131,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "60G";
             };
           };
           "nix/var/nix/db" = {
@@ -143,7 +144,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
-              refquota = "2510M"; # 2,5G
+              refquota = "8G";
             };
           };
 
@@ -274,6 +275,29 @@
             options = {
               mountpoint = "none";
               refreservation = "10G";
+            };
+          };
+
+          ### ZVol container datasets
+          "zvol" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+            };
+          };
+          "zvol/disk" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+            };
+          };
+          "zvol/vm" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
             };
           };
         };

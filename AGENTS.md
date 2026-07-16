@@ -41,6 +41,11 @@ pkgs/                          # Local packages (default.nix is single source of
 install-lib/                   # Install scripts (defaults, checkpoint, lib, nixos-install, hm-standalone)
 ```
 
+### Repo URL — `lib/repo.nix`
+- Single source for `repoUrl`, imported by `version.nix` (`CONFIG_URL` in `/etc/os-release`) and `install-lib/nixos-install.sh` (config clone into installed system)
+- `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
+- Overridable at runtime via `INSTALL_REPO_URL` (env variable)
+
 ## Key Patterns
 
 ### The `marker` Module
