@@ -131,6 +131,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "60G";
             };
           };
           "nix/var/nix/db" = {
