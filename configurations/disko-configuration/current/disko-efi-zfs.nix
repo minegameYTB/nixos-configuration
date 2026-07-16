@@ -279,6 +279,13 @@
           };
 
           ### ZVol container datasets
+          "zvol" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+            };
+          };
           "zvol/disk" = {
             type = "zfs_fs";
             options = {
