@@ -144,7 +144,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
-              refquota = "2510M"; # 2,5G
+              refquota = "8G";
             };
           };
 
