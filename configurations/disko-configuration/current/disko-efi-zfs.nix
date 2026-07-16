@@ -277,6 +277,22 @@
               refreservation = "10G";
             };
           };
+
+          ### ZVol container datasets
+          "zvol/disk" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+            };
+          };
+          "zvol/vm" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+            };
+          };
         };
       };
     };
