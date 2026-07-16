@@ -23,6 +23,7 @@
   fileSystems."/home" = {
     device = "zroot/home";
     fsType = "zfs";
+    options = [ "nosuid" ];
   };
 
   fileSystems."/nix" = {
@@ -48,6 +49,11 @@
   fileSystems."/var/log" = {
     device = "zroot/var/log";
     fsType = "zfs";
+    options = [
+      "nodev"
+      "noexec"
+      "nosuid"
+    ];
   };
 
   fileSystems."/var/cache" = {
@@ -63,6 +69,7 @@
   fileSystems."/var/tmp" = {
     device = "zroot/var/tmp";
     fsType = "zfs";
+    options = [ "nodev" ];
   };
 
   fileSystems."/nix/var/nix" = {
