@@ -50,7 +50,7 @@ stdenvNoCC.mkDerivation rec {
       echo "Setting up configuration in $WORKDIR ..."
       rm -rf "$WORKDIR"
       mkdir -p "$WORKDIR"
-      cp -r "$SRC"/* "$WORKDIR/"
+      cp -r "$SRC"/. "$WORKDIR/"
       chmod -R +w "$WORKDIR"
       echo "${version}" > "$VERSION_FILE"
     fi
