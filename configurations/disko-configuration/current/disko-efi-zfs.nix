@@ -202,7 +202,7 @@
             mountpoint = "/var/lib/libvirt/images";
             options = {
               mountpoint = "legacy";
-              compression = "lz4";
+              compression = "off";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
