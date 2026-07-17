@@ -55,4 +55,20 @@
       ExecStart = "${lib.getExe keyboardSessionScript}";
     };
   };
+
+  # Prevent screen blanking / sleeping during live ISO use
+  systemd.user.services.disable-screen-blanking = {
+    description = "Disable screen blanking and idle sleep for the ISO session";
+    wantedBy = [ "gnome-session.target" ];
+    after = [ "gnome-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = ''${pkgs.writeShellScript "disable-screen-blanking" ''
+        ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.session idle-delay 0
+        ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver idle-activation-enabled false
+        ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver lock-enabled false
+        ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
+      ''}'';
+    };
+  };
 }
