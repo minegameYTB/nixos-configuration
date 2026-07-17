@@ -32,6 +32,6 @@
     consoleLogLevel = 0;
 
     ### Disable bcache on base system
-    bcache.enable = false;
+    bcache.enable = config.boot.initrd.services.bcache.enable;
   };
 }

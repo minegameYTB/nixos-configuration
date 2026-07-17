@@ -77,6 +77,10 @@ hmInstallFn() {
           run_command sudo dnf upgrade
           run_command sudo dnf install -y curl
           ;;
+        arch|manjaro)
+          run_command sudo pacman -Syyu
+          run_command sudo pacman -S curl
+          ;;
         *)
           warn "Distribution '${distro}' not supported — please install curl manually (Error 1)"
           exit 1
@@ -102,6 +106,9 @@ hmInstallFn() {
           ;;
         fedora|almalinux)
           run_command sudo dnf install -y flatpak
+          ;;
+        arch|manjaro)
+          run_command sudo pacman -S flatpak
           ;;
         *)
           warn "Distribution '${distro}' not supported for Flatpak installation — skipping"

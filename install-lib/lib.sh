@@ -172,7 +172,7 @@ checkRepoVersion() {
 getDefaultUser() {
   local errorCode="${1:-5}"
 
-  read -r -p "What is your username? [${INSTALL_DEFAULT_USER}] " userName
+  read -r -p "What is your username? (found with flake.nix file) [${INSTALL_DEFAULT_USER}] " userName
   userName="${userName:-$INSTALL_DEFAULT_USER}"
 
   if [[ -z "$userName" ]]; then

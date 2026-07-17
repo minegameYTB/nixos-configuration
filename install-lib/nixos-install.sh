@@ -175,44 +175,24 @@ destroyTempSwap() {
 # LUKS helpers
 # ---------------------------------------------------------------------------
 
-# Prompt the user to choose or generate a LUKS key file / key device.
-# Exports: keyFile, addPassphrase, luksKeySize
+# Generate the LUKS key using pre-set choices (prompts handled in step_interactive_setup).
+# Reads from checkpoint: keyFile
+# For partition storage: writes key to the partition + keeps a temp copy in /tmp
+# For file storage:     writes key directly to the file
 setupLuksEncryption() {
-  local generateKey keyStorage
-  read -r -p "Do you want to generate a random key? [y/N]: " generateKey
-  generateKey="${generateKey:-N}"
-
-  if [[ "$generateKey" =~ ^[yY]$ ]]; then
-    read -r -p "Store the key on a [f]ile or a raw [p]artition? [F/p]: " keyStorage
-    keyStorage="${keyStorage:-F}"
-
-    if [[ "$keyStorage" =~ ^[pP]$ ]]; then
-      showDiskLsblk
-      read -r -e -p "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
-      info "Writing random key directly to ${keyFile}"
-      warn "This will overwrite the first 4096 bytes of the device — save the key ASAP"
-      sleep 5
-      run_command dd if=/dev/urandom of=/tmp/temporary-keyFile.key bs=4096 count=1
-      run_command chmod 400 /tmp/temporary-keyFile.key
-      run_command dd if=/tmp/temporary-keyFile.key of="$keyFile" bs=4096 count=1
-    else
-      keyFile="/tmp/secret.key"
-      info "Generating random key file at ${keyFile}"
-      run_command dd if=/dev/urandom of="$keyFile" bs=4096 count=1
-      run_command chmod 400 "$keyFile"
-    fi
-  else
-    showDiskLsblk
-    read -r -e -p "Enter path to existing key file or device [/tmp/secret.key]: " keyFile
-    keyFile="${keyFile:-/tmp/secret.key}"
+  if [[ -f "$keyFile" || -b "$keyFile" ]]; then
+    info "Key already exists at ${keyFile} — skipping generation"
+    return
   fi
 
-  read -r -p "Add a passphrase as a second LUKS key slot? [y/N]: " addPassphrase
-  addPassphrase="${addPassphrase:-N}"
+  info "Generating random LUKS key ..."
+  local tmpKey="/tmp/temporary-keyFile.key"
+  run_command dd if=/dev/urandom of="$tmpKey" bs=4096 count=1
+  run_command chmod 400 "$tmpKey"
+  run_command dd if="$tmpKey" of="$keyFile" bs=4096 count=1
 
-  if [[ "$addPassphrase" =~ ^[yY]$ ]]; then
-    read -r -e -p "Enter the key size in bits [4096]: " luksKeySize
-    luksKeySize="${luksKeySize:-4096}"
+  if [[ ! -b "$keyFile" ]]; then
+    mv "$tmpKey" "$keyFile" 2>/dev/null || cp "$tmpKey" "$keyFile"
   fi
 }
 
@@ -296,6 +276,42 @@ step_interactive_setup() {
   read -r -e -p "Enter the profile name to install: " nixosProfile
   echo -e "\n${nixosProfile} selected"
 
+  # ── username ──
+  getDefaultUser 6
+
+  # ── LUKS prompts (only if encryption was chosen above) ──
+  if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
+    local generateKey keyStorage
+    read -r -p "Do you want to generate a random key? [y/N]: " generateKey
+    generateKey="${generateKey:-N}"
+
+    if [[ "$generateKey" =~ ^[yY]$ ]]; then
+      read -r -p "Store the key on a [f]ile or a raw [p]artition? [F/p]: " keyStorage
+      keyStorage="${keyStorage:-F}"
+      if [[ "$keyStorage" =~ ^[pP]$ ]]; then
+        showDiskLsblk
+        read -r -e -p "Enter the partition to use as key device (e.g. /dev/sdb): " keyFile
+      else
+        keyFile="/tmp/secret.key"
+      fi
+    else
+      showDiskLsblk
+      read -r -e -p "Enter path to existing key file or device [/tmp/secret.key]: " keyFile
+      keyFile="${keyFile:-/tmp/secret.key}"
+    fi
+
+    read -r -p "Add a passphrase as a second LUKS key slot? [y/N]: " addPassphrase
+    addPassphrase="${addPassphrase:-N}"
+    if [[ "$addPassphrase" =~ ^[yY]$ ]]; then
+      read -r -e -p "Enter the key size in bits [4096]: " luksKeySize
+      luksKeySize="${luksKeySize:-4096}"
+    fi
+
+    checkpoint_set "VAR_KEY_FILE"       "$keyFile"
+    checkpoint_set "VAR_ADD_PASSPHRASE" "$addPassphrase"
+    checkpoint_set "VAR_LUKS_KEY_SIZE"  "${luksKeySize:-4096}"
+  fi
+
   printf '%b\n' "${YELLOW}/!\\ Starting installation in:${RESET}"
   for i in {5..1}; do
     printf '%b' "\r  ${CYAN}${i}${RESET} seconds... (Ctrl+C to cancel) "
@@ -309,6 +325,7 @@ step_interactive_setup() {
   checkpoint_set "VAR_DISKO_FILE"      "$diskoFile"
   checkpoint_set "VAR_DISKO_FS"        "$diskoFs"
   checkpoint_set "VAR_DISKO_ENCRYPTED" "$diskoEncrypted"
+  checkpoint_set "VAR_USERNAME"        "$userName"
 
   checkpoint_done "STEP_INTERACTIVE_SETUP"
 }
@@ -321,9 +338,6 @@ step_luks_setup() {
     return
   fi
   setupLuksEncryption
-  checkpoint_set "VAR_KEY_FILE"       "$keyFile"
-  checkpoint_set "VAR_ADD_PASSPHRASE" "${addPassphrase:-N}"
-  checkpoint_set "VAR_LUKS_KEY_SIZE"  "${luksKeySize:-4096}"
   checkpoint_done "STEP_LUKS_SETUP"
 }
 
@@ -407,10 +421,7 @@ step_password() {
   if checkpoint_skip "STEP_PASSWORD"; then
     return
   fi
-  if [[ -z "${userName:-}" ]]; then
-    getDefaultUser 6
-  fi
-  checkpoint_set "VAR_USERNAME" "$userName"
+  userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
   run_command nixos-enter --root /mnt -- passwd "$userName"
   checkpoint_done "STEP_PASSWORD"
 }
