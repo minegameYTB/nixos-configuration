@@ -90,8 +90,11 @@
   services.udev.extraRules = ''
     # Hide ZFS member partitions
     ENV{ID_FS_TYPE}=="zfs_member", ENV{UDISKS_IGNORE}="1", ENV{UDISKS_PRESENTATION_HIDE}="1"
+<<<<<<< add/iso-cfg
 
     # hide zvol too
     KERNEL=="zd*", ENV{UDISKS_IGNORE}="1"
+=======
+>>>>>>> flake
   '';
 }
