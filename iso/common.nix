@@ -147,6 +147,9 @@ let
       ]
       ++ lib.optional (keyboardSessionScript != null) keyboardSessionScript;
 
+      ### Only rsync, no vim (neovim is already provided via home-manager)
+      environment.defaultPackages = lib.mkForce (with pkgs; [ rsync ]);
+
       environment.interactiveShellInit = welcomeMessage;
     };
 
