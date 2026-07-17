@@ -297,6 +297,7 @@
             type = "zfs_fs";
             options = {
               mountpoint = "none";
+              volmode = "dev";
               compression = "lz4";
             };
           };
