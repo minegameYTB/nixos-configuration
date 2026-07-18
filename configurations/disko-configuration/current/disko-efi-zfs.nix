@@ -284,6 +284,7 @@
             options = {
               mountpoint = "none";
               compression = "lz4";
+              primarycache = "metadata";
             };
           };
           "zvol/disk" = {
