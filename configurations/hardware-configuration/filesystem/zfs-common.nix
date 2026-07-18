@@ -91,4 +91,13 @@
     # Hide ZFS member partitions
     ENV{ID_FS_TYPE}=="zfs_member", ENV{UDISKS_IGNORE}="1", ENV{UDISKS_PRESENTATION_HIDE}="1"
   '';
+
+  ### For share* properties in zfs
+  services.nfs.server.enable = true;
+  services.samba = {
+    enable = true;
+    package = pkgs.samba;
+    smbd.enable = true;
+    openFirewall = true;
+  };
 }
