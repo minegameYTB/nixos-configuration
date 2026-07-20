@@ -1,16 +1,14 @@
-{ inputs, stateVersion }:
+{
+  inputs,
+  stateVersion,
+  pkgs,
+}:
 {
   config,
-  pkgs,
   lib,
   ...
 }:
 
-let
-  pkgs-unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.stdenvNoCC.system;
-  };
-in
 {
   ### Import configuration from host
   imports = [ ../../../common/system-opts/nix-settings.nix ];
@@ -76,7 +74,7 @@ in
         }
         EOF
       '';
-      packages.myVimPackage = with pkgs-unstable.vimPlugins; {
+      packages.myVimPackage = with pkgs.pkgsUnstable.vimPlugins; {
         start = [
           tokyonight-nvim
           lualine-nvim
@@ -88,7 +86,7 @@ in
     };
   };
 
-  environment.systemPackages = with pkgs-unstable; [
+  environment.systemPackages = with pkgs.pkgsUnstable; [
     opencode
     mcp-nixos
 

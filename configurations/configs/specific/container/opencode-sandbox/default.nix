@@ -8,7 +8,7 @@
 
 let
   containerCfg = import ./container-config.nix {
-    inherit inputs;
+    inherit inputs pkgs;
     inherit (config.system) stateVersion;
   };
 in
