@@ -12,6 +12,9 @@ let
   };
 in
 {
+  ### Import configuration from host
+  imports = [ ../../../common/system-opts/nix-settings.nix ];
+
   users.users.minegame = {
     isNormalUser = true;
     initialPassword = "nixos";
