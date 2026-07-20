@@ -12,7 +12,18 @@
     [
       opencode
       mcp-nixos
-      nixd # Nix lsd server
+      nixd
+
+      ### LSP servers (also used by opencode)
+      bash-language-server
+      gopls
+      lua-language-server
+      marksman
+      nil
+      pyright
+      rust-analyzer
+      typescript-language-server
+      yaml-language-server
     ]
     ++ (lib.optionals config.services.xserver.enable (with pkgs.pkgsPr; [ claude-desktop ]));
 }
