@@ -42,11 +42,22 @@
     extraPackages = (
       with pkgs;
       [
-        nixd # Nix LSP
-        nixfmt # Nix formatter
-        statix # For suggestion on nix files
-        gcc # Provides the C Compiler
-        tree-sitter # Provides the tree-sitter CLI
+        nixd
+        nixfmt
+        statix
+        gcc
+        tree-sitter
+
+        ### LSP servers
+        bash-language-server
+        gopls
+        lua-language-server
+        marksman
+        nil
+        pyright
+        rust-analyzer
+        typescript-language-server
+        yaml-language-server
       ]
     );
     treesitterParsers = with pkgs.vimPlugins.nvim-treesitter-parsers; [ dtd ];

@@ -28,7 +28,7 @@
     ../configurations/configs/specific/desktop/games
 
     ### Other
-    ../configurations/configs/specific/container/podman.nix
+    ../configurations/configs/specific/container
     ../configurations/hardware-configuration/specific/swap.nix
     ../configurations/configs/specific/ai
 
