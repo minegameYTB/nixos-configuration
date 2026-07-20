@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Restrict PATH to known safe locations for NixOS live environments.
-PATH="/bin:/usr/bin:/run/current-system/sw/bin"
+# /run/wrappers/bin is where NixOS places setuid wrappers (sudo).
+PATH="/run/wrappers/bin:/bin:/usr/bin:/run/current-system/sw/bin"
 
 # installLib points to the directory that contains lib.sh and the install
 # scripts.  Using $(pwd) keeps it relocatable without hard-coded paths.
@@ -40,7 +41,7 @@ echo "$name v$INSTALL_SCRIPT_VERSION"
 sleep 2
 
 # ---------------------------------------------------------------------------
-# Version check — warn if repo is dirty or behind upstream
+# Phase 1 — Version check (user only, git should not run as root)
 # ---------------------------------------------------------------------------
 
 if (( SKIP_VERSION_CHECK )); then
@@ -50,7 +51,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Detect whether we are running on NixOS or a generic Linux system.
+# Phase 2 — Detect install mode (no root needed for detection)
 #
 # NixOS detection: both /etc/NIXOS (marker file) and /run/current-system
 # (the active system profile) must be present.  Checking /run/current-system
@@ -60,7 +61,6 @@ fi
 
 if [[ -e "/etc/NIXOS" && -d "/run/current-system" ]]; then
   info "NixOS detected (via /etc/NIXOS + /run/current-system) — running NixOS install"
-  echo ""
   mode="nixosInstall"
 else
   if [[ "$(uname -s)" != "Linux" ]]; then
@@ -68,17 +68,25 @@ else
     exit 2
   fi
   info "Non-NixOS Linux detected — running Home Manager standalone install"
-  echo ""
   mode="hmInstall"
 fi
 
+# ---------------------------------------------------------------------------
+# Phase 3 — Auto-elevation (NixOS install only, HM runs as normal user)
+# ---------------------------------------------------------------------------
+
+if [[ $EUID -ne 0 ]] && [[ "$mode" == "nixosInstall" ]]; then
+  info "Root privileges required — re-running with sudo..."
+  exec sudo "$0" --dont-check "$@"
+fi
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Dispatch
+# ---------------------------------------------------------------------------
+
 case "$mode" in
-  nixosInstall)
-    nixosInstallFn
-    ;;
-  hmInstall)
-    hmInstallFn
-    ;;
+  nixosInstall) nixosInstallFn ;;
+  hmInstall)    hmInstallFn ;;
 esac
 
 exit $?
