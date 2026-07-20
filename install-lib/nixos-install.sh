@@ -271,10 +271,10 @@ step_interactive_setup() {
   read -r -e -p "Enter device to install NixOS on (e.g. /dev/sda, /dev/vda): " deviceDisk
   read -r -e -p "Enter size for the installation (e.g. 100% or 50G): "          sizeDisk
 
-  echo -e "\nAvailable profiles:"
+  echo "Available profiles:"
   nix "${nixFlags[@]}" flake show
   read -r -e -p "Enter the profile name to install: " nixosProfile
-  echo -e "\n${nixosProfile} selected"
+  echo "${nixosProfile} selected"
 
   # ── username ──
   getDefaultUser 6
@@ -526,10 +526,10 @@ nixosInstallFn() {
   sleep 1
   trap 'deactivateSwap' EXIT
 
-  # --- Root check (must happen before anything else) ----------------------
+  # --- Root check (safety net — install.sh should auto-elevate before dispatch)
   if [[ $EUID -ne 0 ]]; then
-    warn "This script must be run as root or with sudo"
-    echo "Please run: sudo $0"
+    warn "This script must be run as root."
+    echo "Please run install.sh without sudo — it will auto-elevate after the version check."
     echo "Stopped (Error 1)"
     exit 1
   fi
