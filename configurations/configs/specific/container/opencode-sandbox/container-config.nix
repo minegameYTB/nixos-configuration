@@ -90,6 +90,7 @@ in
 
   environment.systemPackages = with pkgs-unstable; [
     opencode
+    mcp-nixos
 
     ### Language servers
     bash-language-server

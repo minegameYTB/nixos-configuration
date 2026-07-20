@@ -37,6 +37,10 @@ in
         hostPath = "/home/minegame/nixos-configuration";
         isReadOnly = false;
       };
+      "/home/minegame/.config/opencode" = {
+        hostPath = "/home/minegame/.config/opencode";
+        isReadOnly = false;
+      };
     };
 
     config = containerCfg;
