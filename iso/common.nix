@@ -159,12 +159,18 @@ let
       edition,
       profile,
       hostname,
-      hmProfile,
-      hmExtraModules ? [ ],
+      hmFeatures ? [ ],
       keyboardSession ? false,
       extraModules ? [ ],
     }:
     let
+      isoUserCfg = {
+        nixos = {
+          description = "NixOS Live User";
+          inherit hmFeatures;
+        };
+      };
+
       iSpecialArgs = isoSpecialArgs isoArch // {
         inherit
           mkKeyboardSpec
@@ -176,6 +182,8 @@ let
         inherit rev branch;
         edition = edition;
         welcomeMessage = mkWelcomeMessage edition rev branch;
+        userConfigs = isoUserCfg;
+        globalFeatures = [ ];
       };
     in
     lib.nixosSystem {
@@ -191,9 +199,11 @@ let
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.nixos = import hmProfile {
+            users.nixos = import ../hm-profiles/users/entry.nix {
               username = "nixos";
-              extraModules = hmExtraModules;
+              globalFeatures = [ ];
+              userConfigs = isoUserCfg;
+              featPath = ../home-manager/features;
             };
             extraSpecialArgs = iSpecialArgs;
           };

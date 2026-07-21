@@ -132,8 +132,7 @@ in
     profile = ./iso/gnome.nix;
     hostname = "nixos-iso";
     extraModules = [ ./configurations/hardware-configuration/specific/nvidia.nix ];
-    hmProfile = ./hm-profiles/desktop-profile-wrapped.nix;
-    hmExtraModules = [ ./home-manager/configs/specific/nixos ];
+    hmFeatures = [ "cli" "shell" "desktop-core" "gnome" ];
     keyboardSession = true;
   };
 
@@ -141,6 +140,6 @@ in
     edition = "CLI";
     profile = ./iso/cli.nix;
     hostname = "nixos-iso-minimal";
-    hmProfile = ./hm-profiles/server-profile.nix;
+    hmFeatures = [ ];
   };
 }

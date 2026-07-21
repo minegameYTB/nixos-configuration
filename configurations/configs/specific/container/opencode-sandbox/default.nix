@@ -8,7 +8,7 @@
 }:
 
 let
-  username = builtins.head (builtins.attrNames users);
+  username = builtins.head users;
 
   containerCfg = import ./container-config.nix {
     inherit inputs pkgs username;
