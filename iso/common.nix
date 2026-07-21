@@ -204,6 +204,7 @@ let
               globalFeatures = [ ];
               userConfigs = isoUserCfg;
               featPath = ../home-manager/features;
+              inherit inputs;
             };
             extraSpecialArgs = iSpecialArgs;
           };

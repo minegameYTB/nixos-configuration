@@ -2,12 +2,13 @@
   globalFeatures,
   userConfigs,
   userOverrides ? { },
+  inputs,
   ...
 }:
 
 let
   entry = import ../entry.nix {
-    inherit globalFeatures userConfigs userOverrides;
+    inherit globalFeatures userConfigs userOverrides inputs;
     username = "nixos";
     featPath = ../../../home-manager/features;
   };

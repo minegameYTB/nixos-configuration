@@ -4,6 +4,7 @@
   userConfigs,
   featPath,
   userOverrides ? { },
+  inputs,
 }:
 
 let
@@ -23,7 +24,8 @@ in
 {
   home.username = username;
   home.homeDirectory = "/home/${username}";
-  home.stateVersion = "26.05";
 
-  imports = map (f: "${featPath}/${f}.nix") (effectiveGlobal ++ effectiveFeatures);
+  imports = [
+    (inputs.self + "/home-manager/config-modules")
+  ] ++ map (f: "${featPath}/${f}.nix") (effectiveGlobal ++ effectiveFeatures);
 }

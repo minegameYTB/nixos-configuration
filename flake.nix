@@ -261,11 +261,11 @@
             users = lib.mapAttrs (
               username: _:
               import ./hm-profiles/users/${username}/default.nix {
-                inherit globalFeatures userConfigs userOverrides;
+                inherit globalFeatures userConfigs userOverrides inputs;
               }
             ) userConfigs;
             extraSpecialArgs = specialArgs system // {
-              inherit globalFeatures userConfigs userOverrides;
+              inherit globalFeatures userConfigs userOverrides inputs;
             };
           };
         };
@@ -282,7 +282,7 @@
           pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/users/${username}/default.nix {
-              inherit globalFeatures userConfigs userOverrides;
+              inherit globalFeatures userConfigs userOverrides inputs;
             })
             (overlay system)
 
@@ -291,7 +291,7 @@
           ]
           ++ lib.optionals hasStylix [ inputs.stylix.homeModules.stylix ];
           extraSpecialArgs = specialArgs system // {
-            inherit globalFeatures userConfigs userOverrides;
+            inherit globalFeatures userConfigs userOverrides inputs;
           };
         };
 
