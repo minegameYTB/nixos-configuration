@@ -3,16 +3,27 @@
   pkgs,
   lib,
   inputs,
+  users,
   ...
 }:
 
 let
+  username = builtins.head users;
+
   containerCfg = import ./container-config.nix {
-    inherit inputs pkgs;
+    inherit inputs pkgs username;
     inherit (config.system) stateVersion;
   };
 in
 {
+  ### Create package to login directly into container
+  environment.systemPackages = [
+    (pkgs.writeShellScriptBin "opencode-login" ''
+      echo "Login to the container opencode using ssh, please use your password defined in your container"
+      exec -a "$0" ${config.programs.ssh.package}/bin/ssh $(nixos-container show-ip opencode)
+    '')
+  ];
+
   boot.enableContainers = true;
 
   networking.nat = {
@@ -22,23 +33,23 @@ in
   };
 
   containers.opencode = {
-    autoStart = false;
+    autoStart = true;
 
     privateNetwork = true;
     hostAddress = "10.0.0.1";
     localAddress = "10.0.0.2";
 
     bindMounts = {
-      "/home/minegame/workspace" = {
-        hostPath = "/home/minegame/Projets";
+      "/home/${username}/workspace" = {
+        hostPath = "/home/${username}/Projets";
         isReadOnly = false;
       };
-      "/home/minegame/nixos-configuration" = {
-        hostPath = "/home/minegame/nixos-configuration";
+      "/home/${username}/nixos-configuration" = {
+        hostPath = "/home/${username}/nixos-configuration";
         isReadOnly = false;
       };
-      "/home/minegame/.config/opencode" = {
-        hostPath = "/home/minegame/.config/opencode";
+      "/home/${username}/.config/opencode" = {
+        hostPath = "/home/${username}/.config/opencode";
         isReadOnly = false;
       };
     };
