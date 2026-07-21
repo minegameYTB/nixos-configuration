@@ -22,17 +22,31 @@
     # openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3..." ];
   };
 
+  ### Disable sudo in the container (security: no root privileges needed for opencode/LSPs)
+  security.sudo.enable = false;
+
   services.openssh = {
     enable = true;
     settings = {
       PasswordAuthentication = true;
+      KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
     };
   };
 
+  # SSH service hardening
+  systemd.services.sshd.serviceConfig = {
+    NoNewPrivileges = true;
+    ProtectSystem = "strict";
+    PrivateTmp = true;
+  };
+
   networking = {
     useHostResolvConf = lib.mkForce false;
-    firewall.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = lib.mkForce [ 22 ];
+    };
   };
   services.resolved.enable = true;
 
