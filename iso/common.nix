@@ -219,7 +219,6 @@ let
     // {
       userConfigs = { nixos = { description = "NixOS Live User"; }; };
       globalFeatures = [ ];
-      description = "NixOS Live User";
     };
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";

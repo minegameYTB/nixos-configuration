@@ -108,7 +108,6 @@
       userConfigs = hmProfiles.users;
       # List of usernames for backward compat with modules expecting a list
       users = builtins.attrNames userConfigs;
-      description = "Minegame YTB";
       properties = {
         i18n = "fr_FR.UTF-8";
         keyMap = "fr";
@@ -242,7 +241,6 @@
           globalFeatures
           userConfigs
           users
-          description
           properties
           ;
       };
