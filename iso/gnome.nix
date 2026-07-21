@@ -63,12 +63,12 @@
     after = [ "gnome-session.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = ''${pkgs.writeShellScript "disable-screen-blanking" ''
+      ExecStart = "${pkgs.writeShellScript "disable-screen-blanking" ''
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.session idle-delay 0
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver idle-activation-enabled false
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver lock-enabled false
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
-      ''}'';
+      ''}";
     };
   };
 }

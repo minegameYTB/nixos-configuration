@@ -35,8 +35,18 @@ let
   inherit (helpers.machine) mkMachine;
 
   cliOverrides = {
-    global = { without = [ "desktop-core" ]; };
-    minegame = { without = [ "gnome" "games" "browser" "multimedia" "customization" ]; };
+    global = {
+      without = [ "desktop-core" ];
+    };
+    minegame = {
+      without = [
+        "gnome"
+        "games"
+        "browser"
+        "multimedia"
+        "customization"
+      ];
+    };
   };
 
 in
@@ -141,7 +151,12 @@ in
     profile = ./iso/gnome.nix;
     hostname = "nixos-iso";
     extraModules = [ ./configurations/hardware-configuration/specific/nvidia.nix ];
-    hmFeatures = [ "cli" "shell" "desktop-core" "gnome" ];
+    hmFeatures = [
+      "cli"
+      "shell"
+      "desktop-core"
+      "gnome"
+    ];
     keyboardSession = true;
   };
 

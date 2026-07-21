@@ -1,4 +1,9 @@
-{ globalFeatures, userConfigs, userOverrides ? { }, ... }:
+{
+  globalFeatures,
+  userConfigs,
+  userOverrides ? { },
+  ...
+}:
 
 let
   entry = import ../entry.nix {
@@ -7,7 +12,8 @@ let
     featPath = ../../../home-manager/features;
   };
 in
-entry // {
+entry
+// {
   imports = entry.imports ++ [
     ./git.nix
     ./apps.nix

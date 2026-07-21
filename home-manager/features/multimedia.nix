@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   isX86_64 = pkgs.stdenvNoCC.hostPlatform.isx86_64;
@@ -24,7 +29,8 @@ in
       ])
     )
     ++ lib.optionals isAarch64 (
-      with pkgs; [
+      with pkgs;
+      [
         legcord
       ]
     );

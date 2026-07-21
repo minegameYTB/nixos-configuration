@@ -1,4 +1,9 @@
-{ globalFeatures, userConfigs, userOverrides ? { }, ... }:
+{
+  globalFeatures,
+  userConfigs,
+  userOverrides ? { },
+  ...
+}:
 
 let
   entry = import ../entry.nix {

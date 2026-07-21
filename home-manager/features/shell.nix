@@ -35,16 +35,37 @@
       highlight_base_name = true;
       screen_tabs = true;
       fields = with config.lib.htop.fields; [
-        PID USER PRIORITY NICE M_SIZE M_RESIDENT M_SHARE STATE
-        PERCENT_CPU PERCENT_MEM TIME COMM
+        PID
+        USER
+        PRIORITY
+        NICE
+        M_SIZE
+        M_RESIDENT
+        M_SHARE
+        STATE
+        PERCENT_CPU
+        PERCENT_MEM
+        TIME
+        COMM
       ];
     }
-    // (with config.lib.htop; leftMeters [
-      (bar "AllCPUs") (bar "Memory") (bar "Swap")
-    ])
-    // (with config.lib.htop; rightMeters [
-      (text "System") (text "Tasks") (text "LoadAverage") (text "Uptime")
-    ]);
+    // (
+      with config.lib.htop;
+      leftMeters [
+        (bar "AllCPUs")
+        (bar "Memory")
+        (bar "Swap")
+      ]
+    )
+    // (
+      with config.lib.htop;
+      rightMeters [
+        (text "System")
+        (text "Tasks")
+        (text "LoadAverage")
+        (text "Uptime")
+      ]
+    );
   };
 
   programs.tmux = {

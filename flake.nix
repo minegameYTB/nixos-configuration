@@ -248,17 +248,25 @@
       ### Home-manager config — single entry for all users
       homeManagerConfig =
         system:
-        { config, pkgs, userOverrides ? { }, ... }:
+        {
+          config,
+          pkgs,
+          userOverrides ? { },
+          ...
+        }:
         {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.mapAttrs (username: _:
+            users = lib.mapAttrs (
+              username: _:
               import ./hm-profiles/users/${username}/default.nix {
                 inherit globalFeatures userConfigs userOverrides;
               }
             ) userConfigs;
-            extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs userOverrides; };
+            extraSpecialArgs = specialArgs system // {
+              inherit globalFeatures userConfigs userOverrides;
+            };
           };
         };
 
@@ -282,7 +290,9 @@
             ./home-manager/configs/specific/standalone
           ]
           ++ lib.optionals hasStylix [ inputs.stylix.homeModules.stylix ];
-          extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs userOverrides; };
+          extraSpecialArgs = specialArgs system // {
+            inherit globalFeatures userConfigs userOverrides;
+          };
         };
 
       mkHomeAttr = username: system: {

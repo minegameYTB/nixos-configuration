@@ -217,7 +217,11 @@ let
     system:
     (specialArgs system)
     // {
-      userConfigs = { nixos = { description = "NixOS Live User"; }; };
+      userConfigs = {
+        nixos = {
+          description = "NixOS Live User";
+        };
+      };
       globalFeatures = [ ];
     };
 

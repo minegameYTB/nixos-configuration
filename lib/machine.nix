@@ -27,7 +27,9 @@ let
     lib.nixosSystem {
       system = arch;
       pkgs = machinePkgs;
-      specialArgs = specialArgs arch // { inherit userOverrides; };
+      specialArgs = specialArgs arch // {
+        inherit userOverrides;
+      };
       modules = [
         ../configurations/configuration.nix
 
