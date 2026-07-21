@@ -19,6 +19,7 @@ let
       extraModules ? [ ],
       arch ? defaultArch,
       usePatched ? false,
+      userOverrides ? { },
     }:
     let
       machinePkgs = if usePatched then pkgsPatched arch else pkgsFor arch;
@@ -26,7 +27,7 @@ let
     lib.nixosSystem {
       system = arch;
       pkgs = machinePkgs;
-      specialArgs = specialArgs arch;
+      specialArgs = specialArgs arch // { inherit userOverrides; };
       modules = [
         ../configurations/configuration.nix
 

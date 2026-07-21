@@ -34,6 +34,11 @@ let
   };
   inherit (helpers.machine) mkMachine;
 
+  cliOverrides = {
+    global = { without = [ "desktop-core" ]; };
+    minegame = { without = [ "gnome" "games" "browser" "multimedia" "customization" ]; };
+  };
+
 in
 {
   ### --- Physical machines ---
@@ -84,6 +89,7 @@ in
     hostname = "nixos-kvm-srv";
     profile = ./profiles/vm-no-gui-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    userOverrides = cliOverrides;
   };
 
   # VM preset (CLI bios)
@@ -91,6 +97,7 @@ in
     hostname = "nixos-kvm-srv-bios";
     profile = ./profiles/vm-no-gui-bios-novio-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    userOverrides = cliOverrides;
   };
 
   # VM preset (CLI bios (no virtio disk))
@@ -98,6 +105,7 @@ in
     hostname = "nixos-kvm-desktop-bios-virtio";
     profile = ./profiles/vm-no-gui-bios-vio-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    userOverrides = cliOverrides;
   };
 
   ### --- Test VMs ---
@@ -123,6 +131,7 @@ in
     hostname = "nixos-kvm-srv-zfs";
     profile = ./profiles/vm-no-gui-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
+    userOverrides = cliOverrides;
   };
 
   ### --- ISO Images ---

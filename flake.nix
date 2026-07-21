@@ -248,17 +248,17 @@
       ### Home-manager config — single entry for all users
       homeManagerConfig =
         system:
-        { config, pkgs, ... }:
+        { config, pkgs, userOverrides ? { }, ... }:
         {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
             users = lib.mapAttrs (username: _:
               import ./hm-profiles/users/${username}/default.nix {
-                inherit globalFeatures userConfigs;
+                inherit globalFeatures userConfigs userOverrides;
               }
             ) userConfigs;
-            extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs; };
+            extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs userOverrides; };
           };
         };
 
@@ -268,12 +268,13 @@
         let
           userCfg = userConfigs.${username};
           hasStylix = builtins.elem "gnome" (globalFeatures ++ userCfg.hmFeatures);
+          userOverrides = { };
         in
         inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/users/${username}/default.nix {
-              inherit globalFeatures userConfigs;
+              inherit globalFeatures userConfigs userOverrides;
             })
             (overlay system)
 
@@ -281,7 +282,7 @@
             ./home-manager/configs/specific/standalone
           ]
           ++ lib.optionals hasStylix [ inputs.stylix.homeModules.stylix ];
-          extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs; };
+          extraSpecialArgs = specialArgs system // { inherit globalFeatures userConfigs userOverrides; };
         };
 
       mkHomeAttr = username: system: {
