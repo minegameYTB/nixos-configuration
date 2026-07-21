@@ -10,8 +10,7 @@
   pkgsFor,
   pkgsPatched,
   specialArgs,
-  homeManagerDesktopConfig,
-  homeManagerServerConfig,
+  homeManagerConfig,
   rev,
   branch,
   ...
@@ -28,8 +27,7 @@ let
       pkgsFor
       pkgsPatched
       specialArgs
-      homeManagerDesktopConfig
-      homeManagerServerConfig
+      homeManagerConfig
       rev
       branch
       ;
@@ -86,7 +84,6 @@ in
     hostname = "nixos-kvm-srv";
     profile = ./profiles/vm-no-gui-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
-    homeManagerType = "server";
   };
 
   # VM preset (CLI bios)
@@ -94,7 +91,6 @@ in
     hostname = "nixos-kvm-srv-bios";
     profile = ./profiles/vm-no-gui-bios-novio-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
-    homeManagerType = "server";
   };
 
   # VM preset (CLI bios (no virtio disk))
@@ -102,7 +98,6 @@ in
     hostname = "nixos-kvm-desktop-bios-virtio";
     profile = ./profiles/vm-no-gui-bios-vio-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
-    homeManagerType = "server";
   };
 
   ### --- Test VMs ---
@@ -128,7 +123,6 @@ in
     hostname = "nixos-kvm-srv-zfs";
     profile = ./profiles/vm-no-gui-efi-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
-    homeManagerType = "server";
   };
 
   ### --- ISO Images ---
