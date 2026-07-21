@@ -207,7 +207,7 @@ let
     system:
     (specialArgs system)
     // {
-      users = [ "nixos" ];
+      users = { nixos = { description = "NixOS Live User"; }; };
       description = "NixOS Live User";
     };
 

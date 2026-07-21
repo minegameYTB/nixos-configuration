@@ -1,0 +1,5 @@
+{
+  minegame = {
+    description = "Minegame YTB";
+  };
+}

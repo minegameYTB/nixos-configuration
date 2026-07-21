@@ -103,7 +103,7 @@
 
     let
       ### Username for user config and home-manager standalone (change when forking)
-      users = [ "minegame" ];
+      users = import ./hm-profiles/users.nix;
       description = "Minegame YTB";
       properties = {
         i18n = "fr_FR.UTF-8";
@@ -249,13 +249,12 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.genAttrs users (
-              username:
+            users = lib.mapAttrs (username: _:
               import ./hm-profiles/desktop-profile-wrapped.nix {
                 inherit username;
                 extraModules = [ ./home-manager/configs/specific/nixos ];
               }
-            );
+            ) users;
             extraSpecialArgs = specialArgs system;
           };
         };
@@ -268,9 +267,9 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.genAttrs users (
-              username: import ./hm-profiles/server-profile.nix { inherit username; }
-            );
+            users = lib.mapAttrs (username: _:
+              import ./hm-profiles/server-profile.nix { inherit username; }
+            ) users;
             extraSpecialArgs = specialArgs system;
           };
         };
@@ -357,7 +356,9 @@
 
       ### Home-manager standalone configurations (one per user/system)
       homeConfigurations = lib.listToAttrs (
-        lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) users
+        lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) (
+          builtins.attrNames users
+        )
       );
     };
 }
