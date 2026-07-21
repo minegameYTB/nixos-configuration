@@ -2,6 +2,7 @@
   inputs,
   stateVersion,
   pkgs,
+  username,
 }:
 {
   config,
@@ -13,7 +14,7 @@
   ### Import configuration from host
   imports = [ ../../../common/system-opts/nix-settings.nix ];
 
-  users.users.minegame = {
+  users.users.${username} = {
     isNormalUser = true;
     initialPassword = "nixos";
     # TODO: Add your dedicated SSH public key
