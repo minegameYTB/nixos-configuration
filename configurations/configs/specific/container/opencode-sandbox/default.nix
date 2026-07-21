@@ -19,6 +19,10 @@ in
   ### Create package to login directly into container
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "opencode-login" ''
+      if [[ $(nixos-container status opencode) == "down" ]] then
+        echo "Starting opencode container using sudo"
+        sudo nixos-container start opencode
+      fi
       echo "Login to the container opencode using ssh, please use your password defined in your container"
       exec -a "$0" ${config.programs.ssh.package}/bin/ssh $(nixos-container show-ip opencode)
     '')
@@ -33,7 +37,7 @@ in
   };
 
   containers.opencode = {
-    autoStart = true;
+    autoStart = false;
 
     privateNetwork = true;
     hostAddress = "10.0.0.1";
