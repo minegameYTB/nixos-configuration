@@ -67,7 +67,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - See `doc/ISO.md` for full docs
 
 ## Documentation
-- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `modules.md`, `config-modules.md`
+- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `HM.md`, `modules.md`, `config-modules.md`
 - `AGENTS.md` (this file) stays at the project root for agent discovery
 
 ### Repo URL — `lib/repo.nix`
@@ -76,10 +76,13 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - Overridable at runtime via `INSTALL_REPO_URL` (env variable)
 
 ### Home Manager
-- Two modes: **NixOS-managed** (via `home-manager.nixosModule`) and **standalone** (via `nix run home-manager/master -- init`)
-- Desktop profile: `home.nix` + customization (theme, apps, cli) + gui-packages
-- Server profile: `home.nix` + common + cli-app
-- Standalone mode uses `targets.genericLinux.enable` + NUR overlay + nix GC
+- **Two modes**: NixOS-managed (via `home-manager.nixosModule`) and **standalone** (via `mkHome` in `flake.nix`)
+- **Single entry point**: `hm-profiles/users/entry.nix` reads `globalFeatures` + per-user `hmFeatures` → imports `home-manager/features/<name>.nix`
+- **Users**: defined in `hm-profiles/users.nix` with `description` + `hmFeatures` list. Per-user overrides in `hm-profiles/users/<name>/`
+- **Features** (`home-manager/features/`): HM modules activated by name. Simple features inline; complex ones delegate to `home-manager/config-modules/<name>/` via `(inputs.self + "/home-manager/config-modules/<name>")`
+- **Modules** (`home-manager/config-modules/`): external flake module wrappers (lazyvim, zen-browser), source of truth referenced by features
+- **ISO**: uses `hmFeatures` directly in `machine.nix` → `mkIso { hmFeatures = [...]; }` → user `nixos` in ISO
+- See `doc/HM.md` for full docs
 
 ## Install System (`install-lib/`)
 - **`install.sh`** — auto-detects NixOS vs standalone Linux
