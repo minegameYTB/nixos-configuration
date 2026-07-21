@@ -19,7 +19,7 @@ in
   ### Create package to login directly into container
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "opencode-login" ''
-      if [[ $(nixos-container status opencode) == "down" ]] then
+      if [[ $(nixos-container status opencode) == "down" ]]; then
         echo "Starting opencode container using sudo"
         sudo nixos-container start opencode
       fi
