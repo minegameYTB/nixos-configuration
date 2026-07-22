@@ -53,7 +53,6 @@
         gopls
         lua-language-server
         marksman
-        nil
         pyright
         rust-analyzer
         typescript-language-server

@@ -110,7 +110,6 @@
     gopls
     lua-language-server
     marksman
-    nil
     nixd
     pyright
     rust-analyzer
