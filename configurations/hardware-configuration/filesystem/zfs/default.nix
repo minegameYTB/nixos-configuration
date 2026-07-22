@@ -21,9 +21,14 @@
   };
 
   fileSystems."/home" = {
-    device = "zroot/home";
+    device = "zroot/USERDATA/home";
     fsType = "zfs";
     options = [ "nosuid" ];
+  };
+
+  fileSystems."/root" = {
+    device = "zroot/USERDATA/root";
+    fsType = "zfs";
   };
 
   fileSystems."/nix" = {
@@ -89,6 +94,16 @@
 
   fileSystems."/var/lib/libvirt/images" = lib.mkIf config.virtualisation.libvirtd.enable {
     device = "zroot/var/lib/libvirt/images";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var/lib/AccountsService" = lib.mkIf config.services.accounts-daemon.enable {
+    device = "zroot/var/lib/AccountsService";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var/lib/NetworkManager" = lib.mkIf config.networking.networkmanager.enable {
+    device = "zroot/var/lib/NetworkManager";
     fsType = "zfs";
   };
 }

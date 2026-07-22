@@ -77,8 +77,31 @@
             };
           };
 
-          ### Home dataset
-          "home" = {
+          ### User data container (isolated from OS rollbacks)
+          "USERDATA" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "128K";
+            };
+          };
+          "USERDATA/root" = {
+            type = "zfs_fs";
+            mountpoint = "/root";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-3";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "128K";
+              refquota = "5G";
+            };
+          };
+          "USERDATA/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
             options = {
@@ -208,6 +231,30 @@
               dnodesize = "auto";
               recordsize = "64K";
               primarycache = "metadata";
+            };
+          };
+          "var/lib/AccountsService" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/AccountsService";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+            };
+          };
+          "var/lib/NetworkManager" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/NetworkManager";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
             };
           };
           "var/log" = {
