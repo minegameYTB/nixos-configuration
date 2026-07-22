@@ -244,6 +244,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "60M";
             };
           };
           "var/lib/NetworkManager" = {
@@ -256,6 +257,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              refquota = "60M";
             };
           };
           "var/lib/docker" = {
