@@ -49,6 +49,28 @@ let
     };
   };
 
+  base =
+    type:
+    if type == "desktop" then
+      ./profiles/base-profiles/vm-desktop-profile.nix
+    else
+      ./profiles/base-profiles/vm-no-gui-profile.nix;
+
+  fs =
+    type:
+    if type == "luks" then
+      ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix
+    else if type == "zfs" then
+      ./configurations/hardware-configuration/filesystem/zfs
+    else
+      ./configurations/hardware-configuration/filesystem/btrfs;
+
+  boot = {
+    efi = ./configurations/configs/bootloader/systemd-boot.nix;
+    bios-nv = ./configurations/configs/bootloader/grub2-specific/bios-novirtio.nix;
+    bios-vio = ./configurations/configs/bootloader/grub2-specific/bios-virtio.nix;
+  };
+
 in
 {
   ### --- Physical machines ---
@@ -67,29 +89,30 @@ in
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
   };
 
-  ### --- Desktop VMs (EFI) ---
+  ### --- Desktop VMs ---
 
   # VM preset (desktop efi)
   vm-desktop-efi = mkMachine {
     hostname = "nixos-kvm-desktop";
-    profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    profile = base "desktop";
+    fs = fs "btrfs";
+    extraModules = [ boot.efi ];
   };
-
-  ### --- Desktop VMs (BIOS) ---
 
   # VM preset (desktop bios)
   vm-desktop-bios = mkMachine {
     hostname = "nixos-kvm-desktop-bios";
-    profile = ./profiles/vm-desktop-bios-novio-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    profile = base "desktop";
+    fs = fs "btrfs";
+    extraModules = [ boot.bios-nv ];
   };
 
-  # VM preset (desktop bios (no virtio disk))
+  # VM preset (desktop bios virtio)
   vm-desktop-bios-virtio = mkMachine {
     hostname = "nixos-kvm-desktop-bios-virtio";
-    profile = ./profiles/vm-desktop-bios-vio-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    profile = base "desktop";
+    fs = fs "btrfs";
+    extraModules = [ boot.bios-vio ];
   };
 
   ### --- Headless / server VMs ---
@@ -97,24 +120,27 @@ in
   # VM preset (CLI efi)
   vm-no-gui-efi = mkMachine {
     hostname = "nixos-kvm-srv";
-    profile = ./profiles/vm-no-gui-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    profile = base "headless";
+    fs = fs "btrfs";
+    extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
   };
 
   # VM preset (CLI bios)
   vm-no-gui-bios = mkMachine {
     hostname = "nixos-kvm-srv-bios";
-    profile = ./profiles/vm-no-gui-bios-novio-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    profile = base "headless";
+    fs = fs "btrfs";
+    extraModules = [ boot.bios-nv ];
     userOverrides = cliOverrides;
   };
 
-  # VM preset (CLI bios (no virtio disk))
+  # VM preset (CLI bios virtio)
   vm-no-gui-bios-virtio = mkMachine {
-    hostname = "nixos-kvm-desktop-bios-virtio";
-    profile = ./profiles/vm-no-gui-bios-vio-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    hostname = "nixos-kvm-srv-bios-virtio";
+    profile = base "headless";
+    fs = fs "btrfs";
+    extraModules = [ boot.bios-vio ];
     userOverrides = cliOverrides;
   };
 
@@ -122,25 +148,26 @@ in
 
   # VM preset (desktop efi LUKS btrfs)
   vm-desktop-efi-luks = mkMachine {
-    hostname = "nixos-kvm-desktop";
-    profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/luks-btrfs/vm.nix;
+    hostname = "nixos-kvm-desktop-luks";
+    profile = base "desktop";
+    fs = fs "luks";
+    extraModules = [ boot.efi ];
   };
 
-  # VM preset (desktop efi ZFS) — requires at least 16 GiB RAM (8 GiB bare minimum, tight during nixos-rebuild)
+  # VM preset (desktop efi ZFS) — requires at least 16 GiB RAM
   vm-desktop-efi-zfs = mkMachine {
     hostname = "nixos-kvm-desktop-zfs";
-    profile = ./profiles/vm-desktop-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/zfs;
+    profile = base "desktop";
+    fs = fs "zfs";
+    extraModules = [ boot.efi ];
   };
-
-  ### --- Headless / server VMs (ZFS) ---
 
   # VM preset (CLI efi ZFS)
   vm-no-gui-efi-zfs = mkMachine {
     hostname = "nixos-kvm-srv-zfs";
-    profile = ./profiles/vm-no-gui-efi-profile.nix;
-    fs = ./configurations/hardware-configuration/filesystem/zfs;
+    profile = base "headless";
+    fs = fs "zfs";
+    extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
   };
 
