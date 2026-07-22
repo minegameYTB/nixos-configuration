@@ -359,9 +359,7 @@
 
       ### Home-manager standalone configurations (one per user/system)
       homeConfigurations = lib.listToAttrs (
-        lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) (
-          builtins.attrNames users
-        )
+        lib.concatMap (username: lib.concatMap (system: [ (mkHomeAttr username system) ]) systems) users
       );
     };
 }
