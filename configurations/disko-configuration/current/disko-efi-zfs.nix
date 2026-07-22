@@ -276,7 +276,7 @@
             mountpoint = "/var/lib/flatpak";
             options = {
               mountpoint = "legacy";
-              compression = "lz4";
+              compression = "zstd-6";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
