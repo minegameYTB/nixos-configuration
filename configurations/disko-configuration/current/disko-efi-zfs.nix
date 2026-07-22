@@ -281,7 +281,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "64K";
-              refquota = "30G";
+              refquota = "70G";
             };
           };
           "var/lib/fwupd" = {
