@@ -106,4 +106,19 @@
     device = "zroot/var/lib/NetworkManager";
     fsType = "zfs";
   };
+
+  fileSystems."/var/lib/docker" = lib.mkIf config.virtualisation.docker.enable {
+    device = "zroot/var/lib/docker";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var/lib/flatpak" = lib.mkIf config.services.flatpak.enable {
+    device = "zroot/var/lib/flatpak";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var/lib/fwupd" = lib.mkIf config.services.fwupd.enable {
+    device = "zroot/var/lib/fwupd";
+    fsType = "zfs";
+  };
 }

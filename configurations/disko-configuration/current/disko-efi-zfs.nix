@@ -206,6 +206,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
+              refquota = "10G";
             };
           };
           "var/lib/libvirt" = {
@@ -255,6 +256,45 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+            };
+          };
+          "var/lib/docker" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/docker";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-3";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "64K";
+              refquota = "30G";
+            };
+          };
+          "var/lib/flatpak" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/flatpak";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "64K";
+              refquota = "30G";
+            };
+          };
+          "var/lib/fwupd" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/fwupd";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+              refquota = "2G";
             };
           };
           "var/log" = {
