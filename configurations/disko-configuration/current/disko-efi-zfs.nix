@@ -111,7 +111,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "50G";
+              refquota = "75G";
               setuid = "off";
             };
           };
@@ -141,7 +141,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "30G";
+              refquota = "10G";
             };
           };
           "nix/var/nix" = {
