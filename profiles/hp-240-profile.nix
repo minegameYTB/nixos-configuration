@@ -30,6 +30,7 @@
 
     ### Other
     ../configurations/hardware-configuration/specific/swap.nix
+    ../configurations/configs/specific/desktop/autologin.nix
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
