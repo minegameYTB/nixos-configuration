@@ -6,4 +6,7 @@
     enable = true;
     user = "minegame";
   };
+
+  ### Disable GDM fix autologin bug
+  services.displayManager.gdm.enable = lib.mkForce false;
 }

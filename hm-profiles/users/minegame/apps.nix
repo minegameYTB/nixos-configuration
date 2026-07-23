@@ -6,12 +6,8 @@
 }:
 
 {
-  ### Import conf file for cli software
-  home.file = {
-    #".screenrc".source = "${inputs.dotfiles-minegameYTB}/configs/screen/screenrc";
-  };
-
   xdg.configFile = {
+    "ghostty/config".source = "${inputs.dotfiles-minegameYTB}/configs/ghostty/config";
     "fastfetch/config.jsonc".source = "${inputs.dotfiles-minegameYTB}/configs/fastfetch/config.jsonc";
   };
 }

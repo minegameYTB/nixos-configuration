@@ -43,6 +43,9 @@
     user = "nixos";
   };
 
+  ### Disable GDM fix autologin bug
+  services.displayManager.gdm.enable = lib.mkForce false;
+
   systemd.user.services.keyboard-session-apply = {
     description = "Re-apply keyboard layout after GNOME session init";
     wantedBy = [ "gnome-session.target" ];
@@ -63,12 +66,12 @@
     after = [ "gnome-session.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = ''${pkgs.writeShellScript "disable-screen-blanking" ''
+      ExecStart = "${pkgs.writeShellScript "disable-screen-blanking" ''
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.session idle-delay 0
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver idle-activation-enabled false
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.desktop.screensaver lock-enabled false
         ${lib.getExe' pkgs.glib "gsettings"} set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
-      ''}'';
+      ''}";
     };
   };
 }

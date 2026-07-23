@@ -159,12 +159,18 @@ let
       edition,
       profile,
       hostname,
-      hmProfile,
-      hmExtraModules ? [ ],
+      hmFeatures ? [ ],
       keyboardSession ? false,
       extraModules ? [ ],
     }:
     let
+      isoUserCfg = {
+        nixos = {
+          description = "NixOS Live User";
+          inherit hmFeatures;
+        };
+      };
+
       iSpecialArgs = isoSpecialArgs isoArch // {
         inherit
           mkKeyboardSpec
@@ -176,6 +182,8 @@ let
         inherit rev branch;
         edition = edition;
         welcomeMessage = mkWelcomeMessage edition rev branch;
+        userConfigs = isoUserCfg;
+        globalFeatures = [ ];
       };
     in
     lib.nixosSystem {
@@ -191,9 +199,12 @@ let
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.nixos = import hmProfile {
+            users.nixos = import ../hm-profiles/users/entry.nix {
               username = "nixos";
-              extraModules = hmExtraModules;
+              globalFeatures = [ ];
+              userConfigs = isoUserCfg;
+              featPath = ../home-manager/features;
+              inherit inputs;
             };
             extraSpecialArgs = iSpecialArgs;
           };
@@ -207,8 +218,12 @@ let
     system:
     (specialArgs system)
     // {
-      users = [ "nixos" ];
-      description = "NixOS Live User";
+      userConfigs = {
+        nixos = {
+          description = "NixOS Live User";
+        };
+      };
+      globalFeatures = [ ];
     };
 
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";

@@ -102,9 +102,12 @@
     }@inputs:
 
     let
-      ### Username for user config and home-manager standalone (change when forking)
-      users = [ "minegame" ];
-      description = "Minegame YTB";
+      ### Users configuration (global features + per-user profiles)
+      hmProfiles = import ./hm-profiles/users.nix;
+      globalFeatures = hmProfiles.globalFeatures;
+      userConfigs = hmProfiles.users;
+      # List of usernames for backward compat with modules expecting a list
+      users = builtins.attrNames userConfigs;
       properties = {
         i18n = "fr_FR.UTF-8";
         keyMap = "fr";
@@ -235,61 +238,61 @@
       specialArgs = system: {
         inherit
           inputs
+          globalFeatures
+          userConfigs
           users
-          description
           properties
           ;
       };
 
-      ### Desktop home-manager config (GNOME)
-      homeManagerDesktopConfig =
+      ### Home-manager config — single entry for all users
+      homeManagerConfig =
         system:
-        { config, pkgs, ... }:
+        {
+          config,
+          pkgs,
+          userOverrides ? { },
+          ...
+        }:
         {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.genAttrs users (
-              username:
-              import ./hm-profiles/desktop-profile-wrapped.nix {
-                inherit username;
-                extraModules = [ ./home-manager/configs/specific/nixos ];
+            users = lib.mapAttrs (
+              username: _:
+              import ./hm-profiles/users/${username}/default.nix {
+                inherit globalFeatures userConfigs userOverrides inputs;
               }
-            );
-            extraSpecialArgs = specialArgs system;
-          };
-        };
-
-      ### Server home-manager config (headless)
-      homeManagerServerConfig =
-        system:
-        { config, pkgs, ... }:
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users = lib.genAttrs users (
-              username: import ./hm-profiles/server-profile.nix { inherit username; }
-            );
-            extraSpecialArgs = specialArgs system;
+            ) userConfigs;
+            extraSpecialArgs = specialArgs system // {
+              inherit globalFeatures userConfigs userOverrides inputs;
+            };
           };
         };
 
       ### Standalone home-manager (for non-NixOS Linux)
       mkHome =
         system: username:
+        let
+          userCfg = userConfigs.${username};
+          hasStylix = builtins.elem "gnome" (globalFeatures ++ userCfg.hmFeatures);
+          userOverrides = { };
+        in
         inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           modules = [
-            (import ./hm-profiles/desktop-profile.nix { inherit username; })
-            inputs.stylix.homeModules.stylix
-
+            (import ./hm-profiles/users/${username}/default.nix {
+              inherit globalFeatures userConfigs userOverrides inputs;
+            })
             (overlay system)
 
             ### Standalone-specific configuration
             ./home-manager/configs/specific/standalone
-          ];
-          extraSpecialArgs = specialArgs system;
+          ]
+          ++ lib.optionals hasStylix [ inputs.stylix.homeModules.stylix ];
+          extraSpecialArgs = specialArgs system // {
+            inherit globalFeatures userConfigs userOverrides inputs;
+          };
         };
 
       mkHomeAttr = username: system: {
@@ -346,8 +349,7 @@
           pkgsFor
           pkgsPatched
           specialArgs
-          homeManagerDesktopConfig
-          homeManagerServerConfig
+          homeManagerConfig
           rev
           branch
           ;

@@ -22,7 +22,7 @@
 
     ### Other
     ../../configurations/hardware-configuration/specific/swap.nix
-    ../../configurations/config-modules/declarative-flatpak
+    ../../configurations/config-modules
   ];
 
   ### Disable sleep states on VMs

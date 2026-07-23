@@ -77,8 +77,31 @@
             };
           };
 
-          ### Home dataset
-          "home" = {
+          ### User data container (isolated from OS rollbacks)
+          "USERDATA" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "128K";
+            };
+          };
+          "USERDATA/root" = {
+            type = "zfs_fs";
+            mountpoint = "/root";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-3";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "128K";
+              refquota = "5G";
+            };
+          };
+          "USERDATA/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
             options = {
@@ -88,8 +111,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "50G";
+              refquota = "75G";
               setuid = "off";
+              primarycache = "metadata";
             };
           };
 
@@ -118,7 +142,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "30G";
+              refquota = "10G";
             };
           };
           "nix/var/nix" = {
@@ -183,6 +207,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
+              refquota = "10G";
             };
           };
           "var/lib/libvirt" = {
@@ -208,6 +233,71 @@
               dnodesize = "auto";
               recordsize = "64K";
               primarycache = "metadata";
+            };
+          };
+          "var/lib/AccountsService" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/AccountsService";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+              refquota = "60M";
+            };
+          };
+          "var/lib/NetworkManager" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/NetworkManager";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+              refquota = "60M";
+            };
+          };
+          "var/lib/docker" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/docker";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-3";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "64K";
+              refquota = "30G";
+            };
+          };
+          "var/lib/flatpak" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/flatpak";
+            options = {
+              mountpoint = "legacy";
+              compression = "zstd-6";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "64K";
+              refquota = "70G";
+            };
+          };
+          "var/lib/fwupd" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib/fwupd";
+            options = {
+              mountpoint = "legacy";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "16K";
+              refquota = "2G";
             };
           };
           "var/log" = {

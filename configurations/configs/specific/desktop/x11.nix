@@ -32,16 +32,16 @@
   # services.xserver.libinput.enable = true;
 
   ### Enable kmscon in x11
-  services.kmscon = {
-    enable = true;
-    useXkbConfig = true;
-    fonts = [
-      {
-        name = "JetBrainsMono Nerd Font";
-        package = pkgs.nerd-fonts.jetbrains-mono;
-      }
-    ];
-  };
+  #services.kmscon = {
+  #  enable = true;
+  #  useXkbConfig = true;
+  #  fonts = [
+  #    {
+  #      name = "JetBrainsMono Nerd Font";
+  #      package = pkgs.nerd-fonts.jetbrains-mono;
+  #    }
+  #  ];
+  #};
 
   ### Enable xdg portal (if x11 is enable)
   xdg.portal.enable = config.services.xserver.enable;

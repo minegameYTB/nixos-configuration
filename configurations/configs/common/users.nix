@@ -2,15 +2,14 @@
   lib,
   config,
   pkgs,
-  users,
-  description,
+  userConfigs,
   ...
 }:
 
 {
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users = lib.genAttrs users (username: {
-    inherit description;
+  # Define a user account. Don't forget to set a password with 'passwd'.
+  users.users = lib.mapAttrs (username: cfg: {
+    description = cfg.description;
     isNormalUser = true;
     extraGroups = [
       "networkmanager"
@@ -21,7 +20,7 @@
       "podman" # To use docker socket with podman
     ];
     initialPassword = "nixos";
-  });
+  }) userConfigs;
 
   ### Fix non creation of Desktop...Download folder in graphical mode
   systemd.services."fix-xdg-user-dirs" =

@@ -94,4 +94,5 @@ Every NixOS config starting with `iso-` in `machine.nix` is auto-discovered as a
 | [doc/ISO.md](doc/ISO.md) | ISO profiles — architecture, building, keyboard specialisations, creating variants |
 | [doc/modules.md](doc/modules.md) | Custom NixOS modules — usage and structure |
 | [doc/config-modules.md](doc/config-modules.md) | Wrapper modules for external flake inputs |
+| [doc/HM.md](doc/HM.md) | Home Manager architecture — users, features, config-modules |
 | [AGENTS.md](AGENTS.md) | Agent guide — project overview for AI assistants |
