@@ -43,6 +43,9 @@
     user = "nixos";
   };
 
+  ### Disable GDM fix autologin bug
+  services.displayManager.gdm.enable = lib.mkForce false;
+
   systemd.user.services.keyboard-session-apply = {
     description = "Re-apply keyboard layout after GNOME session init";
     wantedBy = [ "gnome-session.target" ];
