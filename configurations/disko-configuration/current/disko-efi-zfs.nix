@@ -113,6 +113,7 @@
               recordsize = "128K";
               refquota = "75G";
               setuid = "off";
+              primarycache = "metadata";
             };
           };
 
