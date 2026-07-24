@@ -86,6 +86,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
+              primarycache = "metadata";
             };
           };
           "USERDATA/root" = {
@@ -113,7 +114,6 @@
               recordsize = "128K";
               refquota = "75G";
               setuid = "off";
-              primarycache = "metadata";
             };
           };
 
