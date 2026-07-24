@@ -166,11 +166,11 @@
     "dotfiles-minegameYTB": {
       "flake": false,
       "locked": {
-        "lastModified": 1772240386,
-        "narHash": "sha256-jMuh8lS2tYLSOuurFp1fdj/2SGerJn/YwMDPaixcxaI=",
+        "lastModified": 1784902176,
+        "narHash": "sha256-THpiL3LOeRz7ppZXqZpC7jAxylCZ+uvuh8DNpRXKqS0=",
         "owner": "minegameYTB",
         "repo": "dotfiles",
-        "rev": "0855831969437b56373a9a708d1ff35221fe3df5",
+        "rev": "345046a6378b7417bf0cbb3f0bb386ff76f25c94",
         "type": "github"
       },
       "original": {
