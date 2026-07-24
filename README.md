@@ -65,7 +65,7 @@ nixos-configuration/
 │
 ├── iso/                   # ISO profiles (common, gnome, cli)
 ├── lib/                   # Helper re-exports (machine.nix, iso/common.nix, repo.nix)
-├── pkgs/                  # Local packages (nixos-config, fhsEnv, rm-only, sshrm)
+├── pkgs/                  # Local packages (nixos-config)
 ├── install-lib/           # Install script modules
 ├── script/                # Utility scripts (tests, linting)
 ├── doc/                   # Documentation (INSTALL, AGENTS, ISO, modules)

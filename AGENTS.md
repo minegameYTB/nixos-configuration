@@ -8,7 +8,7 @@
 
 ## Flake Architecture
 - **`flake.nix`** — entrypoint: inputs, overlays, `specialArgs`, `mkMachine`, `mkHome`
-- **`machine.nix`** — defines `mkMachine` → 10 NixOS configurations + ISO configs via `helpers.iso.mkIso`
+- **`machine.nix`** — defines `mkMachine` → 11 NixOS configurations + 2 ISO configs via `helpers.iso.mkIso`
 - **`overlay.nix`** — injects NUR, CachyOS kernel, unstable/PR pkgs, `pkgsConfig` (delegates to `pkgs/default.nix`)
 - **`lib/default.nix`** — re-exports `machine.nix` (`mkMachine`) and `iso/common.nix` (ISO helpers)
 - **`lib/repo.nix`** — single source for `repoUrl`, used by packaging, `/etc/os-release`, and install clone
