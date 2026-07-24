@@ -128,7 +128,6 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              primarycache = "metadata";
             };
           };
 
@@ -156,7 +155,6 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
-              primarycache = "metadata";
               refquota = "60G";
             };
           };
