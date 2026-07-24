@@ -8,7 +8,12 @@
 
 let
   entry = import ../entry.nix {
-    inherit globalFeatures userConfigs userOverrides inputs;
+    inherit
+      globalFeatures
+      userConfigs
+      userOverrides
+      inputs
+      ;
     username = "nixos";
     featPath = ../../../home-manager/features;
   };

@@ -8,7 +8,12 @@
 
 let
   entry = import ../entry.nix {
-    inherit globalFeatures userConfigs userOverrides inputs;
+    inherit
+      globalFeatures
+      userConfigs
+      userOverrides
+      inputs
+      ;
     username = "minegame";
     featPath = ../../../home-manager/features;
   };

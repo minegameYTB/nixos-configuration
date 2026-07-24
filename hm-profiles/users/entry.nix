@@ -27,5 +27,6 @@ in
 
   imports = [
     (inputs.self + "/home-manager/config-modules")
-  ] ++ map (f: "${featPath}/${f}.nix") (effectiveGlobal ++ effectiveFeatures);
+  ]
+  ++ map (f: "${featPath}/${f}.nix") (effectiveGlobal ++ effectiveFeatures);
 }
