@@ -45,15 +45,15 @@
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.7";
 
     ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
-    # Home-manager - release-26.05 (8 Jun 2026)
+    # Home-manager - release-26.05 (18 Jul 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/4eb4fec41674d5b059aa2eedf0f98453890546fa";
+      url = "github:nix-community/home-manager/4ce190229c73d44536caa7072f6308fb2d8feeb3";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-26.05 (6 Jun 2026)
+    # Stylix - release-26.05 (14 Jul 2026)
     stylix = {
-      url = "github:danth/stylix/54fa19702f4f2c7f6a981a92850678933588af9a";
+      url = "github:danth/stylix/2245fa9e16034149b6501834b99863a486e94725";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
@@ -261,11 +261,21 @@
             users = lib.mapAttrs (
               username: _:
               import ./hm-profiles/users/${username}/default.nix {
-                inherit globalFeatures userConfigs userOverrides inputs;
+                inherit
+                  globalFeatures
+                  userConfigs
+                  userOverrides
+                  inputs
+                  ;
               }
             ) userConfigs;
             extraSpecialArgs = specialArgs system // {
-              inherit globalFeatures userConfigs userOverrides inputs;
+              inherit
+                globalFeatures
+                userConfigs
+                userOverrides
+                inputs
+                ;
             };
           };
         };
@@ -282,7 +292,12 @@
           pkgs = pkgsFor system;
           modules = [
             (import ./hm-profiles/users/${username}/default.nix {
-              inherit globalFeatures userConfigs userOverrides inputs;
+              inherit
+                globalFeatures
+                userConfigs
+                userOverrides
+                inputs
+                ;
             })
             (overlay system)
 
@@ -291,7 +306,12 @@
           ]
           ++ lib.optionals hasStylix [ inputs.stylix.homeModules.stylix ];
           extraSpecialArgs = specialArgs system // {
-            inherit globalFeatures userConfigs userOverrides inputs;
+            inherit
+              globalFeatures
+              userConfigs
+              userOverrides
+              inputs
+              ;
           };
         };
 
