@@ -36,7 +36,7 @@
       size = 24;
     };
     autoEnable = false;
-    overlays.enable = false;
+    overlays.enable = true;
     targets = {
       gnome.enable = true;
       gnome-text-editor.enable = true;
@@ -54,13 +54,13 @@
   };
 
   ### Patch gnome-shell (disable dark mode option)
-  nixpkgs.overlays = [
-    (self: super: {
-      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
-        patches = (oldAttrs.patches or [ ]) ++ [
-          "${inputs.stylix}/modules/gnome/shell_remove_dark_mode.patch"
-        ];
-      });
-    })
-  ];
+  #nixpkgs.overlays = [
+  #  (self: super: {
+  #    gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
+  #      patches = (oldAttrs.patches or [ ]) ++ [
+  #        "${inputs.stylix}/modules/gnome/shell_remove_dark_mode.patch"
+  #      ];
+  #    });
+  #  })
+  #];
 }
