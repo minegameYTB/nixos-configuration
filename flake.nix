@@ -131,6 +131,7 @@
       ### Nixpkgs specific configuration (allow non-free app and software)
       nixpkgsConfig = {
         allowUnfree = true;
+        permittedInsecurePackages = [ "electron-39.8.10" ];
       };
 
       ### Lib from nixpkgs-main
