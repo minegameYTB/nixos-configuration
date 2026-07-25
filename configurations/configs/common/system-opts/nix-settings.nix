@@ -41,7 +41,7 @@
       dates = "weekly";
       persistent = true;
       randomizedDelaySec = "45min";
-      options = "--delete-older-than 14d --max-freed 15G";
+      options = "--delete-older-than 14d --max-freed 30G";
     };
     optimise = {
       automatic = true;
