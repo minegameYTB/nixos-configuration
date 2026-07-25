@@ -9,8 +9,12 @@ in {
   };
 
   config = lib.mkIf cfg {
+    system.build.flakeCopy = pkgs.pkgsConfig.nixos-config.overrideAttrs (oldAttrs: {
+      name = lib.replaceStrings [ "-dirty" ] [ "" ] "${oldAttrs.pname}-${oldAttrs.version}";
+    });
+
     system.systemBuilderCommands = ''
-      ln -s ${pkgs.pkgsConfig.nixos-config}/share/nixos-config "$out/flake"
+      ln -s ${config.system.build.flakeCopy}/share/nixos-config "$out/flake"
     '';
   };
 }
