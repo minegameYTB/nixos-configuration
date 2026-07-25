@@ -63,8 +63,6 @@ stdenvNoCC.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/share/nixos-config $out/bin
     cp -r . $out/share/nixos-config/
-    rm -rf $out/share/nixos-config/.git
-    rm -f $out/share/nixos-config/result $out/share/nixos-config/result-*
     echo "${repoUrl} ${lib.removeSuffix "-dirty" rev}" > $out/share/nixos-config/.config-repo
     cp ${nixos-config-install}/bin/nixos-config-install $out/bin/nixos-config-install
   '';
