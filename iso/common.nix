@@ -114,9 +114,6 @@ let
       ### Force installing nixos tool (nixos-install)
       system.tools.nixos-install.enable = lib.mkForce true;
 
-      ### Copy flake into toplevel for traceability / modification on live ISO
-      system.copyFlakeConfiguration = true;
-
       users.users.nixos.initialPassword = lib.mkForce "";
       users.users.nixos.initialHashedPassword = lib.mkForce null;
 

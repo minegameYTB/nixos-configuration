@@ -107,6 +107,9 @@
   ### Udev
   services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
+  ### expose flake in top level derivation
+  system.copyFlakeConfiguration = true;
+
   ### Appimage support
   programs.appimage = {
     enable = true;
