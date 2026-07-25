@@ -1,6 +1,6 @@
 {
   callPackage,
-  src,
+  flakePath,
   rev,
   branch,
   repoUrl ? null,
@@ -10,7 +10,7 @@
 {
   nixos-config = callPackage ./nixos-config/default.nix {
     inherit
-      src
+      flakePath
       rev
       branch
       repoUrl

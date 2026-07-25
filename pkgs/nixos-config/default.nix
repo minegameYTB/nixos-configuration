@@ -1,7 +1,7 @@
 {
   stdenvNoCC,
   lib,
-  src,
+  flakePath,
   rev,
   writeShellScriptBin,
   bashInteractive,
@@ -13,7 +13,7 @@ stdenvNoCC.mkDerivation rec {
   pname = "nixos-config";
   version = "${lib.trivial.release}.${rev}" + lib.optionalString (branch != null) ".${branch}";
   dontBuild = true;
-  inherit src;
+  src = flakePath;
 
   nixos-config-install = writeShellScriptBin "nixos-config-install" ''
     set -euo pipefail

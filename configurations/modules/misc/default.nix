@@ -8,5 +8,6 @@
 {
   imports = [
     ./marker.nix
+    ./flake-copy.nix
   ];
 }

@@ -243,6 +243,7 @@
           users
           properties
           ;
+        flakePath = self.outPath;
       };
 
       ### Home-manager config — single entry for all users

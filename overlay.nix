@@ -62,7 +62,7 @@ with inputs;
 
           ### Config packages namespace — delegates to pkgs/default.nix
           pkgsConfig = super.callPackage ./pkgs/default.nix {
-            src = flake.outPath;
+            flakePath = flake.outPath;
             inherit rev branch repoUrl;
           };
 
