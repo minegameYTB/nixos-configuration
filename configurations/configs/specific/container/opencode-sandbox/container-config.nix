@@ -50,6 +50,16 @@
   };
   services.resolved.enable = true;
 
+  programs.git = {
+    enable = true;
+    lfs.enable = true;
+    config = {
+      user.name = "Minegame YTB";
+      user.email = "53137994+minegameYTB@users.noreply.github.com";
+      init.defaultBranch = "flake";
+    };
+  };
+
   programs.neovim = {
     enable = true;
     viAlias = true;
