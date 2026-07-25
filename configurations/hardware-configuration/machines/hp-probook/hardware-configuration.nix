@@ -78,4 +78,7 @@
     hostProfile = "desktop";
     archProfile = "x86-64-v3";
   };
+
+  ### expose flake in top level derivation
+  system.copyFlakeConfiguration = true;
 }
