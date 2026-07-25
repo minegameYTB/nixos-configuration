@@ -1,4 +1,4 @@
-{ config, lib, pkgs, flakePath, rev, branch, repoUrl, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.system.copyFlakeConfiguration;
@@ -9,23 +9,8 @@ in {
   };
 
   config = lib.mkIf cfg {
-    system.build.flakeCopy = pkgs.stdenvNoCC.mkDerivation rec {
-      pname = "nixos-config-flake";
-      version = "${lib.trivial.release}.${rev}" + lib.optionalString (branch != null) ".${branch}";
-      name = "${pname}-${version}";
-      src = flakePath;
-      dontBuild = true;
-      installPhase = ''
-        mkdir -p $out
-        cp -r . "$out/"
-        rm -rf "$out/.git"
-        rm -f "$out/result" "$out/result-"*
-        echo "${repoUrl} ${lib.removeSuffix "-dirty" rev}" > "$out/.config-repo"
-      '';
-    };
-
     system.systemBuilderCommands = ''
-      ln -s ${config.system.build.flakeCopy} "$out/flake"
+      ln -s ${pkgs.pkgsConfig.nixos-config}/share/nixos-config "$out/flake"
     '';
   };
 }

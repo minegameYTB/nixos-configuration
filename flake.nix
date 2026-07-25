@@ -242,11 +242,7 @@
           userConfigs
           users
           properties
-          rev
-          branch
-          repoUrl
           ;
-        flakePath = self.outPath;
       };
 
       ### Home-manager config — single entry for all users
