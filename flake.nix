@@ -242,6 +242,9 @@
           userConfigs
           users
           properties
+          rev
+          branch
+          repoUrl
           ;
         flakePath = self.outPath;
       };

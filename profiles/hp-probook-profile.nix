@@ -1,6 +1,8 @@
 { ... }:
 
 {
+  system.copyFlakeConfiguration = true;
+
   ### Import nix expression for hp-probook
   imports = [
     ### Core
