@@ -60,18 +60,18 @@
     ];
   };
 
-  fileSystems."/mnt/Backup" = {
-    label = "DATA";
-    fsType = "btrfs";
-    options = [
-      "subvol=@backup"
-      "compress=zstd:5"
-      "nofail"
-      "noatime"
-      "nodev"
-      "nosuid"
-    ];
-  };
+  #fileSystems."/mnt/Backup" = {
+  #  label = "DATA";
+  #  fsType = "btrfs";
+  #  options = [
+  #    "subvol=@backup"
+  #    "compress=zstd:5"
+  #    "nofail"
+  #    "noatime"
+  #    "nodev"
+  #    "nosuid"
+  #  ];
+  #};
 
   ### host marker
   marker = {
