@@ -1,8 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.system.copyFlakeConfiguration;
-in {
+in
+{
   options.system.copyFlakeConfiguration = lib.mkOption {
     type = lib.types.bool;
     default = false;
