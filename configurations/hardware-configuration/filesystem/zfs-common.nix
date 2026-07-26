@@ -124,13 +124,13 @@
       };
     };
 
-    datasets = ({
+    datasets = {
       "zroot/USERDATA/home" = {
         use_template = [ "important-data" ];
       };
       "zroot/nix" = {
         use_template = [ "nix-store" ];
       };
-    });
+    };
   };
 }
