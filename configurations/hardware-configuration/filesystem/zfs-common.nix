@@ -100,37 +100,4 @@
     smbd.enable = true;
     openFirewall = true;
   };
-
-  services.sanoid = {
-    enable = true;
-
-    templates = {
-      important-data = {
-        hourly = 24;
-        daily = 14;
-        weekly = 4;
-        monthly = 3;
-        autosnap = true;
-        autoprune = true;
-      };
-
-      nix-store = {
-        hourly = 0;
-        daily = 2;
-        weekly = 0;
-        monthly = 0;
-        autosnap = true;
-        autoprune = true;
-      };
-    };
-
-    datasets = {
-      "zroot/USERDATA/home" = {
-        use_template = [ "important-data" ];
-      };
-      "zroot/nix" = {
-        use_template = [ "nix-store" ];
-      };
-    };
-  };
 }

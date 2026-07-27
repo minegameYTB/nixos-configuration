@@ -28,6 +28,7 @@
     ../configurations/configs/specific/desktop/games
 
     ### Other
+    ../configurations/hardware-configuration/filesystem/zfs/sanoid.nix # Sanoid
     ../configurations/configs/specific/container
     ../configurations/hardware-configuration/specific/swap.nix
     ../configurations/configs/specific/ai
