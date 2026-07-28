@@ -2,4 +2,5 @@
 set -euo pipefail
 
 nix build --extra-experimental-features "nix-command flakes" \
-  --out-link /tmp/result-iso-gnome '.#iso-gnome'
+  --out-link /tmp/iso-gnome '.#iso-gnome'
+echo "→ /tmp/iso-gnome"

@@ -2,4 +2,5 @@
 set -euo pipefail
 
 nix build --extra-experimental-features "nix-command flakes" \
-  --out-link /tmp/result-iso-minimal '.#iso-minimal'
+  --out-link /tmp/iso-minimal '.#iso-minimal'
+echo "→ /tmp/iso-minimal"
