@@ -117,54 +117,12 @@
       ### Git revision (short hash) for versioning
       rev = self.shortRev or self.dirtyShortRev or "unknown";
 
-      ### Replace problematic chars in branch names
-      cleanBranchName = builtins.replaceStrings [ "/" "#" ] [ "-" "-" ];
-
-      ### Dirty tree detection — true when working tree has uncommitted changes
-      dirty = self ? dirtyShortRev || self ? dirtyRev;
-
-      ### Branch detection: CI env vars → .branch file (pure) → .git/HEAD from PWD (impure)
-      branch =
-        let
-          envBranch = builtins.getEnv "BRANCH";
-          ghBranch = builtins.getEnv "GITHUB_REF_NAME";
-          ciBranch = builtins.getEnv "CI_COMMIT_REF_NAME";
-
-          ### For pure eval: read committed .branch file from flake source
-          branchFile = ./. + "/.branch";
-          fromBranchFile =
-            if builtins.pathExists branchFile then
-              lib.removeSuffix "\n" (builtins.readFile branchFile)
-            else
-              null;
-
-          ### For impure eval: read .git/HEAD via PWD env
-          pwd = builtins.getEnv "PWD";
-          fromGit =
-            if pwd != "" && builtins.pathExists (pwd + "/.git/HEAD") then
-              let
-                content = builtins.readFile (pwd + "/.git/HEAD");
-                match = builtins.match "ref: refs/heads/(.+)\n" content;
-              in
-              if match != null then builtins.head match else null
-            else
-              null;
-
-          raw =
-            if envBranch != "" then
-              cleanBranchName envBranch
-            else if ghBranch != "" then
-              cleanBranchName ghBranch
-            else if ciBranch != "" then
-              cleanBranchName ciBranch
-            else if fromBranchFile != null then
-              cleanBranchName fromBranchFile
-            else if fromGit != null then
-              cleanBranchName fromGit
-            else
-              null;
-        in
-        raw;
+      ### Branch name from .branch file at repo root
+      branch = let f = ./. + "/.branch"; in
+        if builtins.pathExists f then
+          builtins.replaceStrings [ "/" "#" ] [ "-" "-" ] (lib.removeSuffix "\n" (builtins.readFile f))
+        else
+          null;
 
       ### Repo URL — single source of truth for packaging and /etc/os-release
       repoUrl = (import ./lib/repo.nix).url;
