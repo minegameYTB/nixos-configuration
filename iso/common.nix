@@ -165,6 +165,7 @@ let
       hmFeatures ? [ ],
       keyboardSession ? false,
       extraModules ? [ ],
+      extraHomeModules ? [ ],
       username ? "nixos",
     }:
     let
@@ -204,12 +205,16 @@ let
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.${username} = import ../hm-profiles/users/entry.nix {
-              inherit username;
-              globalFeatures = [ ];
-              userConfigs = isoUserCfg;
-              featPath = ../home-manager/features;
-              inherit inputs;
+            users.${username} = {
+              imports = [
+                (import ../hm-profiles/users/entry.nix {
+                  inherit username;
+                  globalFeatures = [ ];
+                  userConfigs = isoUserCfg;
+                  featPath = ../home-manager/features;
+                  inherit inputs;
+                })
+              ] ++ extraHomeModules;
             };
             extraSpecialArgs = iSpecialArgs;
           };

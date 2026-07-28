@@ -40,6 +40,7 @@
   console.keyMap = "fr";
   services.xserver.xkb.layout = "fr";
 
+  services.xserver.displayManager.lightdm.enable = true;
   services.displayManager.autoLogin = {
     enable = true;
     user = username;
