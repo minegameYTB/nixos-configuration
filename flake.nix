@@ -285,6 +285,15 @@
       ### Formatter (unified across all architectures)
       formatter = lib.genAttrs systems (system: nixpkgs-main.legacyPackages.${system}.nixfmt-tree);
 
+      ### Dev shell (used by build.sh wrapper)
+      devShells = lib.genAttrs systems (system: {
+        default = (pkgsFor system).mkShell {
+          packages = with pkgsFor system; [
+            gnumake nix.out unzip gitMinimal jq cacert deadnix shellcheck
+          ];
+        };
+      });
+
       ### Flake packages — uses overlay (which delegates to pkgs/default.nix)
       packages = lib.genAttrs systems (
         system:
