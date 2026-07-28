@@ -38,15 +38,8 @@ with inputs;
 
           ### Extend pkgs namespace here
           # inject pkgs-<release> in pkgs namespace instead of pkgsExtra variable
-          pkgsUnstable = import nixpkgs-unstable {
-            inherit system;
-            config = nixpkgsConfig;
-            overlays = [ ];
-          };
-          pkgs2511 = import nixpkgs-25-11 {
-            inherit system;
-            config = nixpkgsConfig;
-          };
+          pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
+          pkgs2511 = nixpkgs-25-11.legacyPackages.${system};
           #pkgsLts = import ctrl-os {
           #  inherit system;
           #  config = nixpkgsConfig;
@@ -55,10 +48,7 @@ with inputs;
           #  inherit system;
           #  config = nixpkgsConfig;
           #};
-          pkgsPr = import nixpkgs-pr {
-            inherit system;
-            config = nixpkgsConfig;
-          };
+          pkgsPr = nixpkgs-pr.legacyPackages.${system};
 
           ### Config packages namespace — delegates to pkgs/default.nix
           pkgsConfig = super.callPackage ./pkgs/default.nix {
