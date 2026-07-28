@@ -118,7 +118,10 @@
       rev = self.shortRev or self.dirtyShortRev or "unknown";
 
       ### Branch name from .branch file at repo root
-      branch = let f = ./. + "/.branch"; in
+      branch =
+        let
+          f = ./. + "/.branch";
+        in
         if builtins.pathExists f then
           builtins.replaceStrings [ "/" "#" ] [ "-" "-" ] (lib.removeSuffix "\n" (builtins.readFile f))
         else
@@ -289,7 +292,14 @@
       devShells = lib.genAttrs systems (system: {
         default = (pkgsFor system).mkShell {
           packages = with pkgsFor system; [
-            gnumake nix.out unzip gitMinimal jq cacert deadnix shellcheck
+            gnumake
+            nix.out
+            unzip
+            gitMinimal
+            jq
+            cacert
+            deadnix
+            shellcheck
           ];
         };
       });

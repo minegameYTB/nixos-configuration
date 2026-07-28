@@ -214,7 +214,8 @@ let
                   featPath = ../home-manager/features;
                   inherit inputs;
                 })
-              ] ++ extraHomeModules;
+              ]
+              ++ extraHomeModules;
             };
             extraSpecialArgs = iSpecialArgs;
           };
