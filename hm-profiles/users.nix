@@ -8,6 +8,7 @@
   users = {
     minegame = {
       description = "Minegame YTB";
+      username = "minegame";
       hmFeatures = [
         "development"
         "gnome"

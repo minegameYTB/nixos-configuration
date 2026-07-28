@@ -8,6 +8,7 @@
   branch,
   edition,
   mkIsoConfig,
+  username,
   ...
 }:
 {
@@ -19,6 +20,7 @@
         branch
         welcomeMessage
         keyboardSetupScript
+        username
         ;
     })
   ];

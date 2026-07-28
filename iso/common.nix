@@ -50,6 +50,7 @@ let
       welcomeMessage,
       keyboardSetupScript,
       keyboardSessionScript ? null,
+      username ? "nixos",
     }:
     {
       config,
@@ -114,8 +115,10 @@ let
       ### Force installing nixos tool (nixos-install)
       system.tools.nixos-install.enable = lib.mkForce true;
 
-      users.users.nixos.initialPassword = lib.mkForce "";
-      users.users.nixos.initialHashedPassword = lib.mkForce null;
+      users.users.${username} = {
+        initialPassword = lib.mkForce "";
+        initialHashedPassword = lib.mkForce null;
+      };
 
       systemd.sleep.settings.Sleep = {
         AllowSuspend = "no";
@@ -162,12 +165,13 @@ let
       hmFeatures ? [ ],
       keyboardSession ? false,
       extraModules ? [ ],
+      username ? "nixos",
     }:
     let
       isoUserCfg = {
-        nixos = {
+        ${username} = {
           description = "NixOS Live User";
-          inherit hmFeatures;
+          inherit username hmFeatures;
         };
       };
 
@@ -177,11 +181,12 @@ let
           keyboardSetupScript
           layouts
           mkIsoConfig
+          username
           ;
         keyboardSessionScript = if keyboardSession then keyboardSessionScript else null;
         inherit rev branch;
         edition = edition;
-        welcomeMessage = mkWelcomeMessage edition rev branch;
+        welcomeMessage = mkWelcomeMessage edition rev branch username;
         userConfigs = isoUserCfg;
         globalFeatures = [ ];
       };
@@ -199,8 +204,8 @@ let
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.nixos = import ../hm-profiles/users/entry.nix {
-              username = "nixos";
+            users.${username} = import ../hm-profiles/users/entry.nix {
+              inherit username;
               globalFeatures = [ ];
               userConfigs = isoUserCfg;
               featPath = ../home-manager/features;
@@ -221,6 +226,7 @@ let
       userConfigs = {
         nixos = {
           description = "NixOS Live User";
+          username = "nixos";
         };
       };
       globalFeatures = [ ];
@@ -229,7 +235,7 @@ let
   isoModule = "${inputs.nixpkgs-main}/nixos/modules/installer/cd-dvd/installation-cd-base.nix";
 
   mkWelcomeMessage =
-    edition: rev: branch:
+    edition: rev: branch: username:
     let
       versionStr = "${lib.trivial.release}.${rev}" + lib.optionalString (branch != null) ".${branch}";
     in
@@ -248,7 +254,7 @@ let
         _line "install: nixos-config-install"
         _line "keymap:  FR (AZERTY) default / US (QWERTY) via"
         _line "         GRUB menu"
-        _line "user:    nixos (no password)"
+        _line "user:    ${username} (no password)"
 
         printf "└"; _repeat "─" $(( _w - 2 )); printf "┘\n"
         echo ""

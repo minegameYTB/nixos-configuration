@@ -262,6 +262,7 @@
               username: _:
               import ./hm-profiles/users/${username}/default.nix {
                 inherit
+                  username
                   globalFeatures
                   userConfigs
                   userOverrides
@@ -293,6 +294,7 @@
           modules = [
             (import ./hm-profiles/users/${username}/default.nix {
               inherit
+                username
                 globalFeatures
                 userConfigs
                 userOverrides

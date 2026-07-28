@@ -1,4 +1,5 @@
 {
+  username,
   globalFeatures,
   userConfigs,
   userOverrides ? { },
@@ -9,12 +10,12 @@
 let
   entry = import ../entry.nix {
     inherit
+      username
       globalFeatures
       userConfigs
       userOverrides
       inputs
       ;
-    username = "minegame";
     featPath = ../../../home-manager/features;
   };
 in

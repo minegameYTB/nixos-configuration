@@ -9,6 +9,7 @@
   branch,
   edition,
   mkIsoConfig,
+  username,
   ...
 }:
 {
@@ -26,6 +27,7 @@
         welcomeMessage
         keyboardSetupScript
         keyboardSessionScript
+        username
         ;
     })
   ];
@@ -40,7 +42,7 @@
 
   services.displayManager.autoLogin = {
     enable = true;
-    user = "nixos";
+    user = username;
   };
 
   ### Disable GDM fix autologin bug
