@@ -30,6 +30,6 @@ iso-gnome:      ### Build GNOME ISO → /tmp/iso-gnome.iso
 iso-minimal:    ### Build CLI ISO → /tmp/iso-minimal.iso
 	bash "$(SCRIPT_DIR)/build-iso-minimal"
 
-iso-all:        ### Build les deux ISOs (séquentiel)
+iso-all:        ### Build both ISOs (sequential)
 	@$(MAKE) iso-gnome
 	@$(MAKE) iso-minimal
