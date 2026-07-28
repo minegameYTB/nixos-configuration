@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nix build --extra-experimental-features "nix-command flakes" \
+  --out-link /tmp/result-iso-minimal '.#iso-minimal'
+
+ln -sf /tmp/result-iso-minimal/*.iso /tmp/iso-minimal.iso 2>/dev/null || true
+echo "→ /tmp/iso-minimal.iso"

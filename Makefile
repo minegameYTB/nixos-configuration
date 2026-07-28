@@ -25,12 +25,10 @@ run-shellcheck: ### Run shellcheck on Bash entrypoints
 	bash "$(SCRIPT_DIR)/run-shellcheck"
 
 iso-gnome:      ### Build GNOME ISO → /tmp/iso-gnome.iso
-	nix build $(NIX_FLAGS) --out-link /tmp/result-iso-gnome '.#iso-gnome'
-	@ln -sf /tmp/result-iso-gnome/*.iso /tmp/iso-gnome.iso 2>/dev/null || true
+	bash "$(SCRIPT_DIR)/build-iso-gnome"
 
 iso-minimal:    ### Build CLI ISO → /tmp/iso-minimal.iso
-	nix build $(NIX_FLAGS) --out-link /tmp/result-iso-minimal '.#iso-minimal'
-	@ln -sf /tmp/result-iso-minimal/*.iso /tmp/iso-minimal.iso 2>/dev/null || true
+	bash "$(SCRIPT_DIR)/build-iso-minimal"
 
 iso-all:        ### Build les deux ISOs (séquentiel)
 	@$(MAKE) iso-gnome

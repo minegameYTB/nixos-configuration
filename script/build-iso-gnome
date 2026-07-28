@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nix build --extra-experimental-features "nix-command flakes" \
+  --out-link /tmp/result-iso-gnome '.#iso-gnome'
+
+ln -sf /tmp/result-iso-gnome/*.iso /tmp/iso-gnome.iso 2>/dev/null || true
+echo "→ /tmp/iso-gnome.iso"
