@@ -183,6 +183,7 @@ in
       "shell"
       "desktop-core"
       "gnome"
+      "browser"
     ];
     keyboardSession = true;
   };

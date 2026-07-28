@@ -19,3 +19,8 @@ let
   };
 in
 entry
+// {
+  imports = entry.imports ++ [
+    ./apps.nix
+  ];
+}
