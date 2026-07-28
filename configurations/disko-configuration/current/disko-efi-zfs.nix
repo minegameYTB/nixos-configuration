@@ -113,7 +113,6 @@
               dnodesize = "auto";
               recordsize = "128K";
               refquota = "75G";
-              primarycache = "all";
               setuid = "off";
             };
           };
