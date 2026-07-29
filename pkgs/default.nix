@@ -3,6 +3,7 @@
   flakePath,
   rev,
   branch,
+  buildDate,
   repoUrl ? null,
   ...
 }:
@@ -13,6 +14,7 @@
       flakePath
       rev
       branch
+      buildDate
       repoUrl
       ;
   };
