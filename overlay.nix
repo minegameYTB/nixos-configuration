@@ -55,7 +55,7 @@ with inputs;
             flakePath = flake.outPath;
             buildDate = builtins.substring 0 8 flake.lastModifiedDate;
             inherit rev branch repoUrl;
-            };
+          };
 
           ### Replace packages here
           ### Force use gh from unstable (on system level)

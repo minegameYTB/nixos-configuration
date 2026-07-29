@@ -12,7 +12,8 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "nixos-config";
-  version = "${lib.trivial.release}.${buildDate}.${rev}" + lib.optionalString (branch != null) ".${branch}";
+  version =
+    "${lib.trivial.release}.${buildDate}.${rev}" + lib.optionalString (branch != null) ".${branch}";
   dontBuild = true;
   src = flakePath;
 
