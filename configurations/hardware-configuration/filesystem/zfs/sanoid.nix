@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   services.sanoid = {
@@ -21,4 +21,7 @@
       };
     };
   };
+
+  ### Use system timezone (override upstream TZ=UTC)
+  systemd.services.sanoid.environment.TZ = lib.mkForce config.time.timeZone;
 }
