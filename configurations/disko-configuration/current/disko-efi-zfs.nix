@@ -112,7 +112,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "75G";
+              refquota = "100G";
               setuid = "off";
               copies = "2";
             };
