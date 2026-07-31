@@ -12,7 +12,7 @@
     settings = {
       user.name = "Minegame YTB";
       user.email = "53137994+minegameYTB@users.noreply.github.com";
-      credential.helper = "/etc/profiles/per-user/minegame/bin/gh auth setup-git";
+      credential.helper = "${config.programs.gh.package}/bin/gh auth setup-git";
       init = {
         defaultBranch = "main";
         rebase = true;
