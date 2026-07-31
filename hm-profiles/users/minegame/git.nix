@@ -19,6 +19,7 @@
       };
       color.ui = true;
       core.hooksPath = ".githooks";
+      fetch.prune = true;
     };
   };
 
