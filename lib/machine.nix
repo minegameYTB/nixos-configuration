@@ -7,6 +7,7 @@
   pkgsPatched,
   specialArgs,
   homeManagerConfig,
+  branch,
   ...
 }:
 
@@ -28,7 +29,7 @@ let
       system = arch;
       pkgs = machinePkgs;
       specialArgs = specialArgs arch // {
-        inherit userOverrides;
+        inherit userOverrides branch;
       };
       modules = [
         ../configurations/configuration.nix
