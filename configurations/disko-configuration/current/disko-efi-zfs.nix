@@ -87,6 +87,7 @@
               dnodesize = "auto";
               recordsize = "128K";
               primarycache = "metadata";
+              devices = "off";
             };
           };
           "USERDATA/root" = {
@@ -98,7 +99,6 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "128K";
               refquota = "5G";
             };
           };
@@ -111,7 +111,6 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "128K";
               refquota = "100G";
               setuid = "off";
               copies = "2";
@@ -142,7 +141,6 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "128K";
               refquota = "10G";
             };
           };
@@ -246,6 +244,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              devices = "off";
+              exec = "off";
+              setuid = "off";
               refquota = "60M";
             };
           };
@@ -259,6 +260,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              devices = "off";
+              exec = "off";
+              setuid = "off";
               refquota = "60M";
             };
           };
@@ -298,6 +302,9 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "16K";
+              devices = "off";
+              exec = "off";
+              setuid = "off";
               refquota = "2G";
             };
           };
