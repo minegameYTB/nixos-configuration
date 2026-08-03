@@ -46,13 +46,19 @@
   networking.hostId = lib.mkDefault "b08dfa60";
 
   ### ZFS package: prefer CachyOS-patched version when available
-  ### Falls back to upstream ZFS for non-CachyOS kernels
+  ### Falls back to upstream ZFS for non-CachyOS kernels.
+  ### Must be the USERLAND package (zfs-user): it ships lib/udev
+  ### (udev rules, vdev_id, zvol_id) required by the initrd.
+  ### The kernel module package is picked up automatically via
+  ### boot.zfs.modulePackage (selectModulePackage).
+  ### NOTE: zfs_cachyos from the CachyOS flake is a combined
+  ### kernel+userspace build, which is why it works as-is.
   boot.zfs = {
     package = lib.mkDefault (
       if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages then
         config.boot.kernelPackages.zfs_cachyos
       else
-        config.boot.kernelPackages.zfs
+        pkgs.zfs
     );
 
     ### Do not force-import pools with -f
