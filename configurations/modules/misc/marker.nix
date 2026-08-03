@@ -34,6 +34,14 @@ in
       default = null;
       description = "Add a marker for processor arch (for some action and specific option, does not effect, only for condition)";
     };
+
+    debug = {
+      verboseOsRelease = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Append the git branch name to the bootloader entry label (system.nixos.label)";
+      };
+    };
   };
 
   config = {

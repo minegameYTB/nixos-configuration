@@ -77,5 +77,6 @@
   marker = {
     hostProfile = "desktop";
     archProfile = "x86-64-v3";
+    debug.verboseOsRelease = true; # Append git branch name to bootloader entry label
   };
 }
