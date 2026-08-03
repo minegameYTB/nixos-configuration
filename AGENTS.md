@@ -10,6 +10,7 @@
 - **`flake.nix`** — entrypoint: inputs, overlays, `specialArgs`, `mkMachine`, `mkHome`
 - **`machine.nix`** — defines `mkMachine` → 11 NixOS configurations + 2 ISO configs via `helpers.iso.mkIso`
 - **`overlay.nix`** — injects NUR, CachyOS kernel, unstable/PR pkgs, `pkgsConfig` (delegates to `pkgs/default.nix`)
+- **`lib/nixpkgs-patches.nix`** — single source for the `pkgsPatched` patch list (PR patches via `pkgs.fetchpatch` — normalized hashes, stable across PR updates; local patches from `configurations/patch/nixpkgs/`)
 - **`lib/default.nix`** — re-exports `machine.nix` (`mkMachine`) and `iso/common.nix` (ISO helpers)
 - **`lib/repo.nix`** — single source for `repoUrl`, used by packaging, `/etc/os-release`, and install clone
 - **Hardware profiles** set `marker.hostProfile` (desktop/server) and `marker.archProfile` (x86-64-v1..v4, amd-zen4, aarch64) via `configurations/modules/misc/marker.nix`
@@ -35,7 +36,7 @@ configurations/
 └── patch/nixpkgs/             # Out-of-tree patches for libvirt, qemu
 
 iso/                           # ISO profiles (common, gnome, cli)
-lib/                           # Helper re-exports (machine.nix, iso/common.nix, repo.nix)
+lib/                           # Helper re-exports (machine.nix, iso/common.nix, nixpkgs-patches.nix, repo.nix)
 pkgs/                          # Local packages (default.nix is single source of truth for overlay + flake)
   nixos-config/                #   nixos-config-install wrapper + .config-repo generation
 install-lib/                   # Install scripts (defaults, checkpoint, lib, nixos-install, hm-standalone)
@@ -116,6 +117,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - `make run-shellcheck` — lint shell scripts
 - `nix build '.#iso-gnome'` — build GNOME ISO
 - `nix build '.#iso-minimal'` — build CLI ISO
+- **Use `/tmp/opencode` as the preferred temporary directory** for scratch work and experiments
 
 ## Critical Context
 - **No secrets in repo**: initial passwords are "nixos", LUKS keys are generated at install time

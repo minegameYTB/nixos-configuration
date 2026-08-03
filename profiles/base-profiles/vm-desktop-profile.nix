@@ -20,6 +20,7 @@
 
     ### Vm specific option
     ../../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
+    ../../configurations/configs/specific/vm/guest/systemd-boot.nix
     ../../configurations/configs/specific/vm/guest/openssh.nix
 
     ### Other

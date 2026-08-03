@@ -162,23 +162,19 @@
             ;
         };
 
-      ### nixpkgs with out-of-tree patches applied
+      ### nixpkgs with out-of-tree patches applied. Name embeds the base
+      ### nixpkgs rev + the patches (lib/nixpkgs-patches.nix) so pkgsPatched
+      ### builds are traceable in the store / nix tools.
       nixpkgs-patched =
         system:
-        nixpkgs-main.legacyPackages.${system}.applyPatches {
-          name = "nixpkgs-patched";
+        let
+          pkgs = nixpkgs-main.legacyPackages.${system};
+          patches = import ./lib/nixpkgs-patches.nix { inherit pkgs lib; };
+        in
+        pkgs.applyPatches {
+          name = "nixpkgs-patched-${nixpkgs-main.shortRev}-${patches.name}";
           src = nixpkgs-main;
-          patches = [
-            (builtins.fetchurl {
-              ### Append ".patch" to the PR URL to get the patch
-              url = "https://github.com/NixOS/nixpkgs/pull/537215.patch";
-              sha256 = "0q8rzbrch578krfkpr16j9j48pyhd0angypqbb4flgkyzfigg70c";
-            })
-
-            ### Local patches (uncomment as needed)
-            #./configurations/patch/nixpkgs/0000-qemu-fix-version.patch
-            #./configurations/patch/nixpkgs/0000-libvirt-update.patch
-          ];
+          inherit (patches) patches;
         };
 
       pkgsPatched =

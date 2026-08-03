@@ -1,0 +1,157 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+### Library directory — substituted at build time; override with
+### NSPAWNCTL_LIBDIR to run from a source tree (development/tests).
+NSPAWNCTL_LIBDIR="${NSPAWNCTL_LIBDIR:-@LIBDIR@}"
+
+### Static busybox used to rescue rootfs without any init (bare zone images).
+NSPAWNCTL_BUSYBOX="${NSPAWNCTL_BUSYBOX:-@BUSYBOX@}"
+BUSYBOX="$NSPAWNCTL_BUSYBOX"
+
+for _f in common sources install machines; do
+  source "$NSPAWNCTL_LIBDIR/$_f.sh"
+done
+
+load_conf
+
+usage() {
+  cat <<'EOF'
+nspawnctl — manage ad-hoc systemd-nspawn machines on ZFS
+
+Usage:
+  nspawnctl --list [--source <name>] [--filter <pattern>] [<source>|<filter>]
+  nspawnctl new <machine> <source>:<os>:<version> [--quota <size>] [--compression <level>]
+  nspawnctl new <machine> --from-tar <url|file> [--quota <size>] [--compression <level>]
+  nspawnctl new <machine> --debootstrap <suite> [--variant <name>] [--arch <arch>] [--quota <size>] [--compression <level>]
+  nspawnctl net <machine> [--static <ip>]
+  nspawnctl info <machine>
+  nspawnctl start <machine>
+  nspawnctl shell <machine> [--user <name>]
+  nspawnctl remove <machine>   (alias: nspawnctl rm <machine>)
+
+Options:
+  --list           list available images with their version and build date
+  <source>:<os>:<version>  image selector for 'new' (unless --from-tar/--debootstrap is used):
+                     smartos:debian:trixie, lxc:debian:trixie, ubuntu:noble;
+                     the lxc version is optional (newest release) and may be
+                     followed by a variant: lxc:ubuntu:noble:cloud (default/cloud/desktop)
+  --source <name>  image source for --list: smartos (default, TritonDataCenter/lx-images),
+                   lxc (linuxcontainers.org), ubuntu (cloud-images.ubuntu.com),
+                   all (every source);
+                   a bare positional matching a source name switches to it ("--list lxc")
+  --filter <pattern>  filter listed images by name; a bare positional that is not a
+                   source also filters ("--list debian")
+  --variant <name> debootstrap variant (default: minbase), e.g. minbase, minimal, buildd
+  --arch <arch>    debootstrap architecture, e.g. amd64, arm64 (cross requires --foreign at install time)
+  --static <ip>    force a specific static IP instead of the derived one
+                   (default: 10.0.5.<derived from machine name>, gateway 10.0.5.1, DNS 1.1.1.1)
+  --quota <size>   dataset refquota (default: 10G)
+  --compression    ZFS compression property for the dataset (default: zstd-3),
+                   e.g. lz4, zstd-9, zstd-19, gzip-9
+
+Machines:
+  containers (smartos/lxc/ubuntu/manual) run via systemd-nspawn with a static IP
+  on the systemd-nspawn bridge; control them with machinectl:
+  machinectl status|login|poweroff <machine>
+  rootfs without any init (bare SmartOS zone images) are rescued with an
+  injected static busybox init; network setup adapts to the init found inside
+  (systemd-networkd / ifupdown / busybox script)
+
+Config:
+  /etc/nspawnctl.conf — overrides written by the NixOS module (nspawnctl.*
+  options) or edited by hand for standalone use; may add manual sources with
+  URL templates ({os}, {version}), see the comments in lib/common.sh
+
+Privileges:
+  --list and --help run without root; new/net/remove re-exec themselves
+  under sudo when needed
+EOF
+  exit 1
+}
+
+### Read-only commands (--list, --help) need no privileges; the mutating
+### ones (new/net/remove) re-exec themselves under sudo when not already root.
+require_root() {
+  [[ $EUID -eq 0 ]] && return 0
+  if command -v sudo >/dev/null 2>&1; then
+    exec sudo -- "$0" "$@"
+  fi
+  die "root required: re-run with sudo (sudo $0 $*)"
+}
+
+[[ $# -ge 1 ]] || usage
+case "$1" in
+  new)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    machine="$2"
+    shift 2
+    cmd_new "$machine" "$@"
+    ;;
+  net)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    machine="$2"
+    shift 2
+    cmd_net "$machine" "$@"
+    ;;
+  shell)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    machine="$2"
+    shift 2
+    cmd_shell "$machine" "$@"
+    ;;
+  start)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    machine="$2"
+    shift 2
+    [[ $# -eq 0 ]] || usage
+    cmd_start "$machine"
+    ;;
+  info)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    cmd_info "$2"
+    ;;
+  remove | rm)
+    [[ $# -ge 2 ]] || usage
+    require_root
+    shift
+    cmd_remove "$@"
+    ;;
+  list | --list)
+    source="smartos"
+    filter=""
+    shift
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --source) source="${2:-}"; shift 2 ;;
+        --filter) filter="${2:-}"; shift 2 ;;
+        -*) usage ;;
+        *)
+          if [[ "$1" == "all" || " $LX_SOURCES " == *" $1 "* ]]; then
+            # "nspawnctl --list lxc" is the natural spelling for --source lxc
+            source="$1"
+          elif [[ -z "$filter" ]]; then
+            filter="$1"
+          else
+            usage
+          fi
+          shift
+          ;;
+      esac
+    done
+    [[ "$source" == "all" || " $LX_SOURCES " == *" $source "* ]] || die "unknown source: $source (available: $LX_SOURCES all)"
+    cmd_list "$source" "$filter"
+    ;;
+  -h | --help | help)
+    usage
+    ;;
+  *)
+    usage
+    ;;
+esac

@@ -8,5 +8,6 @@
 {
   imports = [
     ./vmware-ws-iso.nix
+    ./nspawnctl.nix
   ];
 }

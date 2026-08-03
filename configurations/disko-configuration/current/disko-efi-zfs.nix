@@ -113,7 +113,6 @@
               dnodesize = "auto";
               refquota = "100G";
               setuid = "off";
-              copies = "2";
             };
           };
 
@@ -364,6 +363,19 @@
               setuid = "off";
               devices = "off";
               exec = "off";
+            };
+          };
+
+          ### Machine container datasets (systemd-nspawn /var/lib/machines)
+          "MACHINE" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              compression = "lz4";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              recordsize = "128K";
             };
           };
 

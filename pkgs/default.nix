@@ -18,4 +18,6 @@
       repoUrl
       ;
   };
+
+  nspawnctl = callPackage ./nspawnctl/default.nix { };
 }

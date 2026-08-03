@@ -64,7 +64,6 @@ let
         ../configurations/configs/networking
         ../configurations/config-modules/nix-index-db
         ../configurations/config-modules/stylix
-        ../configurations/configs/system/tmp-on-tmpfs.nix
       ];
 
       specialisation = builtins.listToAttrs (
