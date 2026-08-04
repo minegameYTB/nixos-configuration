@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  rev,
   branch,
   ...
 }:
@@ -10,6 +11,11 @@ let
   repoUrl = (import ../../../../lib/repo.nix).url;
 in
 {
+  ### Git revision (short hash, or "<hash>-dirty") of the top-level flake.
+  ### Populates the "Configuration Revision" column of `nixos-rebuild
+  ### list-generations` and `nixos-version --configuration-revision`.
+  system.configurationRevision = rev;
+
   ### Branch name in boot entry label (bootspec) — e.g. "…26.05.20260731.5b4f72e.add-nspawn-utilities" (disable via marker.debug.verboseOsRelease)
   system.nixos.label = lib.mkIf (branch != null && config.marker.debug.verboseOsRelease) (config.system.nixos.version + ".${branch}");
 
