@@ -61,7 +61,6 @@ let
     {
       imports = [
         ../configurations/configuration.nix
-        ../configurations/configs/networking
         ../configurations/config-modules/nix-index-db
         ../configurations/config-modules/stylix
       ];
