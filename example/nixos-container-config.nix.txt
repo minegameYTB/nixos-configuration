@@ -1,0 +1,58 @@
+### Template: NixOS container-internal config (evaluated INSIDE the container)
+###
+### Copy to:
+###   configurations/configs/specific/container/nixos-container/<container-name>/container-config.nix
+###
+### ⚠️ Required signature: { inputs, stateVersion, pkgs, username }
+### - pkgs        = HOST pkgs (the container's own pkgs has no overlay:
+###                 pkgsUnstable does not exist there). Passed by the framework.
+### - stateVersion= host NixOS version (26.05)
+### - username    = container SSH user (sshUser option of the declaration)
+### - inputs      = host flake inputs (unused in this template)
+###
+### Real example:
+###   configurations/configs/specific/container/nixos-container/opencode-sandbox/container-config.nix
+
+{
+  inputs,
+  stateVersion,
+  pkgs,
+  username,
+}:
+
+{
+  ### Shared base (required): user, hardened sshd, firewall,
+  ### git, nix-settings, stateVersion.
+  imports = [ (import ../base.nix { inherit stateVersion username; }) ];
+
+  ### Base options (see configurations/configs/specific/container/nixos-container/base.nix)
+  containerBase = {
+    ### Git identity (applied only when both fields are set)
+    git = {
+      userName = "Your Name";
+      userEmail = "your@email.com";
+    };
+
+    ### SSH (defaults: enable=true, passwordAuth=true)
+    # ssh = {
+    #   enable = true;
+    #   passwordAuth = true;
+    #   authorizedKeys = [ "ssh-ed25519 AAAA..." ];
+    # };
+
+    ### sudo inside the container (default: false — no root privileges)
+    # sudo = false;
+
+    ### TCP ports open in the container firewall (default: [ 22 ])
+    # firewall.allowedTCPPorts = [ 22 8080 ];
+  };
+
+  ### Container specifics (packages, services, config)
+  environment.systemPackages = with pkgs.pkgsUnstable; [
+    ### Your packages here (opencode, mcp-nixos, language servers...)
+  ];
+
+  ### Example services to add as needed:
+  # services.postgresql = { enable = true; };
+  # programs.nix-ld.enable = true;
+}

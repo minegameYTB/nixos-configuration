@@ -40,4 +40,13 @@
     ### Add lanzaboote (separate module)
     #../configurations/config-modules/lanzaboote
   ];
+
+  ### Container subsystems enabled on this machine.
+  ### Keep only what this machine needs (see containerSubsystems.* in
+  ### configurations/configs/specific/container/*.nix).
+  containerSubsystems = {
+    nixos = true; # Declarative NixOS containers (containers.*)
+    podman = true;
+    nspawn = true; # nspawnctl (systemd-nspawn on ZFS)
+  };
 }

@@ -68,8 +68,8 @@ nixos-configuration/
 ├── pkgs/                  # Local packages (nixos-config)
 ├── install-lib/           # Install script modules
 ├── script/                # Utility scripts (tests, linting)
-├── doc/                   # Documentation (INSTALL, AGENTS, ISO, modules)
-└── example/               # Packaging examples
+├── doc/                   # Documentation (INSTALL, ISO, containers, modules)
+└── example/               # Templates (packages, containers)
 ```
 
 ---
@@ -92,6 +92,7 @@ Every NixOS config starting with `iso-` in `machine.nix` is auto-discovered as a
 |---|---|
 | [doc/INSTALL.md](doc/INSTALL.md) | Install script — usage, flags, steps, environment variables |
 | [doc/ISO.md](doc/ISO.md) | ISO profiles — architecture, building, keyboard specialisations, creating variants |
+| [doc/containers.md](doc/containers.md) | Container stack — NixOS containers / Podman / nspawnctl, gates, adding containers & subsystems |
 | [doc/modules.md](doc/modules.md) | Custom NixOS modules — usage and structure |
 | [doc/config-modules.md](doc/config-modules.md) | Wrapper modules for external flake inputs |
 | [doc/HM.md](doc/HM.md) | Home Manager architecture — users, features, config-modules |

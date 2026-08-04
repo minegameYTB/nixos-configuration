@@ -67,8 +67,18 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - **Auto-discovery** — every config starting with `iso-` in `machine.nix` is automatically exposed as a flake package via `filterAttrs` + `mapAttrs'` in `flake.nix`
 - See `doc/ISO.md` for full docs
 
+### NixOS Containers (`configurations/configs/specific/container/`)
+- **Per-subsystem gates** — `containerSubsystems.nixos|podman|nspawn` (default off), set at the machine profile level (`profiles/<machine>-profile.nix`). Each subsystem file declares its own gate and stays inert when off, so the folder can be imported on any machine
+- **`nixos-container/nixos-containers.nix`** — NixOS containers framework (`nixosContainers.containers.<name>`, active via `containerSubsystems.nixos`): host plumbing (`boot.enableContainers`, NAT via `ve-+`, auto-IP `10.0.<idx>.1/.2`), auto-generated `nixos-<name>-login` scripts. Container options: `enable`, `autoStart`, `hostAddress`/`localAddress` (null = auto), `bindMounts`, `configFile`, `sshUser`, `login`
+- **`nixos-container/base.nix`** — shared container-internal base (user, hardened sshd, firewall, git identity, nix-settings, stateVersion); imported via `(import ../base.nix { inherit stateVersion username; })`
+- **`nixos-container/<name>/default.nix`** — container declaration: `nixosContainers.containers.<name> = { configFile = ./container-config.nix; bindMounts = {...}; }`
+- **`nixos-container/<name>/container-config.nix`** — container-internal module, function of `{ inputs, stateVersion, pkgs, username }` (pkgs must come from the host: the container's own pkgs lack the overlay)
+- **New container recipe**: create `nixos-container/<name>/` with `default.nix` + `container-config.nix`, add `./<name>` to `nixos-container/default.nix` — plumbing is automatic
+- Only imported by hp-probook (`profiles/hp-probook-profile.nix`), which enables all three subsystems
+- See `doc/containers.md` for full docs + `example/nixos-container*.nix.txt` templates
+
 ## Documentation
-- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `HM.md`, `modules.md`, `config-modules.md`
+- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `containers.md`, `HM.md`, `modules.md`, `config-modules.md`
 - `AGENTS.md` (this file) stays at the project root for agent discovery
 
 ### Repo URL — `lib/repo.nix`

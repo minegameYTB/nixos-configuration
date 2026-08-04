@@ -1,0 +1,71 @@
+### Template: declaring a NixOS container (host side)
+###
+### Step 1 — Create the container directory:
+###   mkdir -p configurations/configs/specific/container/nixos-container/<container-name>
+###
+### Step 2 — Copy this file to:
+###   configurations/configs/specific/container/nixos-container/<container-name>/default.nix
+###
+### Step 3 — Create the container-internal config (see nixos-container-config.nix.txt):
+###   configurations/configs/specific/container/nixos-container/<container-name>/container-config.nix
+###
+### Step 4 — Register the container in the subsystem aggregator:
+###   configurations/configs/specific/container/nixos-container/default.nix
+###   →  add "./<container-name>"
+###
+### Step 5 — Make sure the "nixos" subsystem is enabled on the machine
+### (profiles/<machine>-profile.nix):
+###   containerSubsystems.nixos = true;
+###
+### Step 6 — Rebuild then log in:
+###   sudo nixos-rebuild switch --flake .#<machine>
+###   nixos-<container-name>-login   (auto-generated script)
+###
+### ⚠️ Naming constraints: no "_" in the name, max 11 characters
+### (network interface, kernels < 5.8).
+### Real example: configurations/configs/specific/container/nixos-container/opencode-sandbox/
+
+{
+  users,
+  ...
+}:
+
+let
+  ### First system user (minegame) — used for the bind mounts
+  username = builtins.head users;
+in
+{
+  nixosContainers.containers.<container-name> = {
+    ### (required) NixOS module evaluated INSIDE the container
+    ### (see the nixos-container-config.nix.txt template)
+    configFile = ./container-config.nix;
+
+    ### Start automatically at boot (default: false)
+    autoStart = false;
+
+    ### IP addresses — null = automatic allocation 10.0.<idx>.1/.2
+    ### (idx = position in the sorted list of enabled containers)
+    ### Set these fields to pin a stable IP.
+    # hostAddress = "10.0.1.1";    # host side
+    # localAddress = "10.0.1.2";   # container side
+
+    ### User used by the nixos-<name>-login script
+    ### (default: first system user)
+    # sshUser = "minegame";
+
+    ### Disable the login script generation
+    # login = false;
+
+    ### Host directories mounted into the container (optional)
+    bindMounts = {
+      ### "<path/in/container>" = {
+      ###   hostPath = "<path/on/host>";
+      ###   isReadOnly = false;   # true = read-only
+      ### };
+      "/home/${username}/workspace" = {
+        hostPath = "/home/${username}/Projets";
+        isReadOnly = false;
+      };
+    };
+  };
+}
