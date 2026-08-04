@@ -366,7 +366,7 @@ step_zfs_tune() {
   if checkpoint_skip "STEP_ZFS_TUNE"; then
     return
   fi
-  local arcMaxGiB=${ZFS_ARC_MAX_GiB:-4}
+  local arcMaxGiB=${ZFS_ARC_MAX_GiB:-1}
   local arcMax=$(( arcMaxGiB * 1073741824 ))
   if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
     info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
