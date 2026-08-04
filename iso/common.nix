@@ -107,6 +107,9 @@ let
         mode = "0444";
       };
 
+      ### Disable nixos-rebuild tool
+      system.tools.nixos-rebuild.enable = false;
+
       ### Change zfs hostID for iso
       networking.hostId = "43b1da0f";
 
