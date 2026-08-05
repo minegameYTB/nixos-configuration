@@ -61,6 +61,7 @@ let
     {
       imports = [
         ../configurations/configuration.nix
+        ../configurations/configs/networking
         ../configurations/config-modules/nix-index-db
         ../configurations/config-modules/stylix
       ];
@@ -128,7 +129,7 @@ let
         AllowSuspendThenHibernate = "no";
       };
 
-      networking.networkmanager.enable = true;
+      ### NetworkManager is enabled by configurations/configs/networking
       services.openssh.enable = true;
 
       systemd.services.keyboard-setup = {

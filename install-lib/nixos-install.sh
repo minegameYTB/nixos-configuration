@@ -13,8 +13,10 @@
 STEPS=(
   "STEP_INTERACTIVE_SETUP"
   "STEP_LUKS_SETUP"
-  "STEP_PARTITION"
+  # ZFS ARC is capped BEFORE partitioning so it also protects the
+  # disko layout/mount phase (which happens under STEP_PARTITION).
   "STEP_ZFS_TUNE"
+  "STEP_PARTITION"
   "STEP_LUKS_PASSPHRASE"
   "STEP_SWAP"
   "STEP_NIXOS_INSTALL"
@@ -205,7 +207,7 @@ addLuksPassphrase() {
   local luksPartition
 
   luksPartition=$(blkid -t TYPE=crypto_LUKS -o device 2>/dev/null \
-    | grep "^${deviceDisk}[0-9]" || true)
+    | grep "^${deviceDisk}p\?[0-9]" || true)
 
   if [[ -z "$luksPartition" ]]; then
     warn "No LUKS partition found on ${deviceDisk}"
@@ -223,6 +225,21 @@ addLuksPassphrase() {
     printf '%b\n' "${GREEN}Passphrase successfully added to LUKS slot.${RESET}"
   else
     warn "Failed to add passphrase — continuing with key file only"
+  fi
+}
+
+# Resolve the uid:gid of the target user inside the mounted system, so the
+# copied configuration is owned by the right account instead of a hardcoded
+# 1000:100.  Falls back to 1000:100 when the user cannot be queried.
+# Usage: uidGid=$(target_uid_gid <userName>)   → prints "uid:gid"
+target_uid_gid() {
+  local user="$1" uid gid
+  uid=$(nixos-enter --root /mnt -- id -u "$user" 2>/dev/null || true)
+  gid=$(nixos-enter --root /mnt -- id -g "$user" 2>/dev/null || true)
+  if [[ -n "$uid" && -n "$gid" ]] && [[ "$uid" =~ ^[0-9]+$ ]] && [[ "$gid" =~ ^[0-9]+$ ]]; then
+    echo "${uid}:${gid}"
+  else
+    echo "1000:100"
   fi
 }
 
@@ -246,7 +263,7 @@ step_interactive_setup() {
     if [[ "$fsChoice" =~ ^[zZ]$ ]]; then
       diskoFs="zfs"
       diskoEncrypted="N"
-      diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-zfs.nix"
+      diskoFile="$INSTALL_DIR/configurations/disko-configuration/current/disko-efi-zfs.nix"
       echo "Using ZFS filesystem"
     else
       diskoFs="btrfs"
@@ -254,16 +271,16 @@ step_interactive_setup() {
       read -r -p "Use LUKS-encrypted device? [y/N]: " diskoEncrypted
       diskoEncrypted="${diskoEncrypted:-N}"
       if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix"
+        diskoFile="$INSTALL_DIR/configurations/disko-configuration/current/disko-efi-luks-btrfs.nix"
         echo "Using encrypted LUKS configuration (btrfs)"
       else
-        diskoFile="$(pwd)/configurations/disko-configuration/current/disko-efi-btrfs.nix"
+        diskoFile="$INSTALL_DIR/configurations/disko-configuration/current/disko-efi-btrfs.nix"
         echo "Using standard (non-encrypted) btrfs configuration"
       fi
     fi
   else
     echo "BIOS boot detected — using disko-bios-btrfs configuration"
-    diskoFile="$(pwd)/configurations/disko-configuration/current/disko-bios-btrfs.nix"
+    diskoFile="$INSTALL_DIR/configurations/disko-configuration/current/disko-bios-btrfs.nix"
   fi
 
   showDiskLsblk
@@ -298,6 +315,13 @@ step_interactive_setup() {
       showDiskLsblk
       read -r -e -p "Enter path to existing key file or device [/tmp/secret.key]: " keyFile
       keyFile="${keyFile:-/tmp/secret.key}"
+    fi
+
+    # The key device must not live on the disk being installed: disko will
+    # wipe it during STEP_PARTITION, destroying the key.
+    if [[ "$keyFile" == "$deviceDisk"* ]] || [[ "$keyFile" == "${deviceDisk}p"* ]]; then
+      warn "The key device '${keyFile}' is on the same disk as the installation target (${deviceDisk})"
+      warn "It will be destroyed by partitioning — use a separate device (e.g. another disk or SD card)"
     fi
 
     read -r -p "Add a passphrase as a second LUKS key slot? [y/N]: " addPassphrase
@@ -368,6 +392,9 @@ step_zfs_tune() {
   fi
   local arcMaxGiB=${ZFS_ARC_MAX_GiB:-1}
   local arcMax=$(( arcMaxGiB * 1073741824 ))
+  # Ensure the zfs module is loaded so the runtime cap applies from the
+  # very start (this step now runs BEFORE disko partitioning).
+  modprobe zfs 2>/dev/null || true
   if [[ -w /sys/module/zfs/parameters/zfs_arc_max ]]; then
     info "Limiting ZFS ARC to ${arcMaxGiB} GiB"
     echo "$arcMax" > /sys/module/zfs/parameters/zfs_arc_max
@@ -389,6 +416,14 @@ step_luks_passphrase() {
 }
 
 step_swap() {
+  # ZFS does not support swap files (removed in "zfs: remove swap on zfs").
+  # On ZFS the disko config provides no swap — skipping keeps low-RAM ZFS
+  # installs from aborting on an invalid swapon.
+  if [[ "${diskoFs:-}" == "zfs" ]]; then
+    info "ZFS detected — temporary swap skipped (swap files unsupported on ZFS)"
+    return
+  fi
+
   if (( needSwap )); then
     if checkpoint_skip "STEP_SWAP"; then
       if [[ -f "/mnt/.swapfile-install" ]]; then
@@ -432,12 +467,13 @@ step_copy_config() {
   fi
   userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
   local targetDir="/mnt/home/${userName}/nixos-configuration"
-  local sourceDir
-  sourceDir="$(cd "$(dirname "$0")" && pwd)"
+  local sourceDir owner
+  sourceDir="${INSTALL_DIR:-$(cd "$(dirname "$0")" && pwd)}"
+  owner="$(target_uid_gid "$userName")"
 
   if [[ -d "${sourceDir}/.git" ]]; then
     run_command cp -r "$sourceDir" "$targetDir"
-    run_command chown -R 1000:100 "$targetDir"
+    run_command chown -R "$owner" "$targetDir"
     run_command git -C "$targetDir" config pull.rebase true
   else
     local repoUrl="${INSTALL_REPO_URL:-}"
@@ -452,17 +488,17 @@ step_copy_config() {
       info "Cloning repository (full history) from ${repoUrl}"
       run_command git clone --no-checkout "$repoUrl" "$targetDir"
       run_command git -C "$targetDir" checkout "$repoRev"
-      run_command chown -R 1000:100 "$targetDir"
+      run_command chown -R "$owner" "$targetDir"
       run_command git -C "$targetDir" config pull.rebase true
     elif [[ -n "$repoUrl" ]]; then
       info "Cloning repository (shallow) from ${repoUrl}"
       run_command git clone --depth 1 "$repoUrl" "$targetDir"
-      run_command chown -R 1000:100 "$targetDir"
+      run_command chown -R "$owner" "$targetDir"
       run_command git -C "$targetDir" config pull.rebase true
     else
       warn "No .git or repo URL found — copying without history"
       run_command cp -r "${sourceDir}" "$targetDir"
-      run_command chown -R 1000:100 "$targetDir"
+      run_command chown -R "$owner" "$targetDir"
     fi
   fi
   checkpoint_done "STEP_COPY_CONFIG"

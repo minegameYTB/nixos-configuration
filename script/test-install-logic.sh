@@ -132,6 +132,19 @@ test_swap_cleanup() {
 test_swap_cleanup
 
 echo
+echo -e "${CYAN}ZFS swap guard${RESET}"
+
+test_zfs_swap_guard() {
+  if grep -q 'diskoFs:-.*== "zfs"' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "STEP_SWAP skips ZFS installs (swap files unsupported)"
+  else
+    fail "STEP_SWAP has no ZFS guard"
+  fi
+}
+
+test_zfs_swap_guard
+
+echo
 echo -e "${CYAN}ZFS ARC tuning${RESET}"
 
 test_arc_tuning() {
@@ -327,6 +340,99 @@ test_step_flags() {
 }
 
 test_step_flags
+
+echo
+echo -e "${CYAN}Install script hardening${RESET}"
+
+# shellcheck disable=SC2016 # intentional literal grep patterns below
+
+# NVMe / MMC devices use a "-p" separator before the partition number
+# (/dev/nvme0n1p2) — the LUKS partition lookup must handle both.
+test_luks_partition_regex() {
+  if grep -q 'grep "\^\${deviceDisk}p\\\\?\[0-9\]"' "$SCRIPT_DIR/install-lib/nixos-install.sh" \
+    || grep -q 'grep "\^\${deviceDisk}p\\?\[0-9\]"' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "addLuksPassphrase matches NVMe/MMC partitions (p separator)"
+  else
+    fail "addLuksPassphrase regex does not handle NVMe/MMC"
+  fi
+}
+
+test_luks_partition_regex
+
+# ZFS ARC must be capped before partitioning (to protect the disko mount phase).
+test_step_order() {
+  local nixFile="$SCRIPT_DIR/install-lib/nixos-install.sh"
+  local zfs_tune_line partition_line
+  zfs_tune_line=$(grep -n '"STEP_ZFS_TUNE"' "$nixFile" | sed -n '1p' | cut -d: -f1)
+  partition_line=$(grep -n '"STEP_PARTITION"' "$nixFile" | sed -n '1p' | cut -d: -f1)
+  if [[ -n "$zfs_tune_line" && -n "$partition_line" ]] && (( zfs_tune_line < partition_line )); then
+    ok "STEP_ZFS_TUNE runs before STEP_PARTITION"
+  else
+    fail "STEP_ZFS_TUNE must run before STEP_PARTITION"
+  fi
+}
+
+test_step_order
+
+# Auto-elevate must forward the original arguments (--step, ...) to sudo.
+test_orig_args() {
+  if grep -q 'origArgs=("\$@")' "$SCRIPT_DIR/install.sh"; then
+    ok "install.sh snapshots original arguments before parseFlags"
+  else
+    fail "origArgs snapshot missing"
+  fi
+  # shellcheck disable=SC2016
+  if grep -q 'sudo "\$0" --dont-check "\${origArgs\[@\]}"' "$SCRIPT_DIR/install.sh"; then
+    ok "sudo re-exec forwards original arguments"
+  else
+    fail "sudo re-exec does not forward original arguments"
+  fi
+}
+
+test_orig_args
+
+# chown must be derived from the target user, not hardcoded 1000:100.
+test_target_uid_gid() {
+  if grep -q '^target_uid_gid()' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "target_uid_gid helper exists"
+  else
+    fail "target_uid_gid helper missing"
+  fi
+  if grep -q 'chown -R 1000:100' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    fail "hardcoded 1000:100 still present in step_copy_config"
+  else
+    ok "no hardcoded uid:gid in step_copy_config"
+  fi
+}
+
+test_target_uid_gid
+
+# ZFS disko config reserves container/zvol parent datasets (intentional).
+test_zfs_disko_clean() {
+  local zfsDisko="$SCRIPT_DIR/configurations/disko-configuration/current/disko-efi-zfs.nix"
+  for ds in '"MACHINE"' '"zvol"' '"zvol/disk"' '"zvol/vm"'; do
+    if grep -q "$ds" "$zfsDisko"; then
+      ok "dataset ${ds} present in disko-efi-zfs.nix"
+    else
+      fail "dataset ${ds} MISSING from disko-efi-zfs.nix"
+    fi
+  done
+}
+
+test_zfs_disko_clean
+
+# Disko path must be resolved from the script location, not the CWD.
+test_install_dir() {
+  # shellcheck disable=SC2016
+  if grep -q 'INSTALL_DIR="\$(cd "\$(dirname "\$0")" && pwd)"' "$SCRIPT_DIR/install.sh" \
+    && grep -q 'INSTALL_DIR/configurations/disko-configuration' "$SCRIPT_DIR/install-lib/nixos-install.sh"; then
+    ok "disko paths resolved from INSTALL_DIR (relocatable)"
+  else
+    fail "disko paths still depend on the current working directory"
+  fi
+}
+
+test_install_dir
 
 echo
 # ---------------------------------------------------------------------------

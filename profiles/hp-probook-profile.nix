@@ -16,6 +16,7 @@
     ../configurations/configs/specific/desktop/sound.nix
     #../configurations/configs/specific/desktop/printer.nix
     ../configurations/configs/specific/desktop/browser
+    ../configurations/hardware-configuration/specific/intel-graphics.nix
 
     ### Services
     #../configurations/configs/system/services/nix-channel-rm-dirs.nix

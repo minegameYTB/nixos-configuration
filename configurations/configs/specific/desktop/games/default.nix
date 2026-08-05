@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   ...
 }:
 
@@ -32,26 +31,6 @@
       "vm.dirty_writeback_centisecs" = 1500;
     };
   };
-  ### Mesa (Intel GPU packages are x86_64 only)
-  hardware.graphics = lib.mkIf pkgs.stdenvNoCC.hostPlatform.isx86_64 {
-    extraPackages = with pkgs; [
-      intel-gpu-tools
-      intel-media-driver
-      intel-vaapi-driver
-      libva-vdpau-driver
-      libva
-      vulkan-loader
-    ];
-
-    extraPackages32 = with pkgs.pkgsi686Linux; [
-      intel-gpu-tools
-      intel-media-driver
-      intel-vaapi-driver
-      libva-vdpau-driver
-      libva
-    ];
-  };
-
   ### Specific settings for controller
   services.udev.extraRules = ''
     # USB

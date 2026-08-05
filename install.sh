@@ -5,9 +5,16 @@ set -euo pipefail
 # /run/wrappers/bin is where NixOS places setuid wrappers (sudo).
 PATH="/run/wrappers/bin:/bin:/usr/bin:/run/current-system/sw/bin"
 
+# Snapshot the original arguments BEFORE parseFlags consumes them: the
+# sudo re-execution below must forward them verbatim (--step, ...).
+origArgs=("$@")
+
 # installLib points to the directory that contains lib.sh and the install
-# scripts.  Using $(pwd) keeps it relocatable without hard-coded paths.
-installLib="$(pwd)/install-lib"
+# scripts.  Resolved from the script location so install.sh stays
+# relocatable (it no longer depends on the current working directory).
+INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
+export INSTALL_DIR
+installLib="$INSTALL_DIR/install-lib"
 name="$(basename -s .sh "$0")"
 
 # Source common variables and functions (colours, logging, checkpoint system).
@@ -47,7 +54,7 @@ sleep 2
 if (( SKIP_VERSION_CHECK )); then
   info "Version check skipped (--dont-check)"
 else
-  checkRepoVersion "$@"
+  checkRepoVersion "${origArgs[@]}"
 fi
 
 # ---------------------------------------------------------------------------
@@ -77,7 +84,7 @@ fi
 
 if [[ $EUID -ne 0 ]] && [[ "$mode" == "nixosInstall" ]]; then
   info "Root privileges required — re-running with sudo..."
-  exec sudo "$0" --dont-check "$@"
+  exec sudo "$0" --dont-check "${origArgs[@]}"
 fi
 
 # ---------------------------------------------------------------------------

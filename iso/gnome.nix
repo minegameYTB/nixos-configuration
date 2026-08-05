@@ -17,6 +17,7 @@
     ../configurations/configs/specific/desktop/environment/gnome.nix
     ../configurations/configs/specific/desktop/sound.nix
     ../configurations/configs/specific/desktop/browser
+    ../configurations/hardware-configuration/specific/intel-graphics.nix
     ../configurations/configs/specific/vm/guest/qemu-kvm-guest.nix
 
     (mkIsoConfig {

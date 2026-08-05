@@ -54,7 +54,7 @@ let
     if type == "desktop" then
       ./profiles/base-profiles/vm-desktop-profile.nix
     else
-      ./profiles/base-profiles/vm-no-gui-profile.nix;
+      ./profiles/base-profiles/vm-cli-profile.nix;
 
   fs =
     type:
@@ -118,27 +118,27 @@ in
   ### --- Headless / server VMs ---
 
   # VM preset (CLI efi)
-  vm-no-gui-efi = mkMachine {
+  vm-cli-efi = mkMachine {
     hostname = "nixos-kvm-srv";
-    profile = base "headless";
+    profile = base "cli";
     fs = fs "btrfs";
     extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
   };
 
   # VM preset (CLI bios)
-  vm-no-gui-bios = mkMachine {
+  vm-cli-bios = mkMachine {
     hostname = "nixos-kvm-srv-bios";
-    profile = base "headless";
+    profile = base "cli";
     fs = fs "btrfs";
     extraModules = [ boot.bios-nv ];
     userOverrides = cliOverrides;
   };
 
   # VM preset (CLI bios virtio)
-  vm-no-gui-bios-virtio = mkMachine {
+  vm-cli-bios-virtio = mkMachine {
     hostname = "nixos-kvm-srv-bios-virtio";
-    profile = base "headless";
+    profile = base "cli";
     fs = fs "btrfs";
     extraModules = [ boot.bios-vio ];
     userOverrides = cliOverrides;
@@ -163,9 +163,9 @@ in
   };
 
   # VM preset (CLI efi ZFS)
-  vm-no-gui-efi-zfs = mkMachine {
+  vm-cli-efi-zfs = mkMachine {
     hostname = "nixos-kvm-srv-zfs";
-    profile = base "headless";
+    profile = base "cli";
     fs = fs "zfs";
     extraModules = [ boot.efi ];
     userOverrides = cliOverrides;

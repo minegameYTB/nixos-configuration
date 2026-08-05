@@ -98,7 +98,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 ## Install System (`install-lib/`)
 - **`install.sh`** — auto-detects NixOS vs standalone Linux
 - **`nixos-install.sh`** — 10-step system with checkpoint/resume
-  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → PARTITION → ZFS_TUNE → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
+  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → ZFS_TUNE → PARTITION → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
   - `step_copy_config` supports 4 clone modes: `.git/` → full copy, `.config-repo` → `git clone --no-checkout` + checkout $rev, `lib/repo.nix` → shallow clone, fallback → copy without history
   - Temp swap: btrfs (mkswapfile), ext4/other (fallocate)
   - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file

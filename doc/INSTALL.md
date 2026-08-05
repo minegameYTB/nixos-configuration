@@ -81,7 +81,7 @@ SWAP_THRESHOLD_GiB=8 sudo ./install.sh
 
 | Variable | Default | Description |
 |---|---|---|
-| `ZFS_ARC_MAX_GiB` | `4` | Max ARC size in GiB during install (ZFS only) |
+| `ZFS_ARC_MAX_GiB` | `1` | Max ARC size in GiB during install (ZFS only) |
 
 **Examples:**
 
@@ -114,10 +114,10 @@ Checkpoint names (usable with `--step`) are shown in parentheses.
 2. **RAM detection** (`detectRam`) — reads `/proc/meminfo`, evaluates whether a temporary swap is needed based on `SWAP_THRESHOLD_GiB` / `FORCE_SWAP`.
 3. **Interactive setup** (`STEP_INTERACTIVE_SETUP`) — boot method detection, filesystem choice (btrfs/ZFS), encryption prompt, disk selection, profile selection, 5-second countdown.
 4. **LUKS key setup** (`STEP_LUKS_SETUP`) — key generation or path, optional passphrase choice. Skipped when encryption was declined.
-5. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
-6. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: caps ARC to `ZFS_ARC_MAX_GiB` (default 4 GiB).
+5. **ZFS ARC tuning** (`STEP_ZFS_TUNE`) — ZFS only: loads the `zfs` module and caps ARC to `ZFS_ARC_MAX_GiB` (default 1 GiB). Runs *before* partitioning so the cap also protects the disko layout/mount phase.
+6. **Disko partitioning** (`STEP_PARTITION`) — partitions, formats and mounts the target disk via disko. **Destructive.**
 7. **LUKS passphrase** (`STEP_LUKS_PASSPHRASE`) — if a passphrase was requested, adds it as a second LUKS key slot.
-8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`.
+8. **Temporary swap** (`STEP_SWAP`) — if `needSwap` is set, creates a swap on `/mnt`. Always skipped on ZFS (swap files are not supported).
 9. **`nixos-install`** (`STEP_NIXOS_INSTALL`) — installs the flake configuration onto the mounted disk, then tears down the temporary swap.
 10. **User password** (`STEP_PASSWORD`) — prompts for the user password via `nixos-enter passwd`.
 11. **Copy config** (`STEP_COPY_CONFIG`) — copies the nixos-configuration directory into the new system's home.
@@ -204,7 +204,7 @@ When encryption is selected, `setupLuksEncryption` handles key provisioning:
 - **Use an existing key** → provide the path to a key file or device
 - **Optional passphrase** → added as a second LUKS key slot via `cryptsetup luksAddKey`, with configurable key size (default: 4096 bits)
 
-> **Warning:** when using a raw partition as key device, its contents are overwritten immediately.
+> **Warning:** when using a raw partition as key device, its contents are overwritten immediately. The key device must be a **separate disk** (or SD card) — if it is on the same disk as the installation target, disko will wipe it during partitioning (the installer now warns about this case).
 
 ---
 
@@ -231,11 +231,15 @@ btrfs filesystem mkswapfile --size <size>M /mnt/.swapfile-install
 
 **ext4, xfs, and others** — `fallocate` is used directly.
 
+**ZFS** — always skipped. ZFS does not support swap files (`swapon` on a dataset fails), and no swap zvol is created by the ZFS disko config.
+
 ---
 
 ## ZFS ARC tuning
 
-ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 4 GiB so the live environment doesn't run out of memory.
+ZFS's Adaptive Replacement Cache (ARC) uses system RAM by default (up to 50 % of total memory). During install the ARC is capped to 1 GiB so the live environment doesn't run out of memory.
+
+The step loads the `zfs` module and applies the cap **before partitioning**, so the disko layout/mount phase is also protected.
 
 Override with `ZFS_ARC_MAX_GiB`:
 
@@ -260,7 +264,7 @@ Triggered on any non-NixOS Linux system.
 5. Initialises the first Home Manager generation (`hm init --switch`).
 6. Detects system architecture (`x86_64-linux` or `aarch64-linux`).
 7. Reads the default username from `flake.nix` (`users = [ "..." ]`) and prompts for confirmation.
-8. Runs `home-manager switch` with the resolved `username@arch` flake target.
+8. Runs `home-manager switch` (via `nix run` on the resolved branch, so it does not depend on the `home-manager` binary being on PATH) with the resolved `username@arch` flake target.
 
 ---
 
@@ -283,10 +287,12 @@ Before running any install logic, the script checks whether the local repository
 | `deactivateSwap` | `trap EXIT` (C-c, crash), also at end of `step_nixos_install` | `swapoff` on all known devices — always safe, no destruction |
 | `destroyTempSwap` | End of `step_nixos_install` | Removes temp swap file only |
 
-On **resume** after a crash or C-c:
+On **resume** after a crash or C-c (same live session):
 - `STEP_SWAP` is skipped (already done)
 - If the temp file exists → `swapon` (reactivates)
 - If it was destroyed → `setupTempSwap` (recreates)
+
+> **After a reboot of the live environment**, the checkpoint state in `/tmp` is gone and `/mnt` must be re-mounted manually (ZFS: `zpool import zroot` + mount the datasets; btrfs: re-mount the filesystem). Use `INSTALL_STATE_FILE=/mnt/nixos-install-state` to keep the state across a reboot.
 
 ---
 

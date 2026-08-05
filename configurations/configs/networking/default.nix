@@ -30,11 +30,14 @@
   ### BlockList (https://github.com/StevenBlack/hosts)
   # (https://gitlab.com/librephoenix/nixos-config/-/blob/0324f60ab14f8551b72ea6078562813befc72786/system/security/blocklist.nix)
 
-  networking.extraHosts = # Temporairy disabled bcause of this issue: https://github.com/NixOS/nixpkgs/issues/525573
+  # lib.optionals returns a list, but networking.extraHosts (types.lines in
+  # current nixpkgs) only accepts strings — on headless profiles
+  # (xserver disabled) this produced `[ ]` and broke every headless build.
+  networking.extraHosts =
     let
       blocklist = builtins.readFile "${inputs.blocklist}/alternates/fakenews-gambling/hosts";
     in
-    lib.optionals config.services.xserver.enable ''
+    lib.mkIf config.services.xserver.enable ''
 
       ${blocklist}
     '';

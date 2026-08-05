@@ -1,6 +1,7 @@
 ### hm-standalone-install.sh — Home Manager standalone install on non-NixOS systems
 ### Sourced by install.sh; requires lib.sh to be sourced first.
 # shellcheck shell=bash
+# shellcheck disable=SC2154 # nixFlags, nixpkgsRev set by lib.sh sourced earlier
 
 hmInstallFn() {
 
@@ -196,7 +197,10 @@ hmInstallFn() {
   # --- Step: switch to flake-based HM configuration -----------------------
   if ! checkpoint_skip "STEP_HM_SWITCH"; then
     info "Installing HM as ${userName} (${nixArch})"
-    run_command home-manager -b bak --flake ".#${userName}@${nixArch}" switch
+    # Run through `nix run` so this does not depend on the `home-manager`
+    # binary being present on PATH (init does not install it).
+    run_command nix "${nixFlags[@]}" run "$hm_branch" -- \
+      -b bak --flake ".#${userName}@${nixArch}" switch
     checkpoint_done "STEP_HM_SWITCH"
   fi
 

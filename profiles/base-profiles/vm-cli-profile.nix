@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  ### Import nix expression for vm-no-gui
+  ### Import nix expression for vm-cli
   imports = [
     ### Core
     ../../configurations/hardware-configuration/machines/vm/hardware-configuration.nix

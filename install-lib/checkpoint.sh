@@ -29,8 +29,13 @@
 # Override: INSTALL_STATE_FILE=/path/to/file ./install.sh
 #
 # /tmp is intentionally used for normal installs because it disappears on
-# reboot.  If you want to survive a machine crash and resume after a reboot,
-# set INSTALL_STATE_FILE to a path on already-mounted persistent storage, e.g.
+# reboot.  Resume therefore works reliably within the same live session
+# (Ctrl+C, crash): the disk layout and /mnt mounts are still in place.
+#
+# After a full reboot of the live environment, /mnt must be manually
+# re-mounted before resuming (ZFS: import the pool first, then mount the
+# datasets; btrfs: re-mount the filesystem).  Set INSTALL_STATE_FILE to a
+# path on persistent storage if you need the state to survive a reboot:
 # INSTALL_STATE_FILE=/mnt/nixos-install-state
 # ---------------------------------------------------------------------------
 
