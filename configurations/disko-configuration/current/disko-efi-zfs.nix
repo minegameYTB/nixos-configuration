@@ -107,7 +107,7 @@
             mountpoint = "/home";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-6";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
