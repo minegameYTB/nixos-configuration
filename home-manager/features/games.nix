@@ -17,9 +17,8 @@ in
     ++ lib.optionals isX86_64 (
       with pkgs;
       [
-        heroic
-        lutris
-        #waydroid # Need to use nixos option (OS side)
+        #heroic
+        #lutris
       ]
     );
 }
