@@ -24,6 +24,9 @@ in
     CONFIG_URL = repoUrl;
     #BUG_REPORT_URL = CONFIG_URL + "/issues"; # To use concatened text with a variable
 
+    ### GNOME "About" > "System Version" row reads IMAGE_VERSION (nixpkgs issue #480818)
+    IMAGE_VERSION = config.system.nixos.version;
+
     ### Tests
     #NAME = "Minegame OS";
     #PRETTY_NAME = NAME + " " + lib.trivial.release + " " + "(${lib.trivial.codeName})";
