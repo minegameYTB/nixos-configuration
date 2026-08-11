@@ -31,10 +31,19 @@
 
     ### Other
     ../configurations/hardware-configuration/specific/swap.nix
+    ../configurations/configs/specific/container
     ../configurations/configs/specific/desktop/autologin.nix
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
     ../configurations/config-modules
   ];
+
+  ### Container subsystems enabled on this machine.
+  ### Keep only what this machine needs (see containerSubsystems.* in
+  ### configurations/configs/specific/container/*.nix).
+  containerSubsystems = {
+    nixos = true; # Declarative NixOS containers (containers.*)
+    podman = false;
+  };
 }
