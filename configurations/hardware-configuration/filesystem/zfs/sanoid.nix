@@ -2,7 +2,7 @@
 
 {
   services.sanoid = {
-    enable = true;
+    enable = if (config.fileSystems."/".fsType == "zfs") then true else false;
 
     templates = {
       important-data = {
