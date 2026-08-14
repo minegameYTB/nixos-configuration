@@ -60,7 +60,8 @@ Enabling `containerSubsystems.nixos` automatically sets up:
 - `boot.enableContainers = true`
 - Outbound NAT for all containers (`networking.nat.internalInterfaces = [ "ve-+" ]`, `enableIPv6 = false` by default — override via `nixosContainers.nat.enableIPv6`)
 - A `containers.<name>` entry per declared container (private veth network)
-- A `nixos-<name>-login` script per container (starts the container if down, then SSH into it)
+- Host directories of the declared `bindMounts` are auto-created at boot if missing (oneshot `nixos-container-bind-dirs` service — existing directories are never touched)
+- A `nixos-<name>-login` script per container (starts the container if down, waits for sshd, then SSH into it — with error handling at every step)
 
 ### Declaring a container
 
