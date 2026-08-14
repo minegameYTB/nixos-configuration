@@ -19,5 +19,11 @@
     NoNewPrivileges = true;
     ProtectSystem = "strict";
     PrivateTmp = true;
+
+    ### Experimental cgroup v2 resource limits
+    MemoryAccounting = true;
+    MemoryHigh = "512M"; # soft: pressure to reclaim above this
+    MemoryMax = "1G"; # hard: OOM-kill above this
+    TasksMax = 256; # max number of tasks/threads
   };
 }
