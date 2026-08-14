@@ -1,6 +1,6 @@
 {
   config,
-  pkgs,
+  lib,
   inputs,
   ...
 }:
@@ -13,6 +13,24 @@
 
     ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
     channel.enable = false;
+
+    ### Point NIX_PATH and the flake registry at this system's pinned nixpkgs
+    ### (declared implicitly by the flake input nixpkgs-main -> the real copy
+    ### /nix/store/<hash>-source, resolved dynamically so it follows
+    ### flake.lock). Imported by the host, every NixOS container and the ISOs
+    ### (via base.nix / configuration.nix), so containers inherit the host's
+    ### nixpkgs instead of falling back to nixos-unstable. Only applied when
+    ### nix is enabled on the evaluated system.
+    ### NB: use inputs.nixpkgs-main (the canonical input path), NOT pkgs.path:
+    ### pkgs.path resolves to a re-stored copy with a mangled name
+    ### (/nix/store/<h>-<h>-source) instead of the real source directory.
+    nixPath = lib.mkIf config.nix.enable [ "nixpkgs=${inputs.nixpkgs-main}" ];
+    registry.nixpkgs = lib.mkIf config.nix.enable {
+      to = {
+        type = "path";
+        path = inputs.nixpkgs-main.outPath;
+      };
+    };
     #registry.nix-custom-repo.to =
     #  owner = "minegameYTB";
     #  repo = "nix-custom-repo";

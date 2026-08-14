@@ -36,6 +36,12 @@ let
       hostPath = m.hostPath;
       isReadOnly = m.isReadOnly;
     }) c.bindMounts;
+    ### Make the host flake inputs available to the container-internal modules
+    ### (the container's own specialArgs default to {}). Used e.g. by
+    ### nix-settings.nix to point NIX_PATH / the registry at nixpkgs-main.
+    specialArgs = {
+      inherit inputs;
+    };
     ### Container-internal NixOS module, evaluated with the host's pkgs:
     ### the container's own pkgs would miss the overlay (pkgsUnstable)
     config = import c.configFile {

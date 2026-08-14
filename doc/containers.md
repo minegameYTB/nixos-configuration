@@ -133,6 +133,8 @@ The container is a separate NixOS system evaluated at build time. Its module is 
 
 Import it with `imports = [ (import ../base.nix { inherit stateVersion username; }) ]` (relative to the container dir — the base lives in `nixos-container/base.nix`) to get: the user (`initialPassword = "nixos"`), hardened sshd, firewall (port 22), `nix-settings.nix`, git, and `system.stateVersion`. Tunable via `containerBase`:
 
+> **NIX_PATH / flake registry**: `nix-settings.nix` points the container's `NIX_PATH` and `nix.registry.nixpkgs` at the host's pinned nixpkgs (`inputs.nixpkgs-main`, the real `/nix/store/<hash>-source` copy) instead of falling back to `nixos-unstable`. This only applies when nix is enabled in the container (`nix.enable`, default true). The host's `inputs` are made available to container-internal modules via `containers.<name>.specialArgs`.
+
 | Option | Default | Description |
 |---|---|---|
 | `git.userName` / `git.userEmail` | `null` | Git identity (applied only when both are set) |
