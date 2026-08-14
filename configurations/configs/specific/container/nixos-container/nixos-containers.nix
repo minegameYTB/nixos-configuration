@@ -45,7 +45,8 @@ let
     ### Container-internal NixOS module, evaluated with the host's pkgs:
     ### the container's own pkgs would miss the overlay (pkgsUnstable).
     ### configFile + every configModules entry are imported as container
-    ### modules with the shared signature { inputs, stateVersion, pkgs, username }.
+    ### modules. configFile and path entries share the signature
+    ### { inputs, stateVersion, pkgs, username }.
     config =
       let
         mkCfg = f:
@@ -54,9 +55,14 @@ let
             stateVersion = config.system.stateVersion;
             username = c.sshUser;
           };
+        ### Normalize a configModules entry: a path (or path string) is
+        ### imported as a function of the shared signature; any other module
+        ### value (flake module like inputs.home-manager.nixosModules.home-manager
+        ### or inputs.self.nixosModules.<name>, attrset, function) is used as-is.
+        mkModule = m: if lib.types.path.check m then mkCfg m else m;
       in
       {
-        imports = [ (mkCfg c.configFile) ] ++ (map mkCfg c.configModules);
+        imports = [ (mkCfg c.configFile) ] ++ (map mkModule c.configModules);
       };
   };
 
@@ -183,15 +189,17 @@ in
             };
 
             configModules = lib.mkOption {
-              type = lib.types.listOf lib.types.path;
+              type = lib.types.listOf lib.types.unspecified;
               default = [ ];
               description = ''
-                Additional container-internal NixOS modules (paths to .nix
-                files of this repo), imported with the same signature as
-                configFile: { inputs, stateVersion, pkgs, username }.
-                Use this to attach shared configuration modules to the
-                container from its declaration, without touching
-                container-config.nix.
+                Additional container-internal NixOS modules. Each entry is
+                either a path to a .nix file of this repo (imported as a
+                function of { inputs, stateVersion, pkgs, username }, same
+                signature as configFile) or a module value used as-is — e.g.
+                a flake module such as inputs.home-manager.nixosModules.home-manager
+                or inputs.self.nixosModules.<name>, an attrset or a function.
+                Attach shared or external config to the container from its
+                declaration without touching container-config.nix.
               '';
             };
 

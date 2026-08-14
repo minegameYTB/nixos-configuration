@@ -97,21 +97,25 @@ in
 | `localAddress` | nullOr str | `null` | Container-side IP. `null` → auto-allocated `10.0.<idx>.2` |
 | `bindMounts.<path>.*` | — | — | `hostPath` (required), `isReadOnly` (default `false`) |
 | `configFile` | path | **required** | Container-internal module (see below) |
-| `configModules` | list of path | `[]` | Extra container-internal modules, imported with the same signature as `configFile` (reuse shared config modules without touching `container-config.nix`) |
+| `configModules` | list of unspecified | `[]` | Extra container-internal modules: a path to a `.nix` file of this repo (imported with the same signature as `configFile`) or any module value used as-is — flake module (`inputs.home-manager.nixosModules.home-manager`, `inputs.self.nixosModules.<name>`), attrset or function |
 | `sshUser` | str | first system user | User of the generated `nixos-<name>-login` script |
 | `login` | bool | `true` | Generate the `nixos-<name>-login` script |
 
 **Auto-IP**: when `hostAddress`/`localAddress` are left `null`, the framework allocates `10.0.<idx>.1` (host) / `10.0.<idx>.2` (container), where `idx` is the position of the container in the **alphabetically sorted list of enabled containers**. Adding or removing containers shifts the indexes — pin explicit addresses if you need stability. The `opencode` container gets `10.0.0.1/10.0.0.2`.
 
-**Attaching shared config modules**: to reuse config modules of this repo inside a container, list them in `configModules` from the declaration (each is imported with the same `{ inputs, stateVersion, pkgs, username }` signature as `configFile` — `pkgs` is the host's pkgs, so `pkgs.pkgsUnstable`/`pkgs.nur` are available):
+**Attaching shared config modules**: to reuse config modules inside a container, list them in `configModules` from the declaration. Each entry is either a **path** to a `.nix` file (imported with the `{ inputs, stateVersion, pkgs, username }` signature — `pkgs` is the host's pkgs, so `pkgs.pkgsUnstable`/`pkgs.nur` are available) or a **module value used as-is** (flake modules, `inputs.self.*`, attrset or function):
 
 ```nix
-nixosContainers.containers.example = {
-  configFile = ./container-config.nix;
-  configModules = [
-    ../../../../../../modules/my-service.nix   # relative to the container dir
-  ];
-};
+{ inputs, ... }: {
+  nixosContainers.containers.example = {
+    configFile = ./container-config.nix;
+    configModules = [
+      ../../../../../../modules/my-service.nix          # path → shared signature
+      inputs.home-manager.nixosModules.home-manager      # flake module
+      (inputs.self + "/configurations/modules/foo.nix")  # internal module via self
+    ];
+  };
+}
 ```
 
 ### The container-internal module (`container-config.nix`)

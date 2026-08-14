@@ -18,11 +18,15 @@ in
     ### Container-internal NixOS config (see container-config.nix)
     configFile = ./container-config.nix;
 
-    ### Extra container-internal config modules (paths to .nix files of this
-    ### repo), imported with the same signature as configFile:
-    ### { inputs, stateVersion, pkgs, username }. Reuse shared modules without
-    ### touching container-config.nix.
-    # configModules = [ ../../../../modules/my-service.nix ];
+    ### Extra container-internal config modules: either a path to a .nix file
+    ### of this repo (imported with the same signature as configFile:
+    ### { inputs, stateVersion, pkgs, username }) or any module value used
+    ### as-is — flake module (inputs.home-manager.nixosModules.home-manager,
+    ### inputs.self.nixosModules.<name>), attrset or function.
+    # configModules = [
+    #    ../../../../modules/my-service.nix
+    #    inputs.foo.nixosModules.bar
+    # ];
 
     ### Start automatically at boot (default: false)
     # autoStart = true;
