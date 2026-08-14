@@ -41,6 +41,10 @@
 
         ### Hardening service
         ProtectSystem = "strict";
+        ### ProtectSystem=strict makes / read-only, including /home:
+        ### without ReadWritePaths the script cannot create its marker
+        ### file (or the XDG user dirs) and the service always fails.
+        ReadWritePaths = [ "/home/${username}" ];
         PrivateTmp = "true";
         NoNewPrivileges = "yes";
       };
