@@ -20,12 +20,13 @@ in
 
     ### Extra container-internal config modules: either a path to a .nix file
     ### of this repo (imported with the same signature as configFile:
-    ### { inputs, stateVersion, pkgs, username }) or any module value used
-    ### as-is — flake module (inputs.home-manager.nixosModules.home-manager,
-    ### inputs.self.nixosModules.<name>), attrset or function.
+    ### { self, inputs, stateVersion, pkgs, username }) or any module value
+    ### used as-is — flake module (inputs.home-manager.nixosModules.home-manager,
+    ### self.nixosModules.<name>), attrset or function.
     # configModules = [
     #    ../../../../modules/my-service.nix
     #    inputs.foo.nixosModules.bar
+    #    self.nixosModules.foo
     # ];
 
     ### Start automatically at boot (default: false)

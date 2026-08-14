@@ -194,6 +194,7 @@
       ### Global specialArgs (passed to all NixOS and home-manager modules)
       specialArgs = system: {
         inherit
+          self
           inputs
           globalFeatures
           userConfigs

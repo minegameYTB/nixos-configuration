@@ -97,26 +97,29 @@ in
 | `localAddress` | nullOr str | `null` | Container-side IP. `null` → auto-allocated `10.0.<idx>.2` |
 | `bindMounts.<path>.*` | — | — | `hostPath` (required), `isReadOnly` (default `false`) |
 | `configFile` | path | **required** | Container-internal module (see below) |
-| `configModules` | list of unspecified | `[]` | Extra container-internal modules: a path to a `.nix` file of this repo (imported with the same signature as `configFile`) or any module value used as-is — flake module (`inputs.home-manager.nixosModules.home-manager`, `inputs.self.nixosModules.<name>`), attrset or function |
+| `configModules` | list of unspecified | `[]` | Extra container-internal modules: a path to a `.nix` file of this repo (imported with the same signature as `configFile`) or any module value used as-is — flake module (`inputs.home-manager.nixosModules.home-manager`, `self.nixosModules.<name>`), attrset or function |
 | `sshUser` | str | first system user | User of the generated `nixos-<name>-login` script |
 | `login` | bool | `true` | Generate the `nixos-<name>-login` script |
 
 **Auto-IP**: when `hostAddress`/`localAddress` are left `null`, the framework allocates `10.0.<idx>.1` (host) / `10.0.<idx>.2` (container), where `idx` is the position of the container in the **alphabetically sorted list of enabled containers**. Adding or removing containers shifts the indexes — pin explicit addresses if you need stability. The `opencode` container gets `10.0.0.1/10.0.0.2`.
 
-**Attaching shared config modules**: to reuse config modules inside a container, list them in `configModules` from the declaration. Each entry is either a **path** to a `.nix` file (imported with the `{ inputs, stateVersion, pkgs, username }` signature — `pkgs` is the host's pkgs, so `pkgs.pkgsUnstable`/`pkgs.nur` are available) or a **module value used as-is** (flake modules, `inputs.self.*`, attrset or function):
+**Attaching shared config modules**: to reuse config modules inside a container, list them in `configModules` from the declaration. Each entry is either a **path** to a `.nix` file (imported with the `{ self, inputs, stateVersion, pkgs, username }` signature — `pkgs` is the host's pkgs, so `pkgs.pkgsUnstable`/`pkgs.nur` are available) or a **module value used as-is** (flake modules, `self.*`, attrset or function):
 
 ```nix
 { inputs, ... }: {
   nixosContainers.containers.example = {
     configFile = ./container-config.nix;
     configModules = [
-      ../../../../../../modules/my-service.nix          # path → shared signature
-      inputs.home-manager.nixosModules.home-manager      # flake module
-      (inputs.self + "/configurations/modules/foo.nix")  # internal module via self
+      ../../../../../../modules/my-service.nix        # path → shared signature
+      inputs.home-manager.nixosModules.home-manager    # external flake module (inputs)
+      (self + "/configurations/modules/foo.nix")       # internal module via self
+      self.nixosModules.foo                            # internal module via self (if the flake exposes it)
     ];
   };
 }
 ```
+
+> `self` (the repo flake) and `inputs` (all flake inputs) are passed to every container-internal module — both as the path/signature arguments of `configFile`/`configModules` entries and through the container's `specialArgs` (so inline function modules and flake modules get them too).
 
 ### The container-internal module (`container-config.nix`)
 
@@ -125,6 +128,7 @@ The container is a separate NixOS system evaluated at build time. Its module is 
 ```nix
 # configurations/configs/specific/container/nixos-container/<name>/container-config.nix
 {
+  self,          # the repo flake (configurations/modules/..., self.nixosModules.<name>)
   inputs,        # flake inputs (from the host)
   stateVersion,  # host stateVersion (26.05)
   pkgs,          # HOST pkgs — the container's own pkgs has no overlay (pkgsUnstable would be missing)
