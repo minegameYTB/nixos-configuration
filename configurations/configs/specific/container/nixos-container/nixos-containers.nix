@@ -43,12 +43,21 @@ let
       inherit inputs;
     };
     ### Container-internal NixOS module, evaluated with the host's pkgs:
-    ### the container's own pkgs would miss the overlay (pkgsUnstable)
-    config = import c.configFile {
-      inherit inputs pkgs;
-      stateVersion = config.system.stateVersion;
-      username = c.sshUser;
-    };
+    ### the container's own pkgs would miss the overlay (pkgsUnstable).
+    ### configFile + every configModules entry are imported as container
+    ### modules with the shared signature { inputs, stateVersion, pkgs, username }.
+    config =
+      let
+        mkCfg = f:
+          import f {
+            inherit inputs pkgs;
+            stateVersion = config.system.stateVersion;
+            username = c.sshUser;
+          };
+      in
+      {
+        imports = [ (mkCfg c.configFile) ] ++ (map mkCfg c.configModules);
+      };
   };
 
   ### nixos-<name>-login: start the container if it is not running, wait
@@ -170,6 +179,19 @@ in
               description = ''
                 NixOS module evaluated inside the container, as a function of
                 { inputs, stateVersion, pkgs, username }.
+              '';
+            };
+
+            configModules = lib.mkOption {
+              type = lib.types.listOf lib.types.path;
+              default = [ ];
+              description = ''
+                Additional container-internal NixOS modules (paths to .nix
+                files of this repo), imported with the same signature as
+                configFile: { inputs, stateVersion, pkgs, username }.
+                Use this to attach shared configuration modules to the
+                container from its declaration, without touching
+                container-config.nix.
               '';
             };
 

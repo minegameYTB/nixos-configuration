@@ -97,10 +97,22 @@ in
 | `localAddress` | nullOr str | `null` | Container-side IP. `null` → auto-allocated `10.0.<idx>.2` |
 | `bindMounts.<path>.*` | — | — | `hostPath` (required), `isReadOnly` (default `false`) |
 | `configFile` | path | **required** | Container-internal module (see below) |
+| `configModules` | list of path | `[]` | Extra container-internal modules, imported with the same signature as `configFile` (reuse shared config modules without touching `container-config.nix`) |
 | `sshUser` | str | first system user | User of the generated `nixos-<name>-login` script |
 | `login` | bool | `true` | Generate the `nixos-<name>-login` script |
 
 **Auto-IP**: when `hostAddress`/`localAddress` are left `null`, the framework allocates `10.0.<idx>.1` (host) / `10.0.<idx>.2` (container), where `idx` is the position of the container in the **alphabetically sorted list of enabled containers**. Adding or removing containers shifts the indexes — pin explicit addresses if you need stability. The `opencode` container gets `10.0.0.1/10.0.0.2`.
+
+**Attaching shared config modules**: to reuse config modules of this repo inside a container, list them in `configModules` from the declaration (each is imported with the same `{ inputs, stateVersion, pkgs, username }` signature as `configFile` — `pkgs` is the host's pkgs, so `pkgs.pkgsUnstable`/`pkgs.nur` are available):
+
+```nix
+nixosContainers.containers.example = {
+  configFile = ./container-config.nix;
+  configModules = [
+    ../../../../../../modules/my-service.nix   # relative to the container dir
+  ];
+};
+```
 
 ### The container-internal module (`container-config.nix`)
 

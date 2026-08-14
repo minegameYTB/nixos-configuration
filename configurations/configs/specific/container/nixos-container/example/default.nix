@@ -18,6 +18,12 @@ in
     ### Container-internal NixOS config (see container-config.nix)
     configFile = ./container-config.nix;
 
+    ### Extra container-internal config modules (paths to .nix files of this
+    ### repo), imported with the same signature as configFile:
+    ### { inputs, stateVersion, pkgs, username }. Reuse shared modules without
+    ### touching container-config.nix.
+    # configModules = [ ../../../../modules/my-service.nix ];
+
     ### Start automatically at boot (default: false)
     # autoStart = true;
 
