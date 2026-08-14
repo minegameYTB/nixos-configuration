@@ -150,6 +150,7 @@ Import it with `imports = [ (import ../base.nix { inherit stateVersion username;
    cp example/nixos-container.nix.txt         configurations/configs/specific/container/nixos-container/<name>/default.nix
    cp example/nixos-container-config.nix.txt  configurations/configs/specific/container/nixos-container/<name>/container-config.nix
    ```
+   A complete filled-in model is available in `configurations/configs/specific/container/nixos-container/example/` (`default.nix` + `container-config.nix` — not registered, copy it to a new name).
 2. **Edit `default.nix`**: container name, bind mounts, optional `autoStart`/IPs/`sshUser`.
 3. **Edit `container-config.nix`**: `containerBase` (git identity, SSH keys...) + the container-specific packages/services.
 4. **Register the container** in `configurations/configs/specific/container/nixos-container/default.nix`:
@@ -206,6 +207,7 @@ The gate options merge naturally across files: each file declares its own leaf o
 ## References
 
 - Templates: `example/nixos-container.nix.txt`, `example/nixos-container-config.nix.txt`
+- Complete model: `configurations/configs/specific/container/nixos-container/example/` (`default.nix` + `container-config.nix`)
 - Framework implementation: `configurations/configs/specific/container/nixos-container/nixos-containers.nix`
 - Worked example: `configurations/configs/specific/container/nixos-container/opencode-sandbox/`
 - This repo's AGENTS.md also summarizes the container architecture for agents

@@ -230,6 +230,8 @@ in
     };
 
     ### Real containers.<name> entries
+    ### (model/general-purpose template: see ./example in this directory;
+    ### worked example: ./opencode-sandbox)
     containers = lib.listToAttrs (
       lib.imap0 (
         idx: name: lib.nameValuePair name (mkContainer idx name cfg.containers.${name})

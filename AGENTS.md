@@ -75,7 +75,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - **`nixos-container/<name>/container-config.nix`** — container-internal module, function of `{ inputs, stateVersion, pkgs, username }` (pkgs must come from the host: the container's own pkgs lack the overlay)
 - **New container recipe**: create `nixos-container/<name>/` with `default.nix` + `container-config.nix`, add `./<name>` to `nixos-container/default.nix` — plumbing is automatic
 - Only imported by hp-probook (`profiles/hp-probook-profile.nix`), which enables all three subsystems
-- See `doc/containers.md` for full docs + `example/nixos-container*.nix.txt` templates
+- See `doc/containers.md` for full docs + `example/nixos-container*.nix.txt` templates + `configurations/configs/specific/container/nixos-container/example/` general-purpose model
 
 ## Documentation
 - All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `containers.md`, `HM.md`, `modules.md`, `config-modules.md`
