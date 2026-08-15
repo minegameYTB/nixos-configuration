@@ -49,6 +49,9 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 
 ## Key Patterns
 
+### `nixpkgs.overlays` entries use `self: super:`
+- Convention (consigne) for any overlay defined in a module's `nixpkgs.overlays`: use `(self: super: ...)` for the lambda args — not `final:`/`prev:` — `super` for the package being overridden and `self` for anything else in the final package set. Follows `overlay.nix` and the wrappers in `nix-settings.nix` / `nixos-containers.nix`.
+
 ### The `marker` Module
 - `marker.hostProfile` (desktop|server) and `marker.archProfile` set in `hardware-configuration.nix`
 - Consumed by `cachyos-kernel.nix` for kernel selection (desktop=LTO+BORE, server=LTS)
@@ -70,6 +73,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 ### NixOS Containers (`configurations/configs/specific/container/`)
 - **Per-subsystem gates** — `containerSubsystems.nixos|podman|nspawn` (default off), set at the machine profile level (`profiles/<machine>-profile.nix`). Each subsystem file declares its own gate and stays inert when off, so the folder can be imported on any machine
 - **`nixos-container/nixos-containers.nix`** — NixOS containers framework (`nixosContainers.containers.<name>`, active via `containerSubsystems.nixos`): host plumbing (`boot.enableContainers`, NAT via `ve-+`, auto-IP `10.0.<idx>.1/.2`), auto-generated `nixos-<name>-login` scripts. Container options: `enable`, `autoStart`, `hostAddress`/`localAddress` (null = auto), `bindMounts`, `configFile`, `configModules` (extra container-internal modules, same signature as `configFile`), `sshUser`, `login`
+- **`nixos-container` wrapper** — the `nixos-container` CLI is overridden via a `nixpkgs.overlays` entry (overrideAttrs + makeWrapper, same pattern as the `nixos-rebuild` wrapper): the real binary is renamed to `.nixos-container-wrapped` (reachable via `NIX_REAL_CONTAINER`) and a wrapper at the same name adds `list`/`status`/`start`/`stop`/`restart`/`login` subcommands (any other native command passes through). The wrapper is baked with the declared containers (name/IP/ssh user) from `containerInfo`.
 - **`nixos-container/base.nix`** — shared container-internal base (user, hardened sshd, firewall, git identity, nix-settings, stateVersion); imported via `(import ../base.nix { inherit stateVersion username; })`
 - **`nixos-container/<name>/default.nix`** — container declaration: `nixosContainers.containers.<name> = { configFile = ./container-config.nix; bindMounts = {...}; }`
 - **`nixos-container/<name>/container-config.nix`** — container-internal module, function of `{ self, inputs, stateVersion, pkgs, username }` (pkgs must come from the host: the container's own pkgs lack the overlay)

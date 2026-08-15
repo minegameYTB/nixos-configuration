@@ -187,12 +187,31 @@ Import it with `imports = [ (import ../base.nix { inherit stateVersion username;
 6. **Rebuild and use**:
    ```bash
    sudo nixos-rebuild switch --flake .#<machine>
-   nixos-<name>-login                # auto-generated SSH login script
-   sudo nixos-container status <name>
-   sudo systemctl start container@<name>   # start without autoStart
+   nixos-container list               # see all declared containers + status
+   nixos-container start <name>       # or: sudo systemctl start container@<name>
+   nixos-<name>-login                 # auto-generated SSH login script
    ```
 
 **Constraints**: container names must not contain underscores, and with `privateNetwork` on kernels < 5.8 names must be ≤ 11 characters.
+
+### The `nixos-container` wrapper
+
+The `nixos-container` CLI is overridden (same pattern as the `nixos-rebuild` wrapper: `overrideAttrs` + `makeWrapper`): the real binary is renamed to `.nixos-container-wrapped` and a wrapper at the same name adds convenience subcommands:
+
+```bash
+nixos-container list                 # compact table: all declared containers (name, IP, ssh user, status)
+nixos-container status [<name>]      # detailed status of all (or one) container (state + uptime, IP, ssh user)
+nixos-container start <name>         # start a container (no-op if already running)
+nixos-container stop <name>          # stop a container (no-op if already stopped)
+nixos-container restart <name>       # stop then start
+nixos-container login <name>         # same as nixos-<name>-login (starts it first if needed)
+```
+
+- The wrapper is baked at build time with the declared containers (name, auto-allocated IP, ssh user) from the framework's `containerInfo` — so `list`/`status` work even for stopped containers.
+- `start`/`stop`/`restart` delegate to the real binary via `sudo` (reachable through `NIX_REAL_CONTAINER`, set by `makeWrapper`).
+- Any other native command (`create`, `destroy`, `update`, ...) passes through to the real binary.
+- Status probing is privilege-free (`systemctl is-active container@<name>`).
+- The login script (`nixos-<name>-login`, generated per container with `login = true`) stays available as-is.
 
 ## Adding a new container subsystem type (e.g. LXC, Docker, ...)
 

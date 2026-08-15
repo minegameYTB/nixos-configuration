@@ -27,8 +27,20 @@ let
   ### name -> position in enabledNames (stable auto-IP allocation)
   nameToIdx = lib.listToAttrs (lib.imap0 (i: n: lib.nameValuePair n i) enabledNames);
 
+  ### Declared containers, sorted by name, with their resolved runtime info
+  ### (used by the nixos-container wrapper script)
+  containerInfo = lib.imap0 (idx: name: {
+    inherit name;
+    address =
+      if cfg.containers.${name}.localAddress == null
+      then autoLocalAddress idx
+      else cfg.containers.${name}.localAddress;
+    sshUser = cfg.containers.${name}.sshUser;
+    login = cfg.containers.${name}.enable && cfg.containers.${name}.login;
+  }) enabledNames;
+
   ### containers.<name> entry derived from nixosContainers.<name>
-  mkContainer = idx: name: c: {
+  mkContainer = idx: c: {
     autoStart = c.autoStart;
     privateNetwork = true;
     hostAddress = if c.hostAddress == null then autoHostAddress idx else c.hostAddress;
@@ -113,6 +125,7 @@ let
       echo "Login to the container '${name}' using ssh, please use your password defined in your container"
       exec -a "$0" "''${ssh_bin}" "${c.sshUser}@''${ip}"
     '';
+
 in
 {
   ### Per-subsystem switch, set at the machine profile level
@@ -271,7 +284,7 @@ in
     ### worked example: ./opencode-sandbox)
     containers = lib.listToAttrs (
       lib.imap0 (
-        idx: name: lib.nameValuePair name (mkContainer idx name cfg.containers.${name})
+        idx: name: lib.nameValuePair name (mkContainer idx cfg.containers.${name})
       ) enabledNames
     );
 
@@ -279,5 +292,180 @@ in
     environment.systemPackages = lib.mapAttrsToList mkLoginScript (
       lib.filterAttrs (_: c: c.enable && c.login) cfg.containers
     );
+
+    ### Override the nixos-container CLI (same name) to add the
+    ### list/status/start/stop/restart/login subcommands. Same pattern as the
+    ### nixos-rebuild wrapper in nix-settings.nix: overrideAttrs + makeWrapper
+    ### around a personal-command script; the real binary is renamed to
+    ### .nixos-container-wrapped and reachable via NIX_REAL_CONTAINER (other
+    ### native commands pass through to it). The wrapper is baked with the
+    ### declared containers (registry below), so it works even when a container
+    ### is not running.
+    nixpkgs.overlays = [
+      (self: super:
+        let
+          ### nixos-container wrapper script — manage all declared NixOS
+          ### containers. The registry (names, addresses, ssh users) is baked
+          ### in at build time from containerInfo. `login` delegates to the
+          ### per-container nixos-<name>-login script.
+          containersWrapperScript = ''
+            set -euo pipefail
+
+            ### Container registry baked at build time
+            CONTAINERS=( ${lib.concatStringsSep " " (map (c: c.name) containerInfo)} )
+            declare -A ADDRESS=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${c.address}") containerInfo)} )
+            declare -A SSH_USER=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${c.sshUser}") containerInfo)} )
+            declare -A LOGIN=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${if c.login then "1" else "0"}") containerInfo)} )
+
+            usage() {
+              cat <<'EOF'
+            Usage: nixos-container <command> [name]
+
+            Commands:
+              list                    list all declared containers (name, IP, ssh user, status)
+              status [name]           detailed status of all (or one) containers
+              start <name>            start a container
+              stop <name>             stop a container
+              restart <name>          stop then start a container
+              login <name>            ssh into a container (starts it first if needed)
+
+            Any other command (create, destroy, update, ...) is passed through
+            to the real nixos-container binary.
+            EOF
+            }
+
+            ### Resolve <name> against the declared containers; error out otherwise
+            resolve() {
+              local name="''${1:-}"
+              if [[ -z "''${ADDRESS[$name]+x}" ]]; then
+                echo "Unknown container: $name" >&2
+                echo "Declared containers: "''${CONTAINERS[*]}" " >&2
+                exit 1
+              fi
+              printf '%s' "$name"
+            }
+
+            ### Privilege-free state probing via systemd
+            container_state() {
+              local s
+              s="$(systemctl is-active "container@$1" 2>/dev/null || true)"
+              case "$s" in
+                active) printf 'active' ;;
+                activating) printf 'activating' ;;
+                inactive) printf 'stopped' ;;
+                failed) printf 'failed' ;;
+                *) printf 'unknown' ;;
+              esac
+            }
+
+            cmd_list() {
+              printf '%-15s %-13s %-10s %s\n' NAME IP 'SSH USER' STATUS
+              local name
+              for name in "''${CONTAINERS[@]}"; do
+                printf '%-15s %-13s %-10s %s\n' "$name" "''${ADDRESS[$name]}" "''${SSH_USER[$name]}" "$(container_state "$name")"
+              done
+            }
+
+            cmd_status() {
+              local names
+              if [[ $# -eq 0 ]]; then
+                names=( "''${CONTAINERS[@]}" )
+              else
+                names=( "$(resolve "''${1:-}")" )
+              fi
+              local name state since
+              for name in "''${names[@]}"; do
+                state="$(container_state "$name")"
+                since="$(systemctl show "container@$name" --property=ActiveEnterTimestamp --value 2>/dev/null || true)"
+                printf '%-12s %s\n' 'Container:' "$name"
+                printf '%-12s %s\n' 'Status:' "$state''${since:+ (up since $since)}"
+                printf '%-12s %s\n' 'IP:' "''${ADDRESS[$name]}"
+                printf '%-12s %s\n' 'SSH user:' "''${SSH_USER[$name]}"
+                printf '%-12s %s\n' 'Login:' "$([[ "''${LOGIN[$name]}" == "1" ]] && echo yes || echo no)"
+                echo
+              done
+            }
+
+            cmd_start() {
+              local name
+              name="$(resolve "''${1:-}")"
+              if [[ "$(container_state "$name")" == "active" ]]; then
+                echo "Container '$name' is already running"
+                return 0
+              fi
+              echo "Starting container '$name'"
+              sudo "$NIX_REAL_CONTAINER" start "$name" || {
+                echo "ERROR: failed to start container '$name'" >&2
+                echo "       Check the logs: journalctl -u container@$name" >&2
+                echo "       Also check the bind mount host paths (auto-created by nixos-container-bind-dirs)" >&2
+                exit 1
+              }
+            }
+
+            cmd_stop() {
+              local name
+              name="$(resolve "''${1:-}")"
+              if [[ "$(container_state "$name")" == "stopped" ]]; then
+                echo "Container '$name' is already stopped"
+                return 0
+              fi
+              echo "Stopping container '$name'"
+              sudo "$NIX_REAL_CONTAINER" stop "$name" || {
+                echo "ERROR: failed to stop container '$name'" >&2
+                exit 1
+              }
+            }
+
+            cmd_restart() {
+              cmd_stop "''${1:-}"
+              cmd_start "''${1:-}"
+            }
+
+            cmd_login() {
+              local name
+              name="$(resolve "''${1:-}")"
+              if [[ "''${LOGIN[$name]}" != "1" ]]; then
+                echo "No login script generated for container '$name' (login = false)" >&2
+                exit 1
+              fi
+              exec "nixos-''${name}-login"
+            }
+
+            main() {
+              if [[ $# -lt 1 ]]; then
+                usage >&2
+                exit 1
+              fi
+              local cmd="$1"
+              shift
+              case "$cmd" in
+                list) cmd_list "$@" ;;
+                status) cmd_status "$@" ;;
+                start) cmd_start "$@" ;;
+                stop) cmd_stop "$@" ;;
+                restart) cmd_restart "$@" ;;
+                login) cmd_login "$@" ;;
+                -h | --help | help) usage ;;
+                *) exec "$NIX_REAL_CONTAINER" "$cmd" "$@" ;;
+              esac
+            }
+
+            main "$@"
+          '';
+        in
+        {
+          nixos-container = super.nixos-container.overrideAttrs (
+            oldAttrs: {
+              nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
+              postInstall = (oldAttrs.postInstall or "") + ''
+                mv $out/bin/nixos-container $out/bin/.nixos-container-wrapped
+                makeWrapper ${super.writeShellScript "nixos-container-wrapper" containersWrapperScript} $out/bin/nixos-container \
+                  --set NIX_REAL_CONTAINER "$out/bin/.nixos-container-wrapped"
+              '';
+            }
+          );
+        }
+      )
+    ];
   };
 }
