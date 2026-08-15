@@ -27,18 +27,6 @@ let
   ### name -> position in enabledNames (stable auto-IP allocation)
   nameToIdx = lib.listToAttrs (lib.imap0 (i: n: lib.nameValuePair n i) enabledNames);
 
-  ### Declared containers, sorted by name, with their resolved runtime info
-  ### (used by the nixos-container wrapper script)
-  containerInfo = lib.imap0 (idx: name: {
-    inherit name;
-    address =
-      if cfg.containers.${name}.localAddress == null
-      then autoLocalAddress idx
-      else cfg.containers.${name}.localAddress;
-    sshUser = cfg.containers.${name}.sshUser;
-    login = cfg.containers.${name}.enable && cfg.containers.${name}.login;
-  }) enabledNames;
-
   ### containers.<name> entry derived from nixosContainers.<name>
   mkContainer = idx: c: {
     autoStart = c.autoStart;
@@ -304,6 +292,18 @@ in
     nixpkgs.overlays = [
       (self: super:
         let
+          ### Declared containers, sorted by name, with their resolved runtime
+          ### info (only consumed by the wrapper script below)
+          containerInfo = lib.imap0 (idx: name: {
+            inherit name;
+            address =
+              if cfg.containers.${name}.localAddress == null
+              then autoLocalAddress idx
+              else cfg.containers.${name}.localAddress;
+            sshUser = cfg.containers.${name}.sshUser;
+            login = cfg.containers.${name}.enable && cfg.containers.${name}.login;
+          }) enabledNames;
+
           ### nixos-container wrapper script — manage all declared NixOS
           ### containers. The registry (names, addresses, ssh users) is baked
           ### in at build time from containerInfo. `login` delegates to the
