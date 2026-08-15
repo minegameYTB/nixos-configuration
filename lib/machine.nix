@@ -22,6 +22,7 @@ let
       arch ? defaultArch,
       usePatched ? false,
       userOverrides ? { },
+      withHomeManager ? true,
     }:
     let
       machinePkgs = if usePatched then pkgsPatched arch else pkgsFor arch;
@@ -41,7 +42,8 @@ let
         (overlay arch)
 
         { networking.hostName = hostname; }
-
+      ]
+      ++ lib.optionals withHomeManager [
         home-manager.nixosModules.home-manager
         (homeManagerConfig arch)
       ]

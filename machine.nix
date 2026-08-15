@@ -97,6 +97,7 @@ in
     profile = base "desktop";
     fs = fs "btrfs";
     extraModules = [ boot.efi ];
+    withHomeManager = true;
   };
 
   # VM preset (desktop bios)
@@ -124,6 +125,7 @@ in
     fs = fs "btrfs";
     extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
+    withHomeManager = true;
   };
 
   # VM preset (CLI bios)
@@ -189,6 +191,7 @@ in
       "browser"
     ];
     keyboardSession = true;
+    withHomeManager = true;
   };
 
   iso-minimal = helpers.iso.mkIso {
@@ -196,5 +199,6 @@ in
     profile = ./iso/cli.nix;
     hostname = "nixos-iso-minimal";
     hmFeatures = [ ];
+    withHomeManager = true;
   };
 }

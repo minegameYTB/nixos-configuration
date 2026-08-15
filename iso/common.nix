@@ -169,6 +169,7 @@ let
       extraModules ? [ ],
       extraHomeModules ? [ ],
       username ? "nixos",
+      withHomeManager ? true,
     }:
     let
       isoUserCfg = {
@@ -202,6 +203,8 @@ let
         profile
         (overlay isoArch)
         { networking.hostName = hostname; }
+      ]
+      ++ lib.optionals withHomeManager [
         home-manager.nixosModules.home-manager
         {
           home-manager = {
@@ -222,8 +225,8 @@ let
             extraSpecialArgs = iSpecialArgs;
           };
         }
-        isoModule
       ]
+      ++ [ isoModule ]
       ++ extraModules;
     };
 
