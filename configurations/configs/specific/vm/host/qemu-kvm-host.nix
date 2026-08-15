@@ -48,10 +48,16 @@
   virtualisation.vmVariant = {
     # following configuration is added only when building VM with build-vm
     virtualisation = {
-      memorySize = 2048; # Use 1024MiB memory.
+      memorySize = 4096; # Use 4096MiB memory.
       cores = 2;
       graphics = true; # Boot the vm in a window.
       diskSize = 15000; # Virtual machine disk size in MB.
+
+      # virgl GPU acceleration (requires OpenGL host session, e.g. X11/Wayland)
+      qemu.options = [
+        "-device virtio-vga-gl"
+        "-display gtk,gl=on"
+      ];
     };
   };
 }
