@@ -99,8 +99,9 @@
             customKernelArgs;
       in
       if isArm then
-        # no CachyOS on ARM → use stock NixOS kernel
-        pkgs.linuxPackages_latest
+        # no CachyOS on ARM → use stock LTS NixOS kernel
+        # (not latest: newer kernels are unsupported by ZFS, e.g. 7.1.8 vs ZFS 2.4.3 max 7.0)
+        pkgs.linuxPackages
       else if host == "server" && arch != "x86-64-v1" then
         # explicit guard: server kernel exists only as v1
         throw "kernelPackages: CachyOS server kernel only provides x86-64-v1, got ${arch}"
