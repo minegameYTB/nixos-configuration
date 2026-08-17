@@ -186,6 +186,7 @@ in
     hmFeatures = [
       "cli"
       "shell"
+      "shell-no-zsh-hm"
       "desktop-core"
       "gnome"
       "browser"
@@ -198,7 +199,7 @@ in
     edition = "CLI";
     profile = ./iso/cli.nix;
     hostname = "nixos-iso-minimal";
-    hmFeatures = [ ];
+    hmFeatures = [ "shell-no-zsh-hm" ];
     withHomeManager = true;
   };
 }
