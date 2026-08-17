@@ -67,6 +67,15 @@
     };
   };
 
+  #specialisation.all-cores = {
+  #  configuration = {
+  #    nix.settings = {
+  #      max-jobs = lib.mkForce "auto";
+  #      cores = lib.mkForce 0;
+  #    };
+  #  };
+  #};
+
   ### Ctrl-os substitutes (custom option (defined in /configurations/modules/nix/ctrl-os-substitutes.nix))
   #ctrl-os.substitutes.enable = true;
 
@@ -89,6 +98,7 @@
             set -euo pipefail
             REAL_NRB="''${NIX_REAL_NRB}"
             DEFAULT_FLAKE="''${NRB_FLAKE:-}"
+            EXTRA_OPTS=""
             # ----------------------------------------------------------------------
             # nixos-rebuild wrapper - flake injector + personal commands
             #
@@ -168,8 +178,9 @@
 
             # register personal commands here
             register_cmd "cmds"   "show this help for custom commands"
-            register_cmd "status" "show host, flake path, and last 5 generations"
+            register_cmd "status" "show host, flake, current system and generations"
             register_cmd "hello"  "says hi !"
+            register_cmd "turbo"  "rebuild with all cores (max-jobs=auto, cores=0)"
 
             # dispatch personal commands
             case "''${1:-}" in
@@ -177,10 +188,25 @@
                 show_personal_help
                 exit 0
                 ;;
+              turbo)
+                info "turbo mode: using all available cores (max-jobs=auto, cores=0)"
+                EXTRA_OPTS+=" --option max-jobs auto --option cores 0"
+                shift
+                ;;
               status)
                 info "host: $(hostname)"
                 info "flake: ''${DEFAULT_FLAKE:-$(pwd)#$(hostname | tr '[:upper:]' '[:lower:]')}"
-                "$REAL_NRB" list-generations | tail -5
+                if [[ -L /run/current-system ]]; then
+                  info "current: $(readlink -f /run/current-system)"
+                else
+                  warn "no /run/current-system symlink"
+                fi
+                if [[ -e /nix/var/nix/profiles/system ]]; then
+                  echo "generations (last 5):"
+                  { "$REAL_NRB" list-generations 2>/dev/null || true; } | head -6
+                else
+                  warn "no system profile found (not an active NixOS install?)"
+                fi
                 exit 0
                 ;;
               hello)
@@ -227,7 +253,8 @@
               fi
             fi
 
-            exec "$REAL_NRB" "$@"
+            # shellcheck disable=SC2086
+            exec "$REAL_NRB" "$@" $EXTRA_OPTS
           '';
         in
         {
