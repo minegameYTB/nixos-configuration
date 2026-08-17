@@ -2,6 +2,7 @@
   globalFeatures = [
     "cli"
     "shell"
+    "shell-no-zsh-hm"
     "desktop-core"
   ];
 
