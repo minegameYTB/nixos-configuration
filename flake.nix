@@ -28,7 +28,7 @@
     ### External non-nixpkgs repos (overlays, software) — passed via specialArgs
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs-main";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     nur = {
