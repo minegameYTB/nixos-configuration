@@ -51,7 +51,9 @@ let
       name = "snapper-weekly";
       period = "weekly";
       keep = 4;
-      OnCalendar = "weekly";
+      ### Matches sanoid's effective weekly time (anchor Monday 23:30, taken
+      ### on its first hourly run after → Tuesday 00:00).
+      OnCalendar = "Tue *-*-* 00:00:00";
       description = "Weekly snapper snapshot (home)";
     }
     {
