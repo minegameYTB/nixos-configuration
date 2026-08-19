@@ -7,7 +7,7 @@
     templates = {
       important-data = {
         hourly = 24;
-        daily = 7;
+        daily = 15;
         weekly = 4;
         monthly = 3;
         autosnap = true;

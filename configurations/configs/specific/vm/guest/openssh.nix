@@ -16,8 +16,18 @@
 
   ### SSH service hardening
   systemd.services.sshd.serviceConfig = {
-    NoNewPrivileges = true;
     ProtectSystem = "strict";
+
+    ### Keep sudo / nixos-rebuild usable over SSH: re-open only the
+    ### paths needed for ops (strict makes the whole fs read-only)
+    ReadWritePaths = [
+      "/run" # sudo timestamps, dbus/systemd sockets
+      "/nix" # nixos-rebuild profile activation
+      "/boot" # bootloader update (systemd-boot)
+      "/etc" # activation writes /etc/NIXOS + symlinks
+      "/home" # user workdirs
+    ];
+
     PrivateTmp = true;
 
     ### Experimental cgroup v2 resource limits (percentage of RAM:

@@ -322,8 +322,15 @@
                   ;
               }).nixpkgs.overlays;
           };
-        in
-        pkgsWithOverlay.pkgsConfig
+        ### callPackage injects override/overrideDerivation functors into the
+        ### pkgsConfig attrset — strip them so `nix flake show` doesn't warn
+        ### about non-derivation packages.
+        pkgsConfig = lib.removeAttrs pkgsWithOverlay.pkgsConfig [
+          "override"
+          "overrideDerivation"
+        ];
+      in
+      pkgsConfig
 
         ### ISO images auto-discovery
         # Every nixosConfig starting with "iso-" gets picked up automatically

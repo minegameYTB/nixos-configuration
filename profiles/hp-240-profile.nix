@@ -34,6 +34,9 @@
     ../configurations/configs/specific/container
     ../configurations/configs/specific/desktop/autologin.nix
 
+    ### Snapper snapshot planning (equivalent sanoid for btrfs)
+    ../configurations/hardware-configuration/filesystem/btrfs/snapper.nix
+
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
     ../configurations/config-modules
