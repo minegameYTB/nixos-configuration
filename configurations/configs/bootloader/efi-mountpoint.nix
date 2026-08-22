@@ -3,7 +3,7 @@
 {
   ### Use efi partitionment
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/EFI";
+    device = "/dev/disk/by-fs/vfat/label/EFI";
     fsType = "vfat";
     options = [
       "noexec"

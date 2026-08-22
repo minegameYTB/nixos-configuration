@@ -34,7 +34,7 @@
   ### Root/home mount point located to ../filesystem/btrfs
   ### Specific mount point
   fileSystems."/mnt/DATA" = {
-    label = "DATA";
+    device = "/dev/disk/by-fs/btrfs/label/DATA";
     fsType = "btrfs";
     options = [
       "subvol=@data"
@@ -48,7 +48,7 @@
   };
 
   fileSystems."/mnt/Games" = {
-    label = "DATA";
+    device = "/dev/disk/by-fs/btrfs/label/DATA";
     fsType = "btrfs";
     options = [
       "subvol=@games"

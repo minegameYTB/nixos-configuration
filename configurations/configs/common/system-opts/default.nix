@@ -9,6 +9,7 @@
     ./nix-settings.nix
     ./system-apps.nix
     ./system-settings.nix
+    ./disk-symlinks.nix
     ./fonts.nix
     ./shell.nix
     ./version.nix

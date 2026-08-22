@@ -41,7 +41,7 @@
     gbr = "git branch";
     gft = "git fetch";
 
-    ### Core utilities remplacement
+    ### Core utilities replacement
     ls = "${pkgs.lsd}/bin/lsd";
     cat = "${pkgs.bat}/bin/bat";
     df = "${pkgs.duf}/bin/duf -hide special";

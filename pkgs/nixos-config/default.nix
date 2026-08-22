@@ -12,8 +12,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "nixos-config";
+  ### Version without commit hash — avoids false downgrades in nvd diff
+  ### (the shortRev is alphabetically compared and causes [D.] flags).
+  ### The rev remains available via system.configurationRevision and .config-repo.
   version =
-    "${lib.trivial.release}.${buildDate}.${rev}" + lib.optionalString (branch != null) ".${branch}";
+    "${lib.trivial.release}.${buildDate}" + lib.optionalString (branch != null) ".${branch}";
   dontBuild = true;
   src = flakePath;
 

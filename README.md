@@ -10,7 +10,7 @@ Build the ISO, write to a USB drive, boot, and run:
 
 ```bash
 nix build '.#iso-gnome'
-cp result/iso/*.iso /dev/sdX && sync
+sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 
 On the live ISO, open a terminal and run `nixos-config-install`.
@@ -53,7 +53,7 @@ Both include `nixos-config-install`. CachyOS kernel, ZFS support, dual keyboard 
 ```
 nixos-configuration/
 ├── flake.nix              # Entrypoint: inputs, overlays, specialArgs, mkMachine, mkHome
-├── machine.nix            # Defines 10 NixOS configurations + ISO configs
+├── machine.nix            # Defines 11 NixOS configurations + ISO configs
 ├── overlay.nix            # Global overlays (NUR, CachyOS, unstable/PR, pkgsConfig)
 ├── install.sh             # Auto-detecting install script
 ├── build.sh               # nix-shell wrapper for make

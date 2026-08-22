@@ -11,8 +11,10 @@
   ### No encryption on datasets — skip zfs load-key -a in initrd (speeds boot)
   boot.zfs.requestEncryptionCredentials = false;
 
-  ### ZFS pool is directly on the partition — scan by partuuid
-  boot.zfs.devNodes = "/dev/disk/by-partuuid";
+  ### ZFS pool is directly on the partition — scan only ZFS member partitions
+  ### via the by-fs namespace (see doc/udev-by-fs.md). The by-fs links exist
+  ### in the initrd thanks to boot.initrd.services.udev.rules (disk-symlinks.nix).
+  boot.zfs.devNodes = "/dev/disk/by-fs/zfs_member/fs-uuid";
 
   ### Disko-generated mountpoints (zroot datasets)
   fileSystems."/" = {

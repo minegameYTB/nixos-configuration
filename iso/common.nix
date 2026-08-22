@@ -99,7 +99,13 @@ let
       boot.initrd.systemd.emergencyAccess = lib.mkForce true;
       boot.zfs = {
         forceImportRoot = false;
-        package = config.boot.kernelPackages.zfs_cachyos;
+        ### Same fallback as zfs-common.nix: CachyOS-patched zfs when the
+        ### cachyos kernel is enabled, upstream zfs otherwise (vanilla kernel)
+        package =
+          if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages then
+            config.boot.kernelPackages.zfs_cachyos
+          else
+            pkgs.zfs;
       };
 
       ### Create new machine-id

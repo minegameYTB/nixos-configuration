@@ -11,8 +11,7 @@
 
   ### Mount Point
   fileSystems."/" = {
-    #device = "/dev/disk/by-label/nixos-root";
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@"
@@ -22,7 +21,7 @@
   };
 
   fileSystems."/home" = {
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@home"
@@ -32,7 +31,7 @@
   };
 
   fileSystems."/nix" = {
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@nix"
@@ -41,7 +40,7 @@
     ];
   };
   fileSystems."/var/log" = {
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@log"
@@ -50,7 +49,7 @@
     ];
   };
   fileSystems."/var/cache" = {
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@cache"
@@ -60,7 +59,7 @@
   };
 
   fileSystems."/var/lib/libvirt" = lib.mkIf config.virtualisation.libvirtd.enable {
-    label = "nixos-root";
+    device = "/dev/disk/by-fs/btrfs/label/nixos-root";
     fsType = "btrfs";
     options = [
       "subvol=@libvirt"

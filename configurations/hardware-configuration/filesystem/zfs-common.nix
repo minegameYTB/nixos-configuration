@@ -35,7 +35,7 @@
     else
       [
         ### 4 GiB max ARC (conservative for 16 GiB VMs)
-        ### Calcul: 4 * 1024 * 1024 * 1024 = 4294967296
+        ### Calculation: 4 * 1024 * 1024 * 1024 = 4294967296
         "zfs.zfs_arc_min=536870912" # 512M min
         "zfs.zfs_arc_max=1073741824" # 1G max
       ]

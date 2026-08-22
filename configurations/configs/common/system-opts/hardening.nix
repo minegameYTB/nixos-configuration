@@ -38,7 +38,7 @@ let
     "jffs2"
     "hfs"
     "hfsplus"
-    "ntfs3" # Force new NTFS module (nammed NTFSPLUS)
+    # "ntfs3" # Blacklisting forces the NTFSPLUS module — commented out: keep ntfs3 available on vanilla kernel
   ];
 
   unusedAllModulesCategories = unusedNetModules ++ unusedAdvModules ++ unusedFilesystemModules;

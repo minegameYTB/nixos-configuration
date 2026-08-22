@@ -7,7 +7,9 @@
 
 {
   ### Add cachyOS kernel expression
-  imports = [ ./cachyos-kernel.nix ];
+  ### Disabled: vanilla LTS kernel saves ~7 MB of initrd (the CachyOS flake ships
+  ### its own zfs-all closure which duplicates glibc/krb5/openssl against nixpkgs-main)
+  # imports = [ ./cachyos-kernel.nix ];
 
   ### Boot config (followed this guide for hardening: https://madaidans-insecurities.github.io/guides/linux-hardening.html)
   boot = {

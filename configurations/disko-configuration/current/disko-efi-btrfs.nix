@@ -1,6 +1,6 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
-  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixe value or 100% for the disk size",
+  size ? throw "Set size for partition e.g. 100G or 100%, GPT only accept fixed value or 100% for the disk size",
   ...
 }:
 
