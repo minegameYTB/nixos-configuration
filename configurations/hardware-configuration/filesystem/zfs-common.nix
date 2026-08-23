@@ -98,12 +98,44 @@
     ENV{ID_FS_TYPE}=="zfs_member", ENV{UDISKS_IGNORE}="1", ENV{UDISKS_PRESENTATION_HIDE}="1"
   '';
 
-  ### For share* properties in zfs
+  ### For share* properties in zfs:
+  ###   - sharenfs=<opts> → served by nfsd
+  ###   - sharesmb=on     → dataset published as a samba usershare
   services.nfs.server.enable = true;
+
   services.samba = {
     enable = true;
-    package = pkgs.samba;
     smbd.enable = true;
     openFirewall = true;
+
+    ### Required for `zfs set sharesmb=on <dataset>`: `zfs share -a` publishes
+    ### each dataset as a samba usershare via `net usershare add`, which needs
+    ### /var/lib/samba/usershares (created here) and the [global] usershare
+    ### settings injected by the module.
+    ### Usage: zfs set sharesmb=on zroot/USERDATA/home
+    ### Access requires a samba password: smbpasswd -a <user>
+    usershares.enable = true;
+
+    settings.global = {
+      ### Datasets are owned by regular users but the usershare is created by
+      ### root (zfs-share runs as root) — lift samba's ownership check,
+      ### otherwise every ZFS share fails with NT_STATUS_ACCESS_DENIED.
+      "usershare owner only" = false;
+
+      ### Drop legacy SMB1 (security)
+      "server min protocol" = "SMB2";
+    };
   };
+
+  ### Windows 10/11 discovery: NetBIOS browsing is dead there, wsdd answers
+  ### WS-Discovery probes so ZFS/SMB shares show up in the "Network" view.
+  services.samba-wsdd = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  ### Fix boot ordering: upstream zfs-share.service orders after "smb.service"
+  ### which does not exist on NixOS (unit is named samba-smbd.service), so
+  ### `zfs share -a` could race against smbd startup and fail silently.
+  systemd.services."zfs-share".after = [ "samba-smbd.service" ];
 }
