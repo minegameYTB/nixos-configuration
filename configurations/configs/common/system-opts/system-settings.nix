@@ -93,7 +93,7 @@
   zramSwap.enable = true;
 
   ### Fstrim
-  services.fstrim.enable = if (config.fileSystems."/".fsType != "zfs") then true else false;
+  services.fstrim.enable = true;
 
   ### Fwupd
   services.fwupd.enable = true;
