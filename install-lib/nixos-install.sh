@@ -73,8 +73,15 @@ validate_step() {
 # ---------------------------------------------------------------------------
 
 showDiskLsblk() {
-  echo "Available block devices:"
-  lsblk -d -n -o NAME,SIZE,TYPE | grep -E '^(sd|vd|nvme|hd|mmcblk)' || true
+  echo "Available block devices (device, size, model, reproducible by-id path):"
+  for disk in $(lsblk -d -n -o NAME | grep -E '^(sd|vd|nvme|hd|mmcblk)'); do
+    size=$(lsblk -d -n -o SIZE "/dev/$disk")
+    model=$(lsblk -d -n -o MODEL "/dev/$disk" 2>/dev/null | xargs)
+    # first whole-disk /dev/disk/by-id name (partitions excluded via the $ anchor)
+    # shellcheck disable=SC2012 # ls -l is the readable way to resolve symlink names here
+    byid=$(ls -l /dev/disk/by-id/ 2>/dev/null | awk -v d="$disk" '$NF ~ ("/"d"$") {print $9}' | head -1)
+    printf '  /dev/%-14s %-9s %-28s %s\n' "$disk" "$size" "$model" "${byid:+/dev/disk/by-id/$byid}"
+  done
 }
 
 # ---------------------------------------------------------------------------
@@ -285,11 +292,20 @@ step_interactive_setup() {
 
   showDiskLsblk
   echo ""
-  read -r -e -p "Enter device to install NixOS on (e.g. /dev/sda, /dev/vda): " deviceDisk
+  read -r -e -p "Enter device to install NixOS on (e.g. /dev/vda or /dev/disk/by-id/...): " deviceDisk
   read -r -e -p "Enter size for the installation (e.g. 100% or 50G): "          sizeDisk
 
-  echo "Available profiles:"
-  nix "${nixFlags[@]}" flake show
+  echo "Available installable profiles (name - root fs):"
+  # shellcheck disable=SC2016 # the Nix expression is intentionally single-quoted
+  nix "${nixFlags[@]}" eval --raw ".#nixosConfigurations" --apply '
+    cfgs:
+    builtins.concatStringsSep "\n" (
+      builtins.map
+        (name: "  ${name} - ${(cfgs.${name}.config.fileSystems."/" or { fsType = "?"; }).fsType}")
+        (builtins.filter (name: builtins.match "(iso|recovery)-.*" name == null) (builtins.attrNames cfgs))
+    )
+  ' || warn "Could not list profiles — type the profile name manually"
+  echo ""
   read -r -e -p "Enter the profile name to install: " nixosProfile
   echo "${nixosProfile} selected"
 

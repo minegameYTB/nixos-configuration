@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+branch=$(git branch --show-current 2>/dev/null || true)
+if [ -z "$branch" ]; then
+  exit 0
+fi
+
+current=$(cat .branch 2>/dev/null || true)
+if [ "$current" != "$branch" ]; then
+  printf '%s' "$branch" > .branch
+  git add .branch
+fi

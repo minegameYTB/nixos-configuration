@@ -199,7 +199,11 @@ in
     edition = "CLI";
     profile = ./iso/cli.nix;
     hostname = "nixos-iso-minimal";
-    hmFeatures = [ "shell-no-zsh-hm" ];
+    hmFeatures = [
+      "cli"
+      "shell"
+      "shell-no-zsh-hm"
+    ];
     withHomeManager = true;
   };
 }

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+branch=$(git branch --show-current)
+if [ -n "$branch" ]; then
+  printf '%s' "$branch" > .branch
+  git add .branch
+  if ! git diff --cached --exit-code -- .branch >/dev/null 2>&1; then
+    git commit -m ".branch: update after merge" --no-verify
+  fi
+fi
