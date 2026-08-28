@@ -102,6 +102,8 @@
   xdg.mime.defaultApplications = {
     "text/plain" = "org.gnome.TextEditor.desktop";
     "application/x-shellscript" = "org.gnome.TextEditor.desktop";
+    "application/x-iso9660-image" = "gnome-disk-image-mounter.desktop";
+    "application/octet-stream" = "gnome-disk-image-mounter.desktop";
   };
 
   ### Overlays some gnome package
