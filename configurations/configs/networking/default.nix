@@ -51,4 +51,18 @@
   # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
+  ### Mount /export as tmpfs
+  fileSystems."/export" =
+    lib.mkIf (config.services.nfs.server.enable && config.services.samba.enable)
+      {
+        fsType = "tmpfs";
+        options = [
+          "nodev"
+          "noexec"
+          "nosuid"
+          "noswap"
+          "mode=755"
+          "size=4k"
+        ];
+      };
 }
