@@ -15,7 +15,7 @@
           partitions = {
             ### ESP partition
             ESP = {
-              size = "512M";
+              size = "1024M";
               type = "EF00";
               content = {
                 type = "filesystem";
