@@ -37,7 +37,6 @@
         [
           # GUI Packages (only if X11 is enabled)
           gparted
-          rpi-imager
           easyeffects
 
           ### Chromium based browser
