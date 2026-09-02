@@ -116,6 +116,22 @@
             };
           };
 
+          ### "Export" container dataset
+          "EXPORT" = {
+            type = "zfs_fs";
+            # Herited option for this container
+            options = {
+              mountpoint = "none";
+              compression = "zstd-6";
+              atime = "off";
+              xattr = "sa";
+              dnodesize = "auto";
+              setuid = "off";
+              exec = "off";
+              devices = "off";
+            };
+          };
+
           ### Nix dataset
           "nix" = {
             type = "zfs_fs";
