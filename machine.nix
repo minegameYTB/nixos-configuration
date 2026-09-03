@@ -179,7 +179,6 @@ in
     edition = "GNOME";
     profile = ./iso/gnome.nix;
     hostname = "nixos-iso";
-    extraModules = [ ./configurations/hardware-configuration/specific/nvidia.nix ];
     extraHomeModules = [
       ./hm-profiles/users/minegame/apps.nix
     ];
