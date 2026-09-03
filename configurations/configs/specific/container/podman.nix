@@ -21,5 +21,8 @@
     environment.systemPackages =
       (with pkgs.pkgsUnstable; [ distrobox ])
       ++ (lib.optionals config.services.xserver.enable (with pkgs.pkgsUnstable; [ distroshelf ]));
+
+    ### Python http.server (ex: python3 -m http.server 8000) pour servir les sets NetBSD
+    networking.firewall.allowedTCPPorts = [ 8000 ];
   };
 }

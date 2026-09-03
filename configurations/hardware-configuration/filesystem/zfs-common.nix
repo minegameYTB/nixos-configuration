@@ -101,7 +101,40 @@
   ### For share* properties in zfs:
   ###   - sharenfs=<opts> → served by nfsd
   ###   - sharesmb=on     → dataset published as a samba usershare
-  services.nfs.server.enable = true;
+  services.nfs.server = {
+    enable = true;
+
+    ### Fixed ports for firewall traversal (NFSv3 needs rpcbind + mountd + statd + lockd).
+    ### Without pinning, statd/lockd land on random ports (seen via `rpcinfo -p`)
+    ### and get dropped by the firewall.
+    lockdPort = 4001;
+    mountdPort = 4002;
+    statdPort = 4000;
+  };
+
+  ### NFSv3/v4 firewall: 111 (rpcbind), 2049 (nfsd), 20048 (mountd),
+  ### 4000-4002 (pinned statd/lockd/mountd above).
+  ### NOTE: NFSv2 is NOT served by modern kernels (`/proc/fs/nfsd/versions`
+  ### shows +3 +4 only), so old clients forcing `-o -2` (ex: NetBSD sysinst)
+  ### will hang regardless of firewall — use NFSv3+ or HTTP instead.
+  networking.firewall = {
+    allowedTCPPorts = [
+      111
+      2049
+      4000
+      4001
+      4002
+      20048
+    ];
+    allowedUDPPorts = [
+      111
+      2049
+      4000
+      4001
+      4002
+      20048
+    ];
+  };
 
   services.samba = {
     enable = true;
