@@ -62,6 +62,7 @@ let
       imports = [
         ../configurations/configuration.nix
         ../configurations/configs/networking
+        ../configurations/configs/networking/nfs-client.nix
         ../configurations/config-modules/nix-index-db
         ../configurations/config-modules/stylix
       ];
