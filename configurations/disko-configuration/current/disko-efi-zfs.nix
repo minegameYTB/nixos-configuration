@@ -427,9 +427,6 @@
               mountpoint = "none";
               volmode = "dev";
               compression = "lz4";
-              # Inherited by future guest zvols (immutable after creation).
-              # 64K matches general-purpose guest I/O (ext4/NTFS).
-              volblocksize = "64K";
             };
           };
         };
