@@ -8,21 +8,9 @@
   services.spice-vdagentd.enable = true;
 
   ### Nix specific
-  ### Base sizing (memorySize/cores/diskSize) is defined globally in
+  ### VM build defaults (sizing, graphics, virgl) are defined globally in
   ### configurations/configs/common/system-opts/vm-variant.nix —
-  ### only VM-window specifics remain here.
-  virtualisation.vmVariant = {
-    # following configuration is added only when building VM with build-vm
-    virtualisation = {
-      graphics = true; # Boot the vm in a window.
-
-      # virgl GPU acceleration (requires OpenGL host session, e.g. X11/Wayland)
-      qemu.options = [
-        "-device virtio-vga-gl"
-        "-display gtk,gl=on"
-      ];
-    };
-  };
+  ### only guest-OS agents remain here.
 
   ### Temporary fix https://github.com/NixOS/nixpkgs/issues/481078
   systemd = {
