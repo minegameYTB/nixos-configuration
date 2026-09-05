@@ -116,7 +116,8 @@
             };
           };
 
-          ### "Export" container dataset
+          ### "Export" container dataset (temporary datasets, mixed content:
+          ### keep neutral 128K default, tune recordsize per child at creation)
           "EXPORT" = {
             type = "zfs_fs";
             # Herited option for this container
@@ -426,6 +427,9 @@
               mountpoint = "none";
               volmode = "dev";
               compression = "lz4";
+              # Inherited by future guest zvols (immutable after creation).
+              # 64K matches general-purpose guest I/O (ext4/NTFS).
+              volblocksize = "64K";
             };
           };
         };
