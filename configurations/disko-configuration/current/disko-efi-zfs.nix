@@ -168,7 +168,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              recordsize = "16K";
+              recordsize = "64K";
               refquota = "60G";
             };
           };
