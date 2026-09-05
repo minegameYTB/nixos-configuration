@@ -13,5 +13,6 @@
     ./fonts.nix
     ./shell.nix
     ./version.nix
+    ./vm-variant.nix
   ];
 }

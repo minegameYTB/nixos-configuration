@@ -8,13 +8,13 @@
   services.spice-vdagentd.enable = true;
 
   ### Nix specific
+  ### Base sizing (memorySize/cores/diskSize) is defined globally in
+  ### configurations/configs/common/system-opts/vm-variant.nix —
+  ### only VM-window specifics remain here.
   virtualisation.vmVariant = {
     # following configuration is added only when building VM with build-vm
     virtualisation = {
-      memorySize = 4096; # Use 4096MiB memory.
-      cores = 2;
       graphics = true; # Boot the vm in a window.
-      diskSize = 15000; # Virtual machine disk size in MB.
 
       # virgl GPU acceleration (requires OpenGL host session, e.g. X11/Wayland)
       qemu.options = [
