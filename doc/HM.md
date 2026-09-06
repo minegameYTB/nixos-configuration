@@ -10,12 +10,6 @@ hm-profiles/
 │   ├── default.nix               # Calls entry.nix with username + overrides
 │   ├── git.nix                    # User git config
 │   └── apps.nix                   # Apps config (ghostty, fastfetch, ...)
-├── users/matt/
-│   ├── default.nix
-│   ├── git.nix
-│   └── apps.nix
-└── users/nixos/
-    └── default.nix                # ISO user (calls entry.nix, no override)
 
 home-manager/
 ├── features/                      # Activation modules (HM only)
@@ -37,10 +31,17 @@ home-manager/
 
 ### Execution flow
 
+> Note: the ISO does not use `hm-profiles/users/<name>/`. It builds
+> its own `isoUserCfg` (user `nixos`) in `iso/common.nix` and calls
+> `hm-profiles/users/entry.nix` directly + `extraHomeModules`.
+> Do not recreate a `users/nixos/` folder: it would be orphaned since it is
+> absent from `hm-profiles/users.nix` (`entry.nix` would fail on
+> `userConfigs."nixos"` → attribute missing error).
+
 ```
 flake.nix
   → homeManagerConfig
-    → users = [ "minegame" "matt" ]
+    → users = [ "minegame" ]
     → home-manager.users.${username} = import hm-profiles/users/${username}/default.nix
       → entry.nix
         → username = "minegame"

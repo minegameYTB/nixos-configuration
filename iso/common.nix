@@ -93,7 +93,7 @@ let
           "nixos-${edition}-${
             lib.optionalString (branch != null) "${branch}-"
           }${config.system.nixos.release}";
-      isoImage.appendToMenuLabel = lib.mkDefault " ${edition} (${branch}) - AZERTY (Français)";
+      isoImage.appendToMenuLabel = lib.mkDefault " ${edition} (${branch}) - AZERTY (French)";
       isoImage.squashfsCompression = "zstd -Xcompression-level 13";
 
       i18n.defaultLocale = "fr_FR.UTF-8";

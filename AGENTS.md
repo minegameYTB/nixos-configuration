@@ -10,7 +10,7 @@
 - **`flake.nix`** — entrypoint: inputs, overlays, `specialArgs`, `mkMachine`, `mkHome`
 - **`machine.nix`** — defines `mkMachine` → 11 NixOS configurations + 2 ISO configs via `helpers.iso.mkIso`
 - **`overlay.nix`** — injects NUR, CachyOS kernel, unstable/PR pkgs, `pkgsConfig` (delegates to `pkgs/default.nix`)
-- **`lib/nixpkgs-patches.nix`** — single source for the `pkgsPatched` patch list (PR patches via `pkgs.fetchpatch` — normalized hashes, stable across PR updates; local patches from `configurations/patch/nixpkgs/`)
+- **`lib/nixpkgs-patches.nix`** — single source for the `pkgsPatched` patch list (PR patches via `pkgs.fetchpatch` — normalized hashes, stable across PR updates; local patches from `configurations/patch/nixpkgs/`). This is the **OS base layer**: `mkMachine` accepts `usePatched ? false`, and when true the whole machine's `pkgs` come from this patched nixpkgs tree instead of `pkgsFor`. Currently `false` on all machines (reserve mechanism). Do NOT confuse with the `nixpkgs-pr` flake input, which is the **single-package layer** (see Critical Context).
 - **`lib/default.nix`** — re-exports `machine.nix` (`mkMachine`) and `iso/common.nix` (ISO helpers)
 - **`lib/repo.nix`** — single source for `repoUrl`, used by packaging, `/etc/os-release`, and install clone
 - **Hardware profiles** set `marker.hostProfile` (desktop/server) and `marker.archProfile` (x86-64-v1..v4, amd-zen4, aarch64) via `configurations/modules/misc/marker.nix`
@@ -137,7 +137,8 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - **No secrets in repo**: initial passwords are "nixos", LUKS keys are generated at install time
 - **Blocklist disabled**: StevenBlack/hosts nixpkgs module has an issue, commented out in networking
 - **nixpkgs-main** = release-26.05, pinned in flake.lock
-- **nixpkgs-pr** = staging-next for testing PRs (libvirt, qemu updates)
+- **Two-layer unreleased-package strategy (do not conflate):**
+  - **Package layer** — `nixpkgs-pr` input (`?ref=pull/537215/head`, i.e. the `claude-desktop` PR) exposed as `pkgs.pkgsPr` via `overlay.nix`, consumed in exactly one place: `configurations/configs/specific/ai/default.nix`. Purpose: install a single not-yet-released package without touching the OS base.
+  - **OS base layer** — `lib/nixpkgs-patches.nix` → `pkgsPatched` (same PR as `.patch` via `fetchpatch`, plus local patches from `configurations/patch/nixpkgs/` currently commented out: qemu version bump, libvirt/OVMF update). Activated per-machine via `usePatched = true` (currently `false` everywhere). Purpose: patch the nixpkgs source tree the whole system is evaluated against.
 - **forceImportRoot = false** for ZFS (both LUKS+ZFS and plain ZFS)
 - **NixOS stateVersion**: system = 26.05, HM = 26.05
-- **Patches in repo**: `configurations/patch/nixpkgs/` but integration happens via `nixpkgs-patched` in flake.nix using PRs

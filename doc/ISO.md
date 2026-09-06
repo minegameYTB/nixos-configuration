@@ -108,9 +108,9 @@ ZFS is supported via the CachyOS kernel package (`zfs_cachyos`).
 
 Menu entry format:
 
-Default (no specialisation): `NixOS <release> <edition> (<branch>) - AZERTY (Français)`
-- `NixOS 26.05.a1b2c3d GNOME (main) - AZERTY (Français)`
-- `NixOS 26.05.e5f6g7h CLI (fix-ssh) - AZERTY (Français)`
+Default (no specialisation): `NixOS <release> <edition> (<branch>) - AZERTY (French)`
+- `NixOS 26.05.a1b2c3d GNOME (main) - AZERTY (French)`
+- `NixOS 26.05.e5f6g7h CLI (fix-ssh) - AZERTY (French)`
 
 Keyboard specialisation:
 - `NixOS 26.05.a1b2c3d GNOME (main) - US English`
