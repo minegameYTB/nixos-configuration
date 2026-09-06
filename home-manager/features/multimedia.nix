@@ -25,7 +25,7 @@ in
         discord
       ])
       ++ (with pkgs.pkgsUnstable; [
-        #deezer-enhanced
+        deezer-enhanced
       ])
     )
     ++ lib.optionals isAarch64 (
