@@ -10,6 +10,9 @@
     ]
     ++ (with pkgs2511; [
       catppuccin-cursors.mochaDark
+    ])
+    ++ (with pkgsUnstable; [
+      bitwarden-desktop
     ]);
 
   fonts.fontconfig.enable = true;
