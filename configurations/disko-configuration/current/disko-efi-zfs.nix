@@ -73,7 +73,7 @@
               xattr = "sa";
               dnodesize = "auto";
               recordsize = "128K";
-              refquota = "3G";
+              refquota = "20M";
             };
           };
 
