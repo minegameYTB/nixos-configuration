@@ -157,7 +157,7 @@
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
-              refquota = "10G";
+              refquota = "2G";
             };
           };
           "nix/var/nix" = {
