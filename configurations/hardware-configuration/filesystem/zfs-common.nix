@@ -45,14 +45,9 @@
   ### (first 8 chars of machine-id from hardening.nix)
   networking.hostId = lib.mkDefault "b08dfa60";
 
-  ### ZFS package: prefer CachyOS-patched version when available
-  ### Falls back to upstream ZFS for non-CachyOS kernels.
-  ### Must be the USERLAND package (zfs-user): it ships lib/udev
-  ### (udev rules, vdev_id, zvol_id) required by the initrd.
-  ### The kernel module package is picked up automatically via
-  ### boot.zfs.modulePackage (selectModulePackage).
-  ### NOTE: zfs_cachyos from the CachyOS flake is a combined
-  ### kernel+userspace build, which is why it works as-is.
+  ### ZFS package: CachyOS-patched userland when available, upstream otherwise.
+  ### Must be the userland package (ships the udev rules required by the initrd);
+  ### the kernel module follows via boot.zfs.modulePackage. zfs_cachyos bundles both.
   boot.zfs = {
     package = lib.mkDefault (
       if builtins.hasAttr "zfs_cachyos" config.boot.kernelPackages then
@@ -114,9 +109,8 @@
 
   ### NFSv3/v4 firewall: 111 (rpcbind), 2049 (nfsd), 20048 (mountd),
   ### 4000-4002 (pinned statd/lockd/mountd above).
-  ### NOTE: NFSv2 is NOT served by modern kernels (`/proc/fs/nfsd/versions`
-  ### shows +3 +4 only), so old clients forcing `-o -2` (ex: NetBSD sysinst)
-  ### will hang regardless of firewall — use NFSv3+ or HTTP instead.
+  ### NFSv2 is not served by modern kernels — old clients forcing it will hang
+  ### regardless of firewall; use NFSv3+ or HTTP instead.
   networking.firewall = {
     allowedTCPPorts = [
       111
@@ -141,12 +135,9 @@
     smbd.enable = true;
     openFirewall = true;
 
-    ### Required for `zfs set sharesmb=on <dataset>`: `zfs share -a` publishes
-    ### each dataset as a samba usershare via `net usershare add`, which needs
-    ### /var/lib/samba/usershares (created here) and the [global] usershare
-    ### settings injected by the module.
-    ### Usage: zfs set sharesmb=on zroot/USERDATA/home
-    ### Access requires a samba password: smbpasswd -a <user>
+    ### `zfs share -a` publishes each sharesmb=on dataset via `net usershare add`,
+    ### which needs /var/lib/samba/usershares plus the [global] usershare settings.
+    ### Usage: zfs set sharesmb=on zroot/USERDATA/home, then smbpasswd -a <user>.
     usershares.enable = true;
 
     settings.global = {

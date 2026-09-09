@@ -1,75 +1,12 @@
-### Out-of-tree nixpkgs patches — single source of truth for pkgsPatched
+### Out-of-tree nixpkgs patches — canonical patch list for pkgsPatched.
+### Consumed by flake.nix (nixpkgs-patched); machines opt in per-machine with
+### `usePatched = true` in machine.nix (needs a rebuild switch — keep it off otherwise).
 ###
-### Imported by flake.nix (nixpkgs-patched) and applied to the nixpkgs-main
-### input, then used by machines with `usePatched = true` (lib/machine.nix).
+### PR patches go through pkgs.fetchpatch (not fetchurl): it strips the volatile
+### diff headers, so the hash only changes when the patch content really changes.
+### New hash needed? Put a dummy hash and copy the expected one from the build error.
 ###
-### The name suffix of the patched nixpkgs is derived from the patch sources
-### themselves (pure eval, nothing manual): the PR number is extracted from
-### the GitHub URL, the base nixpkgs rev comes from flake.lock (flake.nix).
-### The PR *commit* hash is not in the URL, and the patch file (where the
-### `From <hash>` header lives) is only readable at build time, not eval —
-### so a flake input would be needed to trace it. Not worth it.
-###
-### PR patches: use pkgs.fetchpatch instead of builtins.fetchurl. fetchpatch
-### normalizes the diff (filterdiff --clean strips the volatile `index`/
-### `From`/timestamp headers), so the hash only changes when the patch
-### content actually changes — no more stale-hash breakage on every PR
-### force-push/update.
-###
-### Building / testing
-###
-###   # Plain nixpkgs source (unpatched)
-###   nix build --impure --expr '
-###     let f = builtins.getFlake "path:/home/minegame/nixos-configuration";
-###     in f.inputs.nixpkgs-main'
-###
-###   # Patched source — store path embeds the base rev + patch ids:
-###   #   nixpkgs-patched-<base rev>-pr<number>-<local basenames>
-###   nix build --impure --expr '
-###     let f = builtins.getFlake "path:/home/minegame/nixos-configuration";
-###         pkgs = f.inputs.nixpkgs-main.legacyPackages.x86_64-linux;
-###         patches = import ./lib/nixpkgs-patches.nix { inherit pkgs; lib = pkgs.lib; };
-###     in pkgs.applyPatches {
-###       name = "nixpkgs-patched-${f.inputs.nixpkgs-main.shortRev}-${patches.name}";
-###       src = f.inputs.nixpkgs-main;
-###       inherit (patches) patches;
-###     }'
-###
-### usePatched option (lib/machine.nix)
-###
-###   mkMachine in machine.nix accepts `usePatched ? false`: when true the
-###   machine's pkgs come from pkgsPatched (this file) instead of pkgsFor.
-###   The pkgs is passed explicitly to nixosSystem, so a rebuild switch is
-###   needed; do not leave it enabled on machines that must stay unpatched.
-###
-###     # machine.nix
-###     hp-probook = mkMachine {
-###       ...
-###       usePatched = true;
-###     };
-###
-###   Verify the eval really pulls the patched tree:
-###
-###     nix eval .#nixosConfigurations.<name>.config.system.build.toplevel.drvPath
-###
-###   (drvPath differs from the unpatched build and the nixpkgs-patched-*
-###   drv/output appears in the store).
-###
-### Getting the hash: set a dummy value and build (or temporarily enable
-### usePatched on a machine), then copy the hash from the error message:
-###
-###   nix build --impure --expr '
-###     let f = builtins.getFlake "path:/home/minegame/nixos-configuration";
-###         pkgs = f.inputs.nixpkgs-main.legacyPackages.x86_64-linux;
-###     in pkgs.applyPatches {
-###       name = "nixpkgs-patched";
-###       src = f.inputs.nixpkgs-main;
-###       patches = (import ./lib/nixpkgs-patches.nix { inherit pkgs; lib = pkgs.lib; }).patches;
-###     }'
-###
-### Local patches: relative paths are resolved from this file's directory
-### (repo root = ../), applied with -p1 — keep fetchpatch's default
-### stripLen = 0 so the a/ b/ path prefixes survive.
+### Local patches resolve relative to this file (repo root = ../), applied with -p1.
 {
   pkgs,
   lib,

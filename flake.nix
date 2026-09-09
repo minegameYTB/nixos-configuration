@@ -127,7 +127,7 @@
         else
           null;
 
-      ### Repo URL — single source of truth for packaging and /etc/os-release
+      ### Canonical repo URL (packaging, /etc/os-release)
       repoUrl = (import ./lib/repo.nix).url;
 
       ### Supported systems (also used by home-manager standalone)
@@ -332,10 +332,7 @@
         in
         pkgsConfig
 
-        ### ISO images auto-discovery
-        # Every nixosConfig starting with "iso-" gets picked up automatically
-        # and exposed as a flake package. mapAttrs' + filterAttrs does the job
-        # — no more manual listing when adding a new variant.
+        ### NixOS configs prefixed "iso-" are auto-exposed as flake packages
         // lib.optionalAttrs (system == "x86_64-linux") (
           lib.mapAttrs' (name: config: lib.nameValuePair name config.config.system.build.isoImage) (
             lib.filterAttrs (n: _: lib.hasPrefix "iso-" n) self.nixosConfigurations

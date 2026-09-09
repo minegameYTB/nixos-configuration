@@ -1,5 +1,5 @@
 ### Sources: image catalogs, URL resolution, spec parsing, --list.
-### Sourced by the nspawnctl entry point — never executed directly.
+### Sourced by nspawnctl — do not execute directly.
 
 ### Collect every lx-*.tar.xz asset across all releases of a repo:
 ### <name>\t<published_at>\t<browser_download_url>, newest releases first.

@@ -2,19 +2,11 @@
 ### Sourced by install.sh before any install script
 # shellcheck shell=bash
 
-# ---------------------------------------------------------------------------
-# Defaults and checkpoint helpers
-# ---------------------------------------------------------------------------
-
 # shellcheck source=install-lib/defaults.sh
 source "$(dirname "${BASH_SOURCE[0]:-$0}")/defaults.sh"
 
 # shellcheck source=install-lib/checkpoint.sh
 source "$(dirname "${BASH_SOURCE[0]:-$0}")/checkpoint.sh"
-
-# ---------------------------------------------------------------------------
-# Nix settings
-# ---------------------------------------------------------------------------
 
 # shellcheck disable=SC2034 # used by sourced install scripts
 nixFlags=(--extra-experimental-features "nix-command flakes")
@@ -28,10 +20,7 @@ if [[ -z "$nixpkgsRev" || "$nixpkgsRev" == "null" ]]; then
   nixpkgsRev="$INSTALL_NIXPKGS_FALLBACK_REV"
 fi
 
-# ---------------------------------------------------------------------------
-# ANSI colour variables
 # Disabled when: NO_COLOR is set, TERM=dumb, or stdout is not a terminal.
-# ---------------------------------------------------------------------------
 
 # shellcheck disable=SC2034 # used by sourced install scripts for formatted output
 if [[ -n "${NO_COLOR:-}" ]] || [[ "${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
@@ -47,10 +36,6 @@ else
   RESET='\033[0m'
 fi
 
-# ---------------------------------------------------------------------------
-# Logging helpers
-# ---------------------------------------------------------------------------
-
 warn() {
   printf '%b\n' "${MAGENTA}warning:${RESET} $*" >&2
 }
@@ -59,16 +44,11 @@ info() {
   printf '%b\n' "${CYAN}info:${RESET} $*"
 }
 
-# Print the command before running it so the user can see what is happening.
 run_command() {
   printf '%b\n' "\n${BLUE}▶ Run command:${RESET}"
   printf '%b\n\n' "  ${YELLOW}$*${RESET}"
   "$@"
 }
-
-# ---------------------------------------------------------------------------
-# Flag parsing & usage
-# ---------------------------------------------------------------------------
 
 # Central help text — add new flags here AND in the case below.
 showUsage() {
@@ -84,8 +64,7 @@ Options:
 EOF
 }
 
-# Parse all known flags from "$@" and set globals accordingly.
-# Add new flags here (case branch) AND in showUsage() above.
+# New flags go here (case branch) AND in showUsage() above.
 # shellcheck disable=SC2034 # globals set here, read by install.sh / nixos-install.sh
 parseFlags() {
   while (( $# )); do
@@ -105,10 +84,6 @@ parseFlags() {
   done
 }
 
-# ---------------------------------------------------------------------------
-# Version check
-# ---------------------------------------------------------------------------
-
 # Check whether the local repo has uncommitted changes or is behind its
 # upstream branch.  If behind, propose to auto-update and re-exec.
 checkRepoVersion() {
@@ -117,13 +92,12 @@ checkRepoVersion() {
 
   local dirty=0 behind_count=0
 
-  # ── uncommitted changes ───────────────────────────────────────────────────
   if ! git -C "$repoRoot" diff --quiet 2>/dev/null; then
     dirty=1
     warn "You have uncommitted changes in ${repoRoot}"
   fi
 
-  # ── behind upstream ───────────────────────────────────────────────────────
+  # ── behind upstream ──
   if git -C "$repoRoot" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' &>/dev/null; then
     git -C "$repoRoot" fetch --quiet 2>/dev/null || true
     behind_count=$(git -C "$repoRoot" rev-list --count 'HEAD..@{upstream}' 2>/dev/null || echo 0)
@@ -132,7 +106,7 @@ checkRepoVersion() {
     fi
   fi
 
-  # ── prompt ────────────────────────────────────────────────────────────────
+  # ── prompt ──
   if (( dirty || behind_count > 0 )); then
     echo ""
 
@@ -160,10 +134,6 @@ checkRepoVersion() {
     info "Repository is up to date"
   fi
 }
-
-# ---------------------------------------------------------------------------
-# Username helper
-# ---------------------------------------------------------------------------
 
 # Read the default username from the install defaults and prompt the user to
 # confirm or override it.

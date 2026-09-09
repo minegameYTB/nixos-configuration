@@ -7,9 +7,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 PASS=0
 
-# ---------------------------------------------------------------------------
-# Colours
-# ---------------------------------------------------------------------------
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 CYAN='\033[1;36m'
@@ -18,9 +15,7 @@ RESET='\033[0m'
 ok()   { echo -e "  ${GREEN}✓${RESET} $1"; ((PASS++)) || true; }
 fail() { echo -e "  ${RED}✗${RESET} $1"; ((FAIL++)) || true; }
 
-# ---------------------------------------------------------------------------
 # Import the real lib functions (but mock disko/nixos-install)
-# ---------------------------------------------------------------------------
 
 # Mock run_command — logs but does NOT execute
 # shellcheck disable=SC2329 # intentionally unused — mock for sourced libs
@@ -37,9 +32,7 @@ mock_disko() {
   echo "    [mock disko] would run: nix run nixpkgs/#disko -- -m destroy,format,mount ${file}" >&2
 }
 
-# ---------------------------------------------------------------------------
 # Helper: test a single combination
-# ---------------------------------------------------------------------------
 # Args: boot_mode (efi|bios) fs (btrfs|zfs) encrypted (y|N)
 test_combination() {
   local boot="$1" fs="$2" encrypted="$3"
@@ -66,9 +59,6 @@ test_combination() {
   fi
 }
 
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
 echo -e "${CYAN}Disko config selection${RESET}"
 
 test_combination efi   btrfs  N
@@ -435,9 +425,6 @@ test_install_dir() {
 test_install_dir
 
 echo
-# ---------------------------------------------------------------------------
-# Summary
-# ---------------------------------------------------------------------------
 echo -e "${CYAN}Results: ${PASS} passed, ${FAIL} failed${RESET}"
 
 # Verify all expected disko files exist

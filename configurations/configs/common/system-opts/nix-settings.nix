@@ -14,16 +14,9 @@
     ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
     channel.enable = false;
 
-    ### Point NIX_PATH and the flake registry at this system's pinned nixpkgs
-    ### (declared implicitly by the flake input nixpkgs-main -> the real copy
-    ### /nix/store/<hash>-source, resolved dynamically so it follows
-    ### flake.lock). Imported by the host, every NixOS container and the ISOs
-    ### (via base.nix / configuration.nix), so containers inherit the host's
-    ### nixpkgs instead of falling back to nixos-unstable. Only applied when
-    ### nix is enabled on the evaluated system.
-    ### NB: use inputs.nixpkgs-main (the canonical input path), NOT pkgs.path:
-    ### pkgs.path resolves to a re-stored copy with a mangled name
-    ### (/nix/store/<h>-<h>-source) instead of the real source directory.
+    ### Point NIX_PATH and the flake registry at the flake-pinned nixpkgs
+    ### (follows flake.lock), so hosts, containers and ISOs share one nixpkgs.
+    ### Use inputs.nixpkgs-main, not pkgs.path (re-stored copy, mangled name).
     nixPath = lib.mkIf config.nix.enable [ "nixpkgs=${inputs.nixpkgs-main}" ];
     ### mkDefault lets ISO channel.nix (priority 100) win on ISOs, keeping the
     ### bundled nixpkgs channel for offline install; hosts/containers get the
@@ -102,38 +95,11 @@
             REAL_NRB="''${NIX_REAL_NRB}"
             DEFAULT_FLAKE="''${NRB_FLAKE:-}"
             EXTRA_OPTS=""
-            # ----------------------------------------------------------------------
-            # nixos-rebuild wrapper - flake injector + personal commands
-            #
-            # PURPOSE:
-            #   - Auto-inject '--flake' for build actions so you can run:
-            #       nixos-rebuild switch
-            #     instead of:
-            #       nixos-rebuild switch --flake .#host
-            #   - Add personal helper commands (status, hello, help, etc.)
-            #
-            # BEHAVIOR:
-            #   1. Reorder ".#host switch" -> "switch .#host"
-            #   2. Inject --flake if missing for build actions
-            #   3. Pass through all other commands untouched
-            #   4. Intercept personal commands before upstream
-            #
-            # CONFIG:
-            #   export NRB_FLAKE=/path/to/flake  # default flake to use
-            #   export NO_COLOR=1                # disable colors
-            #
-            # MAINTENANCE:
-            #   - Add new build actions to BUILD_ACTIONS
-            #   - Add personal commands via register_cmd + case block
-            #
-            # ADDING A COMMAND:
-            #   1. register_cmd "name" "description"
-            #   2. add in dispatch case:
-            #        name)
-            #          echo "do something"
-            #          exit 0
-            #          ;;
-            # ----------------------------------------------------------------------
+            # nixos-rebuild wrapper: auto-injects --flake for build actions
+            # (`switch` instead of `switch --flake .#host`), reorders a leading
+            # `.#host` flake ref, and adds personal commands (cmds/status/hello/turbo).
+            # Pin a default flake with NRB_FLAKE; NO_COLOR=1 disables colors.
+            # New build actions go in BUILD_ACTIONS, new commands via register_cmd + case.
             # --- colors ---
             if [[ -n "''${NO_COLOR:-}" ]] || [[ "''${TERM:-dumb}" == "dumb" ]] || ! [[ -t 1 ]]; then
                 BOLD="" RED="" GREEN="" YELLOW="" BLUE="" MAGENTA="" CYAN="" RESET=""

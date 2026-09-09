@@ -37,17 +37,13 @@ let
       hostPath = m.hostPath;
       isReadOnly = m.isReadOnly;
     }) c.bindMounts;
-    ### Make the host flake's self + inputs available to the container-internal
-    ### modules (the container's own specialArgs default to {}). Used e.g. by
-    ### nix-settings.nix to point NIX_PATH / the registry at nixpkgs-main.
+    ### Host flake self + inputs for container modules (their specialArgs default
+    ### to {}); e.g. nix-settings.nix points NIX_PATH at nixpkgs-main with them.
     specialArgs = {
       inherit self inputs;
     };
-    ### Container-internal NixOS module, evaluated with the host's pkgs:
-    ### the container's own pkgs would miss the overlay (pkgsUnstable).
-    ### configFile + every configModules entry are imported as container
-    ### modules. configFile and path entries share the signature
-    ### { self, inputs, stateVersion, pkgs, username }.
+    ### Container modules run with the host pkgs (the container's own pkgs lacks
+    ### the overlay). configFile + path entries take { self, inputs, stateVersion, pkgs, username }.
     config =
       let
         mkCfg = f:
@@ -56,10 +52,8 @@ let
             stateVersion = config.system.stateVersion;
             username = c.sshUser;
           };
-        ### Normalize a configModules entry: a path (or path string) is
-        ### imported as a function of the shared signature; any other module
-        ### value (flake module like inputs.home-manager.nixosModules.home-manager
-        ### or inputs.self.nixosModules.<name>, attrset, function) is used as-is.
+        ### Path entries are imported with the shared signature; any other module
+        ### value (flake module, attrset, function) is used as-is.
         mkModule = m: if lib.types.path.check m then mkCfg m else m;
       in
       {
@@ -67,12 +61,9 @@ let
       };
   };
 
-  ### nixos-<name>-login: start the container if it is not running, wait
-  ### for sshd to come up, then ssh into it — every step with error handling.
-  ### The address is baked at build time (explicit localAddress or the
-  ### auto-allocated 10.0.<idx>.2): it is fully deterministic and avoids
-  ### non-root `nixos-container` calls (they try to mkpath /var/lib/nixos-containers
-  ### and fail with EACCES on a fresh system).
+  ### nixos-<name>-login: start the container if needed, wait for sshd, then ssh.
+  ### The address is baked at build time (explicit or auto 10.0.<idx>.2), so no
+  ### non-root `nixos-container` call (fails with EACCES on a fresh system).
   mkLoginScript =
     name: c:
     let
@@ -234,16 +225,10 @@ in
       enableIPv6 = cfg.nat.enableIPv6;
     };
 
-    ### Create the host dirs of every bind mount and restore their ownership.
-    ### systemd-nspawn --bind fails if the host path does not exist
-    ### (fresh VM/install: /home/<user>/Projets is typically absent).
-    ### tmpfiles `d` is NOT suitable here (it chowns and chmods existing
-    ### dirs); however mkdir -p must be followed by chown-ing every newly
-    ### created component: otherwise /home/<user>/.config ends up owned by
-    ### root and the home-manager activation (running as the user) fails on
-    ### ~/.config/dconf. Chowning the whole chain unconditionally also
-    ### heals pre-existing root-owned parents.
-    ### Derived from the declared bindMounts — nothing hardcoded.
+    ### Create missing bind-mount host dirs (--bind fails without them).
+    ### mkdir -p + chown of every new component: otherwise ~/.config ends up
+    ### root-owned and the user home-manager activation fails on ~/.config/dconf.
+    ### tmpfiles `d` would also chmod existing dirs, so it is not suitable here.
     systemd.services.nixos-container-bind-dirs = {
       description = "Create missing bind mount host dirs for NixOS containers";
       wantedBy = [ "multi-user.target" ];
@@ -281,19 +266,13 @@ in
       lib.filterAttrs (_: c: c.enable && c.login) cfg.containers
     );
 
-    ### Override the nixos-container CLI (same name) to add the
-    ### list/status/start/stop/restart/login subcommands. Same pattern as the
-    ### nixos-rebuild wrapper in nix-settings.nix: overrideAttrs + makeWrapper
-    ### around a personal-command script; the real binary is renamed to
-    ### .nixos-container-wrapped and reachable via NIX_REAL_CONTAINER (other
-    ### native commands pass through to it). The wrapper is baked with the
-    ### declared containers (registry below), so it works even when a container
-    ### is not running.
+    ### Same overrideAttrs + makeWrapper pattern as the nixos-rebuild wrapper:
+    ### real binary renamed to .nixos-container-wrapped (NIX_REAL_CONTAINER),
+    ### adds list/status/start/stop/restart/login; other commands pass through.
     nixpkgs.overlays = [
       (self: super:
         let
-          ### Declared containers, sorted by name, with their resolved runtime
-          ### info (only consumed by the wrapper script below)
+          ### Name/address/ssh-user registry for the wrapper script below
           containerInfo = lib.imap0 (idx: name: {
             inherit name;
             address =
@@ -304,10 +283,7 @@ in
             login = cfg.containers.${name}.enable && cfg.containers.${name}.login;
           }) enabledNames;
 
-          ### nixos-container wrapper script — manage all declared NixOS
-          ### containers. The registry (names, addresses, ssh users) is baked
-          ### in at build time from containerInfo. `login` delegates to the
-          ### per-container nixos-<name>-login script.
+          ### Wrapper over containerInfo; `login` delegates to nixos-<name>-login
           containersWrapperScript = ''
             set -euo pipefail
 

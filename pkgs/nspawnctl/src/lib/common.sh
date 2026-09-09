@@ -1,5 +1,5 @@
 ### Common: constants, config loading, small helpers.
-### Sourced by the nspawnctl entry point — never executed directly.
+### Sourced by nspawnctl — do not execute directly.
 
 MACHINES_DIR="/var/lib/machines"
 DATASET_ROOT="zroot/MACHINE"

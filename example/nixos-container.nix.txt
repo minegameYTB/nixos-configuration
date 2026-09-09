@@ -21,7 +21,7 @@
 ###   sudo nixos-rebuild switch --flake .#<machine>
 ###   nixos-<container-name>-login   (auto-generated script)
 ###
-### ⚠️ Naming constraints: no "_" in the name, max 11 characters
+### NOTE — naming constraints: no "_" in the name, max 11 characters
 ### (network interface, kernels < 5.8).
 ### Real example: configurations/configs/specific/container/nixos-container/opencode-sandbox/
 

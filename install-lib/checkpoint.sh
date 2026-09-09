@@ -2,42 +2,13 @@
 ### Sourced by lib.sh after defaults.sh
 # shellcheck shell=bash
 
-# ---------------------------------------------------------------------------
-# Checkpoint / resume system
-# ---------------------------------------------------------------------------
+# Wrapping: if ! checkpoint_skip "STEP_FOO"; then ...; checkpoint_done "STEP_FOO"; fi
+# Interactive answers persist via checkpoint_set/get (device, profile, …).
 #
-# How it works
-# ~~~~~~~~~~~~
-# Every long or destructive step in the install functions is wrapped with:
-#
-#   if ! checkpoint_skip "STEP_FOO"; then
-#     ... do the work ...
-#     checkpoint_done "STEP_FOO"
-#   fi
-#
-# checkpoint_done writes "STEP_FOO=done" to STATE_FILE.
-# checkpoint_skip returns 0 (true) when that line is already present, causing
-# the surrounding `if ! ...` block to be skipped on a resume run.
-#
-# Variables that are collected interactively (device path, profile name, …)
-# are persisted with checkpoint_set / checkpoint_get so they survive a crash
-# and do not need to be re-entered on resume.
-#
-# State file location
-# ~~~~~~~~~~~~~~~~~~~
-# Default: /tmp/nixos-install-state
-# Override: INSTALL_STATE_FILE=/path/to/file ./install.sh
-#
-# /tmp is intentionally used for normal installs because it disappears on
-# reboot.  Resume therefore works reliably within the same live session
-# (Ctrl+C, crash): the disk layout and /mnt mounts are still in place.
-#
-# After a full reboot of the live environment, /mnt must be manually
-# re-mounted before resuming (ZFS: import the pool first, then mount the
-# datasets; btrfs: re-mount the filesystem).  Set INSTALL_STATE_FILE to a
-# path on persistent storage if you need the state to survive a reboot:
-# INSTALL_STATE_FILE=/mnt/nixos-install-state
-# ---------------------------------------------------------------------------
+# State lives in /tmp by default: resume works within one live session (crash,
+# Ctrl+C) where /mnt is still mounted. After a reboot, re-mount /mnt first
+# (ZFS: import the pool, then mount datasets) or point INSTALL_STATE_FILE at
+# persistent storage (e.g. INSTALL_STATE_FILE=/mnt/nixos-install-state).
 
 STATE_FILE="${INSTALL_STATE_FILE}"
 

@@ -3,13 +3,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2154 # nixFlags, nixpkgsRev set by lib.sh sourced earlier
 
-# ── Steps ──────────────────────────────────────────────────
-# Single source of truth for all installation steps.
-# To add a new step:
-#   1. Write step_foo_bar() { ... }
-#   2. Add "STEP_FOO_BAR" to this array
-#   3. The dispatch loop and --step mode pick it up automatically
-# ────────────────────────────────────────────────────────────
+# New step recipe: write step_foo_bar(), append "STEP_FOO_BAR" to STEPS.
 STEPS=(
   "STEP_INTERACTIVE_SETUP"
   "STEP_LUKS_SETUP"
@@ -25,15 +19,13 @@ STEPS=(
   "STEP_ZFS_EXPORT"
 )
 
-# Derive the step function name from a checkpoint name.
-#   STEP_FOO_BAR → step_foo_bar
+# STEP_FOO_BAR → step_foo_bar
 step_func() {
   local checkpoint="$1"
   local name="${checkpoint#STEP_}"
   echo "step_${name,,}"
 }
 
-# List all known steps with a short description.
 listSteps() {
   info "Available installation steps:"
   for s in "${STEPS[@]}"; do
@@ -43,8 +35,7 @@ listSteps() {
   info "Usage: ./install.sh --step STEP_NAME"
 }
 
-# Load persisted variables from the checkpoint state file.
-# Called when RESUMING=1 or when --step is used.
+# Restores checkpoint vars on resume or --step.
 load_step_state() {
   deviceDisk="$(checkpoint_get   "VAR_DEVICE")"
   sizeDisk="$(checkpoint_get     "VAR_SIZE")"
@@ -58,7 +49,6 @@ load_step_state() {
   userName="$(checkpoint_get     "VAR_USERNAME")"
 }
 
-# Validate that a step name is known and its function exists.
 validate_step() {
   local step="$1"
   if ! printf '%s\n' "${STEPS[@]}" | grep -qx "$step"; then
@@ -67,10 +57,6 @@ validate_step() {
     exit 1
   fi
 }
-
-# ---------------------------------------------------------------------------
-# Disk helpers
-# ---------------------------------------------------------------------------
 
 showDiskLsblk() {
   echo "Available block devices (device, size, model, reproducible by-id path):"
@@ -83,10 +69,6 @@ showDiskLsblk() {
     printf '  /dev/%-14s %-9s %-28s %s\n' "$disk" "$size" "$model" "${byid:+/dev/disk/by-id/$byid}"
   done
 }
-
-# ---------------------------------------------------------------------------
-# RAM detection
-# ---------------------------------------------------------------------------
 
 # Detect total RAM and decide whether a temporary swap file is needed.
 #
@@ -122,10 +104,6 @@ detectRam() {
     info "RAM (${ramGiB} GiB) meets threshold — swap not needed"
   fi
 }
-
-# ---------------------------------------------------------------------------
-# Swap helpers
-# ---------------------------------------------------------------------------
 
 # Create a temporary swap on /mnt (already mounted by disko).
 # - btrfs : uses mkswapfile (handles COW + mkswap in one step)
@@ -164,30 +142,21 @@ setupTempSwap() {
   info "Swap activated — active swap: ${swapTotal}"
 }
 
-# swapoff all known swap devices.
-# Always safe — does not destroy anything.
-# Used by EXIT trap (resilient to ^C).
+# swapoff the temp swap. Safe (destroys nothing); used by the EXIT trap.
 deactivateSwap() {
   swapoff "/mnt/.swapfile-install" 2>/dev/null || true
 }
 
-# Destroy only the temporary swap file.
-# Only acts if the file exists.
-# Called after deactivateSwap, before nixos-enter.
+# Remove the temp swap file if present (after deactivateSwap, before nixos-enter).
 destroyTempSwap() {
   if [[ -f "/mnt/.swapfile-install" ]]; then
     rm -f "/mnt/.swapfile-install" 2>/dev/null || true
   fi
 }
 
-# ---------------------------------------------------------------------------
-# LUKS helpers
-# ---------------------------------------------------------------------------
-
-# Generate the LUKS key using pre-set choices (prompts handled in step_interactive_setup).
-# Reads from checkpoint: keyFile
-# For partition storage: writes key to the partition + keeps a temp copy in /tmp
-# For file storage:     writes key directly to the file
+# Generate the LUKS key (prompts done in step_interactive_setup).
+# Partition storage: key written to the partition + temp copy kept in /tmp.
+# File storage: key written directly to the file.
 setupLuksEncryption() {
   if [[ -f "$keyFile" || -b "$keyFile" ]]; then
     info "Key already exists at ${keyFile} — skipping generation"
@@ -205,7 +174,6 @@ setupLuksEncryption() {
   fi
 }
 
-# Add a passphrase to a LUKS device using an existing key file.
 # Usage: addLuksPassphrase <deviceDisk> <keyFile> <keySize>
 addLuksPassphrase() {
   local deviceDisk="$1"
@@ -249,10 +217,6 @@ target_uid_gid() {
     echo "1000:100"
   fi
 }
-
-# ---------------------------------------------------------------------------
-# Step functions — each corresponds to one entry in the STEPS array
-# ---------------------------------------------------------------------------
 
 step_interactive_setup() {
   if checkpoint_skip "STEP_INTERACTIVE_SETUP"; then
@@ -309,10 +273,8 @@ step_interactive_setup() {
   read -r -e -p "Enter the profile name to install: " nixosProfile
   echo "${nixosProfile} selected"
 
-  # ── username ──
   getDefaultUser 6
 
-  # ── LUKS prompts (only if encryption was chosen above) ──
   if [[ "$diskoEncrypted" =~ ^[yY]$ ]]; then
     local generateKey keyStorage
     read -r -p "Do you want to generate a random key? [y/N]: " generateKey
@@ -570,15 +532,10 @@ step_zfs_export() {
   # Not marking done so the user can retry with --step ZFS_EXPORT
 }
 
-# ---------------------------------------------------------------------------
-# Main install function
-# ---------------------------------------------------------------------------
-
 nixosInstallFn() {
   sleep 1
   trap 'deactivateSwap' EXIT
 
-  # --- Root check (safety net — install.sh should auto-elevate before dispatch)
   if [[ $EUID -ne 0 ]]; then
     warn "This script must be run as root."
     echo "Please run install.sh without sudo — it will auto-elevate after the version check."
@@ -586,7 +543,6 @@ nixosInstallFn() {
     exit 1
   fi
 
-  # --- Standalone step mode ------------------------------------------------
   if [[ -n "${ONLY_STEP:-}" ]]; then
     if [[ ! -f "$STATE_FILE" ]]; then
       warn "State file not found at ${STATE_FILE}"
@@ -601,7 +557,6 @@ nixosInstallFn() {
     return
   fi
 
-  # --- Normal flow ----------------------------------------------------------
   checkpoint_resume_prompt
 
   if [[ "${RESUMING:-0}" == "1" ]]; then

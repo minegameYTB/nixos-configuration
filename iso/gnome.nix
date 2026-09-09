@@ -63,10 +63,8 @@
     };
   };
 
-  # Disable auto-suspend / idle like official GNOME ISO
-  # cf. nixpkgs nixos/modules/installer/cd-dvd/installation-cd-graphical-calamares-gnome.nix:22
-  # (idle-delay + sleep-inactive-*) and gdm autoSuspend = false (gdm.nix:340)
-  # Replaces the previous fragile gsettings oneshot (missing sleep-inactive-*type)
+  # No auto-suspend/idle on the live ISO (mirrors the official GNOME ISO:
+  # installation-cd-graphical-calamares-gnome.nix:22, gdm.nix:340).
   services.desktopManager.gnome.extraGSettingsOverrides = ''
     [org.gnome.desktop.session]
     idle-delay=0
@@ -84,7 +82,6 @@
   '';
   services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.gnome-settings-daemon ];
 
-  # Also cover GDM greeter like official (gdm.autoSuspend = false -> dconf gdm profile)
-  # Kept compatible with current LightDM choice (LightDM greeter has no GNOME suspend)
+  # Same for the GDM greeter profile (harmless under the current LightDM choice).
   services.displayManager.gdm.autoSuspend = lib.mkDefault false;
 }

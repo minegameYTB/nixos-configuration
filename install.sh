@@ -17,24 +17,20 @@ export INSTALL_DIR
 installLib="$INSTALL_DIR/install-lib"
 name="$(basename -s .sh "$0")"
 
-# Source common variables and functions (colours, logging, checkpoint system).
 # shellcheck source=install-lib/lib.sh
 source "$installLib/lib.sh"
 
-# Source install method implementations.
 # shellcheck source=install-lib/nixos-install.sh
 source "$installLib/nixos-install.sh"
 # shellcheck source=install-lib/hm-standalone-install.sh
 source "$installLib/hm-standalone-install.sh"
 
-# Parse flags (--dont-check, --help, --list-steps, --step, ...).
-# Must come after source since parseFlags / showUsage are defined in lib.sh.
+# Must come after source: parseFlags / showUsage are defined in lib.sh.
 SKIP_VERSION_CHECK=0
 LIST_STEPS=""
 ONLY_STEP=""
 parseFlags "$@"
 
-# Handle --list-steps (exits immediately, no version check needed)
 if [[ -n "${LIST_STEPS:-}" ]]; then
   listSteps
   exit 0
@@ -46,10 +42,6 @@ fi
 
 echo "$name v$INSTALL_SCRIPT_VERSION"
 sleep 2
-
-# ---------------------------------------------------------------------------
-# Phase 1 — Version check (user only, git should not run as root)
-# ---------------------------------------------------------------------------
 
 if (( SKIP_VERSION_CHECK )); then
   info "Version check skipped (--dont-check)"
@@ -78,18 +70,10 @@ else
   mode="hmInstall"
 fi
 
-# ---------------------------------------------------------------------------
-# Phase 3 — Auto-elevation (NixOS install only, HM runs as normal user)
-# ---------------------------------------------------------------------------
-
 if [[ $EUID -ne 0 ]] && [[ "$mode" == "nixosInstall" ]]; then
   info "Root privileges required — re-running with sudo..."
   exec sudo "$0" --dont-check "${origArgs[@]}"
 fi
-
-# ---------------------------------------------------------------------------
-# Phase 4 — Dispatch
-# ---------------------------------------------------------------------------
 
 case "$mode" in
   nixosInstall) nixosInstallFn ;;

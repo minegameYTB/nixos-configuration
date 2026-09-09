@@ -1,5 +1,5 @@
 ### Subcommands: new, net, remove.
-### Sourced by the nspawnctl entry point — never executed directly.
+### Sourced by nspawnctl — do not execute directly.
 
 cmd_new() {
   local machine="$1"

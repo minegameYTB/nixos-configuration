@@ -1,5 +1,5 @@
 ### Installers: rootfs tarballs and debootstrap.
-### Sourced by the nspawnctl entry point — never executed directly.
+### Sourced by nspawnctl — do not execute directly.
 
 install_lx() {
   local root="$1" image="$2" source="$3" url tmp

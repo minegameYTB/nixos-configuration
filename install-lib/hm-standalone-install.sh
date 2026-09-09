@@ -5,7 +5,6 @@
 
 hmInstallFn() {
 
-  # --- Resume prompt -------------------------------------------------------
   checkpoint_resume_prompt
 
   # Restore persisted variables when resuming a previous session.
@@ -18,7 +17,6 @@ hmInstallFn() {
     userName="$(checkpoint_get    "VAR_USERNAME")"
   fi
 
-  # --- Step: resolve nixpkgs ref and HM branch -----------------------------
   # Parse flake.lock once to decide which Home Manager branch to use.
   # This is fast and non-destructive, but we checkpoint it to persist the
   # results so resume does not need flake.lock to still be accessible.
@@ -47,7 +45,6 @@ hmInstallFn() {
     checkpoint_done "STEP_RESOLVE_BRANCH"
   fi
 
-  # --- Step: detect distro -------------------------------------------------
   if ! checkpoint_skip "STEP_DETECT_DISTRO"; then
     if [[ -f /etc/os-release ]]; then
       # Source the file in a subshell to avoid polluting the environment with
@@ -64,7 +61,6 @@ hmInstallFn() {
     checkpoint_done "STEP_DETECT_DISTRO"
   fi
 
-  # --- Step: install curl if missing ---------------------------------------
   if ! checkpoint_skip "STEP_INSTALL_CURL"; then
     if ! command -v curl &> /dev/null; then
       echo "curl is not installed — installing…"
@@ -94,7 +90,6 @@ hmInstallFn() {
     checkpoint_done "STEP_INSTALL_CURL"
   fi
 
-  # --- Step: install Flatpak and add Flathub remote ------------------------
   # App management is handled by the HM module — this only sets up the
   # system-level layer (flatpak binary + flathub remote).
   if ! checkpoint_skip "STEP_FLATPAK"; then
@@ -129,7 +124,6 @@ hmInstallFn() {
     checkpoint_done "STEP_FLATPAK"
   fi
 
-  # --- Step: install Nix via Determinate Systems installer -----------------
   if ! checkpoint_skip "STEP_INSTALL_NIX"; then
     info "Installing Nix via nix-installer (Determinate Systems)"
     printf '%b\n' "${BLUE}▶ Run command:${RESET}  ${YELLOW}curl -fsSL nix-installer.sh | sh -s -- install --prefer-upstream-nix${RESET}" >&2
@@ -161,7 +155,6 @@ hmInstallFn() {
     fi
   fi
 
-  # --- Step: detect system architecture ------------------------------------
   if ! checkpoint_skip "STEP_DETECT_ARCH"; then
     local arch
     arch=$(uname -m)
@@ -177,14 +170,12 @@ hmInstallFn() {
     checkpoint_done "STEP_DETECT_ARCH"
   fi
 
-  # --- Step: initialise first Home Manager generation ----------------------
   if ! checkpoint_skip "STEP_HM_INIT"; then
     info "Initialising HM first generation"
     run_command nix "${nixFlags[@]}" run "$hm_branch" -- init --switch
     checkpoint_done "STEP_HM_INIT"
   fi
 
-  # --- Step: resolve username (interactive) --------------------------------
   if ! checkpoint_skip "STEP_GET_USER"; then
     getDefaultUser 5
     checkpoint_set "VAR_USERNAME" "$userName"
@@ -194,7 +185,6 @@ hmInstallFn() {
     userName="${userName:-$(checkpoint_get "VAR_USERNAME")}"
   fi
 
-  # --- Step: switch to flake-based HM configuration -----------------------
   if ! checkpoint_skip "STEP_HM_SWITCH"; then
     info "Installing HM as ${userName} (${nixArch})"
     # Run through `nix run` so this does not depend on the `home-manager`
@@ -204,7 +194,6 @@ hmInstallFn() {
     checkpoint_done "STEP_HM_SWITCH"
   fi
 
-  # --- All steps completed — clean up state --------------------------------
   checkpoint_clear
   echo ""
   info "HM is installed — restart to apply desktop icons and environment changes"

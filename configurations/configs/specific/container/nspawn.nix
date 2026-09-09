@@ -18,12 +18,9 @@ in
     ### configurations/modules/virtualisation/nspawnctl.nix.
     nspawnctl.enable = config.containerSubsystems.nspawn;
 
-    ### Network plumbing for ad-hoc nspawn containers and VMs.
-    ### Per-machine network config lives in /etc/systemd/nspawn/<machine>.nspawn:
-    ###   [Network]
-    ###   VirtualEthernet=yes
-    ###   Bridge=<cfg.bridge>
-    ### Then simply: machinectl start <machine>
+    ### Network plumbing for ad-hoc nspawn containers and VMs. Per-machine config
+    ### in /etc/systemd/nspawn/<machine>.nspawn ([Network] VirtualEthernet=yes,
+    ### Bridge=<cfg.bridge>), then machinectl start <machine>.
     systemd.network = lib.mkIf cfg.enable {
       enable = true;
 
@@ -80,14 +77,8 @@ in
     };
   };
 
-  ### Expose containers as real machines on the LAN (Ethernet / self-host server):
-  ###   /etc/systemd/nspawn/<machine>.nspawn:
-  ###     [Network]
-  ###     MacVLAN=enp3s0
-  ###   Then: machinectl start <machine>
-  ### The container gets its own LAN IP from the router's DHCP and is reachable
-  ### by every LAN client — handy for DBs and servers.
-  ### Caveats: the host itself cannot reach macvlan containers, and Wi-Fi APs
-  ### drop frames from unknown source MACs, so macvlan does not work over Wi-Fi
-  ### (use the forwardPorts approach above on the laptop).
+  ### LAN exposure alternative (Ethernet / self-host): MacVLAN=enp3s0 in the
+  ### .nspawn file gives the container its own LAN IP from the router's DHCP.
+  ### Caveats: the host cannot reach macvlan containers, and Wi-Fi APs drop
+  ### unknown source MACs — on Wi-Fi use forwardPorts above instead.
 }

@@ -109,7 +109,6 @@ echo "NSPAWNCTL_EXTRA_SOURCES=(mirror=https://mirror.example.com/images/{os}-{ve
 : > "$WORK/testconf-empty"
 rm -rf "$WORK/vmtest" && mkdir -p "$WORK/vmtest/machines"
 
-# --- parse_spec ---
 run_test "spec manual source (mirror) -> image" '
   NSPAWNCTL_CONF=/tmp/opencode/testconf-mirror
   load_conf
@@ -139,7 +138,6 @@ run_test_err "spec ubuntu with variant field dies" '
   parse_spec ubuntu:noble:cloud:extra
 ' 'format: ubuntu:<codename>'
 
-# --- lxc spec: version optional, variant selectable ---
 run_test "spec lxc without version -> os only" '
   parse_spec lxc:ubuntu
   echo "image=$G_SPEC_IMAGE"
@@ -159,7 +157,6 @@ run_test_err "spec lxc variant without version -> die" '
   parse_spec lxc:ubuntu::cloud
 ' 'variant needs a version'
 
-# --- lx_url ---
 run_test "lx_url manual template {os}/{version}" '
   NSPAWNCTL_CONF=/tmp/opencode/testconf-mirror
   load_conf
@@ -204,7 +201,6 @@ run_test "cmd_list smartos shows full build timestamp (not seconds)" '
   echo "$out" | grep -q "2026-07-29 00-33-24" && echo OK
 ' 'OK'
 
-# --- conf loading ---
 run_test "conf extra source appears in --list (manual notice)" '
   NSPAWNCTL_CONF=/tmp/opencode/testconf-mirror
   load_conf
@@ -220,7 +216,6 @@ run_test "conf with quoted space-joined lists sources cleanly" '
     && [[ -n "${EXTRA_URLS[m]:-}" && -n "${EXTRA_URLS[n]:-}" ]] && echo OK
 ' 'OK'
 
-# --- detect_init / detect_net ---
 run_test "detect_init: systemd rootfs" '
   mkdir -p /tmp/opencode/vmtest/di-sd/usr/lib/systemd
   touch /tmp/opencode/vmtest/di-sd/usr/lib/systemd/systemd
@@ -249,9 +244,8 @@ run_test "detect_net: ifupdown" '
 
 run_test "detect_net: none" 'echo "$(detect_net /tmp/opencode/vmtest/dn-none)"' 'none'
 
-# --- resolv.conf symlink regression (systemd images symlink
-# --- /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf whose target
-# --- directory does not exist in a freshly extracted rootfs)
+# Regression: systemd images symlink /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
+# whose target directory does not exist in a freshly extracted rootfs.
 run_test "resolv.conf symlink is replaced by regular file" '
   export MACHINES_DIR=/tmp/opencode/vmtest/machines DATASET_ROOT=zroot/MACHINE
   rm -rf "$MACHINES_DIR/r1"
@@ -267,7 +261,6 @@ EOF
     && grep -q "nameserver 1.1.1.1" "$root/etc/resolv.conf" && echo OK
 ' 'OK'
 
-# --- net_enable plumbing ---
 run_test "cmd_remove: declined prompt keeps dropin + net files intact" '
   export MACHINES_DIR=/tmp/opencode/vmtest/machines DATASET_ROOT=zroot/MACHINE
   DROPIN_DIR=/tmp/opencode/vmtest/dropins
@@ -354,7 +347,6 @@ run_test "net_enable: static ip from machine name is stable" '
   [[ "$ip_a" == "$ip_b" ]] && echo "OK $ip_a"
 ' 'OK'
 
-# --- ensure_init ---
 run_test "ensure_init: no init and busybox missing dies" '
   BUSYBOX=
   root=/tmp/opencode/vmtest/no-init
@@ -376,8 +368,7 @@ run_test "ensure_init: injects busybox init into bare rootfs" '
     && echo OK
 ' 'OK'
 
-# --- net_script on systemd rootfs (regression: openEuler — systemd ignores
-# --- /etc/inittab, so the script must be hooked via a oneshot unit) ---
+# Regression (openEuler): systemd ignores /etc/inittab, so the script must be hooked via a oneshot unit.
 run_test "net_script: systemd rootfs gets oneshot unit (not inittab)" '
   root=/tmp/opencode/vmtest/sd-rootfs
   rm -rf "$root" && mkdir -p "$root/usr/lib/systemd" "$root/etc/systemd/system"
@@ -414,7 +405,6 @@ run_test "remove_net_files: cleans systemd oneshot unit too" '
     && echo OK
 ' 'OK'
 
-# --- machine_ip ---
 run_test "machine_ip: via machinectl IPAddress property (no systemd inside)" '
   export MACHINES_DIR=/tmp/opencode/vmtest/machines DATASET_ROOT=zroot/MACHINE
   machinectl() { echo "IPAddress=10.0.5.99"; }
@@ -434,7 +424,6 @@ run_test "machine_ip: fallback nsenter ip when machined has no IP" '
   machine_ip t1
 ' '10.0.5.42'
 
-# --- full dispatch ---
 run_test "full dispatch: --list lxc switches to lxc source" '
   sed -e "s|^#!.*||" -e "/^require_root() {/,/^}/d" "$SRC" > /tmp/opencode/fullsrc.sh
   PATH=/tmp/opencode/fakebin:$PATH NSPAWNCTL_CONF=/tmp/opencode/testconf-shell bash /tmp/opencode/fullsrc.sh --list lxc 2>&1
