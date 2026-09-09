@@ -46,7 +46,8 @@ let
     ### the overlay). configFile + path entries take { self, inputs, stateVersion, pkgs, username }.
     config =
       let
-        mkCfg = f:
+        mkCfg =
+          f:
           import f {
             inherit self inputs pkgs;
             stateVersion = config.system.stateVersion;
@@ -256,9 +257,7 @@ in
     ### (model/general-purpose template: see ./example in this directory;
     ### worked example: ./opencode-sandbox)
     containers = lib.listToAttrs (
-      lib.imap0 (
-        idx: name: lib.nameValuePair name (mkContainer idx cfg.containers.${name})
-      ) enabledNames
+      lib.imap0 (idx: name: lib.nameValuePair name (mkContainer idx cfg.containers.${name})) enabledNames
     );
 
     ### Auto-generated login scripts
@@ -270,15 +269,17 @@ in
     ### real binary renamed to .nixos-container-wrapped (NIX_REAL_CONTAINER),
     ### adds list/status/start/stop/restart/login; other commands pass through.
     nixpkgs.overlays = [
-      (self: super:
+      (
+        self: super:
         let
           ### Name/address/ssh-user registry for the wrapper script below
           containerInfo = lib.imap0 (idx: name: {
             inherit name;
             address =
-              if cfg.containers.${name}.localAddress == null
-              then autoLocalAddress idx
-              else cfg.containers.${name}.localAddress;
+              if cfg.containers.${name}.localAddress == null then
+                autoLocalAddress idx
+              else
+                cfg.containers.${name}.localAddress;
             sshUser = cfg.containers.${name}.sshUser;
             login = cfg.containers.${name}.enable && cfg.containers.${name}.login;
           }) enabledNames;
@@ -289,9 +290,15 @@ in
 
             ### Container registry baked at build time
             CONTAINERS=( ${lib.concatStringsSep " " (map (c: c.name) containerInfo)} )
-            declare -A ADDRESS=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${c.address}") containerInfo)} )
-            declare -A SSH_USER=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${c.sshUser}") containerInfo)} )
-            declare -A LOGIN=( ${lib.concatStringsSep " " (map (c: "[${c.name}]=${if c.login then "1" else "0"}") containerInfo)} )
+            declare -A ADDRESS=( ${
+              lib.concatStringsSep " " (map (c: "[${c.name}]=${c.address}") containerInfo)
+            } )
+            declare -A SSH_USER=( ${
+              lib.concatStringsSep " " (map (c: "[${c.name}]=${c.sshUser}") containerInfo)
+            } )
+            declare -A LOGIN=( ${
+              lib.concatStringsSep " " (map (c: "[${c.name}]=${if c.login then "1" else "0"}") containerInfo)
+            } )
 
             usage() {
               cat <<'EOF'
@@ -430,16 +437,14 @@ in
           '';
         in
         {
-          nixos-container = super.nixos-container.overrideAttrs (
-            oldAttrs: {
-              nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
-              postInstall = (oldAttrs.postInstall or "") + ''
-                mv $out/bin/nixos-container $out/bin/.nixos-container-wrapped
-                makeWrapper ${super.writeShellScript "nixos-container-wrapper" containersWrapperScript} $out/bin/nixos-container \
-                  --set NIX_REAL_CONTAINER "$out/bin/.nixos-container-wrapped"
-              '';
-            }
-          );
+          nixos-container = super.nixos-container.overrideAttrs (oldAttrs: {
+            nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ super.makeWrapper ];
+            postInstall = (oldAttrs.postInstall or "") + ''
+              mv $out/bin/nixos-container $out/bin/.nixos-container-wrapped
+              makeWrapper ${super.writeShellScript "nixos-container-wrapper" containersWrapperScript} $out/bin/nixos-container \
+                --set NIX_REAL_CONTAINER "$out/bin/.nixos-container-wrapped"
+            '';
+          });
         }
       )
     ];

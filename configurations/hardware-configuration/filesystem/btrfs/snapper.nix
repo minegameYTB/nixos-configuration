@@ -77,19 +77,17 @@ lib.mkIf (config.fileSystems."/".fsType == "btrfs") {
   };
 
   systemd.services = lib.mkMerge (
-    (map (
-      p: {
-        ${p.name} = {
-          inherit (p) description;
-          after = [ "snapperd.service" ];
-          wants = [ "snapperd.service" ];
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = [ (periodicScript p.period p.keep) ];
-          };
+    (map (p: {
+      ${p.name} = {
+        inherit (p) description;
+        after = [ "snapperd.service" ];
+        wants = [ "snapperd.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = [ (periodicScript p.period p.keep) ];
         };
-      }
-    ) periods)
+      };
+    }) periods)
     ++ [
       ### Disable the built-in snapper-timeline/-cleanup services (replaced
       ### by the custom period timers above).
@@ -101,18 +99,16 @@ lib.mkIf (config.fileSystems."/".fsType == "btrfs") {
   );
 
   systemd.timers = lib.mkMerge (
-    (map (
-      p: {
-        ${p.name} = {
-          inherit (p) description;
-          wantedBy = [ "timers.target" ];
-          timerConfig = {
-            inherit (p) OnCalendar;
-            Persistent = true; # catch up on missed runs after shutdown (like sanoid)
-          };
+    (map (p: {
+      ${p.name} = {
+        inherit (p) description;
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          inherit (p) OnCalendar;
+          Persistent = true; # catch up on missed runs after shutdown (like sanoid)
         };
-      }
-    ) periods)
+      };
+    }) periods)
     ++ [
       {
         snapper-timeline.enable = lib.mkForce false;

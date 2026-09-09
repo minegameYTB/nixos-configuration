@@ -21,12 +21,14 @@
     ### mkDefault lets ISO channel.nix (priority 100) win on ISOs, keeping the
     ### bundled nixpkgs channel for offline install; hosts/containers get the
     ### flake-pinned source as before.
-    registry.nixpkgs = lib.mkIf config.nix.enable (lib.mkDefault {
-      to = {
-        type = "path";
-        path = inputs.nixpkgs-main.outPath;
-      };
-    });
+    registry.nixpkgs = lib.mkIf config.nix.enable (
+      lib.mkDefault {
+        to = {
+          type = "path";
+          path = inputs.nixpkgs-main.outPath;
+        };
+      }
+    );
     #registry.nix-custom-repo.to =
     #  owner = "minegameYTB";
     #  repo = "nix-custom-repo";
