@@ -17,10 +17,9 @@ with inputs;
     ### Extend pkgs with nur namespace
     [ nur.overlays.default ]
 
-    ### CachyOS kernel & glfOS apps (x86_64 only)
+    ### CachyOS kernel (x86_64 only)
     ++ lib.optionals (system == "x86_64-linux") [
       nix-cachyos-kernel.overlays.pinned
-      glfOS-modules.overlays.default
     ]
 
     ### Custom extend of pkgs or replacing pkgs by other

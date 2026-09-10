@@ -31,7 +31,7 @@ configurations/
 ├── hardware-configuration/
 │   ├── filesystem/            # btrfs, zfs, luks-btrfs mount/config
 │   ├── machines/              # hp-probook, hp-240, vm
-│   └── specific/              # intel-firmware, nvidia, swap
+│   └── specific/              # intel-firmware, intel-graphics, swap
 ├── disko-configuration/       # 4 active + 4 unused disko configs
 └── patch/nixpkgs/             # Out-of-tree patches for libvirt, qemu
 
