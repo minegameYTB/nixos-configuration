@@ -8,8 +8,8 @@
 
   ### Inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
-    ### Main nixpkgs channel
-    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-26.05";
+    ### Main nixpkgs channel (prepare nixos 26.11)
+    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     ### To test a PR: github:username/repo?ref=pull/<PR number>/head
 
@@ -45,21 +45,21 @@
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.7";
 
     ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
-    # Home-manager - release-26.05 (18 Jul 2026)
+    # Home-manager - master (26 Aug 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/4ce190229c73d44536caa7072f6308fb2d8feeb3";
+      url = "github:nix-community/home-manager/6b449e35980e1b75dd17da2d6d9b66e757194f1c";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - release-26.05 (14 Jul 2026)
+    # Stylix - master (26 Aug 2026)
     stylix = {
-      url = "github:danth/stylix/2245fa9e16034149b6501834b99863a486e94725";
+      url = "github:danth/stylix/5e3809851f486e7fc7e84b40f174c74b60ecc784";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
     # Lazyvim-nix - main
     lazyvim = {
-      url = "github:pfassina/lazyvim-nix/v16.0.0";
+      url = "github:pfassina/lazyvim-nix/v16.0.1";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
