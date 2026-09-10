@@ -18,7 +18,6 @@
     };
     extraCompatPackages = with pkgs; [
       pkgsUnstable.proton-ge-bin
-      proton-cachyos-bin # GLF-OS apps
     ];
   };
 }
