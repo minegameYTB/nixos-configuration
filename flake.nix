@@ -42,7 +42,7 @@
     };
 
     ### Remote flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.7";
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.9";
 
     ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
     # Home-manager - master (26 Aug 2026)
