@@ -15,9 +15,10 @@ let
   ### Patch sources: GitHub PR patches (url + hash) or local patch files
   patchList = [
     {
-      ### claude-desktop PR — append ".patch" to the PR URL
-      url = "https://github.com/NixOS/nixpkgs/pull/537215.patch";
-      hash = "sha256-C5ly3Lpl5Kqohwv0OLR3qwBQOvPCni4/Rpg5vywNv60=";
+      ### libcap_ng static fix (doCheck=false when isStatic) — remove after merge
+      ### https://github.com/NixOS/nixpkgs/pull/562812 (fixes #562705, upstream stevegrubb/libcap-ng#85)
+      url = "https://github.com/NixOS/nixpkgs/pull/562812.patch";
+      hash = "sha256-BgXRpxLl561YrlsUNJ5QmNELDHZThkLZHWJ+6At7wq0=";
     }
 
     ### Local patches (uncomment as needed)

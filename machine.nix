@@ -98,6 +98,8 @@ in
     fs = fs "btrfs";
     extraModules = [ boot.efi ];
     withHomeManager = true;
+    # TEMP: libcap_ng static fix (PR #562812, fixes #562705) — revert to false after merge + flake.lock update
+    usePatched = true;
   };
 
   # VM preset (desktop bios)
@@ -162,6 +164,7 @@ in
     profile = base "desktop";
     fs = fs "zfs";
     extraModules = [ boot.efi ];
+    usePatched = true;
   };
 
   # VM preset (CLI efi ZFS)
