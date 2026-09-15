@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-### A wrapper to run make via nix develop (uses devShell from flake.nix)
+if ! command -v nix >/dev/null 2>&1; then
+  echo "error: 'nix' not found in PATH, install Nix first (https://nixos.org/download/) or run ./install.sh (installs Nix + Home Manager on non-NixOS Linux)" >&2
+  exit 1
+fi
+
 nix develop --command make "$@"
