@@ -107,8 +107,14 @@
   ### Udev
   services.udev.packages = [ pkgs.gnome-settings-daemon ];
 
-  ### expose flake in top level derivation
+  ### Expose flake in top level derivation
   system.copyFlakeConfiguration = true;
+
+  ### Userborn
+  services.userborn = {
+    enable = true;
+    importLegacyState = true;
+  };
 
   ### Appimage support
   programs.appimage = {
