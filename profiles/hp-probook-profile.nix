@@ -48,6 +48,6 @@
   containerSubsystems = {
     nixos = true; # Declarative NixOS containers (containers.*)
     podman = true;
-    nspawn = true; # nspawnctl (systemd-nspawn on ZFS)
+    nspawn = false; # nspawnctl (systemd-nspawn on ZFS)
   };
 }
