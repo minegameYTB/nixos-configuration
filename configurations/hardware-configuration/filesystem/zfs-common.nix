@@ -5,7 +5,20 @@
   ...
 }:
 
+let
+  ### Derive ZFS hostId from shared machine-id (first 8 hex chars)
+  machineId = (import ../../configs/common/machine-id.nix).text;
+  hostId = lib.substring 0 8 machineId;
+  machineIdValid = builtins.match "[0-9a-f]{32}" machineId != null;
+in
 {
+  assertions = [
+    {
+      assertion = machineIdValid;
+      message = "machine-id must be a 32-character lowercase hex string (first 8 chars used as ZFS hostId), got: ${builtins.toJSON machineId}";
+    }
+  ];
+
   ### ZFS support at boot level
   boot.supportedFilesystems = {
     zfs = true;
@@ -17,8 +30,8 @@
   boot.kernelParams = [
     "nohibernate"
 
-    ### Explicit hostId for initrd (avoids hostId mismatch with pool label)
-    "spl.spl_hostid=0xb08dfa60"
+    ### Explicit hostId for initrd (derived from machine-id, avoids hostId mismatch with pool label)
+    "spl.spl_hostid=0x${hostId}"
 
     ### Reduce device timeout (VM firmware is slow)
     "systemd.device-timeout=30"
@@ -41,9 +54,8 @@
       ]
   );
 
-  ### Unique hostId required by ZFS
-  ### (first 8 chars of machine-id from hardening.nix)
-  networking.hostId = lib.mkDefault "b08dfa60";
+  ### Unique hostId required by ZFS (derived from machine-id in hardening.nix)
+  networking.hostId = lib.mkDefault hostId;
 
   ### ZFS package: CachyOS-patched userland when available, upstream otherwise.
   ### Must be the userland package (ships the udev rules required by the initrd);

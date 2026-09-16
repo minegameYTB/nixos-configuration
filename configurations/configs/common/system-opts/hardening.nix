@@ -1,6 +1,5 @@
 {
   lib,
-  config,
   pkgs,
   ...
 }:
@@ -137,9 +136,9 @@ in
     };
   };
 
-  ### Declare machine-id
+  ### Declare machine-id (from shared machine-id.nix)
   environment.etc."machine-id" = {
-    text = "b08dfa6083e7567a1921a715000001fb";
+    text = (import ../machine-id.nix).text;
     mode = "0444";
   };
 

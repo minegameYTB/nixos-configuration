@@ -58,7 +58,20 @@ let
       lib,
       ...
     }:
+    let
+      ### Derive ZFS hostId from ISO machine-id (first 8 hex chars)
+      machineId = "43b1da0f0a6e4828a5ce286e398402d2";
+      hostId = lib.substring 0 8 machineId;
+      machineIdValid = builtins.match "[0-9a-f]{32}" machineId != null;
+    in
     {
+      assertions = [
+        {
+          assertion = machineIdValid;
+          message = "ISO machine-id must be a 32-character lowercase hex string (first 8 chars used as ZFS hostId), got: ${builtins.toJSON machineId}";
+        }
+      ];
+
       imports = [
         ../configurations/configuration.nix
         ../configurations/configs/networking
@@ -111,15 +124,15 @@ let
 
       ### Create new machine-id
       environment.etc."machine-id" = lib.mkForce {
-        text = "43b1da0f0a6e4828a5ce286e398402d2";
+        text = machineId;
         mode = "0444";
       };
 
       ### Disable nixos-rebuild tool
       system.tools.nixos-rebuild.enable = false;
 
-      ### Change zfs hostID for iso
-      networking.hostId = "43b1da0f";
+      ### Derive ZFS hostId from machine-id (first 8 chars)
+      networking.hostId = hostId;
 
       ### Force installing nixos tool (nixos-install)
       system.tools.nixos-install.enable = lib.mkForce true;
