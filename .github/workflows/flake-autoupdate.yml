@@ -35,7 +35,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_BRANCH: feat/auto-update
+  SOURCE_BRANCH: prepare/nixos-26.11
   BUFFER_BRANCH: flake-autoupdate
   SOAK_RUNS: "3"
   MACHINES: "vm-cli-efi vm-desktop-efi vm-cli-efi-zfs"
