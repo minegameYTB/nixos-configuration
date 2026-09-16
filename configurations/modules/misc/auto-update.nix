@@ -11,9 +11,12 @@ let
   ### Single source for the service state dir (StateDirectory + scripts).
   stateDir = "nixos-auto-update";
 
-  ### github:owner/repo derived from the canonical https URL — lib/repo.nix
-  ### stays the single source of truth for the repo location.
-  repoSlug = lib.removePrefix "https://github.com/" (import ../../../lib/repo.nix).url;
+  ### Repo location parsed once (forge-agnostic: GitHub, GitLab, generic
+  ### git) — lib/repo.nix stays the single source of truth for the URL.
+  repo = import ../../../lib/repo-info.nix {
+    url = (import ../../../lib/repo.nix).url;
+    inherit (cfg) channel;
+  };
 
   ### Real desktop = GNOME actually enabled, not just marker.hostProfile.
   ### Notifications are only attempted in that case (plus an active graphical
@@ -32,8 +35,8 @@ in
 
     flakeRef = lib.mkOption {
       type = lib.types.str;
-      default = "github:${repoSlug}?ref=${cfg.channel}";
-      description = "Remote flake reference used when no usable local checkout exists. Defaults to the channel on GitHub.";
+      default = repo.flakeRef;
+      description = "Remote flake reference used when no usable local checkout exists. Defaults to the channel on the configured forge.";
     };
 
     localCheckout = lib.mkOption {
@@ -294,7 +297,7 @@ in
         ### --- has no TTL staleness (unlike nix tarball cache), and a     ---
         ### --- shallow clone is small. GIT_URL overridable for tests.    ---
         if [[ "$FLAKE" == "${cfg.flakeRef}" ]]; then
-          GIT_URL="''${AUTO_UPDATE_GIT_URL:-https://github.com/${repoSlug}.git}"
+          GIT_URL="''${AUTO_UPDATE_GIT_URL:-${repo.gitUrl}}"
           SRC_ID=$(git ls-remote "$GIT_URL" "refs/heads/${cfg.channel}" | cut -f1) || fail "channel resolution failed"
           [[ -n "$SRC_ID" ]] || fail "could not resolve channel revision"
           if [[ -d "$WORKDIR/flake/.git" && "$(git -C "$WORKDIR/flake" rev-parse HEAD 2>/dev/null || true)" == "$SRC_ID" ]]; then

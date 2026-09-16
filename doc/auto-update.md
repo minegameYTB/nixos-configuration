@@ -26,7 +26,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 |---|---|---|
 | `enable` | `false` | Opt-in per machine profile. |
 | `channel` | `"flake-autoupdate"` | Last soaked-green source commit followed (not the local `.branch`). |
-| `flakeRef` | `github:<owner>/<repo>?ref=<channel>` | Remote ref, derived from `lib/repo.nix` (single source). |
+| `flakeRef` | `github:<owner>/<repo>?ref=<channel>` | Remote ref, derived from `lib/repo.nix` via `lib/repo-info.nix` (GitHub/GitLab native schemes, generic `git+https`/`git+ssh` elsewhere — Codeberg, self-hosted all work). |
 | `localCheckout` | `null` | e.g. `"/etc/nixos-config"`. Clean checkout on `channel` → pull + rebuild locally. |
 | `configuration` | `null` (required) | `nixosConfigurations.<name>` to build — intentionally not `networking.hostName`. |
 | `updateInputs` | `false` | Trial fresher inputs locally (unvalidated — default builds the channel tree tel quel). |
