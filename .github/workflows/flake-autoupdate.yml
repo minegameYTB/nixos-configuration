@@ -2,9 +2,8 @@
 #
 # BUFFER_BRANCH is a pointer at the last soaked-green SOURCE_BRANCH commit
 # (pure mirror, never any robot commit). Pushes to flake / prepare/**
-# (semiannual releases) / feat/auto-update are all validated (checks run on
-# the pushed branch); only SOURCE advances the pointer, after SOAK_RUNS
-# consecutive green runs.
+# are all validated (checks run on the pushed branch);
+# only SOURCE advances the pointer, after SOAK_RUNS consecutive green runs.
 # Machines with system.autoUpdate follow the buffer and bump inputs locally.
 # Never move the buffer by hand.
 #
@@ -15,7 +14,7 @@ name: flake-autoupdate
 
 on:
   push:
-    branches: ["flake", "prepare/**", "feat/auto-update"]
+    branches: ["flake", "prepare/**"]
     paths-ignore: ["doc/**", "**.md"]
   schedule:
     - cron: "0 3 */2 * *"

@@ -95,7 +95,7 @@ sorted by `createdAt` (API order is not contractual) and filtered to the
 validated branch, so a red run elsewhere never stalls the soak.
 
 - Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`vm-cli-efi vm-desktop-efi vm-cli-efi-zfs` — hp-probook excluded), `DRY_RUN`.
-- Triggers: push to `flake` / `prepare/**` (semiannual releases) / `feat/auto-update` (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
+- Triggers: push to `flake` / `prepare/**` (semiannual releases) (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
 - Broken tree: pointer stays, red run, manual arbitration. `GITHUB_TOKEN` (`contents: write`, `actions: read`) suffices while branches stay unprotected.
 - Never move `flake-autoupdate` by hand — use `advance_now`.
@@ -112,10 +112,10 @@ validated branch, so a red run elsewhere never stalls the soak.
 
 Target: `vm-cli-efi` (btrfs, ~2 vCPU / 2–3 GiB RAM / 40 GiB qcow2). ZFS specifics (`/export` ordering, snapshots) are validated on the ZFS host directly. `vm-cli-efi` and `vm-desktop-efi` carry the `autoUpdate` preset, centralized per machine in `machine.nix`.
 
-1. On `feat/auto-update`: `nix build '.#iso-minimal'` → persistent ISO.
+1. On `prepare/nixos-26.11`: `nix build '.#iso-minimal'` → persistent ISO.
 2. Create a persistent libvirt VM (EFI/OVMF, NAT): fresh qcow2 + ISO as cdrom.
 3. Install inside the VM with `./install.sh` (disko layout).
-4. In the VM, check out `feat/auto-update` (e.g. `/etc/nixos-config`), enable the block above, `nixos-rebuild switch --flake .#vm-cli-efi`.
+4. In the VM, check out `prepare/nixos-26.11` (e.g. `/etc/nixos-config`), enable the block above, `nixos-rebuild switch --flake .#vm-cli-efi`.
 5. Scenarios:
    - **a.** Timer fires → inputs bumped → new generation staged (`boot`), running system untouched.
    - **b.** Reboot → new generation active, previous one still bootable from the menu.
