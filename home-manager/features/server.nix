@@ -49,11 +49,12 @@
   home.activation = {
     report-changes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       report-changes(){
-        export PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin"
         echo -e "\n===================================="
         echo      "| Running nvd diff to show changes |"
         echo -e   "====================================\n"
-        nvd diff $oldGenPath $newGenPath
+        ### Scoped PATH (append, never overwrite): export would clobber PATH
+        ### for every activation step running after writeBoundary.
+        PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin:$PATH" nvd diff $oldGenPath $newGenPath
         echo ""
       }
       report-changes

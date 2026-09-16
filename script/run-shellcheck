@@ -8,7 +8,11 @@ shellcheck -x \
   install-lib/lib.sh \
   install-lib/checkpoint.sh \
   install-lib/nixos-install.sh \
-  script/test-install-logic.sh \
+  test/test-install-logic.sh \
+  test/test-update-flake-local.sh \
+  test/test-auto-update-sh.sh \
+  test/test-auto-update-checkout.sh \
   script/update-flake \
+  script/update-flake-local \
   script/mksymlink \
   script/run-deadnix

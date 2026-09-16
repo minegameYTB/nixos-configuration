@@ -120,8 +120,12 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - The disko config's `postCreateHook` switches `keylocation` from the install-time temp path to the permanent raw device path
 
 ## Testing
-- `script/test-install-logic.sh` — 68 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
-- Run: `bash script/test-install-logic.sh`
+- All tests live in [`test/`](test/) (shell harnesses, scratch in `/tmp/opencode`)
+- `test/test-install-logic.sh` — 72 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
+- `test/test-update-flake-local.sh` — gitless `update-flake-local` + `INSTALL_NO_GIT` (fake git/nix)
+- `test/test-auto-update-sh.sh` — notify/reboot/healthcheck shell logic extracted from `modules/misc/auto-update.nix`
+- `test/test-auto-update-checkout.sh` — source-selection with real git origin/clone
+- Run: `bash test/<name>.sh`
 
 ## Development Workflow
 - `nix build .#nixosConfigurations.<name>.config.system.build.toplevel` — build a config

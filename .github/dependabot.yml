@@ -1,0 +1,13 @@
+# Dependabot — GitHub Actions inputs only. Nix flake inputs are handled
+# by the flake-autoupdate workflow, not here.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"

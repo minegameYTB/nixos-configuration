@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### nspawnctl unit tests — run: bash script/test-nspawnctl.sh
+### nspawnctl unit tests — run: bash test/test-nspawnctl.sh
 ### Relocatable: derives the repo root from its own location; all scratch
 ### files live in a mktemp workdir cleaned up on exit.
 set -u

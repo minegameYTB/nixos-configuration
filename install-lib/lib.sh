@@ -57,6 +57,7 @@ Usage: $(basename "$0") [OPTION]...
 
 Options:
   --dont-check      Skip the git repository version check
+                    (same as setting INSTALL_NO_GIT=1)
   --help, -h        Show this help message and exit
   --list-steps      List all available installation steps and exit
   --step STEP_NAME  Run only the specified installation step
@@ -86,7 +87,13 @@ parseFlags() {
 
 # Check whether the local repo has uncommitted changes or is behind its
 # upstream branch.  If behind, propose to auto-update and re-exec.
+# Skipped entirely when INSTALL_NO_GIT=1 (testers without push access,
+# or checkouts without .git) — no git command is run in that case.
 checkRepoVersion() {
+  if [[ -n "${INSTALL_NO_GIT:-}" ]]; then
+    return 0
+  fi
+
   local repoRoot scriptArgs=("$@")
   repoRoot="$(git rev-parse --show-toplevel 2>/dev/null)" || return 0
 

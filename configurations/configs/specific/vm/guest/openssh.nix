@@ -15,7 +15,13 @@
   };
 
   ### SSH service hardening
-  systemd.services.sshd.serviceConfig = {
+  systemd.services.sshd = {
+    unitConfig.RequiresMountsFor = [
+      ### Operator-driven bootloader updates over SSH must land on the
+      ### mounted ESP (harmless where /boot is no separate mount).
+      "/boot"
+    ];
+    serviceConfig = {
     ProtectSystem = "strict";
 
     ### Keep sudo / nixos-rebuild usable over SSH: re-open only the
@@ -36,5 +42,6 @@
     MemoryHigh = "50%"; # soft: pressure to reclaim above this
     MemoryMax = "75%"; # hard: OOM-kill above this
     TasksMax = 256; # max number of tasks/threads
+    };
   };
 }

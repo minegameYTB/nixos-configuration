@@ -9,5 +9,6 @@
   imports = [
     ./marker.nix
     ./flake-copy.nix
+    ./auto-update.nix
   ];
 }

@@ -71,6 +71,21 @@ let
     bios-vio = ./configurations/configs/bootloader/grub2-specific/bios-virtio.nix;
   };
 
+  ### Per-machine auto-update wiring (feat/auto-update, see doc/auto-update.md).
+  ### Centralized here: one line per machine, configuration passed explicitly.
+  ### Defaults apply (2d checks, no auto-reboot): the machines follow the
+  ### soaked buffer and stage new generations, activation stays manual.
+  ### Prefers /etc/nixos-config when present, otherwise tracks the remote channel.
+  autoUpdate =
+    configuration:
+    {
+      system.autoUpdate = {
+        enable = true;
+        inherit configuration;
+        localCheckout = "/etc/nixos-config";
+      };
+    };
+
 in
 {
   ### --- Physical machines ---
@@ -98,7 +113,11 @@ in
     hostname = "nixos-kvm-desktop";
     profile = base "desktop";
     fs = fs "btrfs";
-    extraModules = [ boot.efi ];
+    extraModules = [
+      boot.efi
+      ### Auto-update enabled (see doc/auto-update.md)
+      (autoUpdate "vm-desktop-efi")
+    ];
     withHomeManager = true;
     usePatched = false;
   };
@@ -128,7 +147,11 @@ in
     hostname = "nixos-kvm-srv";
     profile = base "cli";
     fs = fs "btrfs";
-    extraModules = [ boot.efi ];
+    extraModules = [
+      boot.efi
+      ### Auto-update enabled (see doc/auto-update.md)
+      (autoUpdate "vm-cli-efi")
+    ];
     userOverrides = cliOverrides;
     withHomeManager = true;
     usePatched = false;
