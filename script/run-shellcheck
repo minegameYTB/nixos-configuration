@@ -9,6 +9,7 @@ shellcheck -x \
   install-lib/checkpoint.sh \
   install-lib/nixos-install.sh \
   test/test-install-logic.sh \
+  test/test-repo-info.sh \
   test/test-update-flake-local.sh \
   test/test-auto-update-sh.sh \
   test/test-auto-update-checkout.sh \

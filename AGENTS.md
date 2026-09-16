@@ -13,6 +13,7 @@
 - **`lib/nixpkgs-patches.nix`** — single source for the `pkgsPatched` patch list (PR patches via `pkgs.fetchpatch` — normalized hashes, stable across PR updates; local patches from `configurations/patch/nixpkgs/`). This is the **OS base layer**: `mkMachine` accepts `usePatched ? false`, and when true the whole machine's `pkgs` come from this patched nixpkgs tree instead of `pkgsFor`. Currently `false` on all machines (reserve mechanism). Do NOT confuse with the `nixpkgs-pr` flake input, which is the **single-package layer** (see Critical Context).
 - **`lib/default.nix`** — re-exports `machine.nix` (`mkMachine`) and `iso/common.nix` (ISO helpers)
 - **`lib/repo.nix`** — single source for `repoUrl`, used by packaging, `/etc/os-release`, and install clone
+- **`lib/repo-info.nix`** — pure-builtins URL parser (GitHub/GitLab/generic/SSH) → `{ host, slug, gitUrl, flakeRef }`, consumed by `system.autoUpdate`
 - **Hardware profiles** set `marker.hostProfile` (desktop/server) and `marker.archProfile` (x86-64-v1..v4, amd-zen4, aarch64) via `configurations/modules/misc/marker.nix`
 
 ## Configuration Structure
@@ -123,6 +124,7 @@ install-lib/                   # Install scripts (defaults, checkpoint, lib, nix
 - All tests live in [`test/`](test/) (shell harnesses, scratch in `/tmp/opencode`)
 - `test/test-install-logic.sh` — 72 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
 - `test/test-update-flake-local.sh` — gitless `update-flake-local` + `INSTALL_NO_GIT` (fake git/nix)
+- `test/test-repo-info.sh` — `lib/repo-info.nix` URL parsing (GitHub/GitLab/generic/SSH, pure nix eval)
 - `test/test-auto-update-sh.sh` — notify/reboot/healthcheck shell logic extracted from `modules/misc/auto-update.nix`
 - `test/test-auto-update-checkout.sh` — source-selection with real git origin/clone
 - Run: `bash test/<name>.sh`

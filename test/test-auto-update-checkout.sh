@@ -24,10 +24,11 @@ ko(){ fail=$((fail+1)); echo "FAIL: $*" >&2; }
         -e 's|\${cfg.channel}|flake|g' \
         -e 's|\${cfg.flakeRef}|REMOTE-REF|g' \
         -e 's|\${cfg.configuration}|testconf|g' \
-        -e "s|''\\\${AUTO_UPDATE_GIT_URL:-https://github.com/\\\${repoSlug}.git}|\${AUTO_UPDATE_GIT_URL}|" \
+        -e "s|''\\\${AUTO_UPDATE_GIT_URL:-\\\${repo.gitUrl}}|\${AUTO_UPDATE_GIT_URL}|" \
         -e 's/^        //' > "$T/source.func"
 grep -q 'pull --ff-only' "$T/source.func" && grep -q 'nixos-rebuild boot' "$T/source.func" \
   && grep -q 'git clone --depth 1' "$T/source.func" \
+  && ! grep -Eq '\$\{(cfg|repo|lib)\.' "$T/source.func" \
   && ok "source block extracted intact" || ko "extraction broken"
 
 # ── stubs: git ls-remote shim (rest delegated to real git), nix, rebuild ──
