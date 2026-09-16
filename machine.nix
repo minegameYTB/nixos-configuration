@@ -80,6 +80,7 @@ in
     hostname = "HP-probook";
     profile = ./profiles/hp-probook-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
+    usePatched = false;
   };
 
   # HP-240
@@ -87,6 +88,7 @@ in
     hostname = "UTILISA-0SK6G4E";
     profile = ./profiles/hp-240-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    usePatched = false;
   };
 
   ### --- Desktop VMs ---
@@ -98,8 +100,7 @@ in
     fs = fs "btrfs";
     extraModules = [ boot.efi ];
     withHomeManager = true;
-    # TEMP: libcap_ng static fix (PR #562812, fixes #562705) — revert to false after merge + flake.lock update
-    usePatched = true;
+    usePatched = false;
   };
 
   # VM preset (desktop bios)
@@ -108,6 +109,7 @@ in
     profile = base "desktop";
     fs = fs "btrfs";
     extraModules = [ boot.bios-nv ];
+    usePatched = false;
   };
 
   # VM preset (desktop bios virtio)
@@ -116,6 +118,7 @@ in
     profile = base "desktop";
     fs = fs "btrfs";
     extraModules = [ boot.bios-vio ];
+    usePatched = false;
   };
 
   ### --- Headless / server VMs ---
@@ -128,6 +131,7 @@ in
     extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
     withHomeManager = true;
+    usePatched = false;
   };
 
   # VM preset (CLI bios)
@@ -137,6 +141,7 @@ in
     fs = fs "btrfs";
     extraModules = [ boot.bios-nv ];
     userOverrides = cliOverrides;
+    usePatched = false;
   };
 
   # VM preset (CLI bios virtio)
@@ -146,6 +151,7 @@ in
     fs = fs "btrfs";
     extraModules = [ boot.bios-vio ];
     userOverrides = cliOverrides;
+    usePatched = false;
   };
 
   ### --- Test VMs ---
@@ -156,6 +162,7 @@ in
     profile = base "desktop";
     fs = fs "luks";
     extraModules = [ boot.efi ];
+    usePatched = false;
   };
 
   # VM preset (desktop efi ZFS) — requires at least 16 GiB RAM
@@ -164,7 +171,7 @@ in
     profile = base "desktop";
     fs = fs "zfs";
     extraModules = [ boot.efi ];
-    usePatched = true;
+    usePatched = false;
   };
 
   # VM preset (CLI efi ZFS)
@@ -174,6 +181,7 @@ in
     fs = fs "zfs";
     extraModules = [ boot.efi ];
     userOverrides = cliOverrides;
+    usePatched = false;
   };
 
   ### --- ISO Images ---
