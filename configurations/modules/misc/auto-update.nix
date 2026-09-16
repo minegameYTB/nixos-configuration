@@ -43,7 +43,7 @@ in
       type = lib.types.nullOr lib.types.path;
       default = null;
       example = "/etc/nixos-config";
-      description = "Optional local git checkout. When set, existing, and clean on the channel branch, it is pulled (--ff-only) and rebuilt instead of the remote ref. Any problem falls back to flakeRef with a warning.";
+      description = "Optional local git checkout. When set, existing, and clean on the channel branch, it is pulled (--ff-only) and rebuilt instead of the remote ref. Any problem falls back to flakeRef with a warning. /etc/nixos-config is the system-wide convention; a home checkout (e.g. /home/<user>/nixos-configuration) works too and is handy on dev machines.";
     };
 
     configuration = lib.mkOption {

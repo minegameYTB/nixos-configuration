@@ -82,7 +82,7 @@ let
       system.autoUpdate = {
         enable = true;
         inherit configuration;
-        localCheckout = "/etc/nixos-config";
+        localCheckout = null;
       };
     };
 
