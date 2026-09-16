@@ -6,6 +6,11 @@
   ...
 }:
 
+let
+  exportEnabled = config.services.nfs.server.enable && config.services.samba.enable;
+  isZfs = lib.attrByPath [ "/" "fsType" ] "" config.fileSystems == "zfs";
+in
+
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -52,17 +57,40 @@
   # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
   ### Mount /export as tmpfs
-  fileSystems."/export" =
-    lib.mkIf (config.services.nfs.server.enable && config.services.samba.enable)
+  fileSystems."/export" = lib.mkIf exportEnabled {
+    fsType = "tmpfs";
+    options = [
+      "nodev"
+      "noexec"
+      "nosuid"
+      "noswap"
+      "mode=755"
+      "size=4k"
+    ];
+  };
+
+  ### ZFS: mount the /export tmpfs before any ZFS dataset below it.
+  ### Datasets with a ZFS-native mountpoint (mountpoint=/export/...) are
+  ### mounted by zfs-mount.service, outside fstab ordering — force it after
+  ### export.mount so it can never cover the tmpfs.
+  systemd.services."zfs-mount" = lib.mkIf (exportEnabled && isZfs) {
+    after = [ "export.mount" ];
+    wants = [ "export.mount" ];
+  };
+
+  ### Legacy datasets (fileSystems."/export/..." with fsType = "zfs") are
+  ### ordered after their parent by systemd, but enforce an explicit
+  ### `depends = [ "/export" ]` so the ordering survives refactors.
+  assertions = lib.optionals exportEnabled (
+    let
+      exportChildren = lib.filterAttrs (n: _: lib.hasPrefix "/export/" n) config.fileSystems;
+      missing = lib.filterAttrs (n: v: !(lib.elem "/export" v.depends)) exportChildren;
+    in
+    [
       {
-        fsType = "tmpfs";
-        options = [
-          "nodev"
-          "noexec"
-          "nosuid"
-          "noswap"
-          "mode=755"
-          "size=4k"
-        ];
-      };
+        assertion = missing == { };
+        message = "fileSystems under /export must set depends = [ \"/export\" ] so the /export tmpfs mounts first (offenders: ${lib.concatStringsSep ", " (builtins.attrNames missing)})";
+      }
+    ]
+  );
 }
