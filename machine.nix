@@ -76,15 +76,13 @@ let
   ### Defaults apply (2d checks, no auto-reboot): the machines follow the
   ### soaked buffer and stage new generations, activation stays manual.
   ### Prefers /etc/nixos-config when present, otherwise tracks the remote channel.
-  autoUpdate =
-    configuration:
-    {
-      system.autoUpdate = {
-        enable = true;
-        inherit configuration;
-        localCheckout = null;
-      };
+  autoUpdate = configuration: {
+    system.autoUpdate = {
+      enable = true;
+      inherit configuration;
+      localCheckout = null;
     };
+  };
 
 in
 {

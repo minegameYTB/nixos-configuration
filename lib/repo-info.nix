@@ -13,7 +13,8 @@
 
 let
   ### Strip one trailing suffix (order matters: "/" first, then ".git").
-  stripSuffix = suffix: s:
+  stripSuffix =
+    suffix: s:
     let
       len = builtins.stringLength s;
       slen = builtins.stringLength suffix;
@@ -31,21 +32,29 @@ let
   https = builtins.match "https?://([^/]+)/(.+)" clean;
 
   info =
-    if gh != null then {
-      host = "github";
-      slug = builtins.head gh;
-    } else if gl != null then {
-      host = "gitlab";
-      slug = builtins.head gl;
-    } else if ssh != null then {
-      host = "ssh";
-      sshHost = builtins.head ssh;
-      slug = builtins.elemAt ssh 1;
-    } else if https != null then {
-      host = "https";
-      httpsHost = builtins.head https;
-      slug = builtins.elemAt https 1;
-    } else
+    if gh != null then
+      {
+        host = "github";
+        slug = builtins.head gh;
+      }
+    else if gl != null then
+      {
+        host = "gitlab";
+        slug = builtins.head gl;
+      }
+    else if ssh != null then
+      {
+        host = "ssh";
+        sshHost = builtins.head ssh;
+        slug = builtins.elemAt ssh 1;
+      }
+    else if https != null then
+      {
+        host = "https";
+        httpsHost = builtins.head https;
+        slug = builtins.elemAt https 1;
+      }
+    else
       throw "repo-info: unsupported git remote URL '${url}' (expected https://host/owner/repo or git@host:owner/repo)";
 in
 {
