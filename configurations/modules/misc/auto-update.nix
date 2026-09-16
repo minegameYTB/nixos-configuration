@@ -165,32 +165,18 @@ in
       };
 
       ### Low I/O + CPU priority: updates must never disturb the running system.
+      ### NO mount-namespacing sandbox here (ProtectSystem/PrivateTmp/...):
+      ### this service drives nix builds, and the nix sandbox needs its own
+      ### user+mount namespaces — nesting it inside a systemd sandbox fails
+      ### with "VFS: Mount too revealing" / "no kernel namespaces" (seen in
+      ### prod). Confinement stays on: restrictive PATH + low priority +
+      ### ConditionACPower. (Checked by test-shell-paths.sh: no sandbox keys.)
       serviceConfig = {
         Type = "oneshot";
         Nice = 19;
         IOSchedulingClass = "idle";
         IOSchedulingPriority = 7;
         StateDirectory = stateDir;
-        PrivateTmp = true;
-
-        ### Confinement (same spirit as the sshd hardening): read-only base
-        ### with explicit re-opens for the rebuild paths.
-        ### NOT applied: NoNewPrivileges + restricted user namespaces (the nix
-        ### sandbox needs unshare), cgroup limits (rebuilds are legitimately
-        ### hungry, especially on small VMs).
-        ProtectSystem = "strict";
-        ReadWritePaths = [
-          "/nix" # store, profiles, daemon socket
-          "/boot" # bootloader entries
-          "/etc" # nixos-rebuild bookkeeping
-          "/var" # state dir, nix db
-          "/run" # systemd dbus, profile links
-          "/home" # local checkouts in home dirs
-          "/root" # root checkouts + nix root config
-        ];
-        ProtectKernelTunables = true;
-        ProtectKernelModules = true;
-        ProtectControlGroups = true;
       };
 
       ### Explicit restrictive PATH (hand-picked bin dirs, output-aware):
@@ -388,19 +374,6 @@ in
         Type = "oneshot";
         TimeoutStartSec = cfg.healthCheck.timeout + 60;
         StateDirectory = stateDir;
-
-        ### Same confinement pattern, tighter (checks only read + two state
-        ### files). No NoNewPrivileges: runuser needs setuid for notify.
-        ProtectSystem = "strict";
-        ReadWritePaths = [
-          "/run" # dbus, user buses, booted-system link
-          "/var/lib/${stateDir}" # staged/inhibit markers
-        ];
-        ProtectKernelTunables = true;
-        ProtectKernelModules = true;
-        ProtectControlGroups = true;
-        PrivateTmp = true;
-        MemoryMax = "10%";
       };
 
       ### Explicit restrictive PATH (hand-picked bin dirs, output-aware).

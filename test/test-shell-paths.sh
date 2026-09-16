@@ -76,6 +76,20 @@ check_service(){
 check_service nixos-auto-update
 check_service nixos-autoupdate-healthcheck
 
+# ── 2. no mount-sandboxing on either service ──
+# These services drive (or follow) nix builds and user sessions: mount
+# namespacing (ProtectSystem/PrivateTmp/...) breaks the nix build sandbox
+# ("VFS: Mount too revealing", seen in prod). See module comments.
+BANNED='ProtectSystem|ProtectHome|PrivateTmp|PrivateDevices|ProtectKernelTunables|ProtectKernelModules|ProtectControlGroups|RestrictNamespaces|NoNewPrivileges|ReadWritePaths|ReadOnlyPaths'
+for svc in nixos-auto-update nixos-autoupdate-healthcheck; do
+  if awk "/systemd.services.$svc =.*\{/{f=1} f{print} f&&/^    \};\$/{exit}" "$MOD" \
+    | grep -Eq "^\s*($BANNED)\s*="; then
+    ko "[$svc] mount-sandboxing key present (breaks nix builds, see module comments)"
+  else
+    ok "[$svc] no mount-sandboxing keys"
+  fi
+done
+
 # ── 2. no PATH clobbering in home-manager activation ──
 if grep -rn 'export PATH=' "$REPO/home-manager/" | grep -v '\$PATH' | grep -q .; then
   grep -rn 'export PATH=' "$REPO/home-manager/" | grep -v '\$PATH' >&2
