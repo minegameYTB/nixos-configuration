@@ -63,7 +63,7 @@ jobs:
             echo "target=${{ env.SOURCE_BRANCH }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ steps.target.outputs.target }}
 
@@ -73,10 +73,10 @@ jobs:
         id: validated
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+      - uses: DeterminateSystems/nix-installer-action@v23
       # GHA-backed cache, zero-config. FlakeHub upload explicitly off: it
       # needs an account + id-token and only adds noise without one.
-      - uses: DeterminateSystems/magic-nix-cache-action@84c0677f58dcedf3b91f8223ce36a9ea5b3c84b7 # v15
+      - uses: DeterminateSystems/magic-nix-cache-action@v15
         with:
           use-flakehub: false
 
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
