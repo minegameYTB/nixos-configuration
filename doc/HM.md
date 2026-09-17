@@ -160,5 +160,6 @@ The standalone specifics (`configs/specific/standalone/`):
   plus flatpak PATH and the shell aliases
 - `nix-settings.nix` — mirrors the NixOS-side `configurations/configs/common/system-opts/nix-settings.nix`
   (nix.conf via `nix.settings`, `NIX_PATH`/flake registry pinned to the flake-locked
-  nixpkgs, weekly gc), restricted to user-level options (`trusted-users` stays
-  root-level)
+  nixpkgs, weekly gc), restricted to user-level options (daemon-restricted settings
+  like `auto-optimise-store`, `download-buffer-size`, `trusted-public-keys` and
+  `trusted-users` stay root-level in `/etc/nix/nix.conf`)

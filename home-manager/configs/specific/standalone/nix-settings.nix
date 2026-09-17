@@ -8,7 +8,10 @@
 {
   ### Nix Settings
   ### Aligned with configurations/configs/common/system-opts/nix-settings.nix,
-  ### restricted to user-level options (`trusted-users` stays root-level).
+  ### restricted to user-level options: daemon-restricted settings
+  ### (auto-optimise-store, download-buffer-size, trusted-public-keys,
+  ### trusted-users) belong to /etc/nix/nix.conf (root), otherwise the daemon
+  ### ignores them with "not a trusted user" warnings.
   nix = {
     ### Nix package used to generate/validate nix.conf and for the gc service
     ### (required once nix.settings is set)
@@ -26,20 +29,15 @@
 
     settings = {
       warn-dirty = false;
-      auto-optimise-store = true;
-      download-buffer-size = 134217728; # 128M for download buffer
       experimental-features = [
         "nix-command"
         "flakes"
       ];
       max-jobs = 2;
       cores = 2;
-      substituters = [
-        #"https://cache.nixos.org/"
-      ];
-      trusted-public-keys = [
-        #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      ];
+      #substituters = [
+      #  "https://cache.nixos.org/"
+      #];
     };
     gc = {
       automatic = true;
