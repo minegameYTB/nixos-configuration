@@ -152,3 +152,13 @@ The `mkHome` in `flake.nix`:
 - Imports `hm-profiles/users/<name>/default.nix` (same entry point as NixOS)
 - Automatically adds `configs/specific/standalone` (standalone specifics)
 - Adds the stylix HM module if `gnome` is in the features
+
+The standalone specifics (`configs/specific/standalone/`):
+- `standalone-opts.nix` — `programs.home-manager.enable = true` installs the
+  `home-manager` command in the user profile, so `home-manager switch` works after
+  the first install (the `home-manager = "home-manager -b bak"` alias resolves to it),
+  plus flatpak PATH and the shell aliases
+- `nix-settings.nix` — mirrors the NixOS-side `configurations/configs/common/system-opts/nix-settings.nix`
+  (nix.conf via `nix.settings`, `NIX_PATH`/flake registry pinned to the flake-locked
+  nixpkgs, weekly gc), restricted to user-level options (`trusted-users` stays
+  root-level)

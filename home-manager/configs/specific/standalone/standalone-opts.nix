@@ -10,17 +10,15 @@
   ### Better integration of home manager in standalone mode
   targets.genericLinux.enable = true;
 
-  ### Initialise nur on home-manager standalone (already the case on hm-module on NixOS)
-  nixpkgs.overlays = [ inputs.nur.overlays.default ];
+  ### Install the home-manager command (binary + completions) in the user
+  ### profile so the `home-manager` shell alias below actually resolves.
+  ### Then `home-manager switch` replaces the `nix run <branch> -- switch`
+  ### used during the first install.
+  programs.home-manager.enable = true;
 
-  ### Nix option
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 15d";
-    };
-  };
+  ### Nix settings, NUR overlay, nix package and nvd diff hook
+  ### (single source of truth, mirrors NixOS-side nix-settings.nix)
+  imports = [ ./nix-settings.nix ];
 
   ### Environment variable
   home.sessionVariables = {
@@ -59,29 +57,5 @@
 
     ### This alias is just inspired from macOS "open" command
     open = "${pkgs.xdg-utils}/bin/xdg-open";
-  };
-
-  ### Nix package
-  home.packages = with pkgs; [ nix ];
-
-  ### Nvd diff hook
-  home.activation = {
-    report-changes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      ### Define strict variable on this context
-      report-changes(){
-        echo -e "\n===================================="
-        echo      "| Running nvd diff to show changes |"
-        echo -e   "====================================\n"
-
-        ### Scoped PATH (append, never overwrite): export would clobber PATH
-        ### for every activation step running after writeBoundary.
-        ### Variable found in activation script
-        PATH="${pkgs.nvd}/bin:${pkgs.coreutils}/bin:${pkgs.nix}/bin:$PATH" nvd diff $oldGenPath $newGenPath
-        echo ""
-      }
-
-      ### Execute report-changes hook
-      report-changes
-    '';
   };
 }

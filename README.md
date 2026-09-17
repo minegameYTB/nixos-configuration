@@ -60,7 +60,7 @@ nixos-configuration/
 │
 ├── configurations/        # NixOS configuration modules
 ├── profiles/              # Machine profiles (hp-probook, hp-240, VMs)
-├── hm-profiles/           # Home Manager profiles (desktop, server)
+├── hm-profiles/           # Home Manager profiles (users.nix + per-user dirs)
 ├── home-manager/          # Home Manager modules
 │
 ├── iso/                   # ISO profiles (common, gnome, cli)
