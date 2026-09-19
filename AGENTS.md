@@ -1,150 +1,60 @@
 # NixOS Configuration — Agent Guide
 
-## Project Overview
-- Flake-based NixOS configuration with btrfs/ZFS support
-- Modules: desktop (GNOME), gaming, VM host/guest, AI tools, LUKS encryption
-- Dual install path: NixOS (full) + Home Manager standalone (non-NixOS Linux)
-- ISO builder: 2 variants (GNOME / CLI) with `mkIso` helper, auto-discovered as flake packages
+Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch `prepare/nixos-26.11`).
+13 `nixosConfigurations` in `machine.nix`: 11 machines (2 physical + 9 VM presets) + `iso-gnome` + `iso-minimal`.
 
-## Flake Architecture
-- **`flake.nix`** — entrypoint: inputs, overlays, `specialArgs`, `mkMachine`, `mkHome`
-- **`machine.nix`** — defines `mkMachine` → 11 NixOS configurations + 2 ISO configs via `helpers.iso.mkIso`
-- **`overlay.nix`** — injects NUR, CachyOS kernel, unstable/PR pkgs, `pkgsConfig` (delegates to `pkgs/default.nix`)
-- **`lib/nixpkgs-patches.nix`** — single source for the `pkgsPatched` patch list (PR patches via `pkgs.fetchpatch` — normalized hashes, stable across PR updates; local patches from `configurations/patch/nixpkgs/`). This is the **OS base layer**: `mkMachine` accepts `usePatched ? false`, and when true the whole machine's `pkgs` come from this patched nixpkgs tree instead of `pkgsFor`. Currently `false` on all machines (reserve mechanism). Do NOT confuse with the `nixpkgs-pr` flake input, which is the **single-package layer** (see Critical Context).
-- **`lib/default.nix`** — re-exports `machine.nix` (`mkMachine`) and `iso/common.nix` (ISO helpers)
-- **`lib/repo.nix`** — single source for `repoUrl`, used by packaging, `/etc/os-release`, and install clone
-- **`lib/repo-info.nix`** — pure-builtins URL parser (GitHub/GitLab/generic/SSH) → `{ host, slug, gitUrl, flakeRef }`, consumed by `system.autoUpdate`
-- **Hardware profiles** set `marker.hostProfile` (desktop/server) and `marker.archProfile` (x86-64-v1..v4, amd-zen4, aarch64) via `configurations/modules/misc/marker.nix`
+## Flake wiring
 
-## Configuration Structure
-```
-configurations/
-├── configuration.nix          # Core NixOS module (imports common configs)
-├── config-modules/            # Distant flake modules (stylix, lanzaboote, flatpak, nix-index-db)
-├── modules/                   # Custom modules (programs, misc markers, nix caches, vmware)
-├── configs/
-│   ├── common/                # Shared: users, pkgs, timezone, security, system-opts/*
-│   ├── networking/
-│   ├── overlays/              # Package overrides (mutters, coreutils, gnome-control-center)
-│   ├── bootloader/            # systemd-boot, GRUB2 (EFI/BIOS), efi-mountpoint
-│   ├── specific/              # Machine features: desktop (gnome, games, browser), VM guest/host, AI, container
-│   └── system/                # Services (flatpak, channel cleanup), /tmp modes
-├── hardware-configuration/
-│   ├── filesystem/            # btrfs, zfs, luks-btrfs mount/config
-│   ├── machines/              # hp-probook, hp-240, vm
-│   └── specific/              # intel-firmware, intel-graphics, swap
-├── disko-configuration/       # 4 active + 4 unused disko configs
-└── patch/nixpkgs/             # Out-of-tree patches for libvirt, qemu
+- `flake.nix` — inputs, overlays, `specialArgs`, `mkMachine`/`mkHome`. Formatter is `nixfmt-tree` (`nix fmt`). Dev shell via `build.sh` → `nix develop --command make "$@"`; run make targets as `./build.sh <target>` outside NixOS.
+- `machine.nix` — `mkMachine { hostname, profile, fs, extraModules ? [], arch ?, usePatched ? false, userOverrides ? {}, withHomeManager ? true }`. `lib/machine.nix` switches whole-system pkgs (`pkgsPatched` vs `pkgsFor`); `usePatched` is `false` everywhere (reserve mechanism).
+- `lib/default.nix` re-exports `lib/machine.nix` (`mkMachine`) + `iso/common.nix` (`mkIso`/`mkIsoConfig`).
+- `pkgs/default.nix` is the single source of truth for both the overlay's `pkgsConfig` and flake `packages`. Configs prefixed `iso-` are auto-exposed as flake packages, **x86_64-linux only**.
+- `overlay.nix` — NUR + CachyOS kernel overlay (x86_64 only) + one `(self: super: ...)` overlay exposing `pkgsUnstable`, `pkgs2511`, `pkgsPr`, `pkgsConfig`. Convention: overlay lambdas in modules use `(self: super:)` — never `final:`/`prev:`.
+- Two unreleased-package layers, do not conflate:
+  - **Single package** — `nixpkgs-pr` input (`?ref=pull/537215/head`) → `pkgs.pkgsPr`, consumed in exactly one place: `configurations/configs/specific/ai/default.nix` (`claude-desktop`, xserver-gated).
+  - **OS base** — `lib/nixpkgs-patches.nix` → `pkgsPatched` via `pkgs.fetchpatch` (currently PR 562812 libcap_ng static fix). Per-machine opt-in via `usePatched = true`.
+- `lib/repo.nix` is the canonical `repoUrl` (packaging, `/etc/os-release` `CONFIG_URL`, install clone). Runtime override: `INSTALL_REPO_URL`. Branch comes from the `.branch` file.
 
-iso/                           # ISO profiles (common, gnome, cli)
-lib/                           # Helper re-exports (machine.nix, iso/common.nix, nixpkgs-patches.nix, repo.nix)
-pkgs/                          # Local packages (default.nix is single source of truth for overlay + flake)
-  nixos-config/                #   nixos-config-install wrapper + .config-repo generation
-install-lib/                   # Install scripts (defaults, checkpoint, lib, nixos-install, hm-standalone)
-```
+## Machines: profile + marker + kernel
 
-### Repo URL — `lib/repo.nix`
-- Single source for `repoUrl`, imported by `version.nix` (`CONFIG_URL` in `/etc/os-release`) and `install-lib/nixos-install.sh` (config clone into installed system)
-- `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
-- Overridable at runtime via `INSTALL_REPO_URL` (env variable)
+- `profiles/`: `hp-probook`, `hp-240` (physical) + `vm-desktop`/`vm-cli` presets. `machine.nix` combines profile + fs module + bootloader per machine.
+- `marker.hostProfile` (`desktop`|`server`) and `marker.archProfile` (`x86-64-v1..v4`, `amd-zen4`, `aarch64`) are **required** — missing values fail evaluation via assertions (`configurations/modules/misc/marker.nix`).
+- Kernel (`configs/common/system-opts/cachyos-kernel.nix`): desktop → `linuxPackages-cachyos-bore-lto` (+ `-x86_64-v2/v3/v4` suffix); server → `linuxPackages-cachyos-server` (**v1 only**, other arch throws); aarch64 → stock `linuxPackages`. Pinned/custom kernels via flags in that file (default off = binary cache intact).
 
-## Key Patterns
+## Home Manager
 
-### `nixpkgs.overlays` entries use `self: super:`
-- Convention (consigne) for any overlay defined in a module's `nixpkgs.overlays`: use `(self: super: ...)` for the lambda args — not `final:`/`prev:` — `super` for the package being overridden and `self` for anything else in the final package set. Follows `overlay.nix` and the wrappers in `nix-settings.nix` / `nixos-containers.nix`.
+- Single entry `hm-profiles/users/entry.nix`: `globalFeatures` + per-user `hmFeatures` → `home-manager/features/<name>.nix`. Users in `hm-profiles/users.nix` (currently only `minegame`); per-user overrides in `hm-profiles/users/<name>/`.
+- `userOverrides` shape: `{ global = { without|extra }; <user> = { without|extra }; }` (see `cliOverrides` in `machine.nix`). ISO passes `hmFeatures` directly to `mkIso`.
+- Two modes: NixOS-managed (`home-manager.nixosModule` + `homeManagerConfig`) and standalone (`mkHome`, `homeConfigurations.<user>@<system>`). See `doc/HM.md`.
 
-### The `marker` Module
-- `marker.hostProfile` (desktop|server) and `marker.archProfile` set in `hardware-configuration.nix`
-- Consumed by `cachyos-kernel.nix` for kernel selection (desktop=LTO+BORE, server=LTS)
+## ISO (`iso/`, see `doc/ISO.md`)
 
-### CachyOS Kernel
-- Desktop uses `linux_cachyos-lto` (bore scheduler), server uses `linux_cachyos-server-lto`
-- Supports micro-arch pinning (v2/v3/v4/amd-zen4) via arch suffix
-- ARM falls back to stock nixpkgs kernel
-- Custom build options via `hardware.cachyos.kernelBuildConfig`
+- `common.nix`: `mkIsoConfig` + `mkIso`, welcome message, fixed machine-id (first 8 hex chars = ZFS hostId — keep it valid hex). `gnome.nix` (desktop) / `cli.nix` (minimal). Build: `nix build '.#iso-gnome'` / `'.#iso-minimal'` (or `make iso-gnome|iso-minimal|iso-all`).
 
-### ISO Profiles (`iso/`)
-- **`iso/common.nix`** — `mkIsoConfig` (shared NixOS module for all ISOs), `mkIso` (nixosSystem builder), keyboard helpers, welcome message
-- **`iso/gnome.nix`** — GNOME desktop variant (imports desktop, sound, browser, autologin)
-- **`iso/cli.nix`** — Minimal CLI variant (only shared config + console keymap)
-- **`machine.nix`** — ISO configs registered via `helpers.iso.mkIso { edition, profile, hostname, hmProfile, ... }`
-- **Auto-discovery** — every config starting with `iso-` in `machine.nix` is automatically exposed as a flake package via `filterAttrs` + `mapAttrs'` in `flake.nix`
-- See `doc/ISO.md` for full docs
+## Containers (`configs/specific/container/`, see `doc/containers.md`)
 
-### NixOS Containers (`configurations/configs/specific/container/`)
-- **Per-subsystem gates** — `containerSubsystems.nixos|podman|nspawn` (default off), set at the machine profile level (`profiles/<machine>-profile.nix`). Each subsystem file declares its own gate and stays inert when off, so the folder can be imported on any machine
-- **`nixos-container/nixos-containers.nix`** — NixOS containers framework (`nixosContainers.containers.<name>`, active via `containerSubsystems.nixos`): host plumbing (`boot.enableContainers`, NAT via `ve-+`, auto-IP `10.0.<idx>.1/.2`), auto-generated `nixos-<name>-login` scripts. Container options: `enable`, `autoStart`, `hostAddress`/`localAddress` (null = auto), `bindMounts`, `configFile`, `configModules` (extra container-internal modules, same signature as `configFile`), `sshUser`, `login`
-- **`nixos-container` wrapper** — the `nixos-container` CLI is overridden via a `nixpkgs.overlays` entry (overrideAttrs + makeWrapper, same pattern as the `nixos-rebuild` wrapper): the real binary is renamed to `.nixos-container-wrapped` (reachable via `NIX_REAL_CONTAINER`) and a wrapper at the same name adds `list`/`status`/`start`/`stop`/`restart`/`login` subcommands (any other native command passes through). The wrapper is baked with the declared containers (name/IP/ssh user) from `containerInfo`.
-- **`nixos-container/base.nix`** — shared container-internal base (user, hardened sshd, firewall, git identity, nix-settings, stateVersion); imported via `(import ../base.nix { inherit stateVersion username; })`
-- **`nixos-container/<name>/default.nix`** — container declaration: `nixosContainers.containers.<name> = { configFile = ./container-config.nix; bindMounts = {...}; }`
-- **`nixos-container/<name>/container-config.nix`** — container-internal module, function of `{ self, inputs, stateVersion, pkgs, username }` (pkgs must come from the host: the container's own pkgs lack the overlay)
-- **New container recipe**: create `nixos-container/<name>/` with `default.nix` + `container-config.nix`, add `./<name>` to `nixos-container/default.nix` — plumbing is automatic
-- Only imported by hp-probook (`profiles/hp-probook-profile.nix`), which enables all three subsystems
-- See `doc/containers.md` for full docs + `example/nixos-container*.nix.txt` templates + `configurations/configs/specific/container/nixos-container/example/` general-purpose model
+- Per-subsystem gates `containerSubsystems.nixos|podman|nspawn` (default off, set in machine profile); only hp-probook enables them.
+- `nixos-container/nixos-containers.nix`: `nixosContainers.containers.<name>` with host plumbing (NAT `ve-+`, auto-IP `10.0.<idx>.1/.2`, `nixos-<name>-login` scripts). Options: `enable`, `autoStart`, `hostAddress`/`localAddress` (null = auto), `bindMounts`, `configFile`, `configModules`, `sshUser`, `login`.
+- `nixos-container` CLI is wrapped via `nixpkgs.overlays` (real binary → `.nixos-container-wrapped`, `NIX_REAL_CONTAINER` passthrough) adding `list|status|start|stop|restart|login`.
+- Container-internal modules take `{ self, inputs, stateVersion, pkgs, username }` — `pkgs` must come from the host (container's own pkgs lack the overlay); shared base via `(import ../base.nix { inherit stateVersion username; })`.
+- New container: create `nixos-container/<name>/{default.nix,container-config.nix}`, add `./<name>` to `nixos-container/default.nix`. Templates in `example/`.
 
-## Documentation
-- All documentation lives in [`doc/`](doc/) — `INSTALL.md`, `ISO.md`, `containers.md`, `HM.md`, `modules.md`, `config-modules.md`
-- `AGENTS.md` (this file) stays at the project root for agent discovery
+## Install (`install-lib/`, `install.sh`, see `doc/INSTALL.md`)
 
-### Repo URL — `lib/repo.nix`
-- Single source for `repoUrl`, imported by `flake.nix` (packaging), `version.nix` (`CONFIG_URL` in `/etc/os-release`), and `install-lib/nixos-install.sh` (config clone into installed system)
-- `.config-repo` (URL + rev) generated in the `nixos-config` derivation for the ISO
-- Overridable at runtime via `INSTALL_REPO_URL` (env variable)
+- `install.sh` auto-detects NixOS vs standalone Linux (→ `nixos-install.sh` vs `hm-standalone-install.sh`).
+- `nixos-install.sh` is checkpointed/resumable (`/tmp/nixos-install-state`); `step_copy_config` supports `.git/` copy, `.config-repo` pin, shallow clone, fallback.
+- Disko: `configurations/disko-configuration/{current (4 active),unused (4)}`. No ZFS native encryption (`boot.zfs.requestEncryptionCredentials = false`); ZFS uses `devNodes = /dev/disk/by-fs/...` + `forceImportRoot = false` (see `doc/udev-by-fs.md`).
 
-### Home Manager
-- **Two modes**: NixOS-managed (via `home-manager.nixosModule`) and **standalone** (via `mkHome` in `flake.nix`)
-- **Single entry point**: `hm-profiles/users/entry.nix` reads `globalFeatures` + per-user `hmFeatures` → imports `home-manager/features/<name>.nix`
-- **Users**: defined in `hm-profiles/users.nix` with `description` + `hmFeatures` list. Per-user overrides in `hm-profiles/users/<name>/`
-- **Features** (`home-manager/features/`): HM modules activated by name. Simple features inline; complex ones delegate to `home-manager/config-modules/<name>/` via `(inputs.self + "/home-manager/config-modules/<name>")`
-- **Modules** (`home-manager/config-modules/`): external flake module wrappers (lazyvim, zen-browser), source of truth referenced by features
-- **ISO**: uses `hmFeatures` directly in `machine.nix` → `mkIso { hmFeatures = [...]; }` → user `nixos` in ISO
-- See `doc/HM.md` for full docs
+## Tests & checks
 
-## Install System (`install-lib/`)
-- **`install.sh`** — auto-detects NixOS vs standalone Linux
-- **`nixos-install.sh`** — 10-step system with checkpoint/resume
-  - Steps: INTERACTIVE_SETUP → LUKS_SETUP → ZFS_TUNE → PARTITION → LUKS_PASSPHRASE → SWAP → NIXOS_INSTALL → PASSWORD → COPY_CONFIG → ZFS_EXPORT
-  - `step_copy_config` supports 4 clone modes: `.git/` → full copy, `.config-repo` → `git clone --no-checkout` + checkout $rev, `lib/repo.nix` → shallow clone, fallback → copy without history
-  - Temp swap: btrfs (mkswapfile), ext4/other (fallocate)
-  - ZFS native encryption: generates 32-byte raw key, stores on raw partition or file
-- **`hm-standalone-install.sh`** — standalone HM install on any Linux
-- **Checkpoint system** (`checkpoint.sh`): state file in `/tmp/nixos-install-state`, persists interactive answers, survives crashes
-- ZFS native encryption support was removed (see git history for `disko-efi-zfs-encrypted.nix` and `zfs-encrypted/` filesystem module)
+- Suites in `test/`: `bash test/<name>.sh` (install-logic, repo-info, update-flake-local, auto-update-sh, auto-update-checkout, nspawnctl, shell-paths).
+- `make run-deadnix` (`deadnix -eqlL .`), `make run-shellcheck` (install.sh, build.sh, install-lib, test, script). Format with `nix fmt`.
+- CI (`.github/workflows/flake-autoupdate.yml`): runs **all** `test/test-*.sh` + `nix eval` instantiate of `vm-cli-efi vm-desktop-efi vm-cli-efi-zfs`. Buffer branch `flake-autoupdate` soaks off `prepare/nixos-26.11` (`SOAK_RUNS=3`) — **never move the buffer pointer by hand**; see `doc/auto-update.md`.
 
-### ZFS Native Encryption
-- Datasets are encrypted with `aes-256-gcm` + `keyformat = "raw"` (32-byte key)
-- `boot.zfs.requestEncryptionCredentials = true` triggers `zfs load-key -a` in initrd
-- Key stored on a raw partition (e.g. SD card) at install time — read directly by initrd at boot
-- `boot.initrd.kernelModules = [ "mmc_block" ]` ensures the key device is available
-- Encrypted datasets: `ROOT` (covers `/`), `home`, `var` (covers `/var/log`, `/var/cache`, `/var/lib/libvirt`)
-- Unencrypted: `nix` (performance), `reserved`
-- The disko config's `postCreateHook` switches `keylocation` from the install-time temp path to the permanent raw device path
+## Gotchas
 
-## Testing
-- All tests live in [`test/`](test/) (shell harnesses, scratch in `/tmp/opencode`)
-- `test/test-install-logic.sh` — 72 tests covering disko selection, swap types, cleanup, ARC tuning, variables, flags, step system
-- `test/test-update-flake-local.sh` — gitless `update-flake-local` + `INSTALL_NO_GIT` (fake git/nix)
-- `test/test-repo-info.sh` — `lib/repo-info.nix` URL parsing (GitHub/GitLab/generic/SSH, pure nix eval)
-- `test/test-auto-update-sh.sh` — notify/reboot/healthcheck shell logic extracted from `modules/misc/auto-update.nix`
-- `test/test-auto-update-checkout.sh` — source-selection with real git origin/clone
-- Run: `bash test/<name>.sh`
-
-## Development Workflow
-- `nix build .#nixosConfigurations.<name>.config.system.build.toplevel` — build a config
-- `sudo nixos-rebuild switch --flake .#<name>` — deploy
-- `nix develop` — dev shell (via `build.sh` or flake)
-- `make run-deadnix` — find unused nix code
-- `make run-shellcheck` — lint shell scripts
-- `nix build '.#iso-gnome'` — build GNOME ISO
-- `nix build '.#iso-minimal'` — build CLI ISO
-- **Use `/tmp/opencode` as the preferred temporary directory** for scratch work and experiments
-
-## Critical Context
-- **No secrets in repo**: initial passwords are "nixos", LUKS keys are generated at install time
-- **Blocklist disabled**: StevenBlack/hosts nixpkgs module has an issue, commented out in networking
-- **nixpkgs-main** = release-26.05, pinned in flake.lock
-- **Two-layer unreleased-package strategy (do not conflate):**
-  - **Package layer** — `nixpkgs-pr` input (`?ref=pull/537215/head`, i.e. the `claude-desktop` PR) exposed as `pkgs.pkgsPr` via `overlay.nix`, consumed in exactly one place: `configurations/configs/specific/ai/default.nix`. Purpose: install a single not-yet-released package without touching the OS base.
-  - **OS base layer** — `lib/nixpkgs-patches.nix` → `pkgsPatched` (same PR as `.patch` via `fetchpatch`, plus local patches from `configurations/patch/nixpkgs/` currently commented out: qemu version bump, libvirt/OVMF update). Activated per-machine via `usePatched = true` (currently `false` everywhere). Purpose: patch the nixpkgs source tree the whole system is evaluated against.
-- **forceImportRoot = false** for ZFS (both LUKS+ZFS and plain ZFS)
-- **NixOS stateVersion**: system = 26.05, HM = 26.05
+- `system.stateVersion = "24.05"` (do not bump casually); HM `home.stateVersion = "26.05"`.
+- `networking.extraHosts` blocklist is **active but xserver-gated** (`lib.mkIf config.services.xserver.enable`): `extraHosts` is `types.lines`, an unguarded `lib.optionals` list breaks every headless build.
+- No secrets in repo; initial passwords are `"nixos"`.
+- Docs live in `doc/` (`INSTALL`, `ISO`, `containers`, `HM`, `modules`, `config-modules`, `auto-update`, `udev-by-fs`). Trust `flake.nix`/`machine.nix`/scripts over prose when they conflict.
+- Scratch dir for experiments: `/tmp/opencode`.
