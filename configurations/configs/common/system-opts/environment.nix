@@ -33,6 +33,7 @@
     gsw = "git switch";
     gbr = "git branch";
     gft = "git fetch";
+    glog = "git log";
   };
 
   ### gnu nano

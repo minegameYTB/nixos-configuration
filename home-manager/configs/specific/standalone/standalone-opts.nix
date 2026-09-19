@@ -38,6 +38,7 @@
     gsw = "git switch";
     gbr = "git branch";
     gft = "git fetch";
+    glog = "git log";
 
     ### Core utilities replacement
     ls = "${pkgs.lsd}/bin/lsd";
