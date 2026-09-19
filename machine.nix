@@ -52,9 +52,9 @@ let
   base =
     type:
     if type == "desktop" then
-      ./profiles/base-profiles/vm-desktop-profile.nix
+      ./profiles/vm-desktop-profile.nix
     else
-      ./profiles/base-profiles/vm-cli-profile.nix;
+      ./profiles/vm-cli-profile.nix;
 
   fs =
     type:
