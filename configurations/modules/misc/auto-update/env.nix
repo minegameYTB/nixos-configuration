@@ -12,8 +12,8 @@
 # are shell builtins (printf).
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 36
-#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 20
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 37
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 {
@@ -29,7 +29,7 @@ let
       ${lib.concatMapStrings (b: "ln -s ${b} \"$out/bin/${builtins.baseNameOf b}\"\n") bins}
     '';
 
-  # Common core (intersection of all services): 9 binaries.
+  # Common core (intersection of all services): 10 binaries.
   coreBins = with pkgs; [
     "${coreutils}/bin/base64"
     "${coreutils}/bin/cat"
@@ -40,6 +40,7 @@ let
     "${coreutils}/bin/mv"
     "${coreutils}/bin/stat"
     "${coreutils}/bin/sync"
+    "${coreutils}/bin/test"
   ];
 
   pendingBins = coreBins ++ [

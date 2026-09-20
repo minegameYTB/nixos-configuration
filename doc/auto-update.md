@@ -19,11 +19,11 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Five tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
-- `core` (9): `base64 cat chmod date mkdir mktemp mv stat sync`
-- `pending` (10): `core` + `notify-send`
-- `root` (16): `core` + `basename env id rm timeout runuser notify-send`
-- `health` (20): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
-- `main` (36): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl nix nix-env nixos-rebuild git cmp curl awk sed nvd`
+- `core` (10): `base64 cat chmod date mkdir mktemp mv stat sync test`
+- `pending` (11): `core` + `notify-send`
+- `root` (17): `core` + `basename env id rm timeout runuser notify-send`
+- `health` (21): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
+- `main` (37): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl nix nix-env nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore = [ "${env.core}/bin" ]` etc. (`pathPending` for the user pending service).
 
@@ -35,11 +35,11 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 36
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 20
-nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 16
-nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 10
-nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 9
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 37
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
+nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 17
+nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 11
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 10
 # or all at once:
 make env
 
