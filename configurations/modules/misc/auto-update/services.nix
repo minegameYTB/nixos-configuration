@@ -62,7 +62,11 @@ in
 
     unitConfig = {
       ### Network is mandatory (fetch channel + substituters).
-      After = [ "network-online.target" ];
+      ### Order after nix-gc when both run: GC reclaims store space first
+      ### (the disk-space precheck sees the real free space) and avoids
+      ### GC/build I/O contention. Deliberately NOT in Wants: GC is weekly,
+      ### updates are daily — pulling it in would GC on every run.
+      After = [ "network-online.target" "nix-gc.service" ];
       Wants = [ "network-online.target" ];
 
       ### Bootloader writes must land on the mounted ESP, never on a
