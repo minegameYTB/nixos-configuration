@@ -191,27 +191,25 @@ in
   }
 
   _run_nixos_build() {
-    local debug_args=()
+    local nixos_label_env=()
     if [ "$DEBUG_MODE" -eq 1 ]; then
-      debug_args=(--option system.nixos.label debug)
+      nixos_label_env=(NIXOS_LABEL=debug)
       _debug "Debug mode: generation will be labeled 'debug'"
     fi
 
     if [ "$REBUILD_BUILD_TIMEOUT_ENABLED" -eq 0 ]; then
-      nixos-rebuild build \
+      "''${nixos_label_env[@]}" nixos-rebuild build \
         --flake "$FLAKE#${cfg.configuration}" \
-        "''${debug_args[@]}" \
         --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT"
       return $?
     fi
 
-    timeout \
+    "''${nixos_label_env[@]}" timeout \
       --signal=TERM \
       --kill-after=1m \
       "${cfg.timeouts.build}" \
       nixos-rebuild build \
       --flake "$FLAKE#${cfg.configuration}" \
-      "''${debug_args[@]}" \
       --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT"
   }
 
@@ -219,20 +217,19 @@ in
     local command_status=0
     local renderer_status=0
     local pipeline_status="0 0 0"
-    local debug_args=()
+    local nixos_label_env=()
 
     if [ "$DEBUG_MODE" -eq 1 ]; then
-      debug_args=(--option system.nixos.label debug)
+      nixos_label_env=(NIXOS_LABEL=debug)
     fi
 
     _status INFO "Installing the validated system as the next boot generation..."
-    if timeout \
+    if "''${nixos_label_env[@]}" timeout \
       --signal=TERM \
       --kill-after=1m \
       "${cfg.timeouts.boot}" \
       nixos-rebuild boot \
       --flake "$FLAKE#${cfg.configuration}" \
-      "''${debug_args[@]}" \
       --print-build-logs \
       --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT" 2>&1 | _monitor_nix_output | _prefix_lines INFO; then
       pipeline_status="0 0 0"
