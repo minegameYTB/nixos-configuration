@@ -1,131 +1,330 @@
 #!/usr/bin/env bash
-### Logic tests for the shell embedded in modules/misc/auto-update.nix.
-### Extracts the real functions from the module file (no duplication),
-### stubs loginctl/id/runuser/notify-send, and checks notify + reboot logic.
+### Logic tests for the auto-update shell fragments (no duplication):
+### sources the real functions from configurations/modules/misc/auto-update/
+### via test/lib-fragments.sh, stubs runuser/id/notify-send, and checks the
+### bilingual notifier + dedup + health logic.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MOD="$REPO/configurations/modules/misc/auto-update.nix"
+# shellcheck source=lib-fragments.sh
+source "$REPO/test/lib-fragments.sh"
 T=/tmp/opencode/autoupdate-test
-rm -rf "$T"; mkdir -p "$T/fakebin" "$T/trees/booted" "$T/trees/new"
+rm -rf "$T"; mkdir -p "$T/fakebin" "$T/rundir"
 
 pass=0; fail=0
 ok(){ pass=$((pass+1)); echo "PASS: $*"; }
 ko(){ fail=$((fail+1)); echo "FAIL: $*" >&2; }
 
-# ── extract notify() (from 'notify() {' to first line that is exactly 8sp+}) ──
-# (Nix interpolations resolved with test values so the shell stays valid)
-awk '/^        notify\(\) \{/{f=1} f{print} f&&/^        \}$/{exit}' "$MOD" | sed -e 's/^        //' -e 's|\${cfg.notifyIcon}|nix-snowflake-white|' -e 's|\${toString cfg.notifyTimeout}|10000|' > "$T/notify.func"
-grep -q '^notify() {' "$T/notify.func" && grep -q 'runuser' "$T/notify.func" \
-  && ok "notify() extracted intact" || ko "notify() extraction broken"
+# ── resolve Nix interpolations in fragments with test values ──
+fragment errors.nix errors > "$T/errors.func"
+fragment output.nix output-core > "$T/output.func"
+fragment output.nix output-render > "$T/output-render.func"
+fragment notifier.nix notifier-user > "$T/notifier-user.func"
+fragment notifier.nix notifier-root > "$T/notifier-root.func"
+fragment notifier.nix notifier-once > "$T/notifier-once.func"
+fragment health.nix health > "$T/health.func"
+sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
+  "$T/notifier-user.func" > "$T/nu.func"
+sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
+  "$T/notifier-root.func" > "$T/nr.func"
+# Fragments carry Nix `''${...}` escapes: resolve them to plain bash ${...}.
+sed -i "s|''\${|\${|g" "$T/nu.func" "$T/nr.func" "$T/output-render.func"
+# errors.toBash is Nix-generated; emulate the two codes under test.
+cat > "$T/errors.func" <<'EOF'
+_err_lookup() {
+  case "$1:$2" in
+    rebuild-boot:urgency) printf '%s' "critical" ;;
+    rebuild-boot:title_fr) printf '%s' "Mise à jour NixOS — Reconstruction échouée" ;;
+    rebuild-boot:body_fr) printf '%s' "La reconstruction du système a échoué." ;;
+    rebuild-boot:title_en) printf '%s' "NixOS Update — Rebuild failed" ;;
+    rebuild-boot:body_en) printf '%s' "System rebuild failed." ;;
+    *) printf '%s' "" ;;
+  esac
+}
+EOF
+sed -e 's|\${lib.escapeShellArgs cfg.healthCheck.units}|sshd.service cron.service|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.requireNetwork}|true|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.checkFailedUnits}|true|' \
+    -e "s|''\\\${PROC_NET_ROUTE:-/proc/net/route}|\${PROC_NET_ROUTE}|" \
+    -e "s|''\\\${AUTO_UPDATE_BOOTED_SYSTEM:-/run/booted-system}|\${AUTO_UPDATE_BOOTED_SYSTEM}|" \
+    -e 's|\${lib.boolToString cfg.healthCheck.autoRollback}|false|' \
+    -e 's|\${lib.boolToString cfg.allowReboot}|false|' \
+  "$T/health.func" > "$T/health.resolved"
+# (Nix `''${...}` escapes resolved globally below with the `true` variant.)
+sed -e 's|\${lib.escapeShellArgs cfg.healthCheck.units}|sshd.service cron.service|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.requireNetwork}|true|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.checkFailedUnits}|true|' \
+    -e "s|''\\\${PROC_NET_ROUTE:-/proc/net/route}|\${PROC_NET_ROUTE}|" \
+    -e "s|''\\\${AUTO_UPDATE_BOOTED_SYSTEM:-/run/booted-system}|\${AUTO_UPDATE_BOOTED_SYSTEM}|" \
+    -e 's|\${lib.boolToString cfg.healthCheck.autoRollback}|true|' \
+    -e 's|\${lib.boolToString cfg.allowReboot}|false|' \
+  "$T/health.func" > "$T/health.true"
+sed -e 's|\${lib.escapeShellArgs cfg.healthCheck.units}|sshd.service cron.service|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.requireNetwork}|true|' \
+    -e 's|\${lib.boolToString cfg.healthCheck.checkFailedUnits}|true|' \
+    -e "s|''\\\${PROC_NET_ROUTE:-/proc/net/route}|\${PROC_NET_ROUTE}|" \
+    -e "s|''\\\${AUTO_UPDATE_BOOTED_SYSTEM:-/run/booted-system}|\${AUTO_UPDATE_BOOTED_SYSTEM}|" \
+    -e 's|\${lib.boolToString cfg.healthCheck.autoRollback}|true|' \
+    -e 's|\${lib.boolToString cfg.allowReboot}|true|' \
+  "$T/health.func" > "$T/health.rb"
+sed -i "s|''\${|\${|g" "$T/health.resolved" "$T/health.true" "$T/health.rb"
 
-# ── extract reboot block, resolving the Nix bool interpolation ──
-awk '/^        NEW_SYSTEM=/{f=1} f{print} f&&/^        fi$/{c++; if(c==2) exit}' "$MOD" \
-  | sed 's/^        //; s/\${lib.boolToString cfg.allowReboot}/__ALLOW__/' > "$T/reboot.tpl"
-grep -q '__ALLOW__' "$T/reboot.tpl" && ok "reboot block extracted" || ko "reboot extraction broken"
+grep -q '^[ \t]*_notify_all_users() {' "$T/nr.func" && grep -q '_notify_user' "$T/nr.func" \
+  && ok "notifier-root extracted intact" || ko "notifier-root extraction broken"
+grep -q '^[ \t]*check_health() {' "$T/health.resolved" \
+  && ok "health extracted intact" || ko "health extraction broken"
+grep -q '^_err_lookup() {' "$T/errors.func" \
+  && ok "errors stub in place" || ko "errors stub missing"
 
 # ── stubs ──
-cat > "$T/fakebin/loginctl" <<'EOF'
-#!/usr/bin/env bash
-# SCENARIO env controls output. Args: list-sessions | show-session <s> -p <k>
-case "$SCENARIO" in
-  none) [[ "$1" == "list-sessions" ]] && exit 0; echo "N/A";;
-  user) case "$1" in
-    list-sessions) echo "3 1000 minegame seat0";;
-    show-session) case "$4" in
-      Type) echo "wayland";; Active) echo "yes";; Name) echo "minegame";; esac;;
-  esac;;
-  gdm) case "$1" in
-    list-sessions) echo "1 120 gdm seat0";;
-    show-session) case "$4" in
-      Type) echo "x11";; Active) echo "yes";; Name) echo "gdm";; esac;;
-  esac;;
-esac
-EOF
 cat > "$T/fakebin/id" <<'EOF'
 #!/usr/bin/env bash
-[[ "$1" == "-u" && "$2" == "minegame" ]] && echo 1000 || exit 1
+# maps Codes/uids/1000... no: id -nu <uid>
+if [[ "${1:-}" == "-nu" ]]; then
+  case "${2:-}" in
+    1000) echo minegame;;
+    120) echo gdm;;
+    *) exit 1;;
+  esac
+else
+  exit 1
+fi
 EOF
 cat > "$T/fakebin/runuser" <<'EOF'
 #!/usr/bin/env bash
 echo "RUNUSER: $*" >> "$CALLS"
 exit 0
 EOF
+cat > "$T/fakebin/timeout" <<'EOF'
+#!/usr/bin/env bash
+# drop --signal/--kill-after/duration, exec the rest
+args=()
+skip=0
+for a in "$@"; do
+  if (( skip > 0 )); then skip=$((skip-1)); continue; fi
+  case "$a" in
+    --signal|--kill-after) skip=1; continue;;
+    --signal=*|--kill-after=*) continue;;
+    --) continue;;
+    [0-9]*s|[0-9]*m|[0-9]*h) [[ "${#args[@]}" -eq 0 ]] && continue;;
+  esac
+  args+=("$a")
+done
+exec "${args[@]}"
+EOF
 chmod +x "$T/fakebin/"*
 export PATH="$T/fakebin:$PATH"
 export CALLS="$T/calls.log"
 
-run_notify(){
-  local scenario="$1" notif="$2"
+BASE_PRELUDE='
+log() { :; }
+_status() { :; }
+STATE_DIR="/tmp/opencode/autoupdate-test/state"
+STATE_FILE="$STATE_DIR/last-rebuild-status"
+LOG_FILE="$STATE_DIR/test.log"
+PENDING_NOTIFICATION_FILE="$STATE_DIR/pending-notification"
+NOTIFICATION_TIMEOUT=15s
+mkdir -p "$STATE_DIR"
+'
+
+run_notify_all(){
+  local rundir="$1" notif="$2" lang="${3:-en}"
   : > "$CALLS"
-  SCENARIO="$scenario" AUTO_UPDATE_NOTIFY="$notif" bash -c "
-    log() { :; }
-    source \"$T/notify.func\"
-    notify normal 't' 'b'
-  " 2>/dev/null
+  AUTO_UPDATE_RUN_USER_DIR="$rundir" NOTIFICATIONS_ENABLED="$notif" LANG="$lang" bash -c "
+    $BASE_PRELUDE
+    source "$T/nu.func"
+    source "$T/nr.func"
+    _notify 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+  " 2>/dev/null || true
+}
+
+mksock(){
+  # $1 = dir/uid : create a real unix socket at <dir>/bus
+  mkdir -p "$1"
+  python3 -c "import socket; s = socket.socket(socket.AF_UNIX); s.bind('$1/bus')"
 }
 
 # ── notify cases ──
-run_notify user 1
+mkdir -p "$T/rundir-user/1000"
+mksock "$T/rundir-user/1000"
+run_notify_all "$T/rundir-user" 1
 grep -q 'RUNUSER:.*-u minegame.*notify-send' "$CALLS" \
-  && ok "active wayland user → notify-send via runuser" || ko "active user not notified"
+  && ok "active user → notify-send via runuser" || ko "active user not notified"
 grep -q 'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus' "$CALLS" \
   && ok "dbus env targets user bus" || ko "dbus env wrong"
-grep -q 'notify-send -i ' "$CALLS" \
-  && ok "notification carries an icon" || ko "notification icon missing"
 grep -q 'notify-send .* -t 10000' "$CALLS" \
   && ok "notification carries a timeout" || ko "notification timeout missing"
+grep -q 'notify-send -u normal' "$CALLS" \
+  && ok "urgency flag carries a real urgency (arg-order regression)" || ko "urgency flag broken"
 
-run_notify none 1
+run_notify_all "$T/rundir-empty" 1
 [[ ! -s "$CALLS" ]] && ok "no session → silent (journal only)" || ko "notified with no session"
 
-run_notify gdm 1
+mkdir -p "$T/rundir-gdm/120"
+mksock "$T/rundir-gdm/120"
+run_notify_all "$T/rundir-gdm" 1
 [[ ! -s "$CALLS" ]] && ok "gdm greeter session ignored" || ko "gdm was notified"
 
-run_notify user 0
+run_notify_all "$T/rundir-user" 0
 [[ ! -s "$CALLS" ]] && ok "notify disabled → silent" || ko "notified while disabled"
 
-# ── extract note_once (pure shell, no Nix interpolation to resolve) ──
-awk '/^        note_once\(\) \{/{f=1} f{print} f&&/^        \}$/{exit}' "$MOD" | sed 's/^        //' > "$T/note_once.func"
-grep -q '^note_once() {' "$T/note_once.func" \
-  && ok "note_once() extracted intact" || ko "note_once() extraction broken"
+LANG=fr AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" NOTIFICATIONS_ENABLED=1 bash -c "
+  $BASE_PRELUDE
+  source \"$T/nu.func\"
+  source \"$T/nr.func\"
+  _notify 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+" 2>/dev/null || true
+grep -q 'titre FR' "$CALLS" \
+  && ok "LANG=fr picks French title" || ko "French title not picked"
 
+# ── _notify_or_queue fallback: no session → queued bilingual ──
+rm -f "$T/state/pending-notification"
+AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" NOTIFICATIONS_ENABLED=1 bash -c "
+  $BASE_PRELUDE
+  source \"$T/nu.func\"
+  source \"$T/nr.func\"
+  _notify_or_queue 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+" 2>/dev/null || true
+[[ -f "$T/state/pending-notification" ]] \
+  && ok "headless notify → queued for next login" || ko "headless notify not queued"
+
+# ── pending delivery dedup (user service path) ──
+export HOME="$T/home" XDG_STATE_HOME="$T/home/.local/state"
+mkdir -p "$HOME"
+DELIVER='
+source "'"$T/nu.func"'"
+STATE_DIR="'"$T/state"'"
+_init_notifier
+PENDING_NOTIFICATION_FILE="'"$T/state/pending-notification"'"
+_deliver_pending_notification
+'
+cat > "$T/fakebin/notify-send" <<'EOF'
+#!/usr/bin/env bash
+echo "NOTIFY-SEND: $*" >> "$CALLS"
+exit 0
+EOF
+chmod +x "$T/fakebin/notify-send"
+: > "$CALLS"
+bash -c "$DELIVER" 2>/dev/null || true
+grep -q 'NOTIFY-SEND' "$CALLS" \
+  && ok "pending notification delivered at login" || ko "pending delivery failed"
+: > "$CALLS"
+bash -c "$DELIVER" 2>/dev/null || true
+[[ ! -s "$CALLS" ]] && ok "delivered notification not repeated (id dedup)" || ko "pending delivered twice"
+
+# ── stale delivery carries the event date (no "just happened" confusion) ──
+rm -f "$T/home/.local/state/nixos-auto-update/last-notification"
+AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" NOTIFICATIONS_ENABLED=1 bash -c "
+  $BASE_PRELUDE
+  source \"$T/nu.func\"
+  source \"$T/nr.func\"
+  _notify_or_queue 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+" 2>/dev/null || true
+touch -d '3 hours ago' "$T/state/pending-notification"
+: > "$CALLS"
+bash -c "$DELIVER" 2>/dev/null || true
+grep -q 'NOTIFY-SEND' "$CALLS" && grep -qE 'événement du [0-9]{4}|event of [0-9]{4}' "$CALLS" \
+  && ok "stale delivery annotates the event date" || ko "stale delivery not annotated"
+rm -f "$T/home/.local/state/nixos-auto-update/last-notification"
+AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" NOTIFICATIONS_ENABLED=1 bash -c "
+  $BASE_PRELUDE
+  source \"$T/nu.func\"
+  source \"$T/nr.func\"
+  _notify_or_queue 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+" 2>/dev/null || true
+: > "$CALLS"
+bash -c "$DELIVER" 2>/dev/null || true
+grep -q 'NOTIFY-SEND' "$CALLS" && ! grep -qE 'événement du|event of' "$CALLS" \
+  && ok "fresh delivery has no event-date annotation" || ko "fresh delivery wrongly annotated"
+
+# ── _prefix_lines + _filter_git_progress (uniform log rendering) ──
+PREFIX_PRE='
+source "'"$T/output-render.func"'"
+_status() { printf "STATUS[%s]: %s\n" "$1" "$2" >> "'"$CALLS"'"; }
+INTERACTIVE_OUTPUT=0
+'
+: > "$CALLS"
+printf 'plain\n\033[1;31mred\033[0m\nmixed \033[36mcyan\033[0m end\nend\rof\n' \
+  | bash -c "$PREFIX_PRE
+_prefix_lines INFO" 2>/dev/null || true
+grep -q 'STATUS\[INFO\]: plain' "$CALLS" \
+  && grep -q 'STATUS\[INFO\]: red$' "$CALLS" \
+  && grep -q 'STATUS\[INFO\]: mixed cyan end' "$CALLS" \
+  && grep -q 'STATUS\[INFO\]: endof' "$CALLS" \
+  && ! grep -q "$(printf '\033')" "$CALLS" \
+  && ! grep -q "$(printf '\r')" "$CALLS" \
+  && ok "prefix_lines: [INFO] prefix, ANSI + CR stripped" || ko "prefix_lines broken"
+: > "$CALLS"
+printf '%s\n' 'remote: Enumerating objects: 10, done.' 'Receiving objects:  50% (5/10)' 'remote: useful warning' 'Update completed.' \
+  | bash -c "$PREFIX_PRE
+_filter_git_progress" > "$T/filter.out" 2>/dev/null || true
+grep -q 'useful warning' "$T/filter.out" && grep -q 'Update completed' "$T/filter.out" \
+  && ! grep -q 'Enumerating\|50% (5/10)' "$T/filter.out" \
+  && ok "git progress filter drops counters, keeps useful output" || ko "git progress filter broken"
+
+# ── note_once dedup + arg order (generation spam guard) ──
 run_note(){
   local last="$1" sys="$2"
-  : > "$CALLS"; rm -f "$T/state"; [[ -n "$last" ]] && echo "$last" > "$T/state"
+  : > "$CALLS"; rm -f "$T/nstate"; [[ -n "$last" ]] && echo "$last" > "$T/nstate"
   bash -c "
-    log() { echo \"LOG: \$*\"; }
-    notify() { echo \"NOTIFY: \$*\" >> \"$CALLS\"; }
-    STATE_FILE=\"$T/state\"
-    last_notified=\$(cat \"\$STATE_FILE\" 2>/dev/null || true)
-    source \"$T/note_once.func\"
-    note_once \"$sys\" normal 't' 'b'
-  " > "$T/note.out" 2>&1
+    _status() { echo \"STATUS: \$*\"; }
+    _notify_or_queue() { echo \"NOTIFY: \$*\" >> \"$CALLS\"; }
+    NOTIFIED_FILE=\"$T/nstate\"
+    last_notified=\$(cat \"\$NOTIFIED_FILE\" 2>/dev/null || true)
+    source \"$T/notifier-once.func\"
+    note_once \"$sys\" 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+  " > "$T/note.out" 2>&1 || true
 }
 
-# ── dedup cases ──
 run_note "" "/sys-A"
-grep -q 'NOTIFY' "$CALLS" && [[ "$(cat "$T/state")" == "/sys-A" ]] \
-  && ok "first sight of generation → notify + state stored" || ko "first sight failed"
+grep -q 'NOTIFY: titre FR corps FR title EN body EN normal' "$CALLS" \
+  && [[ "$(cat "$T/nstate")" == "/sys-A" ]] \
+  && ok "first sight → notify (texts first, urgency last) + state stored" || ko "first sight failed"
 
 run_note "/sys-A" "/sys-A"
 ! grep -q 'NOTIFY' "$CALLS" && grep -q 'already notified, silent' "$T/note.out" \
   && ok "unchanged generation → silent, journal only" || ko "spam on unchanged generation"
 
 run_note "/sys-A" "/sys-B"
-grep -q 'NOTIFY' "$CALLS" && [[ "$(cat "$T/state")" == "/sys-B" ]] \
+grep -q 'NOTIFY' "$CALLS" && [[ "$(cat "$T/nstate")" == "/sys-B" ]] \
   && ok "new generation → notify + state updated" || ko "new generation not notified"
 
-# ── extract check_health (resolve Nix interpolations with test values) ──
-awk '/^        check_health\(\) \{/{f=1} f{print} f&&/^        \}$/{exit}' "$MOD" \
-  | sed -e 's/^        //' \
-        -e 's|\${lib.escapeShellArgs cfg.healthCheck.units}|sshd.service cron.service|' \
-        -e 's|\${lib.boolToString cfg.healthCheck.requireNetwork}|true|' \
-        -e 's|\${lib.boolToString cfg.healthCheck.checkFailedUnits}|true|' \
-        -e "s|''\\\${PROC_NET_ROUTE:-/proc/net/route}|\${PROC_NET_ROUTE}|" > "$T/check_health.func"
-grep -q '^check_health() {' "$T/check_health.func" \
-  && ok "check_health() extracted intact" || ko "check_health() extraction broken"
+# ── _notify_failure paths ──
+FAIL_PRE='
+source "'"$T/errors.func"'"
+source "'"$T/nu.func"'"
+source "'"$T/nr.func"'"
+_status() { echo "STATUS: $*" >> "'"$CALLS"'"; }
+STATE_DIR="'"$T/state"'"
+STATE_FILE="$STATE_DIR/last-rebuild-status"
+LOG_FILE="$STATE_DIR/test.log"
+PENDING_NOTIFICATION_FILE="$STATE_DIR/pending-notification"
+NOTIFICATION_TIMEOUT=15s
+NOTIFICATIONS_ENABLED=1
+'
+printf 'failed|2026-01-01T00:00:00|rebuild-boot|pending' > "$T/state/last-rebuild-status"
+rm -f "$T/state/pending-notification"
+: > "$CALLS"
+LANG=C AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" bash -c "$FAIL_PRE
+_notify_failure" 2>/dev/null || true
+grep -q 'RUNUSER:.*Rebuild failed' "$CALLS" \
+  && ok "failure with session → immediate bilingual notify (catalogue)" || ko "failure notify broken"
 
+printf 'failed|2026-01-01T00:00:00|rebuild-boot|notified' > "$T/state/last-rebuild-status"
+: > "$CALLS"
+AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" bash -c "$FAIL_PRE
+_notify_failure" 2>/dev/null
+[[ ! -s "$CALLS" ]] && ok "already-notified failure → silent" || ko "already-notified failure re-notified"
+
+printf 'failed|2026-01-01T00:00:00|rebuild-boot|pending' > "$T/state/last-rebuild-status"
+rm -f "$T/state/pending-notification"
+: > "$CALLS"
+AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" bash -c "$FAIL_PRE
+_notify_failure" 2>/dev/null
+[[ -f "$T/state/pending-notification" ]] \
+  && ok "headless failure → queued" || ko "headless failure not queued"
+
+# ── check_health cases ──
 cat > "$T/fakebin/systemctl" <<'EOF'
 #!/usr/bin/env bash
 # is-active --quiet <unit> -> 0 iff listed in $ACTIVE_UNITS
@@ -146,7 +345,7 @@ printf 'Iface\tDestination\tGateway\tFlags\nlo\t00000000\t00000000\t0001\n' > "$
 run_health(){
   local units="$1" route="$2" failed="${3:-}"
   if ACTIVE_UNITS="$units" PROC_NET_ROUTE="$route" FAILED_UNITS="$failed" \
-    bash -c "log() { echo \"LOG: \$*\"; }; source \"$T/check_health.func\"; check_health" > "$T/health.out" 2>&1; then
+    bash -c "_status() { echo \"STATUS: \$*\"; }; source \"$T/health.resolved\"; check_health" > "$T/health.out" 2>&1; then
     rc=0
   else
     rc=$?
@@ -154,7 +353,6 @@ run_health(){
   HRc=$rc
 }
 
-# ── health cases ──
 run_health "sshd.service cron.service" "$T/route-good"
 (( HRc == 0 )) && ok "healthy units + route → 0" || ko "healthy case failed"
 
@@ -170,46 +368,88 @@ run_health "sshd.service cron.service" "$T/route-good" "foo.service● loaded fa
 (( HRc != 0 )) && grep -q 'failed units present' "$T/health.out" \
   && ok "failed unit → 1 + logged" || ko "failed unit not detected"
 
-# ── reboot cases (fake trees) ──
-mk_tree(){ mkdir -p "$T/trees/$1"; echo "kernel-$2" > "$T/trees/$1/kernel"; echo "init-$2" > "$T/trees/$1/init"; }
-run_reboot(){
-  local allow="$1" newdir="$2"
-  mk_tree booted same; mk_tree new new
-  echo "init-new" > "$T/trees/new/init"
-  sed -e "s/__ALLOW__/$allow/" \
-      -e 's|^NEW_SYSTEM=.*|NEW_SYSTEM="'"$newdir"'"|' \
-      -e 's|^BOOTED_SYSTEM=.*|BOOTED_SYSTEM="'"$T/trees/booted"'"|' \
-      "$T/reboot.tpl" > "$T/reboot.body"
-  # Reboot paths now go through the real note_once (module uses it):
-  # stub log/notify/state around it, like the notify tests do.
-  { echo 'log(){ :; }'
-    echo 'notify(){ echo "NOTIFY: $*"; }'
-    echo "STATE_FILE=\"$T/rstate\""
-    echo 'last_notified=""'
-    cat "$T/note_once.func"
-    cat "$T/reboot.body"; } > "$T/reboot.sh"
-  BOOTED_SYSTEM="$T/trees/booted" NEW_SYSTEM="$T/trees/new" bash "$T/reboot.sh" 2>&1
+# ── _validate_staged_boot (phase validating) ──
+setup_vstate(){
+  local dir="$T/vstate-$1"
+  rm -rf "$dir"; mkdir -p "$dir"
+  VDIR="$dir"
 }
-cat > "$T/fakebin/systemctl" <<'EOF'
-#!/usr/bin/env bash
-echo "SYSTEMCTL: $*" >> "$CALLS"
-EOF
-chmod +x "$T/fakebin/systemctl"
+run_validate(){
+  local healthfile="$1" healthy="$2" verdict
+  if HEALTHY="$healthy" VDIR="$VDIR" BOOTED_SYS="$VDIR/booted" bash -c "
+    _status() { echo \"STATUS: \$*\" >> \"\$VDIR/calls\"; }
+    _write_state() { echo \"STATE: \$*\" >> \"\$VDIR/calls\"; }
+    _notify_or_queue() { echo \"NOTIFY: \$*\" >> \"\$VDIR/calls\"; return 0; }
+    _switch_boot_to_system() { echo \"SWITCH: \$*\" >> \"\$VDIR/calls\"; return 0; }
+    systemctl() { echo \"SYSTEMCTL: \$*\" >> \"\$VDIR/calls\"; return 0; }
+    source \"$healthfile\"
+    check_health() { return \"\$HEALTHY\"; }
+    STATE_DIR=\"\$VDIR\" STATE_FILE=\"\$VDIR/status\" LOG_FILE=\"\$VDIR/log\"
+    STAGED_FILE=\"\$VDIR/staged\" INHIBITED_FILE=\"\$VDIR/inhibited\"
+    PREVIOUS_FILE=\"\$VDIR/previous\" ROLLED_BACK_FILE=\"\$VDIR/rolled-back\"
+    REBUILD_BOOT_TIMEOUT=1h NOTIFICATIONS_ENABLED=1
+    AUTO_UPDATE_BOOTED_SYSTEM=\"\$BOOTED_SYS\"
+    _validate_staged_boot
+  " > /dev/null 2>&1; then
+    verdict=0
+  else
+    verdict=$?
+  fi
+  VRC=$verdict
+}
 
-: > "$CALLS"
-out=$(run_reboot true "$T/trees/new")
-grep -q 'SYSTEMCTL: reboot' "$CALLS" \
-  && ok "kernel+init changed, allowReboot → reboot" || ko "no reboot when expected ($out)"
+setup_vstate no-staged
+: > "$VDIR/calls"
+run_validate "$T/health.resolved" 0
+(( VRC == 0 )) && grep -q 'nothing to validate' "$VDIR/calls" \
+  && ok "no staged file → silent 0" || ko "no-staged path broken"
 
-: > "$CALLS"
-out=$(run_reboot false "$T/trees/new")
-grep -q 'reboot required' <<<"$out" && ! grep -q 'SYSTEMCTL: reboot' "$CALLS" \
-  && ok "changed, no allowReboot → notice, no reboot" || ko "wrong no-reboot path ($out)"
+setup_vstate mismatch
+echo "/nix/store/aaa-system" > "$VDIR/staged"
+ln -sfn /nix/store/bbb-system "$VDIR/booted"
+: > "$VDIR/calls"
+run_validate "$T/health.resolved" 0
+(( VRC == 0 )) && grep -q 'not the staged' "$VDIR/calls" \
+  && ok "booted != staged → silent 0" || ko "mismatch path broken"
 
-: > "$CALLS"
-out=$(run_reboot true "$T/trees/booted")
-grep -q 'already up to date' <<<"$out" && ! grep -q 'SYSTEMCTL' "$CALLS" \
-  && ok "identical generations → up-to-date, nothing staged" || ko "wrong up-to-date path ($out)"
+setup_vstate healthy
+echo "/nix/store/aaa-system" > "$VDIR/staged"
+ln -sfn /nix/store/aaa-system "$VDIR/booted"
+: > "$VDIR/calls"
+run_validate "$T/health.resolved" 0
+(( VRC == 0 )) && [[ ! -f "$VDIR/staged" ]] && grep -q 'adopted' "$VDIR/calls" \
+  && ok "healthy staged boot → adopted" || ko "healthy path broken"
+
+setup_vstate sick
+echo "/nix/store/aaa-system" > "$VDIR/staged"
+ln -sfn /nix/store/aaa-system "$VDIR/booted"
+: > "$VDIR/calls"
+run_validate "$T/health.resolved" 1
+(( VRC != 0 )) && [[ -f "$VDIR/inhibited" ]] && grep -q 'NOTIFY' "$VDIR/calls" \
+  && ! grep -q 'SWITCH' "$VDIR/calls" \
+  && ok "sick staged boot → inhibited, no auto-rollback by default" || ko "sick path broken"
+
+setup_vstate sick-rb
+echo "/nix/store/aaa-system" > "$VDIR/staged"
+echo "/nix/store/old-healthy-system" > "$VDIR/previous"
+ln -sfn /nix/store/aaa-system "$VDIR/booted"
+: > "$VDIR/calls"
+run_validate "$T/health.true" 1
+(( VRC != 0 )) && grep -q 'SWITCH: /nix/store/old-healthy-system' "$VDIR/calls" \
+  && [[ -f "$VDIR/rolled-back" && -f "$VDIR/inhibited" ]] \
+  && ! grep -q 'SYSTEMCTL' "$VDIR/calls" \
+  && ok "sick + autoRollback → previous restored (one-shot, inhibit kept)" || ko "rollback path broken"
+
+setup_vstate sick-rb-reboot
+echo "/nix/store/aaa-system" > "$VDIR/staged"
+echo "/nix/store/old-healthy-system" > "$VDIR/previous"
+ln -sfn /nix/store/aaa-system "$VDIR/booted"
+: > "$VDIR/calls"
+run_validate "$T/health.rb" 1
+(( VRC != 0 )) && grep -q 'SWITCH: /nix/store/old-healthy-system' "$VDIR/calls" \
+  && grep -q 'SYSTEMCTL: reboot' "$VDIR/calls" \
+  && [[ -f "$VDIR/rolled-back" && -f "$VDIR/inhibited" ]] \
+  && ok "sick + autoRollback + allowReboot → restored + reboot" || ko "rollback+reboot path broken"
 
 echo "--- $pass passed, $fail failed ---"
 (( fail == 0 ))

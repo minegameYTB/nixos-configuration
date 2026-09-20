@@ -73,7 +73,7 @@ let
 
   ### Per-machine auto-update wiring (feat/auto-update, see doc/auto-update.md).
   ### Centralized here: one line per machine, configuration passed explicitly.
-  ### Defaults apply (2d checks, no auto-reboot): the machines follow the
+  ### Defaults apply (daily checks, no auto-reboot): the machines follow the
   ### soaked buffer and stage new generations, activation stays manual.
   ### Prefers /etc/nixos-config when present, otherwise tracks the remote channel.
   autoUpdate = configuration: {

@@ -14,7 +14,7 @@ name: flake-autoupdate
 
 on:
   push:
-    branches: ["flake", "prepare/**"]
+    branches: ["flake", "prepare/**", "feat/**"]
     paths-ignore: ["doc/**", "**.md"]
   schedule:
     - cron: "0 3 */2 * *"

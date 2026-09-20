@@ -54,6 +54,7 @@ Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch 
 ## Gotchas
 
 - `system.stateVersion = "24.05"` (do not bump casually); HM `home.stateVersion = "26.05"`.
+- Bilingual FR/EN strings are intentional, not untranslated leftovers: the auto-update notification catalogue (`configurations/modules/misc/auto-update/errors.nix` `title_fr`/`body_fr`, success/notice texts in `auto-update/default.nix` main flow, `_notify_failure` fallback in `auto-update/notifier.nix`) ships both locales side by side with runtime `LANG` selection. When translating the repo to English, leave every French string in place.
 - `networking.extraHosts` blocklist is **active but xserver-gated** (`lib.mkIf config.services.xserver.enable`): `extraHosts` is `types.lines`, an unguarded `lib.optionals` list breaks every headless build.
 - No secrets in repo; initial passwords are `"nixos"`.
 - Docs live in `doc/` (`INSTALL`, `ISO`, `containers`, `HM`, `modules`, `config-modules`, `auto-update`, `udev-by-fs`). Trust `flake.nix`/`machine.nix`/scripts over prose when they conflict.
