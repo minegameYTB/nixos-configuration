@@ -57,7 +57,6 @@ let
     "${pkgs.curl}/bin"
     "${pkgs.gawk}/bin"
     "${pkgs.gnused}/bin"
-    "${pkgs.nix-output-monitor}/bin"
     "${pkgs.nvd}/bin"
   ];
 in

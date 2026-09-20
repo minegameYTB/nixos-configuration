@@ -4,7 +4,7 @@
 #
 # Layout (one concern per file, contracts in each header):
 #   errors.nix      — CODE -> FR/EN catalogue + _err_lookup generator
-#   output.nix      — { core, render, full }: _status, logging, nom, git filter
+#   output.nix      — { core, render, full }: _status, logging, git filter
 #   notifier.nix    — { user, full }: queue/deliver/notify/failure (bilingual)
 #   transaction.nix — state machine: lock, traps, phases, recovery, _fail
 #   sync.nix        — channel force-sync, flake inputs, rebuild (network/build)

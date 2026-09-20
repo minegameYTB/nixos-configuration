@@ -296,8 +296,7 @@ in
 
   _rebuild_system() {
     # The service runs as root, so nh cannot be used: it deliberately
-    # refuses root execution. Progress comes from nom, the package summary
-    # from nvd.
+    # refuses root execution. Package summary comes from nvd.
     _status INFO "Validating and building the new system configuration..."
     if ! _run_nixos_build 2>&1 | _monitor_nix_output | _prefix_lines INFO; then
       return 1

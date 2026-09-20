@@ -1,9 +1,9 @@
 # configurations/modules/misc/auto-update/output.nix — status messages,
 # output rendering and persistent logging for the auto-update services.
 #
-# Split (PATH-hygiene: tiny services must not drag the nom/sed closure):
+# Split (PATH-hygiene: tiny services must not drag the sed closure):
 #   core   — _init_output, _status, _write_state (coreutils + builtins only)
-#   render — _monitor_nix_output (nom), _filter_git_progress (sed),
+#   render — _monitor_nix_output, _filter_git_progress (sed),
 #            _prefix_lines (prefixes a stream via _status)
 #   full   — core + render (main service only)
 #
@@ -77,15 +77,7 @@ let
   render = ''
     # >>>BEGIN output-render
     _monitor_nix_output() {
-      if [ "$INTERACTIVE_OUTPUT" -eq 1 ]; then
-        # The dynamic nom graph stays on the terminal only: its redraws would
-        # make the persistent log unreadable.
-        TERM="''${TERM:-xterm-256color}" \
-          nom --json > /dev/tty 2>&1
-      else
-        # Headless: keep the raw, concise nix output.
-        cat
-      fi
+      cat
     }
 
     _filter_git_progress() {
@@ -100,10 +92,9 @@ let
       # under the service PID in both journal and $LOG_FILE. Runs in a
       # pipeline subshell (logging only — exit status intentionally ignored
       # by callers, pipefail still reports the producer's failure).
-      # ANSI control sequences would pollute both sinks (nom renders to
-      # /dev/tty directly and never flows here); a single sed strips them
-      # for the whole stream (bash glob classes like [0-9]* misbehave here,
-      # eating entire lines — sed BRE does not).
+    # ANSI control sequences would pollute both sinks; a single sed strips
+    # them for the whole stream (bash glob classes like [0-9]* misbehave
+    # here, eating entire lines — sed BRE does not).
       local level="$1"
       local line
       sed -u -e $'s/\033\\[[0-9;]*[a-zA-Z]//g' -e 's/\r//g' | \

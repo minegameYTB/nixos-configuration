@@ -50,7 +50,7 @@
 
   _run_debug_dependency_checks() {
     local command_name
-    for command_name in curl git nix nixos-rebuild nom nvd timeout; do
+    for command_name in curl git nix nixos-rebuild nvd timeout; do
       if command -v "$command_name" >/dev/null 2>&1; then
         _debug_pass "Dependency available: $command_name"
       else
