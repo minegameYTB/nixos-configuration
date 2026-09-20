@@ -51,10 +51,7 @@ let
 
   base =
     type:
-    if type == "desktop" then
-      ./profiles/vm-desktop-profile.nix
-    else
-      ./profiles/vm-cli-profile.nix;
+    if type == "desktop" then ./profiles/vm-desktop-profile.nix else ./profiles/vm-cli-profile.nix;
 
   fs =
     type:
@@ -93,6 +90,7 @@ in
     hostname = "HP-probook";
     profile = ./profiles/hp-probook-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
+    extraModules = [ ];
     usePatched = false;
   };
 
@@ -101,6 +99,10 @@ in
     hostname = "UTILISA-0SK6G4E";
     profile = ./profiles/hp-240-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
+    extraModules = [
+      ### Auto-update enabled (see doc/auto-update.md)
+      (autoUpdate "hp-240")
+    ];
     usePatched = false;
   };
 
@@ -191,7 +193,10 @@ in
     hostname = "nixos-kvm-desktop-zfs";
     profile = base "desktop";
     fs = fs "zfs";
-    extraModules = [ boot.efi ];
+    extraModules = [
+      boot.efi
+      (autoUpdate "vm-desktop-efi-zfs")
+    ];
     usePatched = false;
   };
 
