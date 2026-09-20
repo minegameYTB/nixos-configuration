@@ -7,12 +7,41 @@ CI: `.github/workflows/flake-autoupdate.yml` (see Lifecycle below).
 
 Layout (one concern per file, contracts in each header): `default.nix`
 (options + assertions), `services.nix` (systemd assembly + main flows),
+`env.nix` (tight per-service `$out/bin` envs, single `PATH` entry per
+service), `debug.nix` (verbose logging + dry-run transaction tests),
 `errors.nix` (CODE → FR/EN catalogue, single source of truth for messages),
-`output.nix` (status,
-logging, nom, git filter), `notifier.nix` (immediate + deferred bilingual
-notifications), `transaction.nix` (lock, traps, phases, recovery, `_fail`),
-`sync.nix` (channel force-sync, flake inputs, rebuild), `health.nix`
-(post-boot validation, the `validating` phase).
+`output.nix` (status, logging, git filter), `notifier.nix` (immediate +
+deferred bilingual notifications), `transaction.nix` (lock, traps, phases,
+recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
+`health.nix` (post-boot validation, the `validating` phase).
+
+## Runtime envs (`env.nix`)
+
+Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Five tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
+
+- `core` (9): `base64 cat chmod date mkdir mktemp mv stat sync`
+- `pending` (10): `core` + `notify-send`
+- `root` (16): `core` + `basename env id rm timeout runuser notify-send`
+- `health` (20): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
+- `main` (36): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl nix nix-env nixos-rebuild git cmp curl awk sed nvd`
+
+Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore = [ "${env.core}/bin" ]` etc. (`pathPending` for the user pending service).
+
+Build / inspect independently (no full system rebuild):
+
+```bash
+# which env will the service see?
+nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
+nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
+
+# what is inside each env? (from the evaluated system)
+drv=$(nix build '.#nixosConfigurations.vm-desktop-efi.config.system.build.toplevel' --dry-run 2>&1 | grep -o '/nix/store/.*-main-env.drv' | head -1)
+out=$(nix build "$drv^out" --print-out-paths 2>&1 | tail -1); ls -1 "$out/bin" | tr '\n' ' '
+# 36 for main, 20 for health, 16 for root, 10 for pending, 9 for core
+
+# PATH hygiene guard (must stay green):
+bash test/test-shell-paths.sh
+```
 
 ## How it works
 
