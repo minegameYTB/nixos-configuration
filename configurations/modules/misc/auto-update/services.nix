@@ -100,6 +100,14 @@ in
       SuccessExitStatus = [ 75 ];
       ### Kill nix/nixos-rebuild children with the service on timeout.
       KillMode = "control-group";
+      ### Mirror of the nix-gc flock gate: After= cannot order against an
+      ### already-active unit (same-transaction jobs only), so if a weekly
+      ### GC is running when the timer fires, wait for it here (up to 2h,
+      ### then fail the run). Fail-open when the unit is absent. Absolute
+      ### paths: the restricted service PATH applies to ExecStartPre too.
+      ExecStartPre = [
+        "${pkgs.bash}/bin/bash -c 'for ((i=0; i<120; i++)); do ${config.systemd.package}/bin/systemctl is-active --quiet nix-gc.service || exit 0; ${pkgs.coreutils}/bin/sleep 60; done; exit 1'"
+      ];
     };
 
     ### Explicit restrictive PATH (one package dir per entry, output-aware):
