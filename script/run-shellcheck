@@ -17,4 +17,5 @@ shellcheck -x \
   script/update-flake \
   script/update-flake-local \
   script/mksymlink \
-  script/run-deadnix
+  script/run-deadnix \
+  script/build-env
