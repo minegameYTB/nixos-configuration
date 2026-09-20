@@ -175,7 +175,7 @@ explicit `workflow_dispatch` instead). To freeze the pointer while testing,
 point `SOURCE_BRANCH` away from the work branch: its runs then validate
 only and can never advance the buffer.
 
-- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`vm-cli-efi vm-desktop-efi vm-cli-efi-zfs` — hp-probook excluded), `DRY_RUN`.
+- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`ci-efi ci-bios` — vanilla, no CachyOS, EFI+BIOS coverage, really built not just evaled), `DRY_RUN`.
 - Triggers: push to `flake` / `prepare/**` / `feat/**` (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
 - Broken tree: pointer stays, red run, manual arbitration. `GITHUB_TOKEN` (`contents: write`, `actions: read`) suffices while branches stay unprotected.

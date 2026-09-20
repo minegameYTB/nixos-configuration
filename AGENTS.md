@@ -1,7 +1,7 @@
 # NixOS Configuration — Agent Guide
 
 Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch `prepare/nixos-26.11`).
-13 `nixosConfigurations` in `machine.nix`: 11 machines (2 physical + 9 VM presets) + `iso-gnome` + `iso-minimal`.
+15 `nixosConfigurations` in `machine.nix`: 13 machines (2 physical + 9 VM presets + 2 CI vanilla) + `iso-gnome` + `iso-minimal`.
 
 ## Flake wiring
 
@@ -17,7 +17,7 @@ Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch 
 
 ## Machines: profile + marker + kernel
 
-- `profiles/`: `hp-probook`, `hp-240` (physical) + `vm-desktop`/`vm-cli` presets. `machine.nix` combines profile + fs module + bootloader per machine.
+- `profiles/`: `hp-probook`, `hp-240` (physical) + `vm-desktop`/`vm-cli` + `ci` (vanilla, `ci-efi`/`ci-bios` for GHA) presets at `profiles/*-profile.nix` (`vm-*` + `ci-profile.nix`). `machine.nix` combines profile + fs module + bootloader per machine.
 - `marker.hostProfile` (`desktop`|`server`) and `marker.archProfile` (`x86-64-v1..v4`, `amd-zen4`, `aarch64`) are **required** — missing values fail evaluation via assertions (`configurations/modules/misc/marker.nix`).
 - Kernel (`configs/common/system-opts/cachyos-kernel.nix`): desktop → `linuxPackages-cachyos-bore-lto` (+ `-x86_64-v2/v3/v4` suffix); server → `linuxPackages-cachyos-server` (**v1 only**, other arch throws); aarch64 → stock `linuxPackages`. Pinned/custom kernels via flags in that file (default off = binary cache intact).
 

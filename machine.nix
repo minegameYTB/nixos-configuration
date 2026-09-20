@@ -210,6 +210,28 @@ in
     usePatched = false;
   };
 
+  ### --- CI VMs (vanilla kernel, no CachyOS — fast for GHA) ---
+
+  ci-efi = mkMachine {
+    hostname = "nixos-ci-efi";
+    profile = ./profiles/ci-profile.nix;
+    fs = fs "btrfs";
+    extraModules = [ boot.efi ];
+    userOverrides = cliOverrides;
+    withHomeManager = true;
+    usePatched = false;
+  };
+
+  ci-bios = mkMachine {
+    hostname = "nixos-ci-bios";
+    profile = ./profiles/ci-profile.nix;
+    fs = fs "btrfs";
+    extraModules = [ boot.bios-nv ];
+    userOverrides = cliOverrides;
+    withHomeManager = true;
+    usePatched = false;
+  };
+
   ### --- ISO Images ---
 
   iso-gnome = helpers.iso.mkIso {

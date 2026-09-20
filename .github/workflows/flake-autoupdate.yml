@@ -37,7 +37,7 @@ env:
   SOURCE_BRANCH: prepare/nixos-26.11
   BUFFER_BRANCH: flake-autoupdate
   SOAK_RUNS: "3"
-  MACHINES: "vm-cli-efi vm-desktop-efi vm-cli-efi-zfs"
+  MACHINES: "ci-efi ci-bios"
   DRY_RUN: "false"
 
 permissions:
@@ -93,12 +93,22 @@ jobs:
           set -euo pipefail
           # shellcheck disable=SC2086
           for m in $MACHINES; do
-            echo "--- $m"
+            echo "--- $m (eval)"
             # Filter the known-benign builtins.derivation/options.json warning
             # (nix evaluation quirk): exit code and real errors are preserved,
             # only the warning lines are dropped.
             nix eval ".#nixosConfigurations.$m.config.system.build.toplevel.drvPath" --raw \
               2> >(grep -v -e "without a proper context" -e "will not have a correct store reference" 1>&2)
+          done
+
+      - name: Build CI configurations (vanilla, catches boot failures like missing test)
+        run: |
+          set -euo pipefail
+          # Real build (not just eval) — ci-efi/ci-bios are vanilla (no CachyOS) and small (<3G),
+          # so they fit in the 14G GHA runner and catch boot-time failures (e.g. missing test in PATH).
+          for m in $MACHINES; do
+            echo "--- $m (build)"
+            nix build ".#nixosConfigurations.$m.config.system.build.toplevel" --print-out-paths
           done
 
   advance:
