@@ -14,6 +14,7 @@ shellcheck -x \
   test/test-update-flake-local.sh \
   test/test-auto-update-sh.sh \
   test/test-auto-update-checkout.sh \
+  test/test-auto-update-env-runtime.sh \
   script/update-flake \
   script/update-flake-local \
   script/mksymlink \

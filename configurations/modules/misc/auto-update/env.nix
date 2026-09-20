@@ -12,7 +12,7 @@
 # are shell builtins (printf).
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 37
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 41
 #   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
@@ -90,8 +90,20 @@ let
     "${pkgs.util-linux.bin}/bin/runuser"
     "${pkgs.libnotify}/bin/notify-send"
     "${config.systemd.package}/bin/systemctl"
+    # nixos-rebuild-ng wraps switch-to-configuration in systemd-run when
+    # systemd is up (nix.py SWITCH_TO_CONFIGURATION_CMD_PREFIX). Without
+    # it, boot fails with [Errno 2] right after the test check passes.
+    "${config.systemd.package}/bin/systemd-run"
     "${config.nix.package}/bin/nix"
     "${config.nix.package}/bin/nix-env"
+    # Edge-case insurance (zero new closure: same nix package): classic,
+    # remote-tmpdir and channel paths of nixos-rebuild-ng call these;
+    # a nixpkgs refactor moving a call onto our flake path must not Errno 2.
+    # ssh/nix-copy-closure (remote-only) and nano/$EDITOR (edit action) stay
+    # out on purpose — unreachable from build/boot local service.
+    "${config.nix.package}/bin/nix-store"
+    "${config.nix.package}/bin/nix-build"
+    "${config.nix.package}/bin/nix-instantiate"
     "${config.system.build.nixos-rebuild}/bin/nixos-rebuild"
     "${pkgs.gitMinimal}/bin/git"
     "${pkgs.diffutils}/bin/cmp"

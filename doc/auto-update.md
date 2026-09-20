@@ -23,9 +23,11 @@ Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.n
 - `pending` (11): `core` + `notify-send`
 - `root` (17): `core` + `basename env id rm timeout runuser notify-send`
 - `health` (21): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
-- `main` (37): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl nix nix-env nixos-rebuild git cmp curl awk sed nvd`
+- `main` (41): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore = [ "${env.core}/bin" ]` etc. (`pathPending` for the user pending service).
+
+`main` also covers nixos-rebuild-ng's own subprocess calls (audited from its 26.11 Python source — `test/test-auto-update-env-runtime.sh` pins them). Python has no shell, so bash builtins don't help: `test` (`set_profile`, `switch_to_configuration` — the 2026-09-20 `rebuild-boot` incident), `systemd-run` (boot prefix when systemd is up), `mkdir`/`nix-env` (profile set), `env -i` (elevated runs), plus `nix-store`/`nix-build`/`nix-instantiate` as edge-case insurance. `ssh`/`nix-copy-closure` (remote-only) and `$EDITOR` (edit action) stay out — unreachable from build/boot.
 
 Build / inspect independently (no full system rebuild):
 
@@ -35,7 +37,7 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 37
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
 nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
 nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 17
 nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 11
@@ -43,9 +45,9 @@ nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 1
 # or all at once:
 make env
 
-# PATH hygiene guard (must stay green):
+# PATH hygiene guards (must stay green):
 bash test/test-shell-paths.sh
-```
+bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
@@ -175,7 +177,8 @@ explicit `workflow_dispatch` instead). To freeze the pointer while testing,
 point `SOURCE_BRANCH` away from the work branch: its runs then validate
 only and can never advance the buffer.
 
-- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`ci-efi ci-bios` — vanilla, no CachyOS, EFI+BIOS coverage, really built not just evaled), `DRY_RUN`.
+- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`ci-efi ci-bios` — vanilla, no CachyOS, EFI+BIOS coverage, evaled only), `DRY_RUN`.
+- CI builds the 5 `nixos-auto-update-env-*` packages instead of full toplevels: KBs not GBs (14G runners, throttled cache), and full builds can't catch runtime-only failures anyway — symlink envs always build green; the 2026-09-20 `test` incident only fires when nixos-rebuild-ng execs at service runtime, covered by `test-auto-update-env-runtime.sh`.
 - Triggers: push to `flake` / `prepare/**` / `feat/**` (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
 - Broken tree: pointer stays, red run, manual arbitration. `GITHUB_TOKEN` (`contents: write`, `actions: read`) suffices while branches stay unprotected.
