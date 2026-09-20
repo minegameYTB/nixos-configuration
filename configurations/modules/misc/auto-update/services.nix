@@ -352,7 +352,10 @@ in
       ExecStartPre = [
         "+${pkgs.util-linux.bin}/bin/flock -w 10800 /run/lock/nixos-auto-update.lock -c true"
       ];
-      TimeoutStartSec = "4h";
+      # Keep the stock oneshot default (disabled start timeout): only the
+      # flock wait above is bounded (3h); a long GC run itself must never
+      # be killed for our gating.
+      TimeoutStartSec = "infinity";
     };
   };
 
