@@ -30,14 +30,18 @@ Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*
 Build / inspect independently (no full system rebuild):
 
 ```bash
-# which env will the service see?
+# which env will the service see? (system-wired, single PATH)
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
-# what is inside each env? (from the evaluated system)
-drv=$(nix build '.#nixosConfigurations.vm-desktop-efi.config.system.build.toplevel' --dry-run 2>&1 | grep -o '/nix/store/.*-main-env.drv' | head -1)
-out=$(nix build "$drv^out" --print-out-paths 2>&1 | tail -1); ls -1 "$out/bin" | tr '\n' ' '
-# 36 for main, 20 for health, 16 for root, 10 for pending, 9 for core
+# what is inside each env? — standalone flake packages (no system eval)
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 36
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 20
+nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 16
+nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 10
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 9
+# or all at once:
+make env
 
 # PATH hygiene guard (must stay green):
 bash test/test-shell-paths.sh

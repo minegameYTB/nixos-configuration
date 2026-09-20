@@ -1,7 +1,7 @@
 # -- Build variable and "fake target" --
 NIX_FLAGS=--extra-experimental-features "nix-command flakes"
 SCRIPT_DIR=$(shell pwd)/script
-.PHONY: help update-flake update-flake-local mksymlink run-deadnix run-shellcheck iso-gnome iso-minimal iso-all
+.PHONY: help update-flake update-flake-local mksymlink run-deadnix run-shellcheck env iso-gnome iso-minimal iso-all
 
 # -- Use help target by default (use '#' 3 times to show comment for help) --
 .DEFAULT_GOAL := help
@@ -26,6 +26,20 @@ run-deadnix:    ### Run deadnix (remove unused declaration in nix expressions)
 
 run-shellcheck: ### Run shellcheck on Bash entrypoints
 	bash "$(SCRIPT_DIR)/run-shellcheck"
+
+env:            ### Build tight per-service envs and list their bins
+	@for e in core pending root health main; do \
+	  echo "=== nixos-auto-update-env-$$e ==="; \
+	  out=$$(nix $(NIX_FLAGS) build ".#nixos-auto-update-env-$$e" --print-out-paths 2>&1 | tail -1); \
+	  ls -1 "$$out/bin" | tr '\n' ' '; echo; echo; \
+	done
+	@echo "System-wired envs (single PATH per service):"
+	@for svc in nixos-auto-update nixos-auto-update-notify-failure nixos-autoupdate-healthcheck; do \
+	  path=$$(nix $(NIX_FLAGS) eval --raw ".#nixosConfigurations.vm-desktop-efi.config.systemd.services.$$svc.environment.PATH" 2>&1); \
+	  echo "  $$svc: $$path"; \
+	done
+	@pending=$$(nix $(NIX_FLAGS) eval --raw ".#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH" 2>&1); \
+	echo "  nixos-auto-update-notify-pending: $$pending"
 
 iso-gnome:      ### Build GNOME ISO → /tmp/iso-gnome.iso
 	bash "$(SCRIPT_DIR)/build-iso-gnome"

@@ -12,9 +12,10 @@
 # are shell builtins (printf).
 #
 # Build / inspect independently (no full system rebuild):
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 36
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 20
+#   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
-#   drv=$(nix build '.#nixosConfigurations.vm-desktop-efi.config.system.build.toplevel' --dry-run 2>&1 | grep -o '/nix/store/.*-main-env.drv' | head -1)
-#   out=$(nix build "$drv^out" --print-out-paths | tail -1); ls -1 "$out/bin"
 {
   pkgs,
   config,
