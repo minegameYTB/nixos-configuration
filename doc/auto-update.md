@@ -247,6 +247,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **No automatic boot rollback by default**: there is no `boot.loader.systemd-boot.bootCounting` option in nixpkgs — the only native mechanism is `boot.uki.tries` (UKI-only, architectural shift, out of scope). The pragmatic net is healthcheck inhibit (+ opt-in `healthCheck.autoRollback` re-pointing the boot profile) + manual rollback via the 30 kept entries (`configurationLimit`).
 - **Service skipped on laptop**: `ConditionACPower` — plug in AC power.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
+- **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, and `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock — whichever starts second waits. GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.
 - **"dubious ownership" with `localCheckout`**: the service runs as root on checkouts owned by regular users — every git call passes `-c safe.directory=<checkout>`, so no `/root/.gitconfig` tweak is needed.
 - **Fails behind proxy/VPN**: same requirements as a manual `nix flake update` + `nixos-rebuild boot`.
