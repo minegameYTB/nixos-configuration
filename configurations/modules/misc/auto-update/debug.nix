@@ -8,8 +8,8 @@
 #
 # 2. Dry-run gate: on service start, _handle_debug_mode runs the safe local
 #    checks (dependencies + transaction tests in isolated temp dirs, no
-#    /nix/store write, no network, no nixos-rebuild) and exits without
-#    performing the actual update.
+#    /nix/store write, no network, no nixos-rebuild) and proceeds with the
+#    actual update if all checks pass. Exits early on check failure.
 #
 # Callers must set before use: DEBUG_MODE, LOG_FILE, STATE_DIR,
 # TRANSACTION_ROOT/DIR, SYSTEM_PROFILE, STAGED/PREVIOUS/LAST_OK/INHIBITED_FILES.
@@ -202,8 +202,7 @@
       _debug_info "$debug_failures check(s) failed." >&2
       exit 1
     fi
-    _debug_info "All dry-run checks passed."
-    exit 0
+    _debug_info "All dry-run checks passed, proceeding with verbose update."
   }
   # <<<END debug
 ''
