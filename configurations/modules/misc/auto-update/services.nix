@@ -36,29 +36,15 @@ let
   ### session checked at runtime) — servers stay journal-only.
   hasRealDesktop = config.services.desktopManager.gnome.enable;
 
-  ### Shared PATH blocks (hand-picked bin dirs, output-aware). Small services
-  ### only get what their assembled script text uses — see test-shell-paths.sh.
-  pathCore = [
-    "${pkgs.coreutils}/bin"
-  ];
-  pathRoot = pathCore ++ [
-    "${pkgs.util-linux.bin}/bin"
-    "${pkgs.libnotify}/bin"
-  ];
-  pathHealth = pathRoot ++ [
-    "${config.systemd.package}/bin"
-    "${pkgs.gnugrep}/bin"
-  ];
-  pathMain = pathHealth ++ [
-    "${config.nix.package}/bin"
-    "${config.system.build.nixos-rebuild}/bin"
-    "${pkgs.gitMinimal}/bin"
-    "${pkgs.diffutils}/bin"
-    "${pkgs.curl}/bin"
-    "${pkgs.gawk}/bin"
-    "${pkgs.gnused}/bin"
-    "${pkgs.nvd}/bin"
-  ];
+  ### Tight per-service envs: each service gets exactly one /bin with
+  ### only the binaries it calls (see env.nix + test-shell-paths.sh).
+  ### The host PATH is never inherited.
+  env = import ./env.nix { inherit pkgs config lib; };
+  pathCore = [ "${env.core}/bin" ];
+  pathRoot = [ "${env.root}/bin" ];
+  pathHealth = [ "${env.health}/bin" ];
+  pathMain = [ "${env.main}/bin" ];
+  pathPending = [ "${env.pending}/bin" ];
 in
 {
   services.logrotate.settings.nixos-auto-update = {
@@ -112,7 +98,7 @@ in
       KillMode = "control-group";
     };
 
-    ### Explicit restrictive PATH (hand-picked bin dirs, output-aware):
+    ### Explicit restrictive PATH (one package dir per entry, output-aware):
     ### only these directories exist for the script — nothing inherited
     ### and nothing from the host (/run/current-system is never used).
     environment = {
@@ -446,7 +432,7 @@ in
       RestartSec = "10s";
     };
     environment = {
-      PATH = lib.mkForce (lib.concatStringsSep ":" (pathCore ++ [ "${pkgs.libnotify}/bin" ]));
+      PATH = lib.mkForce (lib.concatStringsSep ":" pathPending);
     };
   };
 

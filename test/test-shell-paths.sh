@@ -22,7 +22,10 @@ ko(){ fail=$((fail+1)); echo "FAIL: $*" >&2; }
 
 KEYWORDS='then if fi else elif do done while for continue return local set shift exit echo true break case esac in printf exec trap'
 
-# command -> explicit PATH entry (keep in sync with environment.PATH)
+# command -> explicit PATH entry (keep in sync with environment.PATH).
+# When services use the tight envs (env.nix), the actual PATH is a
+# single ${env.<tier>}/bin — the test expands that env to its
+# underlying pkgs/config constituents via ENV_CONTENTS below.
 declare -A NEED=(
   [git]=pkgs.gitMinimal
   [nix]=config.nix.package
@@ -31,7 +34,6 @@ declare -A NEED=(
   [curl]=pkgs.curl
   [awk]=pkgs.gawk
   [sed]=pkgs.gnused
-  [nom]=pkgs.nix-output-monitor
   [nvd]=pkgs.nvd
   [grep]=pkgs.gnugrep
   [sha256sum]=pkgs.coreutils
@@ -61,6 +63,33 @@ declare -A NEED=(
   [systemctl]=config.systemd.package
   [runuser]=pkgs.util-linux.bin
   [notify-send]=pkgs.libnotify
+  [findmnt]=pkgs.util-linux.bin
+)
+declare -A ENV_CONTENTS=(
+  [env.core]="pkgs.coreutils"
+  [env.root]="pkgs.coreutils
+pkgs.util-linux.bin
+pkgs.libnotify"
+  [env.health]="pkgs.coreutils
+pkgs.util-linux.bin
+pkgs.libnotify
+config.systemd.package
+pkgs.gnugrep"
+  [env.pending]="pkgs.coreutils
+pkgs.libnotify"
+  [env.main]="pkgs.coreutils
+pkgs.util-linux.bin
+pkgs.libnotify
+config.systemd.package
+pkgs.gnugrep
+config.nix.package
+config.system.build.nixos-rebuild
+pkgs.gitMinimal
+pkgs.diffutils
+pkgs.curl
+pkgs.gawk
+pkgs.gnused
+pkgs.nvd"
 )
 
 # assemble <out> <fragment-spec>... — fragment-spec is "file:marker".
@@ -83,13 +112,24 @@ assemble(){
 # full entry set recursively so inherited packages count.
 declare -A _PATH_SEEN=()
 _path_block_recurse(){
-  local block="$1" dep
+  local block="$1" dep raw
   [[ -n "${_PATH_SEEN[$block]:-}" ]] && return 0
   _PATH_SEEN[$block]=1
   local text
   text=$(awk "/^  $block =/{f=1} f{print} f&&/\];/{exit}" "$SVCNIX")
-  grep -oE '\$\{(pkgs\.[a-zA-Z0-9_.-]+|config\.[a-zA-Z0-9_.-]+)\}' <<<"$text" \
-    | sed -E 's/^\$\{//; s/\}$//'
+  while IFS= read -r raw; do
+    raw=$(sed -E 's/^\$\{//; s/\}$//' <<<"$raw")
+    if [[ "$raw" == env.* ]]; then
+      # expand tight env to its underlying pkgs/config set
+      if [[ -n "${ENV_CONTENTS[$raw]:-}" ]]; then
+        printf '%s\n' "${ENV_CONTENTS[$raw]}"
+      else
+        echo "$raw"
+      fi
+    else
+      echo "$raw"
+    fi
+  done < <(grep -oE '\$\{(pkgs\.[a-zA-Z0-9_.-]+|config\.[a-zA-Z0-9_.-]+|env\.[a-z]+)\}' <<<"$text")
   for dep in $(grep -oE '\bpath[A-Z][A-Za-z]*\b' <<<"$text" | sort -u); do
     [[ "$dep" == "$block" ]] && continue
     _path_block_recurse "$dep"
@@ -97,7 +137,7 @@ _path_block_recurse(){
 }
 path_block_pkgs(){
   _PATH_SEEN=()
-  _path_block_recurse "$1" | sort -u
+  _path_block_recurse "$1" | tr ' ' '\n' | grep -v '^$' | sort -u
 }
 
 # scan_prep <in> <out> — strip scanner noise, keep code:
@@ -160,16 +200,8 @@ for spec in "nixos-auto-update:$T/main.sh:pathMain" \
   check_service "$svc" "$script" "$pname"
 done
 
-# user pending service: coreutils + libnotify only
-{
-  echo "pkgs.coreutils"
-  echo "pkgs.libnotify"
-} > "$T/pending-expected"
-path_block_pkgs "pathCore" > "$T/pending-core"
-{
-  cat "$T/pending-core"
-  echo "pkgs.libnotify"
-} | sort -u > "$T/pending-path"
+# user pending service: via env.pending (coreutils + libnotify)
+path_block_pkgs "pathPending" > "$T/pending-path"
 CANDS=$(scan_prep "$T/pending.sh" "$T/prep-pending.sh" \
   && grep -oE '(^[ \t]*|[;&|][ \t]*|&&[ \t]*|\|\|[ \t]*|\$\([ \t]*)[a-z][a-z0-9_.-]*' "$T/prep-pending.sh" \
   | sed -E 's/^[^a-z]*//' | sort -u)
@@ -248,7 +280,7 @@ else
 fi
 
 # ── drift guard: EXPECTED path blocks exist in services.nix ──
-for pname in pathMain pathRoot pathHealth pathCore; do
+for pname in pathMain pathRoot pathHealth pathCore pathPending; do
   if grep -q "^  $pname =" "$SVCNIX"; then
     ok "path block $pname present in services.nix"
   else
