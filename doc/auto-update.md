@@ -250,3 +250,8 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.
 - **"dubious ownership" with `localCheckout`**: the service runs as root on checkouts owned by regular users — every git call passes `-c safe.directory=<checkout>`, so no `/root/.gitconfig` tweak is needed.
 - **Fails behind proxy/VPN**: same requirements as a manual `nix flake update` + `nixos-rebuild boot`.
+- **`[Errno 2]` on a binary right after an env fix (`test`, `systemd-run`, …)**: the service executes under the *running* generation's `PATH`, not the staged one — a tight-PATH service cannot self-heal a PATH gap (seen 2026-09-20: `test` fixed in `04c9469`, next run failed on `systemd-run` from the old env). One-time manual recovery with a full user PATH, then the timer resumes on the fixed env — do NOT delete the transaction dir, recovery commits it:
+  ```bash
+  sudo nixos-rebuild switch --flake /var/lib/nixos-auto-update/flake#vm-desktop-efi
+  # (or `boot` + reboot; replace vm-desktop-efi with your configuration)
+  ```
