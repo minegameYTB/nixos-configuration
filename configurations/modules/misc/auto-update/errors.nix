@@ -29,7 +29,7 @@ let
     let
       text = builtins.getAttr field (builtins.getAttr code catalog);
     in
-    ''      ${code}:${field}) printf '%s' "${text}" ;;'';
+    ''${code}:${field}) printf '%s' "${text}" ;;'';
 
   catalog = {
     channel-resolve = {
@@ -64,7 +64,8 @@ let
       body_en = "Updating the flake inputs failed repeatedly. Network or source unreachable, see the journal.";
     };
 
-    local-pull = {      urgency = "normal";
+    local-pull = {
+      urgency = "normal";
       title_fr = "Mise à jour NixOS — Checkout local ignoré";
       body_fr = "Le checkout local est absent, sale ou hors branche : repli sur la référence distante.";
       title_en = "NixOS Update — Local checkout skipped";

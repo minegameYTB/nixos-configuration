@@ -214,18 +214,26 @@ in
       description = "Verbose logging and debug-labeled generations. When enabled, the auto-update service emits extra diagnostic output (transaction phases, state dumps, command details) and the generated system profile is labeled \"debug\" so debug-built generations are identifiable in `nix-env --list-generations` and `systemctl status`.";
     };
   };
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    {
-      assertions = [
-        {
-          assertion = cfg.configuration != null && cfg.configuration != "";
-          message = "system.autoUpdate.configuration must be set to a nixosConfigurations attribute (e.g. \"vm-cli-efi\") when system.autoUpdate.enable is true.";
-        }
-      ];
-    }
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        assertions = [
+          {
+            assertion = cfg.configuration != null && cfg.configuration != "";
+            message = "system.autoUpdate.configuration must be set to a nixosConfigurations attribute (e.g. \"vm-cli-efi\") when system.autoUpdate.enable is true.";
+          }
+        ];
+      }
 
-    (import ./services.nix {
-      inherit lib pkgs config cfg repo;
-    })
-  ]);
+      (import ./services.nix {
+        inherit
+          lib
+          pkgs
+          config
+          cfg
+          repo
+          ;
+      })
+    ]
+  );
 }
