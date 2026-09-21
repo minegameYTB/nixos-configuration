@@ -71,7 +71,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `configuration` | `null` (required) | `nixosConfigurations.<name>` to build — intentionally not `networking.hostName`. |
 | `checkInterval` | `"1d"` | Check cadence (`OnUnitInactiveSec`, from previous run's end). Daily absorbs manual rev bumps (every 3-4 days) within a day. |
 | `startDelay` | `"5min"` | First-check delay after boot (`OnBootSec`). Short like GLF-OS (`1min`) for prompt catch-up. |
-| `randomizedDelay` | `"1h"` | Jitter per trigger (spread a fleet). |
+| `randomizedDelay` | `"10min"` | Jitter per trigger (spread a fleet). Added on top of `startDelay` at boot, so worst case the first check runs ~15min after boot. |
 | `allowReboot` | `false` | Reboot automatically on kernel/init change. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |

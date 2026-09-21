@@ -59,8 +59,8 @@ in
 
     randomizedDelay = lib.mkOption {
       type = lib.types.str;
-      default = "1h";
-      description = "RandomizedDelaySec for the update timer (spread a fleet).";
+      default = "10min";
+      description = "RandomizedDelaySec for the update timer (spread a fleet). Applies on top of startDelay at boot too, so keep it small: worst case the first check runs startDelay + randomizedDelay after boot.";
     };
 
     allowReboot = lib.mkOption {
