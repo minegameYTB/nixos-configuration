@@ -1,41 +1,23 @@
-{ config, pkgs, lib, ... }:
-
+{ lib, ... }:
 
 {
-  ### Autologin via greetd (no display-manager greeter race): GDM's
-  ### autologin is broken on this machine in both modes (immediate:
-  ### session starts on VT2 but its GDM registration times out, stray
-  ### greeter keeps tty1; timed: the autologin conversation stalls
-  ### forever) while manual login works. greetd initial_session boots
-  ### straight into GNOME deterministically; logout falls back to the
-  ### tuigreet menu (session picker + power actions) instead of
-  ### re-logging in. Only hp-240 imports this file.
+  ### Autologin via LightDM. GDM's autologin is broken on this machine
+  ### in both modes (immediate: session on VT2 whose registration
+  ### times out; timed: conversation stalls) while manual login works,
+  ### and greetd 0.10.3 initial_session cannot declare a graphical
+  ### logind session type (empty env channel), so gnome-shell refuses
+  ### to join it. LightDM handles autologin natively with a proper
+  ### Wayland session (same recipe as the ISO, proven working); the
+  ### gtk greeter stays as fallback login UI. Only hp-240 imports this.
   services.displayManager.gdm.enable = lib.mkForce false;
 
-  services.greetd = {
+  services.displayManager.autoLogin = {
     enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions --power-shutdown 'systemctl poweroff' --power-reboot 'systemctl reboot'";
-        user = "greeter";
-      };
-      initial_session = {
-        ### greetd cannot guess the session type (defaults to tty, and
-        ### logind then records a TTY session gnome-shell refuses to
-        ### join). Force the Wayland/GNOME identity tuigreet sets from
-        ### the .desktop file. Plain VAR=value tokens: safe with
-        ### greetd's whitespace splitting, absolute env path required.
-        command = "${pkgs.coreutils}/bin/env XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=gnome DESKTOP_SESSION=gnome XDG_MENU_PREFIX=gnome- ${pkgs.gnome-session}/bin/gnome-session";
-        user = "minegame";
-      };
-    };
+    user = "minegame";
   };
 
-  ### Unlock the login keyring in greetd sessions, like GDM does.
-  security.pam.services.greetd.enableGnomeKeyring = true;
-
-  ### Set the loginuid so processes map to their logind session
-  ### (gnome-shell dies with "no matching session" without it).
-  ### Standard for login flows; harmless for the greeter itself.
-  security.pam.services.greetd.setLoginUid = true;
+  services.xserver.displayManager.lightdm = {
+    enable = true;
+    greeters.gtk.enable = true;
+  };
 }
