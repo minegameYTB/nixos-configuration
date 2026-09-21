@@ -11,12 +11,10 @@ shellcheck -x \
   test/test-install-logic.sh \
   test/test-repo-info.sh \
   test/lib-fragments.sh \
-  test/test-update-flake-local.sh \
   test/test-auto-update-sh.sh \
   test/test-auto-update-checkout.sh \
   test/test-auto-update-env-runtime.sh \
   script/update-flake \
-  script/update-flake-local \
   script/mksymlink \
   script/run-deadnix \
   script/build-env

@@ -1,7 +1,7 @@
 # -- Build variable and "fake target" --
 NIX_FLAGS=--extra-experimental-features "nix-command flakes"
 SCRIPT_DIR=$(shell pwd)/script
-.PHONY: help update-flake update-flake-local mksymlink run-deadnix run-shellcheck env iso-gnome iso-minimal iso-all
+.PHONY: help update-flake mksymlink run-deadnix run-shellcheck env iso-gnome iso-minimal iso-all
 
 # -- Use help target by default (use '#' 3 times to show comment for help) --
 .DEFAULT_GOAL := help
@@ -14,9 +14,6 @@ help:           ### Show help
 
 update-flake:   ### update-flake
 	bash "$(SCRIPT_DIR)/update-flake"
-
-update-flake-local:   ### update-flake without git (testers, no commit/push)
-	bash "$(SCRIPT_DIR)/update-flake-local"
 
 mksymlink:      ### Make symlink
 	bash "$(SCRIPT_DIR)/mksymlink"

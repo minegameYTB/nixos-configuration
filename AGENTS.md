@@ -47,7 +47,7 @@ Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch 
 
 ## Tests & checks
 
-- Suites in `test/`: `bash test/<name>.sh` (install-logic, repo-info, update-flake-local, auto-update-sh, auto-update-checkout, auto-update-env-runtime, nspawnctl, shell-paths).
+- Suites in `test/`: `bash test/<name>.sh` (install-logic, repo-info, auto-update-sh, auto-update-checkout, auto-update-env-runtime, nspawnctl, shell-paths).
 - `make run-deadnix` (`deadnix -eqlL .`), `make run-shellcheck` (install.sh, build.sh, install-lib, test, script). Format with `nix fmt`.
 - CI (`.github/workflows/flake-autoupdate.yml`): runs **all** `test/test-*.sh` + `nix eval` of `vm-cli-efi ci-bios` (vm-cli-efi carries the real autoUpdate wiring — ci machines don't enable it so their eval never touches the service assembly — plus BIOS coverage) + `nix build` of the 5 `nixos-auto-update-env-*` packages (no full toplevel builds — KBs not GBs; runtime-only failures like the missing `test` can't be caught by builds anyway, see `test-auto-update-env-runtime.sh`). Buffer branch `flake-autoupdate` soaks off `prepare/nixos-26.11` (`SOAK_RUNS=3`) — **never move the buffer pointer by hand**; see `doc/auto-update.md`.
 
