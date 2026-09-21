@@ -174,8 +174,7 @@ in
 
   _install_boot_configuration() {
     local command_status=0
-    local renderer_status=0
-    local pipeline_status="0 0 0"
+    local pipeline_status="0 0"
     local nixos_label_env=()
 
     if [ "$DEBUG_MODE" -eq 1 ]; then
@@ -190,19 +189,15 @@ in
       nixos-rebuild boot \
       --flake "$FLAKE#${cfg.configuration}" \
       --print-build-logs \
-      --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT" 2>&1 | _monitor_nix_output | _prefix_lines INFO; then
-      pipeline_status="0 0 0"
+      --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT" 2>&1 | _prefix_lines INFO; then
+      pipeline_status="0 0"
     else
       pipeline_status="''${PIPESTATUS[@]}"
     fi
     command_status=$(echo "$pipeline_status" | cut -d' ' -f1)
-    renderer_status=$(echo "$pipeline_status" | cut -d' ' -f2)
-    # pipeline_status[2] is the logging-only prefix loop; its failure is
-    # noise, the producer statuses above decide.
+    # pipeline_status[1] is the logging-only prefix loop; its failure is
+    # noise, the producer status above decides.
 
-    if [ "$renderer_status" -ne 0 ]; then
-      _status WARNING "The output renderer failed; the boot installation result is unaffected."
-    fi
     if [ "$command_status" -ne 0 ]; then
       return 1
     fi
@@ -257,7 +252,7 @@ in
     # The service runs as root, so nh cannot be used: it deliberately
     # refuses root execution. Package summary comes from nvd.
     _status INFO "Validating and building the new system configuration..."
-    if ! _run_nixos_build 2>&1 | _monitor_nix_output | _prefix_lines INFO; then
+    if ! _run_nixos_build 2>&1 | _prefix_lines INFO; then
       return 1
     fi
 

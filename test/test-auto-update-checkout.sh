@@ -60,7 +60,6 @@ _status() { echo "[sync] \$*"; }
 _fail() { echo "[sync] ERROR(\$1)"; exit 1; }
 _err_lookup() { echo "lookup:\$1/\$2"; }
 _filter_git_progress() { cat; }
-_monitor_nix_output() { cat; }
 WORKDIR="$T/work-$CASE"
 mkdir -p "\$WORKDIR"
 FLAKE="REMOTE-REF"

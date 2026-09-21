@@ -3,7 +3,7 @@
 #
 # Split (PATH-hygiene: tiny services must not drag the sed closure):
 #   core   — _init_output, _status, _write_state (coreutils + builtins only)
-#   render — _monitor_nix_output, _filter_git_progress (sed),
+#   render — _filter_git_progress (sed),
 #            _prefix_lines (prefixes a stream via _status)
 #   full   — core + render (main service only)
 #
@@ -76,10 +76,6 @@ let
 
   render = ''
     # >>>BEGIN output-render
-    _monitor_nix_output() {
-      cat
-    }
-
     _filter_git_progress() {
       # Drop the language-independent percentage/counter format.
       sed -u -E \
