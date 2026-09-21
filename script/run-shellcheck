@@ -11,6 +11,7 @@ shellcheck -x \
   test/test-install-logic.sh \
   test/test-repo-info.sh \
   test/lib-fragments.sh \
+  test/test-auto-update-reboot.sh \
   test/test-auto-update-sh.sh \
   test/test-auto-update-checkout.sh \
   test/test-auto-update-env-runtime.sh \

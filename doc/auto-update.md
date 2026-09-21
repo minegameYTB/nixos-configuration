@@ -54,7 +54,7 @@ Smart behavior — unchanged state costs nothing:
 1. **Source** — the channel revision is resolved fresh via `git ls-remote` (no nix tarball-cache staleness), then the machine-owned mirror clone in `/var/lib/nixos-auto-update/flake` is force-synced (`git fetch --force --depth 1 --update-shallow` + `reset --hard` + `clean -fdx`, verified against the resolved rev). The force-sync follows channel force-pushes (soak advances, phase jumps). Any incremental failure falls back to a fresh `git clone --depth 1 --no-tags` into `flake.new` + atomic `mv` (the previous tree is only dropped after the new one verifies). Tags are never fetched (`--no-tags` everywhere).
 2. **Skip** — `(source-rev, lock-hash)` identical to the last fully successful run → exit immediately: no update, no rebuild, no generation spam.
 3. **Build** — the channel tree is built tel quel, exactly as validated (`nixos-rebuild boot --flake <ref>#<configuration> --print-build-logs`). Explicit `--flake` is respected by the repo's `nixos-rebuild` wrapper (no auto-injection). Followed by an `nvd diff` summary between the previous profile generation and the staged profile — same generation resolution as the `report-changes` activation hook (`nix-env --list-generations`, incremental across double-stages). Failure keeps the running generation and logs an error (failures always notify, see below).
-4. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true`. Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
+4. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true` (opt-in, e.g. hp-240). The reboot then waits out a `rebootDelayMinutes` countdown (default 60): a critical notification announces the deadline, and creating `/var/lib/nixos-auto-update/postpone-reboot` (e.g. `sudo touch …`) during the window cancels the reboot (the marker is consumed and a "reboot manually" notice is emitted instead). Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
 
 No garbage collection is performed (default nix behavior kept); rollback uses the 30 kept boot entries plus snapper/sanoid snapshots.
 
@@ -68,7 +68,8 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `checkInterval` | `"1d"` | Check cadence (`OnUnitInactiveSec`, from previous run's end). Daily absorbs manual rev bumps (every 3-4 days) within a day. |
 | `startDelay` | `"5min"` | First-check delay after boot (`OnBootSec`). Short like GLF-OS (`1min`) for prompt catch-up. |
 | `randomizedDelay` | `"10min"` | Jitter per trigger (spread a fleet). Added on top of `startDelay` at boot, so worst case the first check runs ~15min after boot. |
-| `allowReboot` | `false` | Reboot automatically on kernel/init change. |
+| `allowReboot` | `false` | Reboot automatically on kernel/init change (behind a `rebootDelayMinutes` countdown, postponable). |
+| `rebootDelayMinutes` | `60` | Countdown before an automatic reboot, in minutes (checked once per minute). Touch `/var/lib/nixos-auto-update/postpone-reboot` during the window to cancel it (marker consumed — reboot manually afterwards). |
 | `requireACPower` | `true` | Only run on AC power (`ConditionACPower`). Set `false` on transportables that are effectively always plugged in. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |

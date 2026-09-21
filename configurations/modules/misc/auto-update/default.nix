@@ -66,7 +66,13 @@ in
     allowReboot = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Automatically reboot when the new generation changes kernel or init.";
+      description = "Automatically reboot when the new generation changes kernel or init. The reboot waits out rebootDelayMinutes first and can be cancelled by creating the postpone marker file.";
+    };
+
+    rebootDelayMinutes = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 60;
+      description = "Countdown before an automatic reboot (allowReboot), in minutes, checked once per minute. Touch /var/lib/nixos-auto-update/postpone-reboot during the window to cancel the reboot (the marker is consumed); reboot manually afterwards to activate the staged generation.";
     };
 
     requireACPower = lib.mkOption {

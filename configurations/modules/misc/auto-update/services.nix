@@ -104,6 +104,11 @@ in
       SuccessExitStatus = [ 75 ];
       ### Kill nix/nixos-rebuild children with the service on timeout.
       KillMode = "control-group";
+      ### No start timeout: every phase is self-bounded via timeout(1)
+      ### (fetch/clone/build/boot budgets, internet wait, GC-wait
+      ### ExecStartPre, reboot countdown) — a manager default would kill
+      ### long but healthy runs mid-flight.
+      TimeoutStartSec = "infinity";
       ### Mirror of the nix-gc flock gate: After= cannot order against an
       ### already-active unit (same-transaction jobs only), so if a weekly
       ### GC is running when the timer fires, wait for it here (up to 2h,
@@ -277,13 +282,50 @@ in
 
       if (( NEEDS_REBOOT )); then
         if ${lib.boolToString cfg.allowReboot}; then
+          # >>>BEGIN reboot-countdown
+          _await_reboot_window() {
+            # Countdown before an automatic reboot (allowReboot): sleeps
+            # $1 minutes in 1-minute slices so a postponement marker ($2)
+            # is honoured promptly. Returns 0 when the window expires
+            # (reboot), 1 when postponed (marker consumed).
+            local delay_min="$1" postpone_file="$2"
+            local waited=0
+            _status INFO "Automatic reboot in $delay_min min (touch $postpone_file to postpone)."
+            while (( waited < delay_min )); do
+              sleep 60
+              waited=$((waited + 1))
+              if [[ -f "$postpone_file" ]]; then
+                rm -f -- "$postpone_file"
+                return 1
+              fi
+            done
+            return 0
+          }
+          # <<<END reboot-countdown
+          REBOOT_POSTPONE_FILE="$WORKDIR/postpone-reboot"
           _notify_or_queue \
-            "Mise à jour NixOS — Redémarrage" \
-            "Nouveau noyau ou init, redémarrage automatique." \
-            "NixOS Update — Rebooting" \
-            "New kernel/init, automatic reboot." \
+            "Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min" \
+            "Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement quand vous êtes prêt." \
+            "NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min" \
+            "New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready." \
             "critical"
-          systemctl reboot
+          if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_POSTPONE_FILE"; then
+            _status WARNING "Reboot countdown expired, rebooting into the staged generation."
+            _notify_or_queue \
+              "Mise à jour NixOS — Redémarrage imminent" \
+              "Le système redémarre maintenant sur la nouvelle génération." \
+              "NixOS Update — Rebooting now" \
+              "Rebooting into the new generation now." \
+              "critical"
+            systemctl reboot
+          else
+            _notify_or_queue \
+              "Mise à jour NixOS — Redémarrage reporté" \
+              "Le redémarrage automatique est annulé. Redémarrez manuellement pour activer la génération staged." \
+              "NixOS Update — Reboot postponed" \
+              "Automatic reboot cancelled. Reboot manually to activate the staged generation." \
+              "normal"
+          fi
         else
           note_once "$NEW_SYSTEM" \
             "Mise à jour NixOS — Redémarrage requis" \
