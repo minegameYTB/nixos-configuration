@@ -66,7 +66,10 @@ in
       ### (the disk-space precheck sees the real free space) and avoids
       ### GC/build I/O contention. Deliberately NOT in Wants: GC is weekly,
       ### updates are daily — pulling it in would GC on every run.
-      After = [ "network-online.target" "nix-gc.service" ];
+      After = [
+        "network-online.target"
+        "nix-gc.service"
+      ];
       Wants = [ "network-online.target" ];
 
       ### Bootloader writes must land on the mounted ESP, never on a
