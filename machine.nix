@@ -100,6 +100,9 @@ in
     extraModules = [
       ### Auto-update enabled (see doc/auto-update.md)
       (autoUpdate "hp-240")
+      ### Per-machine override: stacked modules merge, so this only
+      ### affects hp-240 — other autoUpdate hosts keep the default.
+      { system.autoUpdate.healthCheck.autoRollback = true; }
     ];
     usePatched = false;
   };
