@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 
 {
   ### Autologin via LightDM. GDM's autologin is broken on this machine
@@ -13,7 +13,7 @@
 
   services.displayManager.autoLogin = {
     enable = true;
-    user = "minegame";
+    user = config.users.primaryUser;
   };
 
   services.xserver.displayManager.lightdm = {
