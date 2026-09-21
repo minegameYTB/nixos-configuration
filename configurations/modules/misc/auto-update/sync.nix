@@ -1,5 +1,5 @@
-# configurations/modules/misc/auto-update/sync.nix — channel synchronisation,
-# flake inputs and system rebuild (the network/build half; state machine in
+# configurations/modules/misc/auto-update/sync.nix — channel synchronisation
+# and system rebuild (the network/build half; state machine in
 # transaction.nix).
 #
 # Contract (functions exported; globals set: SRC_ID, FLAKE, LOCK_HASH):
@@ -15,14 +15,12 @@
 #                                    SRC_ID, FLAKE=$WORKDIR/flake; _fail
 #                                    channel-resolve / flake-sync /
 #                                    flake-lock-missing
-#   _run_flake_update_once / _update_flake_inputs
-#                                — nix flake update with retries, _fail flake-update
 #   _run_nixos_build / _install_boot_configuration / _rebuild_system
 #                                — build, boot-install (attempt-counted by the
 #                                  caller via _attempt_boot_installation), nvd diff
 #
-# Callers must set before use: WORKDIR, FLAKE (init: remote ref),
-# AUTO_UPDATE_NIX_LOG_FORMAT (via _init_output), REBUILD_BUILD_TIMEOUT_ENABLED.
+# Callers must set before use: WORKDIR,
+# AUTO_UPDATE_NIX_LOG_FORMAT (via _init_output).
 { cfg, repo }:
 
 let
@@ -158,50 +156,11 @@ in
     [ -f "$FLAKE/flake.lock" ] || _fail flake-lock-missing
   }
 
-  _run_flake_update_once() {
-    timeout \
-      --signal=TERM \
-      --kill-after=5m \
-      "${cfg.timeouts.flakeUpdate}" \
-      nix flake update \
-      --flake "$FLAKE" \
-      --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT" 2>&1 | _filter_git_progress | _monitor_nix_output | _prefix_lines INFO
-  }
-
-  _update_flake_inputs() {
-    local max_retries=3
-    local retry_delay=60
-    local flake_update_ok=0
-    local attempt
-
-    _status INFO "Starting flake update for $FLAKE"
-    for attempt in $(seq 1 "$max_retries"); do
-      _status INFO "Resolving flake inputs (attempt $attempt/$max_retries)..."
-      if _run_flake_update_once; then
-        flake_update_ok=1
-        break
-      fi
-      _status WARNING "Flake update failed (try $attempt/$max_retries), retrying in $retry_delay sec..."
-      [ "$attempt" -lt "$max_retries" ] && sleep "$retry_delay"
-    done
-
-    if [ "$flake_update_ok" -eq 0 ]; then
-      _fail flake-update
-    fi
-  }
-
   _run_nixos_build() {
     local nixos_label_env=()
     if [ "$DEBUG_MODE" -eq 1 ]; then
       nixos_label_env=(NIXOS_LABEL=debug)
       _debug "Debug mode: generation will be labeled 'debug'"
-    fi
-
-    if [ "$REBUILD_BUILD_TIMEOUT_ENABLED" -eq 0 ]; then
-      "''${nixos_label_env[@]}" nixos-rebuild build \
-        --flake "$FLAKE#${cfg.configuration}" \
-        --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT"
-      return $?
     fi
 
     "''${nixos_label_env[@]}" timeout \

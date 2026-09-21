@@ -56,22 +56,6 @@ let
       body_en = "The flake.lock file is missing from the synced tree. Sync aborted.";
     };
 
-    flake-update = {
-      urgency = "critical";
-      title_fr = "Mise à jour NixOS — Entrées introuvables";
-      body_fr = "La mise à jour des entrées du flake a échoué plusieurs fois. Réseau ou source injoignable, voir le journal.";
-      title_en = "NixOS Update — Inputs update failed";
-      body_en = "Updating the flake inputs failed repeatedly. Network or source unreachable, see the journal.";
-    };
-
-    local-pull = {
-      urgency = "normal";
-      title_fr = "Mise à jour NixOS — Checkout local ignoré";
-      body_fr = "Le checkout local est absent, sale ou hors branche : repli sur la référence distante.";
-      title_en = "NixOS Update — Local checkout skipped";
-      body_en = "The local checkout is missing, dirty or off-branch: falling back to the remote ref.";
-    };
-
     rebuild-boot = {
       urgency = "critical";
       title_fr = "Mise à jour NixOS — Reconstruction échouée";

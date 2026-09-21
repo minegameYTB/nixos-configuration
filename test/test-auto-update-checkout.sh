@@ -20,7 +20,6 @@ ko(){ fail=$((fail+1)); echo "FAIL: $*" >&2; }
 fragment sync.nix sync > "$T/sync.raw"
 sed -e 's|\${cfg.channel}|flake|g' \
     -e 's|\${channel}|flake|g' \
-    -e 's|\${cfg.flakeRef}|REMOTE-REF|g' \
     -e 's|\${cfg.configuration}|testconf|g' \
     -e "s|''\\\${AUTO_UPDATE_GIT_URL:-\${repo.gitUrl}}|\${AUTO_UPDATE_GIT_URL}|" \
     -e "s|''\\\${[0-9a-zA-Z_]*:-[^}]*}|\${IGNORED}|g" \
@@ -226,59 +225,6 @@ else
   ko "case K rc!=0: $(cat "$T/out-K.log")"
 fi
 ln -sfn "$T/sys-new" "$T/prof/system-11-link"
-cat > "$T/fakebin/nix" <<'EOF'
-#!/usr/bin/env bash
-n=$(cat "$NIX_COUNT" 2>/dev/null || echo 0)
-n=$((n+1)); echo "$n" > "$NIX_COUNT"
-echo "NIX-TRY-$n: $*" >> "$CALLS"
-(( n < 3 )) && exit 1 || exit 0
-EOF
-chmod +x "$T/fakebin/nix"
-export NIX_COUNT="$T/nixcount"
-echo 0 > "$NIX_COUNT"
-if bash -c "
-  set -euo pipefail
-  _status() { echo \"[sync] \$*\"; }
-  _fail() { echo \"[sync] ERROR(\$1)\"; exit 1; }
-  FLAKE=/tmp; AUTO_UPDATE_NIX_LOG_FORMAT=raw
-  _filter_git_progress() { cat; }
-  _monitor_nix_output() { cat; }
-  _prefix_lines() { cat; }
-  source \"$T/sync.func\"
-  _update_flake_inputs
-" > "$T/out-G.log" 2>&1; then
-  if [[ "$(cat "$T/nixcount")" -eq 3 ]] && grep -q "attempt 3/3" "$T/out-G.log"; then
-    ok "flake inputs: retry then success on 3rd try"
-  else
-    ko "case G: unexpected attempts ($(cat "$T/nixcount"))"
-  fi
-else
-  ko "case G: $(cat "$T/out-G.log")"
-fi
-
-# ── H: flake inputs always failing → _fail flake-update ──
-cat > "$T/fakebin/nix" <<'EOF'
-#!/usr/bin/env bash
-echo "NIX: $*" >> "$CALLS"
-exit 1
-EOF
-chmod +x "$T/fakebin/nix"
-if bash -c "
-  set -euo pipefail
-  _status() { echo \"[sync] \$*\"; }
-  _fail() { echo \"[sync] ERROR(\$1)\"; exit 1; }
-  FLAKE=/tmp; AUTO_UPDATE_NIX_LOG_FORMAT=raw
-  _filter_git_progress() { cat; }
-  _monitor_nix_output() { cat; }
-  _prefix_lines() { cat; }
-  source \"$T/sync.func\"
-  _update_flake_inputs
-" > "$T/out-H.log" 2>&1; then
-  ko "case H: expected failure, got success"
-else
-  grep -q "ERROR(flake-update)" "$T/out-H.log" \
-    && ok "flake inputs: persistent failure → fail flake-update" || ko "case H: $(cat "$T/out-H.log")"
-fi
 
 echo "--- $pass passed, $fail failed ---"
 (( fail == 0 ))

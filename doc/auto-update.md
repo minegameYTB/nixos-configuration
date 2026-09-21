@@ -23,7 +23,7 @@ Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.n
 - `pending` (11): `core` + `notify-send`
 - `root` (17): `core` + `basename env id rm timeout runuser notify-send`
 - `health` (21): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
-- `main` (41): `core` + `basename cut df env head id readlink rm seq sha256sum sleep timeout touch findmnt flock runuser notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
+- `main` (39): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore = [ "${env.core}/bin" ]` etc. (`pathPending` for the user pending service).
 
@@ -37,7 +37,7 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 39
 nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
 nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 17
 nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 11
@@ -55,12 +55,10 @@ Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipp
 
 Smart behavior — unchanged state costs nothing:
 
-1. **Source** — when `localCheckout` is set, exists, and is a clean checkout on the channel branch, it is pulled (`--ff-only`) and rebuilt. Any problem (missing, dirty, wrong branch, pull failure) falls back to the remote `flakeRef` with a warning — the machine never needs push access. The human-owned checkout is never force-updated.
-2. **Remote mode** — the channel revision is resolved fresh via `git ls-remote` (no nix tarball-cache staleness), then the machine-owned mirror clone in `/var/lib/nixos-auto-update/flake` is force-synced (`git fetch --force --depth 1 --update-shallow` + `reset --hard` + `clean -fdx`, verified against the resolved rev). The force-sync follows channel force-pushes (soak advances, phase jumps). Any incremental failure falls back to a fresh `git clone --depth 1 --no-tags` into `flake.new` + atomic `mv` (the previous tree is only dropped after the new one verifies). Tags are never fetched (`--no-tags` everywhere). Cloning by branch (not pinned rev) keeps the tree a real checkout that `nix flake update` understands.
-3. **Skip** — `(source-rev, lock-hash)` identical to the last fully successful run → exit immediately: no update, no rebuild, no generation spam. Same after `nix flake update` when inputs turn out already current.
-4. **Inputs** — skipped by default (`updateInputs = false`): the channel tree is built tel quel, exactly as validated. Opt in to trial fresher inputs locally (at your own risk: unvalidated bumps can break the build, as any local `nix flake update` would).
-5. **Build** — `nixos-rebuild boot --flake <ref>#<configuration> --print-build-logs`. Explicit `--flake` is respected by the repo's `nixos-rebuild` wrapper (no auto-injection). Followed by an `nvd diff` summary between the previous profile generation and the staged profile — same generation resolution as the `report-changes` activation hook (`nix-env --list-generations`, incremental across double-stages). Failure keeps the running generation and logs an error (failures always notify, see below).
-6. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true`. Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
+1. **Source** — the channel revision is resolved fresh via `git ls-remote` (no nix tarball-cache staleness), then the machine-owned mirror clone in `/var/lib/nixos-auto-update/flake` is force-synced (`git fetch --force --depth 1 --update-shallow` + `reset --hard` + `clean -fdx`, verified against the resolved rev). The force-sync follows channel force-pushes (soak advances, phase jumps). Any incremental failure falls back to a fresh `git clone --depth 1 --no-tags` into `flake.new` + atomic `mv` (the previous tree is only dropped after the new one verifies). Tags are never fetched (`--no-tags` everywhere).
+2. **Skip** — `(source-rev, lock-hash)` identical to the last fully successful run → exit immediately: no update, no rebuild, no generation spam.
+3. **Build** — the channel tree is built tel quel, exactly as validated (`nixos-rebuild boot --flake <ref>#<configuration> --print-build-logs`). Explicit `--flake` is respected by the repo's `nixos-rebuild` wrapper (no auto-injection). Followed by an `nvd diff` summary between the previous profile generation and the staged profile — same generation resolution as the `report-changes` activation hook (`nix-env --list-generations`, incremental across double-stages). Failure keeps the running generation and logs an error (failures always notify, see below).
+4. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true`. Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
 
 No garbage collection is performed (default nix behavior kept); rollback uses the 30 kept boot entries plus snapper/sanoid snapshots.
 
@@ -70,10 +68,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 |---|---|---|
 | `enable` | `false` | Opt-in per machine profile. |
 | `channel` | `"flake-autoupdate"` | Last soaked-green source commit followed (not the local `.branch`). |
-| `flakeRef` | `github:<owner>/<repo>?ref=<channel>` | Remote ref, derived from `lib/repo.nix` via `lib/repo-info.nix` (GitHub/GitLab native schemes, generic `git+https`/`git+ssh` elsewhere — Codeberg, self-hosted all work). |
-| `localCheckout` | `null` | e.g. `"/etc/nixos-config"`. Clean checkout on `channel` → pull + rebuild locally. |
 | `configuration` | `null` (required) | `nixosConfigurations.<name>` to build — intentionally not `networking.hostName`. |
-| `updateInputs` | `false` | Trial fresher inputs locally (unvalidated — default builds the channel tree tel quel). |
 | `checkInterval` | `"1d"` | Check cadence (`OnUnitInactiveSec`, from previous run's end). Daily absorbs manual rev bumps (every 3-4 days) within a day. |
 | `startDelay` | `"5min"` | First-check delay after boot (`OnBootSec`). Short like GLF-OS (`1min`) for prompt catch-up. |
 | `randomizedDelay` | `"1h"` | Jitter per trigger (spread a fleet). |
@@ -86,7 +81,6 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `timeouts.lsRemote` | `"5m"` | Budget for `git ls-remote` channel resolution. |
 | `timeouts.fetch` | `"10m"` | Budget for the incremental channel force-sync. |
 | `timeouts.clone` | `"30m"` | Budget for a fresh channel clone (fallback). |
-| `timeouts.flakeUpdate` | `"30m"` | Budget per `nix flake update` attempt (`updateInputs` only). |
 | `timeouts.build` | `"1h"` | Budget for `nixos-rebuild build`. |
 | `timeouts.boot` | `"1h"` | Budget for `nixos-rebuild boot` / `switch-to-configuration boot`. |
 | `timeouts.internetWait` | `600` | How long to wait for connectivity (seconds) before giving up. |
@@ -103,7 +97,6 @@ Example (test VM profile):
 system.autoUpdate = {
   enable = true;
   configuration = "vm-cli-efi";
-  localCheckout = "/etc/nixos-config";
 };
 ```
 
@@ -127,8 +120,6 @@ Every failure goes through `_fail CODE [detail]` (see `errors.nix`, the single s
 | `channel-resolve` | `git ls-remote` empty/failed — network or forge unreachable. |
 | `flake-sync` | Incremental force-sync then fresh clone both failed. |
 | `flake-lock-missing` | Synced tree has no `flake.lock`. |
-| `flake-update` | `nix flake update` failed repeatedly (`updateInputs` only). |
-| `local-pull` | Local checkout skipped (warning only) — fallback to remote. |
 | `rebuild-boot` | `nixos-rebuild boot` failed — running generation kept. |
 | `disk-space` | `/nix/store` below `minDiskGB`. |
 | `network-offline` | No connectivity after `timeouts.internetWait`. |
@@ -150,7 +141,7 @@ Manual run: `sudo systemctl start nixos-auto-update.service`.
 
 ## Lifecycle (OSTree-style buffer)
 
-`flake-autoupdate` is a pointer at the last soaked-green source commit — pure mirror, never any robot commit. Humans write to the source, the workflow validates the exact committed tree and advances the pointer, machines follow the pointer and bump inputs locally:
+`flake-autoupdate` is a pointer at the last soaked-green source commit — pure mirror, never any robot commit. Humans write to the source, the workflow validates the exact committed tree and advances the pointer, machines follow the pointer and build the channel tree tel quel:
 
 ```
 feat/auto-update ─┐ (migration phases: SOURCE_BRANCH, one edit per phase)
@@ -183,7 +174,7 @@ only and can never advance the buffer.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
 - Broken tree: pointer stays, red run, manual arbitration. `GITHUB_TOKEN` (`contents: write`, `actions: read`) suffices while branches stay unprotected.
 - Never move `flake-autoupdate` by hand — use `advance_now`.
-- Input bumps are the human's job (`script/update-flake` on work branches); machines build the channel tree tel quel unless `updateInputs` is opted into. The CI never touches `flake.lock`.
+- Input bumps are the human's job (`script/update-flake` on work branches); machines build the channel tree tel quel. The CI never touches `flake.lock`.
 
 ### Changing the base (phase change: feat → prepare → flake)
 
@@ -199,13 +190,13 @@ Target: `vm-cli-efi` (btrfs, ~2 vCPU / 2–3 GiB RAM / 40 GiB qcow2). ZFS specif
 1. On `prepare/nixos-26.11`: `nix build '.#iso-minimal'` → persistent ISO.
 2. Create a persistent libvirt VM (EFI/OVMF, NAT): fresh qcow2 + ISO as cdrom.
 3. Install inside the VM with `./install.sh` (disko layout).
-4. In the VM, check out `prepare/nixos-26.11` (e.g. `/etc/nixos-config`), enable the block above, `nixos-rebuild switch --flake .#vm-cli-efi`.
+4. In the VM, enable the block above, `nixos-rebuild switch --flake .#vm-cli-efi`.
 5. Scenarios:
-   - **a.** Timer fires → inputs bumped → new generation staged (`boot`), running system untouched.
-   - **b.** Reboot → new generation active, previous one still bootable from the menu.
-   - **c.** Broken flake (bad input URL in the checkout) → build fails, running generation kept, error in journal.
-   - **d.** Checkout without push rights / dirty tree → no git push attempted, remote fallback or local rebuild, never a "commit your changes" failure.
-   - **e.** CLI VM → journal-only, proving no desktop notification is attempted headless.
+    - **a.** Timer fires → new generation staged (`boot`), running system untouched.
+    - **b.** Reboot → new generation active, previous one still bootable from the menu.
+    - **c.** Broken channel tree (bad input URL) → build fails, running generation kept, error in journal.
+    - **d.** Channel force-push (soak advance, phase jump) → mirror follows via force-sync, no manual intervention.
+    - **e.** CLI VM → journal-only, proving no desktop notification is attempted headless.
   - **f.** Unhealthy staged boot → on the VM as root, append `systemd.mask=display-manager.service` (desktop) or `systemd.mask=sshd.service` (server) to a copy of the current `/boot/loader/entries/*.conf`, reboot into it → healthcheck fails, `inhibited` written, updates stop; with `healthCheck.autoRollback = true` (temporary local rebuild) the previous system is re-pointed (one-shot). Delete the sabotaged entry afterwards.
   - **g.** Power cut during update → start the service, then `kill -KILL` its MainPID (or power off the VM) mid-run → `verify` shows the recovery lines and a clean rerun instead of a blind rebuild; needs `/nix/store` writable.
 6. Acceptance: staged generations accumulate, rollback boots, timer + journal clean.
@@ -225,8 +216,7 @@ traps. `_recover_transaction()` runs first every time:
   (`boot-recovery-rolled-back`) or preserve for the next run (`boot-recovery`);
 - `restoring-*` → resume the restoration; anything else → drop the tracking dir.
 
-The updater never mutates local checkouts, so rollback only drops its own
-tracking state (plus a leftover `flake.new`).
+Rollback only drops the updater's own tracking state (plus a leftover `flake.new`).
 
 ## Post-boot healthcheck (the `validating` phase)
 
@@ -249,8 +239,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
 - **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.
-- **"dubious ownership" with `localCheckout`**: the service runs as root on checkouts owned by regular users — every git call passes `-c safe.directory=<checkout>`, so no `/root/.gitconfig` tweak is needed.
-- **Fails behind proxy/VPN**: same requirements as a manual `nix flake update` + `nixos-rebuild boot`.
+- **Fails behind proxy/VPN**: same requirements as a manual `nixos-rebuild boot`.
 - **`[Errno 2]` on a binary right after an env fix (`test`, `systemd-run`, …)**: the service executes under the *running* generation's `PATH`, not the staged one — a tight-PATH service cannot self-heal a PATH gap (seen 2026-09-20: `test` fixed in `04c9469`, next run failed on `systemd-run` from the old env). One-time manual recovery with a full user PATH, then the timer resumes on the fixed env — do NOT delete the transaction dir, recovery commits it:
   ```bash
   sudo nixos-rebuild switch --flake /var/lib/nixos-auto-update/flake#vm-desktop-efi

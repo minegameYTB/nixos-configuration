@@ -12,7 +12,7 @@
 #    actual update if all checks pass. Exits early on check failure.
 #
 # Callers must set before use: DEBUG_MODE, LOG_FILE, STATE_DIR,
-# TRANSACTION_ROOT/DIR, SYSTEM_PROFILE, STAGED/PREVIOUS/LAST_OK/INHIBITED_FILES.
+# TRANSACTION_ROOT/DIR, SYSTEM_PROFILE.
 { pkgs }:
 
 ''
@@ -22,22 +22,6 @@
     [ "$DEBUG_MODE" -eq 1 ] || return 0
     ${pkgs.coreutils}/bin/printf '[DEBUG] %s\n' "$*" >> "$LOG_FILE" 2>/dev/null || true
     ${pkgs.coreutils}/bin/printf '[DEBUG] %s\n' "$*" >&5
-  }
-
-  _debug_state() {
-    [ "$DEBUG_MODE" -eq 1 ] || return 0
-    _debug "STATE: staged=$(cat "$STAGED_FILE" 2>/dev/null || echo '<none>') previous=$(cat "$PREVIOUS_FILE" 2>/dev/null || echo '<none>') last_ok=$(cat "$LAST_OK_FILE" 2>/dev/null || echo '<none>') inhibited=$([ -f "$INHIBITED_FILE" ] && echo yes || echo no)"
-    _debug "STATE: transaction_active=$TRANSACTION_ACTIVE recovered=$TRANSACTION_RECOVERED rolled_back=$TRANSACTION_AUTO_ROLLED_BACK"
-    if [ -d "$TRANSACTION_DIR" ]; then
-      _debug "STATE: phase=$(cat "$TRANSACTION_DIR/phase" 2>/dev/null || echo unreadable) old_system=$(cat "$TRANSACTION_DIR/old-system" 2>/dev/null || echo unreadable) boot_attempts=$(cat "$TRANSACTION_DIR/boot-install-attempts" 2>/dev/null || echo unreadable)"
-    fi
-  }
-
-  _debug_mounts() {
-    [ "$DEBUG_MODE" -eq 1 ] || return 0
-    _debug "MOUNTS: /nix/store=$(findmnt -n -o OPTIONS /nix/store 2>/dev/null || echo unknown)"
-    _debug "MOUNTS: /boot=$(findmnt -n -o OPTIONS /boot 2>/dev/null || echo 'not separate')"
-    _debug "MOUNTS: df=/nix/store:$(df -h /nix/store 2>/dev/null | awk 'NR==2{print $4}') free"
   }
 
   # ─── dry-run test helpers ─────────────────────────────────────────────

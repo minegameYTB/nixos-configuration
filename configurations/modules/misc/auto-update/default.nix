@@ -38,30 +38,11 @@ in
       description = "Channel branch followed by auto-update: the last soaked-green source commit (pure mirror pointer), not the local .branch.";
     };
 
-    flakeRef = lib.mkOption {
-      type = lib.types.str;
-      default = repo.flakeRef;
-      description = "Remote flake reference used when no usable local checkout exists. Defaults to the channel on the configured forge.";
-    };
-
-    localCheckout = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      example = "/etc/nixos-config";
-      description = "Optional local git checkout. When set, existing, and clean on the channel branch, it is pulled (--ff-only) and rebuilt instead of the remote ref. Any problem falls back to flakeRef with a warning. /etc/nixos-config is the system-wide convention; a home checkout (e.g. /home/<user>/nixos-configuration) works too and is handy on dev machines.";
-    };
-
     configuration = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
       example = "vm-cli-efi";
       description = "Flake attribute to build (nixosConfigurations.<name>). Must be set when enable is true — it intentionally differs from networking.hostName.";
-    };
-
-    updateInputs = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Bump flake inputs (nix flake update) before rebuilding. Off by default: machines build the channel tree as-is, like an OSTree client — opt in only to trial fresher inputs locally.";
     };
 
     checkInterval = lib.mkOption {
@@ -135,12 +116,6 @@ in
         type = lib.types.str;
         default = "30m";
         description = "Budget for a fresh channel clone (fallback path).";
-      };
-
-      flakeUpdate = lib.mkOption {
-        type = lib.types.str;
-        default = "30m";
-        description = "Budget per nix flake update attempt (updateInputs only).";
       };
 
       build = lib.mkOption {

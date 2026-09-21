@@ -71,13 +71,11 @@ let
   ### Per-machine auto-update wiring (feat/auto-update, see doc/auto-update.md).
   ### Centralized here: one line per machine, configuration passed explicitly.
   ### Defaults apply (daily checks, no auto-reboot): the machines follow the
-  ### soaked buffer and stage new generations, activation stays manual.
-  ### Prefers /etc/nixos-config when present, otherwise tracks the remote channel.
+  ### soaked buffer channel and stage new generations, activation stays manual.
   autoUpdate = configuration: {
     system.autoUpdate = {
       enable = true;
       inherit configuration;
-      localCheckout = null;
     };
   };
 

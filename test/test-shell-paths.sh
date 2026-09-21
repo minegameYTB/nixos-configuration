@@ -56,14 +56,12 @@ declare -A NEED=(
   [base64]=pkgs.coreutils
   [sleep]=pkgs.coreutils
   [df]=pkgs.coreutils
-  [seq]=pkgs.coreutils
   [stat]=pkgs.coreutils
   [flock]=pkgs.util-linux.bin
   [touch]=pkgs.coreutils
   [systemctl]=config.systemd.package
   [runuser]=pkgs.util-linux.bin
   [notify-send]=pkgs.libnotify
-  [findmnt]=pkgs.util-linux.bin
 )
 declare -A ENV_CONTENTS=(
   [env.core]="pkgs.coreutils"

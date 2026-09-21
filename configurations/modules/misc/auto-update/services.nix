@@ -40,7 +40,6 @@ let
   ### only the binaries it calls (see env.nix + test-shell-paths.sh).
   ### The host PATH is never inherited.
   env = import ./env.nix { inherit pkgs config lib; };
-  pathCore = [ "${env.core}/bin" ];
   pathRoot = [ "${env.root}/bin" ];
   pathHealth = [ "${env.health}/bin" ];
   pathMain = [ "${env.main}/bin" ];
@@ -66,7 +65,10 @@ in
       ### (the disk-space precheck sees the real free space) and avoids
       ### GC/build I/O contention. Deliberately NOT in Wants: GC is weekly,
       ### updates are daily — pulling it in would GC on every run.
-      After = [ "network-online.target" "nix-gc.service" ];
+      After = [
+        "network-online.target"
+        "nix-gc.service"
+      ];
       Wants = [ "network-online.target" ];
 
       ### Bootloader writes must land on the mounted ESP, never on a
@@ -133,11 +135,10 @@ in
       TRANSACTION_RECOVERED=0
       TRANSACTION_AUTO_ROLLED_BACK=0
       BOOT_INSTALL_MAX_ATTEMPTS=3
-      REBUILD_BUILD_TIMEOUT_ENABLED=1
       REBUILD_BOOT_TIMEOUT="${cfg.timeouts.boot}"
       DEBUG_MODE=${if cfg.debug then "1" else "0"}
       SYSTEM_PROFILE=/nix/var/nix/profiles/system
-      FLAKE="${cfg.flakeRef}"
+      FLAKE=""
       LAST_OK_FILE="$WORKDIR/last-ok"
       STAGED_FILE="$WORKDIR/staged-system"
       PREVIOUS_FILE="$WORKDIR/previous-system"
@@ -215,39 +216,12 @@ in
       _check_disk_space
       _wait_for_internet
 
-      ### --- source: local checkout when usable, remote ref otherwise ---
-      ${lib.optionalString (cfg.localCheckout != null) ''
-        CHECKOUT="${cfg.localCheckout}"
-        ### safe.directory: the service runs as root on checkouts owned by
-        ### regular users — without it git aborts with "dubious ownership".
-        if [[ -d "$CHECKOUT/.git" ]]; then
-          if git -c safe.directory="$CHECKOUT" -C "$CHECKOUT" diff --quiet && [[ "$(git -c safe.directory="$CHECKOUT" -C "$CHECKOUT" branch --show-current)" == "${cfg.channel}" ]]; then
-            _status INFO "Pulling local checkout $CHECKOUT."
-            if git -c safe.directory="$CHECKOUT" -C "$CHECKOUT" pull --ff-only; then
-              FLAKE="$CHECKOUT"
-              SRC_ID=$(git -c safe.directory="$CHECKOUT" -C "$CHECKOUT" rev-parse HEAD) || _fail state-error "checkout revision unreadable"
-            else
-              _status WARNING "Pull failed, falling back to remote ${cfg.flakeRef} ($(_err_lookup local-pull body_en))."
-            fi
-          else
-            _status WARNING "Checkout dirty or not on ${cfg.channel}, using remote ${cfg.flakeRef}."
-          fi
-        else
-          _status WARNING "No checkout at $CHECKOUT, using remote ${cfg.flakeRef}."
-        fi
-      ''}
-
-      ### --- remote mode: force-sync the machine-owned mirror clone. ---
-      ### Never force the human-owned localCheckout above (pull --ff-only
-      ### + fallback); the mirror here is disposable cache, so fetch --force
-      ### + reset --hard follows channel force-pushes (soak advances, phase
-      ### jumps). Tags are unwanted update ballast: --no-tags everywhere.
-      if [[ "$FLAKE" == "${cfg.flakeRef}" ]]; then
-        _debug "Remote mode — syncing channel clone"
-        _sync_channel_clone
-      else
-        _debug "Local checkout mode — $FLAKE"
-      fi
+      ### --- channel: force-sync the machine-owned mirror clone. ---
+      ### The mirror is disposable cache, so fetch --force + reset --hard
+      ### follows channel force-pushes (soak advances, phase jumps). Tags
+      ### are unwanted update ballast: --no-tags everywhere.
+      _debug "Syncing channel clone"
+      _sync_channel_clone
 
       LOCK_HASH=$(sha256sum "$FLAKE/flake.lock" | cut -d' ' -f1) || _fail flake-lock-missing "$FLAKE"
       _debug "SRC_ID=$SRC_ID LOCK_HASH=$LOCK_HASH"
@@ -261,16 +235,6 @@ in
         exit 0
       fi
       _debug "Source or inputs changed, proceeding to rebuild"
-
-      ${lib.optionalString cfg.updateInputs ''
-        _status INFO "Updating inputs in $FLAKE."
-        _update_flake_inputs
-        LOCK_HASH=$(sha256sum "$FLAKE/flake.lock" | cut -d' ' -f1) || _fail flake-lock-missing "$FLAKE after update"
-        if [[ -n "$last_ok" && "$last_ok" == "$SRC_ID $LOCK_HASH" ]]; then
-          _status INFO "Inputs already current, skipping rebuild."
-          exit 0
-        fi
-      ''}
 
       _status INFO "Rebuilding ${cfg.configuration} (boot, no immediate activation)."
       ### Store-resolved wrapper (system build handle, carries the repo's

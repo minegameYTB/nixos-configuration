@@ -6,13 +6,12 @@
 # preserving the binaries' original RPATHs to their libs.
 #
 # Audit: every bare invocation in the assembled scripts was traced
-# (see test-shell-paths.sh CANDS + debug.nix findmnt/df/awk). Only
-# those binaries are kept — no cp/dirname/numfmt/tail/wc/gawk/diff
-# etc. that are only ever invoked via absolute ${pkgs.*}/bin/* or
-# are shell builtins (printf).
+# (see test-shell-paths.sh CANDS). Only those binaries are kept —
+# no cp/dirname/numfmt/tail/wc/gawk/diff etc. that are only ever
+# invoked via absolute ${pkgs.*}/bin/* or are shell builtins (printf).
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 41
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 39
 #   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
@@ -80,12 +79,10 @@ let
     "${pkgs.coreutils}/bin/id"
     "${pkgs.coreutils}/bin/readlink"
     "${pkgs.coreutils}/bin/rm"
-    "${pkgs.coreutils}/bin/seq"
     "${pkgs.coreutils}/bin/sha256sum"
     "${pkgs.coreutils}/bin/sleep"
     "${pkgs.coreutils}/bin/timeout"
     "${pkgs.coreutils}/bin/touch"
-    "${pkgs.util-linux.bin}/bin/findmnt"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
     "${pkgs.libnotify}/bin/notify-send"
