@@ -40,6 +40,7 @@ let
   ### only the binaries it calls (see env.nix + test-shell-paths.sh).
   ### The host PATH is never inherited.
   env = import ./env.nix { inherit pkgs config lib; };
+  pathCore = [ "${env.core}/bin" ];
   pathRoot = [ "${env.root}/bin" ];
   pathHealth = [ "${env.health}/bin" ];
   pathMain = [ "${env.main}/bin" ];
@@ -65,10 +66,7 @@ in
       ### (the disk-space precheck sees the real free space) and avoids
       ### GC/build I/O contention. Deliberately NOT in Wants: GC is weekly,
       ### updates are daily — pulling it in would GC on every run.
-      After = [
-        "network-online.target"
-        "nix-gc.service"
-      ];
+      After = [ "network-online.target" "nix-gc.service" ];
       Wants = [ "network-online.target" ];
 
       ### Bootloader writes must land on the mounted ESP, never on a
