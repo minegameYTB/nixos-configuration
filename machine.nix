@@ -104,19 +104,10 @@ in
       ### affect hp-240 — other autoUpdate hosts keep the defaults.
       ### (Transportable, effectively always plugged in: no AC gate,
       ### automatic reboot behind a postponable countdown.)
-      ### GDM debug is TEMPORARY: autologin succeeds but GDM still
-      ### spawns the greeter on tty1 afterwards — verbose logs needed
-      ### to see why. Remove once diagnosed.
-      ### TimedLogin experiment: delay != 0 switches GDM from immediate
-      ### AutomaticLogin (separate display on VT2, whose registration
-      ### times out -> stray greeter) to greeter-first login after 10s
-      ### on the SAME display/VT. Revert to delay 0 if it changes nothing.
       {
         system.autoUpdate.healthCheck.autoRollback = true;
         system.autoUpdate.requireACPower = false;
         system.autoUpdate.allowReboot = true;
-        services.displayManager.gdm.debug = true;
-        services.displayManager.gdm.autoLogin.delay = 10;
       }
     ];
     usePatched = false;
