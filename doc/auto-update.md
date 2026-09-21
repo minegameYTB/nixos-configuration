@@ -21,7 +21,7 @@ Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.n
 
 - `core` (11): `base64 cat chmod date mkdir mktemp mv stat sync test notify-send`
 - `health` (21): `core` + `basename env id readlink rm timeout flock runuser systemctl grep`
-- `main` (39): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
+- `main` (40): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
 
@@ -35,7 +35,7 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 39
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 40
 nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
 nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 11
 # or all at once:
@@ -54,7 +54,7 @@ Smart behavior — unchanged state costs nothing:
 1. **Source** — the channel revision is resolved fresh via `git ls-remote` (no nix tarball-cache staleness), then the machine-owned mirror clone in `/var/lib/nixos-auto-update/flake` is force-synced (`git fetch --force --depth 1 --update-shallow` + `reset --hard` + `clean -fdx`, verified against the resolved rev). The force-sync follows channel force-pushes (soak advances, phase jumps). Any incremental failure falls back to a fresh `git clone --depth 1 --no-tags` into `flake.new` + atomic `mv` (the previous tree is only dropped after the new one verifies). Tags are never fetched (`--no-tags` everywhere).
 2. **Skip** — `(source-rev, lock-hash)` identical to the last fully successful run → exit immediately: no update, no rebuild, no generation spam.
 3. **Build** — the channel tree is built tel quel, exactly as validated (`nixos-rebuild boot --flake <ref>#<configuration> --print-build-logs`). Explicit `--flake` is respected by the repo's `nixos-rebuild` wrapper (no auto-injection). Followed by an `nvd diff` summary between the previous profile generation and the staged profile — same generation resolution as the `report-changes` activation hook (`nix-env --list-generations`, incremental across double-stages). Failure keeps the running generation and logs an error (failures always notify, see below).
-4. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true` (opt-in, e.g. hp-240). The reboot then waits out a `rebootDelayMinutes` countdown (default 60): a critical notification announces the deadline, and creating `/var/lib/nixos-auto-update/postpone-reboot` (e.g. `sudo touch …`) during the window cancels the reboot (the marker is consumed and a "reboot manually" notice is emitted instead). Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
+4. **Reboot** — only when the new generation changes `kernel` or `init`, and only when `allowReboot = true` (opt-in, e.g. hp-240). The reboot then waits out a `rebootDelayMinutes` countdown (default 60): a critical notification announces the deadline, and creating `/var/lib/nixos-auto-update/postpone-reboot` (e.g. `sudo touch …`) during the window cancels the reboot (the marker is consumed and a "reboot manually" notice is emitted instead). Each milestone (deadline, imminent, postponed) is also broadcast with `wall` to all logged-in terminals (including terminal emulators), so CLI sessions see it too — `notify-send` alone only reaches graphical ones. Otherwise a "reboot required / staged" notice is emitted — once per generation (see anti-spam).
 
 No garbage collection is performed (default nix behavior kept); rollback uses the 30 kept boot entries plus snapper/sanoid snapshots.
 

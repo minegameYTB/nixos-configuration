@@ -303,12 +303,18 @@ in
           }
           # <<<END reboot-countdown
           REBOOT_POSTPONE_FILE="$WORKDIR/postpone-reboot"
+          # TTY broadcast for CLI sessions (notify-send only reaches
+          # graphical ones): best-effort, never fails the run.
+          _wall_tty() {
+            wall "$1" 2>/dev/null || _status WARNING "Unable to broadcast to logged-in terminals."
+          }
           _notify_or_queue \
             "Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min" \
             "Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement quand vous êtes prêt." \
             "NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min" \
             "New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready." \
             "critical"
+          _wall_tty "NixOS update: automatic reboot in ${toString cfg.rebootDelayMinutes} min (kernel/init change). To postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready. / Mise à jour NixOS : redémarrage automatique dans ${toString cfg.rebootDelayMinutes} min (noyau/init). Pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement."
           if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_POSTPONE_FILE"; then
             _status WARNING "Reboot countdown expired, rebooting into the staged generation."
             _notify_or_queue \
@@ -317,6 +323,7 @@ in
               "NixOS Update — Rebooting now" \
               "Rebooting into the new generation now." \
               "critical"
+            _wall_tty "NixOS update: rebooting into the new generation now. / Mise à jour NixOS : redémarrage immédiat sur la nouvelle génération."
             systemctl reboot
           else
             _notify_or_queue \
@@ -325,6 +332,7 @@ in
               "NixOS Update — Reboot postponed" \
               "Automatic reboot cancelled. Reboot manually to activate the staged generation." \
               "normal"
+            _wall_tty "NixOS update: automatic reboot postponed, reboot manually when ready. / Mise à jour NixOS : redémarrage reporté, redémarrez manuellement quand vous êtes prêt."
           fi
         else
           note_once "$NEW_SYSTEM" \

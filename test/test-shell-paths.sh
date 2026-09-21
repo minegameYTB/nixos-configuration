@@ -58,6 +58,7 @@ declare -A NEED=(
   [df]=pkgs.coreutils
   [stat]=pkgs.coreutils
   [flock]=pkgs.util-linux.bin
+  [wall]=pkgs.util-linux.bin
   [touch]=pkgs.coreutils
   [systemctl]=config.systemd.package
   [runuser]=pkgs.util-linux.bin

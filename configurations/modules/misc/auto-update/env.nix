@@ -16,7 +16,7 @@
 # no unused envs.
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 39
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 40
 #   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
@@ -78,6 +78,7 @@ let
     "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
+    "${pkgs.util-linux.bin}/bin/wall"
     "${config.systemd.package}/bin/systemctl"
     # nixos-rebuild-ng wraps switch-to-configuration in systemd-run when
     # systemd is up (nix.py SWITCH_TO_CONFIGURATION_CMD_PREFIX). Without
