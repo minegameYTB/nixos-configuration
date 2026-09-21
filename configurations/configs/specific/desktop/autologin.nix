@@ -1,17 +1,5 @@
 { config, pkgs, lib, ... }:
 
-let
-  ### TEMPORARY diagnostic wrapper: dumps the exact environment
-  ### greetd launches initial_session with, runs gnome-session as a
-  ### child to capture its exit code, and logs both. Remove once the
-  ### 2-second death is understood (keep plain gnome-session after).
-  gnome-session-debug = pkgs.writeShellScriptBin "gnome-session-debug" ''
-    ${pkgs.coreutils}/bin/env | ${pkgs.coreutils}/bin/sort > /tmp/greetd-initial-env.txt
-    ${pkgs.gnome-session}/bin/gnome-session >> /tmp/greetd-initial-env.txt 2>&1
-    echo "exit=$?" >> /tmp/greetd-initial-env.txt
-  '';
-in
-
 
 {
   ### Autologin via greetd (no display-manager greeter race): GDM's
@@ -32,7 +20,12 @@ in
         user = "greeter";
       };
       initial_session = {
-        command = "${gnome-session-debug}/bin/gnome-session-debug";
+        ### greetd cannot guess the session type (defaults to tty, and
+        ### logind then records a TTY session gnome-shell refuses to
+        ### join). Force the Wayland/GNOME identity tuigreet sets from
+        ### the .desktop file. Plain VAR=value tokens: safe with
+        ### greetd's whitespace splitting, absolute env path required.
+        command = "${pkgs.coreutils}/bin/env XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=gnome DESKTOP_SESSION=gnome XDG_MENU_PREFIX=gnome- ${pkgs.gnome-session}/bin/gnome-session";
         user = "minegame";
       };
     };
