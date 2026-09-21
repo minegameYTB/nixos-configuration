@@ -1,5 +1,18 @@
 { config, pkgs, lib, ... }:
 
+let
+  ### TEMPORARY diagnostic wrapper: dumps the exact environment
+  ### greetd launches initial_session with, runs gnome-session as a
+  ### child to capture its exit code, and logs both. Remove once the
+  ### 2-second death is understood (keep plain gnome-session after).
+  gnome-session-debug = pkgs.writeShellScriptBin "gnome-session-debug" ''
+    ${pkgs.coreutils}/bin/env | ${pkgs.coreutils}/bin/sort > /tmp/greetd-initial-env.txt
+    ${pkgs.gnome-session}/bin/gnome-session >> /tmp/greetd-initial-env.txt 2>&1
+    echo "exit=$?" >> /tmp/greetd-initial-env.txt
+  '';
+in
+
+
 {
   ### Autologin via greetd (no display-manager greeter race): GDM's
   ### autologin is broken on this machine in both modes (immediate:
@@ -19,7 +32,7 @@
         user = "greeter";
       };
       initial_session = {
-        command = "${pkgs.gnome-session}/bin/gnome-session";
+        command = "${gnome-session-debug}/bin/gnome-session-debug";
         user = "minegame";
       };
     };
