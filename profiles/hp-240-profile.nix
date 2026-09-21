@@ -32,7 +32,7 @@
     ### Other
     ../configurations/hardware-configuration/specific/swap.nix
     ../configurations/configs/specific/container
-    #../configurations/configs/specific/desktop/autologin.nix
+    ../configurations/configs/specific/desktop/autologin.nix
 
     ### Snapper snapshot planning (equivalent sanoid for btrfs)
     ../configurations/hardware-configuration/filesystem/btrfs/snapper.nix
