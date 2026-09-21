@@ -27,4 +27,9 @@
 
   ### Unlock the login keyring in greetd sessions, like GDM does.
   security.pam.services.greetd.enableGnomeKeyring = true;
+
+  ### Set the loginuid so processes map to their logind session
+  ### (gnome-shell dies with "no matching session" without it).
+  ### Standard for login flows; harmless for the greeter itself.
+  security.pam.services.greetd.setLoginUid = true;
 }
