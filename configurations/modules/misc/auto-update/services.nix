@@ -287,35 +287,53 @@ in
             # Countdown before an automatic reboot (allowReboot): sleeps
             # $1 minutes in 1-minute slices so a postponement marker ($2)
             # is honoured promptly. Returns 0 when the window expires
-            # (reboot), 1 when postponed (marker consumed).
-            local delay_min="$1" postpone_file="$2"
-            local waited=0
+            # (reboot), 1 when postponed (marker consumed). Only markers
+            # created at/after $3 (window start epoch) count: stale ones
+            # (forgotten manual touch, late notification clicks) are
+            # dropped. Callers timestamp $3 before announcing the
+            # deadline, so nothing created afterwards can be missed.
+            local delay_min="$1" postpone_file="$2" window_start="$3"
+            local waited=0 marker_mtime
+            # No cleanup up front: a marker touched between the deadline
+            # announcement and this loop must still qualify (its mtime is
+            # >= window_start). Found markers are consumed below whether
+            # honoured or stale, so nothing accumulates.
             _status INFO "Automatic reboot in $delay_min min (touch $postpone_file to postpone)."
             while (( waited < delay_min )); do
               sleep 60
               waited=$((waited + 1))
               if [[ -f "$postpone_file" ]]; then
+                marker_mtime=$(stat -c %Y "$postpone_file" 2>/dev/null || echo 0)
                 rm -f -- "$postpone_file"
-                return 1
+                if (( marker_mtime >= window_start )); then
+                  return 1
+                fi
               fi
             done
             return 0
           }
           # <<<END reboot-countdown
           REBOOT_POSTPONE_FILE="$WORKDIR/postpone-reboot"
+          REBOOT_WAITER_PIDS="$WORKDIR/reboot-waiter-pids"
+          # Timestamped before any announcement: a marker touched from
+          # the moment the deadline is known always qualifies.
+          REBOOT_WINDOW_START=$(date +%s)
           # TTY broadcast for CLI sessions (notify-send only reaches
           # graphical ones): best-effort, never fails the run.
           _wall_tty() {
             wall "$1" 2>/dev/null || _status WARNING "Unable to broadcast to logged-in terminals."
           }
-          _notify_or_queue \
-            "Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min" \
-            "Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement quand vous êtes prêt." \
-            "NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min" \
-            "New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready." \
-            "critical"
+          # One text per channel (desktop notice, TTY wall, action
+          # buttons): same wording everywhere, resolved once.
+          REBOOT_TITLE_FR="Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min"
+          REBOOT_MSG_FR="Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour reporter : cliquer Reporter, ou sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement quand vous êtes prêt."
+          REBOOT_TITLE_EN="NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min"
+          REBOOT_MSG_EN="New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to postpone: click Postpone, or sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready."
+          _notify_or_queue "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN" "critical"
           _wall_tty "NixOS update: automatic reboot in ${toString cfg.rebootDelayMinutes} min (kernel/init change). To postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready. / Mise à jour NixOS : redémarrage automatique dans ${toString cfg.rebootDelayMinutes} min (noyau/init). Pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement."
-          if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_POSTPONE_FILE"; then
+          _notify_reboot_with_actions "$REBOOT_POSTPONE_FILE" "$REBOOT_WAITER_PIDS" \
+            "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN"
+          if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_POSTPONE_FILE" "$REBOOT_WINDOW_START"; then
             _status WARNING "Reboot countdown expired, rebooting into the staged generation."
             _notify_or_queue \
               "Mise à jour NixOS — Redémarrage imminent" \
@@ -333,6 +351,16 @@ in
               "Automatic reboot cancelled. Reboot manually to activate the staged generation." \
               "normal"
             _wall_tty "NixOS update: automatic reboot postponed, reboot manually when ready. / Mise à jour NixOS : redémarrage reporté, redémarrez manuellement quand vous êtes prêt."
+          fi
+          ### Reboot waiters only live for the window: reap them so a late
+          ### click cannot touch the marker afterwards (the mtime guard
+          ### would ignore it anyway). Stragglers also die with the
+          ### service (control-group).
+          if [[ -f "$REBOOT_WAITER_PIDS" ]]; then
+            while IFS= read -r reboot_waiter_pid || [ -n "$reboot_waiter_pid" ]; do
+              kill "$reboot_waiter_pid" 2>/dev/null || true
+            done < "$REBOOT_WAITER_PIDS"
+            rm -f -- "$REBOOT_WAITER_PIDS"
           fi
         else
           note_once "$NEW_SYSTEM" \

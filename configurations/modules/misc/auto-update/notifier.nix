@@ -6,7 +6,9 @@
 #   user — _init_notifier, _queue_pending_notification,
 #          _deliver_pending_notification (coreutils + libnotify only)
 #   full — user + _notify_user, _notify_all_users, _notify,
-#          _notify_or_queue, _notify_failure (adds util-linux runuser)
+#          _notify_or_queue, _notify_failure,
+#          _notify_reboot_waiter, _notify_reboot_with_actions
+#          (adds util-linux runuser)
 #
 # The /run/user scan honors $AUTO_UPDATE_RUN_USER_DIR (tests point it at a
 # fake tree; production leaves it unset).
@@ -204,6 +206,76 @@ let
       [ "$NOTIFICATIONS_ENABLED" -eq 1 ] || return 0
       _notify_all_users "$@"
     }
+
+    # >>>BEGIN reboot-waiter
+    _notify_reboot_waiter() {
+      # One interactive reboot notice for a single graphical session:
+      # shows a Reporter/Postpone button and touches $3 (the reboot
+      # postpone marker) when clicked. Dismissed, expired or failed
+      # delivery exits quietly: dismiss != postpone, and a missing
+      # action backend must never fail the update run.
+      local uid="$1" user="$2" marker="$3" action_label="$4" title="$5" message="$6"
+      local action=""
+
+      # Deliberately no NOTIFICATION_TIMEOUT wrapper here: --wait must
+      # survive the whole reboot window (a timeout would dismiss the
+      # notice early). -t 0 asks for no server-side expiry; critical
+      # urgency persists on GNOME regardless.
+      action=$(runuser -u "$user" -- env \
+        XDG_RUNTIME_DIR="/run/user/$uid" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        notify-send \
+          -u "critical" \
+          -a "NixOS" \
+          -i "${notifyIcon}" \
+          -t 0 \
+          -A "postpone=$action_label" \
+          "$title" \
+          "$message" 2>/dev/null) || return 0
+      if [ "$action" = "postpone" ]; then
+        touch "$marker"
+      fi
+      return 0
+    }
+
+    _notify_reboot_with_actions() {
+      # Fan-out of the interactive reboot notice to every live graphical
+      # session (same scan as _notify_all_users): each waiter runs in the
+      # background and only ever touches $1 on click. Appends waiter PIDs
+      # to $2 for the caller to kill once the window closes; waiters also
+      # die with the service (control-group). A late click can only touch
+      # the marker, which the window-start guard then ignores.
+      local marker="$1" pidfile="$2"
+      local title_fr="$3" message_fr="$4" title_en="$5" message_en="$6"
+      local lang="''${LANG:-en}"
+      local run_dir="''${AUTO_UPDATE_RUN_USER_DIR:-/run/user}"
+      local title message action_label path uid user waiter_pid
+
+      case "''${lang%%_*}" in
+        fr) title="$title_fr"; message="$message_fr"; action_label="Reporter" ;;
+        *) title="$title_en"; message="$message_en"; action_label="Postpone" ;;
+      esac
+
+      : > "$pidfile" || return 0
+      for path in "$run_dir"/*; do
+        [ -d "$path" ] || continue
+        [ -S "$path/bus" ] || continue
+        uid=$(basename "$path")
+        case "$uid" in
+          ""|*[!0-9]*) continue ;;
+        esac
+        user=$(id -nu "$uid" 2>/dev/null) || continue
+        [ -n "$user" ] || continue
+        # Never notify the display-manager greeter itself.
+        [ "$user" != "gdm" ] || continue
+
+        _notify_reboot_waiter "$uid" "$user" "$marker" "$action_label" "$title" "$message" &
+        waiter_pid=$!
+        echo "$waiter_pid" >> "$pidfile"
+      done
+      return 0
+    }
+    # <<<END reboot-waiter
 
     _notify_or_queue() {
       local notification_queued=0

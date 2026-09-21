@@ -22,13 +22,16 @@ fragment output.nix output-render > "$T/output-render.func"
 fragment notifier.nix notifier-user > "$T/notifier-user.func"
 fragment notifier.nix notifier-root > "$T/notifier-root.func"
 fragment notifier.nix notifier-once > "$T/notifier-once.func"
+fragment notifier.nix reboot-waiter > "$T/notifier-waiter.func"
 fragment health.nix health > "$T/health.func"
 sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-user.func" > "$T/nu.func"
 sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-root.func" > "$T/nr.func"
+sed -e 's|\${notifyIcon}|nix-snowflake-white|' \
+  "$T/notifier-waiter.func" > "$T/nw.func"
 # Fragments carry Nix `''${...}` escapes: resolve them to plain bash ${...}.
-sed -i "s|''\${|\${|g" "$T/nu.func" "$T/nr.func" "$T/output-render.func"
+sed -i "s|''\${|\${|g" "$T/nu.func" "$T/nr.func" "$T/nw.func" "$T/output-render.func"
 # errors.toBash is Nix-generated; emulate the two codes under test.
 cat > "$T/errors.func" <<'EOF'
 _err_lookup() {
@@ -71,6 +74,8 @@ sed -i "s|''\${|\${|g" "$T/health.resolved" "$T/health.true" "$T/health.rb"
 
 grep -q '^[ \t]*_notify_all_users() {' "$T/nr.func" && grep -q '_notify_user' "$T/nr.func" \
   && ok "notifier-root extracted intact" || ko "notifier-root extraction broken"
+grep -q '^[ \t]*_notify_reboot_waiter() {' "$T/nw.func" && grep -q '_notify_reboot_with_actions' "$T/nw.func" \
+  && ok "reboot-waiter extracted intact" || ko "reboot-waiter extraction broken"
 grep -q '^[ \t]*check_health() {' "$T/health.resolved" \
   && ok "health extracted intact" || ko "health extraction broken"
 grep -q '^_err_lookup() {' "$T/errors.func" \
@@ -450,6 +455,45 @@ run_validate "$T/health.rb" 1
   && grep -q 'SYSTEMCTL: reboot' "$VDIR/calls" \
   && [[ -f "$VDIR/rolled-back" && -f "$VDIR/inhibited" ]] \
   && ok "sick + autoRollback + allowReboot → restored + reboot" || ko "rollback+reboot path broken"
+
+# ── _notify_reboot_waiter (interactive reboot notice) ──
+# runuser stub: drop the `-u <uid> --` prefix, exec the rest (real env
+# assignments + fake notify-send from PATH). notify-send stub: print
+# $WAIT_ACTION (the clicked action id, empty = dismissed), exit $WAIT_RC.
+cat > "$T/fakebin/runuser" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${1:-}" == "-u" ]]; then shift 2; fi
+if [[ "${1:-}" == "--" ]]; then shift; fi
+exec "$@"
+EOF
+cat > "$T/fakebin/notify-send" <<'EOF'
+#!/usr/bin/env bash
+printf '%s' "${WAIT_ACTION:-}"
+exit "${WAIT_RC:-0}"
+EOF
+chmod +x "$T/fakebin/runuser" "$T/fakebin/notify-send"
+run_waiter(){
+  local action="$1" rc="$2"
+  local marker="$T/waiter-marker"
+  rm -f -- "$marker"
+  if WAIT_ACTION="$action" WAIT_RC="$rc" bash -c "
+    source \"$T/nw.func\"
+    _notify_reboot_waiter 1000 minegame \"$marker\" Reporter 'titre' 'corps'
+  " 2>/dev/null; then
+    WRC=0
+  else
+    WRC=$?
+  fi
+}
+run_waiter postpone 0
+(( WRC == 0 )) && [[ -f "$T/waiter-marker" ]] \
+  && ok "click Reporter → postpone marker created" || ko "click did not create the marker"
+run_waiter "" 0
+(( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
+  && ok "dismissed notice → no marker, waiter stays green" || ko "dismiss wrongly handled"
+run_waiter "" 1
+(( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
+  && ok "failing notify-send → no marker, waiter stays green" || ko "backend failure wrongly handled"
 
 echo "--- $pass passed, $fail failed ---"
 (( fail == 0 ))
