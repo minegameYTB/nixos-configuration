@@ -168,7 +168,7 @@ explicit `workflow_dispatch` instead). To freeze the pointer while testing,
 point `SOURCE_BRANCH` away from the work branch: its runs then validate
 only and can never advance the buffer.
 
-- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`vm-cli-efi ci-bios` — the real autoUpdate wiring plus BIOS coverage, evaled only), `DRY_RUN`.
+- Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`vm-cli-efi vm-cli-bios` — EFI + BIOS with the real autoUpdate wiring, evaled only), `DRY_RUN`.
 - CI builds the 5 `nixos-auto-update-env-*` packages instead of full toplevels: KBs not GBs (14G runners, throttled cache), and full builds can't catch runtime-only failures anyway — symlink envs always build green; the 2026-09-20 `test` incident only fires when nixos-rebuild-ng execs at service runtime, covered by `test-auto-update-env-runtime.sh`.
 - Triggers: push to `flake` / `prepare/**` / `feat/**` (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
