@@ -12,6 +12,12 @@ lib.mkIf pkgs.stdenvNoCC.hostPlatform.isx86_64 {
   ### Intel i915 kernel module (early load)
   boot.kernelModules = [ "i915" ];
 
+  ### Same, one stage earlier: without i915 in the initrd, plymouth
+  ### starts on simpledrm and the graphical theme never recovers when
+  ### i915 takes over DRM late (~16s on Geminilake) — splash degrades
+  ### to dots. Needed since the 7.2.4 kernel (7.1.8 was fine without).
+  boot.initrd.kernelModules = [ "i915" ];
+
   ### Enable GuC/HuC firmware loading for better performance and video features
   boot.kernelParams = [
     "i915.enable_guc=2"
