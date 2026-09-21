@@ -47,7 +47,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. Pre-checks first: free disk on `/nix/store`, internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. Pre-checks first: free disk on `/nix/store`, internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
 
 Smart behavior — unchanged state costs nothing:
 
@@ -69,6 +69,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `startDelay` | `"5min"` | First-check delay after boot (`OnBootSec`). Short like GLF-OS (`1min`) for prompt catch-up. |
 | `randomizedDelay` | `"10min"` | Jitter per trigger (spread a fleet). Added on top of `startDelay` at boot, so worst case the first check runs ~15min after boot. |
 | `allowReboot` | `false` | Reboot automatically on kernel/init change. |
+| `requireACPower` | `true` | Only run on AC power (`ConditionACPower`). Set `false` on transportables that are effectively always plugged in. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |
 | `notifyTimeout` | `10000` | Display time in milliseconds. Honored by most servers; GNOME caps custom timeouts. |
@@ -231,7 +232,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 
 - **CI `options.json` warning** (`builtins.derivation ... without a proper context`): known benign nix evaluation quirk, filtered in the workflow (exit code and real errors preserved).
 - **No automatic boot rollback by default**: there is no `boot.loader.systemd-boot.bootCounting` option in nixpkgs — the only native mechanism is `boot.uki.tries` (UKI-only, architectural shift, out of scope). The pragmatic net is healthcheck inhibit (+ opt-in `healthCheck.autoRollback` re-pointing the boot profile) + manual rollback via the 30 kept entries (`configurationLimit`).
-- **Service skipped on laptop**: `ConditionACPower` — plug in AC power.
+- **Service skipped on laptop**: `ConditionACPower` (default `requireACPower = true`) — plug in AC power, or set `requireACPower = false` on transportables.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
 - **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.

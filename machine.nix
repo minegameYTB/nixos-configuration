@@ -100,9 +100,13 @@ in
     extraModules = [
       ### Auto-update enabled (see doc/auto-update.md)
       (autoUpdate "hp-240")
-      ### Per-machine override: stacked modules merge, so this only
-      ### affects hp-240 — other autoUpdate hosts keep the default.
-      { system.autoUpdate.healthCheck.autoRollback = true; }
+      ### Per-machine overrides: stacked modules merge, so these only
+      ### affect hp-240 — other autoUpdate hosts keep the defaults.
+      ### (Transportable, effectively always plugged in: no AC gate.)
+      {
+        system.autoUpdate.healthCheck.autoRollback = true;
+        system.autoUpdate.requireACPower = false;
+      }
     ];
     usePatched = false;
   };

@@ -69,6 +69,12 @@ in
       description = "Automatically reboot when the new generation changes kernel or init.";
     };
 
+    requireACPower = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Only run on AC power (systemd ConditionACPower). Disable on machines that are effectively always plugged in (e.g. transportables): a full rebuild is CPU/IO-heavy and will drain a battery fast.";
+    };
+
     notify = lib.mkOption {
       type = lib.types.bool;
       default = true;

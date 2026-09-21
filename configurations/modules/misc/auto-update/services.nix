@@ -77,8 +77,9 @@ in
       ### separate mount: requires the parent mount instead).
       RequiresMountsFor = [ "/boot" ];
 
-      ### Laptops: never update on battery.
-      ConditionACPower = true;
+      ### Laptops: never update on battery unless requireACPower is
+      ### disabled (transportables that are effectively always plugged in).
+      ConditionACPower = lib.mkIf cfg.requireACPower true;
     };
 
     ### Detailed failures are delivered by the onFailure unit even when
