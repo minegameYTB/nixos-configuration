@@ -104,10 +104,14 @@ in
       ### affect hp-240 — other autoUpdate hosts keep the defaults.
       ### (Transportable, effectively always plugged in: no AC gate,
       ### automatic reboot behind a postponable countdown.)
+      ### GDM debug is TEMPORARY: autologin succeeds but GDM still
+      ### spawns the greeter on tty1 afterwards — verbose logs needed
+      ### to see why. Remove once diagnosed.
       {
         system.autoUpdate.healthCheck.autoRollback = true;
         system.autoUpdate.requireACPower = false;
         system.autoUpdate.allowReboot = true;
+        services.displayManager.gdm.debug = true;
       }
     ];
     usePatched = false;
