@@ -37,7 +37,10 @@ env:
   SOURCE_BRANCH: prepare/nixos-26.11
   BUFFER_BRANCH: flake-autoupdate
   SOAK_RUNS: "3"
-  MACHINES: "ci-efi ci-bios"
+  # vm-cli-efi carries the real autoUpdate wiring (ci machines don't enable
+  # it, so their eval never touches the service assembly); ci-bios keeps the
+  # BIOS bootloader path covered. Eval-only, no toplevel builds.
+  MACHINES: "vm-cli-efi ci-bios"
   DRY_RUN: "false"
 
 permissions:
