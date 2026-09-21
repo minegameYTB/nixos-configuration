@@ -8,7 +8,9 @@
   ### logind session type (empty env channel), so gnome-shell refuses
   ### to join it. LightDM handles autologin natively with a proper
   ### Wayland session (same recipe as the ISO, proven working); the
-  ### gtk greeter stays as fallback login UI. Only hp-240 imports this.
+  ### gtk greeter stays as fallback login UI. Imported by physical
+  ### desktops (hp-240 profile) and all desktop VM presets (shared
+  ### vm-desktop-profile.nix).
   services.displayManager.gdm.enable = lib.mkForce false;
 
   services.displayManager.autoLogin = {

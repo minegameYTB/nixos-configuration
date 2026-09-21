@@ -25,6 +25,8 @@
 
     ### Other
     ../configurations/hardware-configuration/specific/swap.nix
+    ### Autologin via LightDM (same recipe as physical desktops)
+    ../configurations/configs/specific/desktop/autologin.nix
 
     ### NixOS configuration module (distant flake)
     ### import default.nix from this directory ↓
