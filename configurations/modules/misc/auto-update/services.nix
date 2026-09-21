@@ -38,13 +38,13 @@ let
 
   ### Tight per-service envs: each service gets exactly one /bin with
   ### only the binaries it calls (see env.nix + test-shell-paths.sh).
-  ### The host PATH is never inherited.
+  ### The host PATH is never inherited. Three tiers: core for the
+  ### unprivileged pending service, health for the small root services
+  ### (healthcheck + notify-failure), main for the updater itself.
   env = import ./env.nix { inherit pkgs config lib; };
   pathCore = [ "${env.core}/bin" ];
-  pathRoot = [ "${env.root}/bin" ];
   pathHealth = [ "${env.health}/bin" ];
   pathMain = [ "${env.main}/bin" ];
-  pathPending = [ "${env.pending}/bin" ];
 in
 {
   services.logrotate.settings.nixos-auto-update = {
@@ -331,7 +331,7 @@ in
 
     environment = {
       AUTO_UPDATE_NOTIFY = if (cfg.notify && hasRealDesktop) then "1" else "0";
-      PATH = lib.mkForce (lib.concatStringsSep ":" pathRoot);
+      PATH = lib.mkForce (lib.concatStringsSep ":" pathHealth);
     };
 
     script = ''
@@ -427,7 +427,7 @@ in
       RestartSec = "10s";
     };
     environment = {
-      PATH = lib.mkForce (lib.concatStringsSep ":" pathPending);
+      PATH = lib.mkForce (lib.concatStringsSep ":" pathCore);
     };
   };
 

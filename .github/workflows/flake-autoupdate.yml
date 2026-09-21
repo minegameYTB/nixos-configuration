@@ -114,7 +114,7 @@ jobs:
           # by test-auto-update-env-runtime.sh (in the shell suites above),
           # which pins nixos-rebuild-ng's subprocess deps against env.nix.
           # These builds validate the env derivations themselves resolve.
-          for e in core pending root health main; do
+          for e in core health main; do
             echo "--- nixos-auto-update-env-$e"
             nix build ".#nixos-auto-update-env-$e" --print-out-paths
           done

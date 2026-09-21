@@ -64,17 +64,13 @@ declare -A NEED=(
   [notify-send]=pkgs.libnotify
 )
 declare -A ENV_CONTENTS=(
-  [env.core]="pkgs.coreutils"
-  [env.root]="pkgs.coreutils
-pkgs.util-linux.bin
+  [env.core]="pkgs.coreutils
 pkgs.libnotify"
   [env.health]="pkgs.coreutils
 pkgs.util-linux.bin
 pkgs.libnotify
 config.systemd.package
 pkgs.gnugrep"
-  [env.pending]="pkgs.coreutils
-pkgs.libnotify"
   [env.main]="pkgs.coreutils
 pkgs.util-linux.bin
 pkgs.libnotify
@@ -192,14 +188,14 @@ assemble "$T/pending.sh" \
   notifier.nix:notifier-user
 
 for spec in "nixos-auto-update:$T/main.sh:pathMain" \
-            "nixos-auto-update-notify-failure:$T/failure.sh:pathRoot" \
+            "nixos-auto-update-notify-failure:$T/failure.sh:pathHealth" \
             "nixos-autoupdate-healthcheck:$T/health.sh:pathHealth"; do
   svc="${spec%%:*}"; rest="${spec#*:}"; script="${rest%%:*}"; pname="${rest##*:}"
   check_service "$svc" "$script" "$pname"
 done
 
-# user pending service: via env.pending (coreutils + libnotify)
-path_block_pkgs "pathPending" > "$T/pending-path"
+# user pending service: via env.core (coreutils + libnotify)
+path_block_pkgs "pathCore" > "$T/pending-path"
 CANDS=$(scan_prep "$T/pending.sh" "$T/prep-pending.sh" \
   && grep -oE '(^[ \t]*|[;&|][ \t]*|&&[ \t]*|\|\|[ \t]*|\$\([ \t]*)[a-z][a-z0-9_.-]*' "$T/prep-pending.sh" \
   | sed -E 's/^[^a-z]*//' | sort -u)
@@ -278,7 +274,7 @@ else
 fi
 
 # ── drift guard: EXPECTED path blocks exist in services.nix ──
-for pname in pathMain pathRoot pathHealth pathCore pathPending; do
+for pname in pathMain pathHealth pathCore; do
   if grep -q "^  $pname =" "$SVCNIX"; then
     ok "path block $pname present in services.nix"
   else

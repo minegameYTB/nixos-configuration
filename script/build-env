@@ -3,7 +3,7 @@ set -euo pipefail
 
 NIX_FLAGS=(--extra-experimental-features "nix-command flakes")
 
-for e in core pending root health main; do
+for e in core health main; do
   echo "=== nixos-auto-update-env-$e ==="
   out=$(nix "${NIX_FLAGS[@]}" build ".#nixos-auto-update-env-$e" --print-out-paths 2>&1 | tail -1)
   ls -1 "$out/bin" | tr '\n' ' '; echo; echo

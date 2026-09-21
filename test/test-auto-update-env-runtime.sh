@@ -109,7 +109,7 @@ fi
 #    while `.` resolves fine; CI uses `.` too.
 if command -v nix >/dev/null 2>&1; then
   cd "$REPO" || { ko "[live] cannot cd to $REPO"; }
-  for e in core pending root health main; do
+  for e in core health main; do
     out=$(nix build ".#nixos-auto-update-env-$e" --print-out-paths 2>/dev/null | tail -1) || {
       ko "[live] nix build '.#nixos-auto-update-env-$e' failed (hint: git add new files first — untracked paths are invisible to nix)"
       continue

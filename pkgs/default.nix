@@ -40,8 +40,6 @@ in
   nspawnctl = callPackage ./nspawnctl/default.nix { };
 
   nixos-auto-update-env-core = autoUpdateEnvs.core;
-  nixos-auto-update-env-pending = autoUpdateEnvs.pending;
-  nixos-auto-update-env-root = autoUpdateEnvs.root;
   nixos-auto-update-env-health = autoUpdateEnvs.health;
   nixos-auto-update-env-main = autoUpdateEnvs.main;
   nixos-auto-update-envs = pkgs.symlinkJoin {

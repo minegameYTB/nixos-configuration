@@ -17,15 +17,13 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 
 ## Runtime envs (`env.nix`)
 
-Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Five tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
+Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
-- `core` (10): `base64 cat chmod date mkdir mktemp mv stat sync test`
-- `pending` (11): `core` + `notify-send`
-- `root` (17): `core` + `basename env id rm timeout runuser notify-send`
-- `health` (21): `core` + `basename env id readlink rm timeout flock runuser notify-send systemctl grep`
-- `main` (39): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
+- `core` (11): `base64 cat chmod date mkdir mktemp mv stat sync test notify-send`
+- `health` (21): `core` + `basename env id readlink rm timeout flock runuser systemctl grep`
+- `main` (39): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
-Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore = [ "${env.core}/bin" ]` etc. (`pathPending` for the user pending service).
+Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
 
 `main` also covers nixos-rebuild-ng's own subprocess calls (audited from its 26.11 Python source — `test/test-auto-update-env-runtime.sh` pins them). Python has no shell, so bash builtins don't help: `test` (`set_profile`, `switch_to_configuration` — the 2026-09-20 `rebuild-boot` incident), `systemd-run` (boot prefix when systemd is up), `mkdir`/`nix-env` (profile set), `env -i` (elevated runs), plus `nix-store`/`nix-build`/`nix-instantiate` as edge-case insurance. `ssh`/`nix-copy-closure` (remote-only) and `$EDITOR` (edit action) stay out — unreachable from build/boot.
 
@@ -39,9 +37,7 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.service
 # what is inside each env? — standalone flake packages (no system eval)
 nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 39
 nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
-nix build '.#nixos-auto-update-env-root'   && ls -1 result/bin | tr '\n' ' ' # 17
-nix build '.#nixos-auto-update-env-pending'&& ls -1 result/bin | tr '\n' ' ' # 11
-nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 10
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 11
 # or all at once:
 make env
 
@@ -169,7 +165,7 @@ point `SOURCE_BRANCH` away from the work branch: its runs then validate
 only and can never advance the buffer.
 
 - Workflow variables (top `env`): `SOURCE_BRANCH`, `BUFFER_BRANCH`, `SOAK_RUNS`, `MACHINES` (`vm-cli-efi vm-cli-bios` — EFI + BIOS with the real autoUpdate wiring, evaled only), `DRY_RUN`.
-- CI builds the 5 `nixos-auto-update-env-*` packages instead of full toplevels: KBs not GBs (14G runners, throttled cache), and full builds can't catch runtime-only failures anyway — symlink envs always build green; the 2026-09-20 `test` incident only fires when nixos-rebuild-ng execs at service runtime, covered by `test-auto-update-env-runtime.sh`.
+- CI builds the 3 `nixos-auto-update-env-*` packages instead of full toplevels: KBs not GBs (14G runners, throttled cache), and full builds can't catch runtime-only failures anyway — symlink envs always build green; the 2026-09-20 `test` incident only fires when nixos-rebuild-ng execs at service runtime, covered by `test-auto-update-env-runtime.sh`.
 - Triggers: push to `flake` / `prepare/**` / `feat/**` (doc-only changes ignored) + cron every 2 days (`0 3 */2 * *`, only fires on the default branch, liveness) + manual `workflow_dispatch` (`advance_now`, `dry_run`). Every push is validated on its own branch; the pointer only follows `SOURCE_BRANCH`.
 - `advance_now: true` (manual): moves the pointer immediately after green checks, skipping the soak — for phase changes.
 - Broken tree: pointer stays, red run, manual arbitration. `GITHUB_TOKEN` (`contents: write`, `actions: read`) suffices while branches stay unprotected.

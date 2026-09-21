@@ -10,6 +10,11 @@
 # no cp/dirname/numfmt/tail/wc/gawk/diff etc. that are only ever
 # invoked via absolute ${pkgs.*}/bin/* or are shell builtins (printf).
 #
+# Three tiers: core serves the unprivileged per-user pending service,
+# health serves the small root services (healthcheck + notify-failure),
+# main serves the updater itself. One tier per PATH actually wired —
+# no unused envs.
+#
 # Build / inspect independently (no full system rebuild):
 #   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 39
 #   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
@@ -28,7 +33,8 @@ let
       ${lib.concatMapStrings (b: "ln -s ${b} \"$out/bin/${builtins.baseNameOf b}\"\n") bins}
     '';
 
-  # Common core (intersection of all services): 10 binaries.
+  # Common core (11 binaries): serves the unprivileged per-user pending
+  # service directly, and is the base of every other tier.
   coreBins = with pkgs; [
     "${coreutils}/bin/base64"
     "${coreutils}/bin/cat"
@@ -40,22 +46,10 @@ let
     "${coreutils}/bin/stat"
     "${coreutils}/bin/sync"
     "${coreutils}/bin/test"
+    "${libnotify}/bin/notify-send"
   ];
 
-  pendingBins = coreBins ++ [
-    "${pkgs.libnotify}/bin/notify-send"
-  ];
-
-  rootBins = coreBins ++ [
-    "${pkgs.coreutils}/bin/basename"
-    "${pkgs.coreutils}/bin/env"
-    "${pkgs.coreutils}/bin/id"
-    "${pkgs.coreutils}/bin/rm"
-    "${pkgs.coreutils}/bin/timeout"
-    "${pkgs.util-linux.bin}/bin/runuser"
-    "${pkgs.libnotify}/bin/notify-send"
-  ];
-
+  # Small root services (healthcheck + notify-failure): 21 binaries.
   healthBins = coreBins ++ [
     "${pkgs.coreutils}/bin/basename"
     "${pkgs.coreutils}/bin/env"
@@ -65,7 +59,6 @@ let
     "${pkgs.coreutils}/bin/timeout"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
-    "${pkgs.libnotify}/bin/notify-send"
     "${config.systemd.package}/bin/systemctl"
     "${pkgs.gnugrep}/bin/grep"
   ];
@@ -85,7 +78,6 @@ let
     "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
-    "${pkgs.libnotify}/bin/notify-send"
     "${config.systemd.package}/bin/systemctl"
     # nixos-rebuild-ng wraps switch-to-configuration in systemd-run when
     # systemd is up (nix.py SWITCH_TO_CONFIGURATION_CMD_PREFIX). Without
@@ -112,8 +104,6 @@ let
 in
 {
   core = mkEnv "nixos-auto-update-core-env" coreBins;
-  pending = mkEnv "nixos-auto-update-pending-env" pendingBins;
-  root = mkEnv "nixos-auto-update-root-env" rootBins;
   health = mkEnv "nixos-auto-update-health-env" healthBins;
   main = mkEnv "nixos-auto-update-main-env" mainBins;
 }
