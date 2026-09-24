@@ -1,8 +1,10 @@
-{ config, ... }:
+{ ... }:
 
 {
-  ### Import efi mountpoint expression
-  imports = [ ../efi-mountpoint.nix ];
+  imports = [
+    ../grub2.nix
+    ../efi-mountpoint.nix
+  ];
 
   boot.loader = {
     grub = {
@@ -10,10 +12,7 @@
       device = "nodev";
     };
     efi = {
-      ### Use /boot/efi as a mountpoint for grub2
-      efiSysMountPoint = "/boot/efi";
-
-      ### Enable EFI editable variable
+      efiSysMountPoint = "/boot";
       canTouchEfiVariables = true;
     };
   };
