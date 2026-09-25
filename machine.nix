@@ -64,6 +64,7 @@ let
 
   boot = {
     efi = ./configurations/configs/bootloader/systemd-boot.nix;
+    efiGrub = ./configurations/configs/bootloader/grub2-specific/grub2-efi.nix;
     bios-nv = ./configurations/configs/bootloader/grub2-specific/bios-novirtio.nix;
     bios-vio = ./configurations/configs/bootloader/grub2-specific/bios-virtio.nix;
   };
@@ -88,7 +89,7 @@ in
     hostname = "HP-probook";
     profile = ./profiles/hp-probook-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/zfs;
-    extraModules = [ ];
+    extraModules = [ boot.efi ];
     usePatched = false;
   };
 
@@ -98,6 +99,7 @@ in
     profile = ./profiles/hp-240-profile.nix;
     fs = ./configurations/hardware-configuration/filesystem/btrfs;
     extraModules = [
+      boot.efi
       ### Auto-update enabled (see doc/auto-update.md)
       (autoUpdate "hp-240")
       ### Per-machine overrides: stacked modules merge, so these only
