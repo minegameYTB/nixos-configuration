@@ -16,7 +16,7 @@ in
       vlc
       amberol
       #pika-backup
-      warp
+      #warp
     ])
     ++ (with pkgs.pkgsUnstable; [
     ])
