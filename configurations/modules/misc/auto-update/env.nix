@@ -17,7 +17,7 @@
 #
 # Build / inspect independently (no full system rebuild):
 #   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 40
-#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 21
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 22
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 {
@@ -33,8 +33,12 @@ let
       ${lib.concatMapStrings (b: "ln -s ${b} \"$out/bin/${builtins.baseNameOf b}\"\n") bins}
     '';
 
-  # Common core (11 binaries): serves the unprivileged per-user pending
-  # service directly, and is the base of every other tier.
+  # Common core (12 binaries): serves the unprivileged per-user pending
+  # service directly, and is the base of every other tier. `timeout` is
+  # required by the pending delivery path (_deliver_pending_notification
+  # hangs guard): without it queued notifications were never delivered
+  # (`timeout: command not found`, 2026-09-26 — guarded by the
+  # binary-level check in test-shell-paths.sh).
   coreBins = with pkgs; [
     "${coreutils}/bin/base64"
     "${coreutils}/bin/cat"
@@ -46,17 +50,23 @@ let
     "${coreutils}/bin/stat"
     "${coreutils}/bin/sync"
     "${coreutils}/bin/test"
+    "${coreutils}/bin/timeout"
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 21 binaries.
+  # Small root services (healthcheck + notify-failure): 22 binaries.
+  # `touch` (mainBins sibling) is needed because notifier.full also carries
+  # the reboot-waiter functions into these scripts — the PATH must cover
+  # every command the assembled script *defines*, not just the ones it runs.
+  # `timeout` now comes from coreBins (do not repeat it here: mkEnv links
+  # one symlink per entry and a duplicate fails the build).
   healthBins = coreBins ++ [
     "${pkgs.coreutils}/bin/basename"
     "${pkgs.coreutils}/bin/env"
     "${pkgs.coreutils}/bin/id"
     "${pkgs.coreutils}/bin/readlink"
     "${pkgs.coreutils}/bin/rm"
-    "${pkgs.coreutils}/bin/timeout"
+    "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
     "${config.systemd.package}/bin/systemctl"
@@ -74,7 +84,6 @@ let
     "${pkgs.coreutils}/bin/rm"
     "${pkgs.coreutils}/bin/sha256sum"
     "${pkgs.coreutils}/bin/sleep"
-    "${pkgs.coreutils}/bin/timeout"
     "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"

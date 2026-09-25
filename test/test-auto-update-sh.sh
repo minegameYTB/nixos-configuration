@@ -24,9 +24,9 @@ fragment notifier.nix notifier-root > "$T/notifier-root.func"
 fragment notifier.nix notifier-once > "$T/notifier-once.func"
 fragment notifier.nix reboot-waiter > "$T/notifier-waiter.func"
 fragment health.nix health > "$T/health.func"
-sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
+sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-user.func" > "$T/nu.func"
-sed -e 's|\${toString notifyTimeout}|10000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
+sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-root.func" > "$T/nr.func"
 sed -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-waiter.func" > "$T/nw.func"
@@ -157,7 +157,7 @@ grep -q 'RUNUSER:.*-u minegame.*notify-send' "$CALLS" \
   && ok "active user → notify-send via runuser" || ko "active user not notified"
 grep -q 'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus' "$CALLS" \
   && ok "dbus env targets user bus" || ko "dbus env wrong"
-grep -q 'notify-send .* -t 10000' "$CALLS" \
+grep -q 'notify-send .* -t 15000' "$CALLS" \
   && ok "notification carries a timeout" || ko "notification timeout missing"
 grep -q 'notify-send -u normal' "$CALLS" \
   && ok "urgency flag carries a real urgency (arg-order regression)" || ko "urgency flag broken"

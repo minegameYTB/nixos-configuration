@@ -44,6 +44,13 @@ in
   nixos-auto-update-env-main = autoUpdateEnvs.main;
   nixos-auto-update-envs = pkgs.symlinkJoin {
     name = "nixos-auto-update-envs";
-    paths = builtins.attrValues autoUpdateEnvs;
+    # Explicit list: callPackage wraps the result with makeOverridable, so
+    # builtins.attrValues would also yield `override`/`overrideDerivation`
+    # (callable sets, not derivations) and symlinkJoin fails to coerce them.
+    paths = [
+      autoUpdateEnvs.core
+      autoUpdateEnvs.health
+      autoUpdateEnvs.main
+    ];
   };
 }

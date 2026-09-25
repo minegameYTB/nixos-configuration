@@ -19,11 +19,13 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
-- `core` (11): `base64 cat chmod date mkdir mktemp mv stat sync test notify-send`
-- `health` (21): `core` + `basename env id readlink rm timeout flock runuser systemctl grep`
+- `core` (12): `base64 cat chmod date mkdir mktemp mv stat sync test timeout notify-send`
+- `health` (22): `core` + `basename env id readlink rm timeout touch flock runuser systemctl grep`
 - `main` (40): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
+
+Binary-level guard: `test/test-shell-paths.sh` also requires every bare command to be *symlinked* into its tier's bin list, not merely covered by a package — the package-granularity check alone passed while `timeout` was missing from `core` (2026-09-26 incident: `_deliver_pending_notification` died with `command not found`, so queued notifications were never delivered at login).
 
 `main` also covers nixos-rebuild-ng's own subprocess calls (audited from its 26.11 Python source — `test/test-auto-update-env-runtime.sh` pins them). Python has no shell, so bash builtins don't help: `test` (`set_profile`, `switch_to_configuration` — the 2026-09-20 `rebuild-boot` incident), `systemd-run` (boot prefix when systemd is up), `mkdir`/`nix-env` (profile set), `env -i` (elevated runs), plus `nix-store`/`nix-build`/`nix-instantiate` as edge-case insurance. `ssh`/`nix-copy-closure` (remote-only) and `$EDITOR` (edit action) stay out — unreachable from build/boot.
 
@@ -36,8 +38,8 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.service
 
 # what is inside each env? — standalone flake packages (no system eval)
 nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 40
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 21
-nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 11
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 22
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 12
 # or all at once:
 make env
 
@@ -73,7 +75,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `requireACPower` | `true` | Only run on AC power (`ConditionACPower`). Set `false` on transportables that are effectively always plugged in. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |
-| `notifyTimeout` | `10000` | Display time in milliseconds. Honored by most servers; GNOME caps custom timeouts. |
+| `notifyTimeout` | `15000` | Display time in milliseconds (`-t`). Per notify-send(1), GNOME Shell ignores `-t` entirely (only critical persists there); honored by dunst/mako and Plasma (except critical). |
 | `logFile` | `"/var/log/nixos-auto-update.log"` | Persistent text log (journald stays the binary source of truth). Rotated by logrotate (daily, 7 kept). |
 | `minDiskGB` | `10` | Minimum free space on `/nix/store` (GiB) to start a run. |
 | `timeouts.lsRemote` | `"5m"` | Budget for `git ls-remote` channel resolution. |

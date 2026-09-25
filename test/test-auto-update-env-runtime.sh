@@ -136,6 +136,21 @@ if command -v nix >/dev/null 2>&1; then
       fi
     done
   fi
+  # Aggregate package (the three tiers joined): regression for the
+  # makeOverridable `override`/`overrideDerivation` sets that
+  # builtins.attrValues fed to symlinkJoin (pre-existing coercion failure),
+  # plus the pending-service `timeout` that lives in core only.
+  joined=$(nix build ".#nixos-auto-update-envs" --print-out-paths 2>/dev/null | tail -1) || joined=""
+  if [ -n "$joined" ] && [ -d "$joined/bin" ]; then
+    ok "[live] built nixos-auto-update-envs"
+    if [ -e "$joined/bin/timeout" ]; then
+      ok "[live] joined env resolves timeout"
+    else
+      ko "[live] joined env misses timeout"
+    fi
+  else
+    ko "[live] nix build '.#nixos-auto-update-envs' failed (attrValues on a callPackage result yields override/overrideDerivation — list the tiers explicitly)"
+  fi
 else
   echo "SKIP: live checks (no nix in PATH)"
 fi

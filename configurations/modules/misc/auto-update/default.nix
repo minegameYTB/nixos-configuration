@@ -95,8 +95,8 @@ in
 
     notifyTimeout = lib.mkOption {
       type = lib.types.ints.positive;
-      default = 10000;
-      description = "Notification display time in milliseconds (-t). Honored by most servers; GNOME caps custom timeouts (only critical persists).";
+      default = 15000;
+      description = "Notification display time in milliseconds (-t). Per notify-send(1), GNOME Shell ignores -t entirely (only critical persists there); honored by dunst/mako, and by Plasma except for critical urgency.";
     };
 
     logFile = lib.mkOption {

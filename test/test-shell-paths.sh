@@ -13,6 +13,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$REPO/test/lib-fragments.sh"
 AUDIR="$REPO/configurations/modules/misc/auto-update"
 SVCNIX="$AUDIR/services.nix"
+ENVNIX="$AUDIR/env.nix"
 T=/tmp/opencode/shell-paths-test
 rm -rf "$T"; mkdir -p "$T"
 
@@ -219,6 +220,57 @@ while read -r cmd; do
   ko "[pending] command '$cmd' has no package in service path"
 done <<<"$CANDS"
 ok "[pending] path covers $covered external commands"
+
+# ── binary-level coverage (2026-09-26 `timeout`-in-core incident) ──
+# The NEED/ENV_CONTENTS checks above match at *package* granularity, so a
+# command whose binary was never ln -s'ed into the tier's $out/bin still
+# passed: coreutils is in env.core while `timeout` was not linked there,
+# so _deliver_pending_notification died with `command not found` and
+# queued notifications were never delivered at login. Require the exact
+# /bin/<cmd> link in the tier's bin list (env.nix coreBins + tier block).
+tier_bins(){
+  local tier="$1"
+  {
+    awk '/^  coreBins =/{f=1} f{print} f&&/^[[:space:]]*\];/{exit}' "$ENVNIX"
+    if [[ "$tier" != core ]]; then
+      awk "/^  ${tier}Bins =/{f=1} f{print} f&&/^[[:space:]]*\];/{exit}" "$ENVNIX"
+    fi
+  } | grep -oE '/bin/[a-zA-Z0-9_.+-]+' | sed 's|/bin/||' | sort -u
+}
+
+check_binaries(){
+  local svc="$1" script="$2" tier="$3"
+  local bins cands funcs locals cmd found=0
+  scan_prep "$script" "$T/prep-code.sh"
+  cands=$(grep -oE '(^[ \t]*|[;&|][ \t]*|&&[ \t]*|\|\|[ \t]*|\$\([ \t]*)[a-z][a-z0-9_.-]*' "$T/prep-code.sh" \
+    | sed -E 's/^[^a-z]*//' | sort -u)
+  funcs=$(grep -oE '^[ \t]*[a-z_][a-z0-9_]*\(\)' "$T/prep-code.sh" \
+    | sed -E 's/^[ \t]*([a-z_][a-z0-9_]*)\(\).*/\1/')
+  locals=$(grep -oE '^[ \t]*local [a-z0-9_ =]+' "$T/prep-code.sh" \
+    | sed -E 's/^[ \t]*local //; s/=[^ ]*//g; s/ +/\n/g' | sort -u)
+  bins=$(tier_bins "$tier" || true)
+  while read -r cmd; do
+    [[ -z "$cmd" ]] && continue
+    if [[ " $KEYWORDS " == *" $cmd "* ]]; then continue; fi
+    if grep -qFx "$cmd" <<<"$funcs"; then continue; fi
+    if grep -qFx "$cmd" <<<"$locals"; then continue; fi
+    if grep -qF "\$$cmd" <<<"$(cat "$T/prep-code.sh")"; then continue; fi
+    if grep -qFx "$cmd" <<<"$bins"; then
+      found=$((found+1))
+    else
+      ko "[$svc] '$cmd' has no /bin link in the $tier env bin list (binary-level coverage)"
+    fi
+  done <<<"$cands"
+  ok "[$svc] $found binaries symlinked in $tier env"
+}
+
+for spec in "nixos-auto-update:$T/main.sh:main" \
+            "nixos-auto-update-notify-failure:$T/failure.sh:health" \
+            "nixos-autoupdate-healthcheck:$T/health.sh:health" \
+            "pending:$T/pending.sh:core"; do
+  svc="${spec%%:*}"; rest="${spec#*:}"; script="${rest%%:*}"; tier="${rest##*:}"
+  check_binaries "$svc" "$script" "$tier"
+done
 
 # ── bash -n syntax gate on assembled flows (catches broken `\`
 # continuations and bad nesting — the PATH scan cannot see those) ──
