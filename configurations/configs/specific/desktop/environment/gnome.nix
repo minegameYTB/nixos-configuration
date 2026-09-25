@@ -47,7 +47,7 @@
       thunderbird
       file-roller
       amberol
-      pika-backup
+      #pika-backup
 
       ### Themes
       ### Override papirus-icon-theme to set folder color (see other available color here: https://github.com/costales/folder-color/?tab=readme-ov-file#create-a-new-theme)

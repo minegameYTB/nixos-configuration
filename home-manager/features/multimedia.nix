@@ -15,7 +15,7 @@ in
     (with pkgs; [
       vlc
       amberol
-      pika-backup
+      #pika-backup
       warp
     ])
     ++ (with pkgs.pkgsUnstable; [
