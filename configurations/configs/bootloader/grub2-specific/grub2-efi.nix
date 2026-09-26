@@ -10,7 +10,7 @@
     grub = {
       efiSupport = true;
       device = "nodev";
-      zfsSupport = if (config.fileSystems."/".fsType == "zfs") then true else false;
+      zfsSupport = config.boot.zfs.enabled;
     };
     efi = {
       efiSysMountPoint = "/boot";
