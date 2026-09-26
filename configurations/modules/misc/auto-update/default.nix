@@ -47,7 +47,7 @@ in
 
     checkInterval = lib.mkOption {
       type = lib.types.str;
-      default = "1d";
+      default = "12h";
       description = "How often to check for updates (systemd monotonic OnUnitInactiveSec — counted from the previous run's end, unlike GLF-OS OnUnitActiveSec which counts from its start). Daily checks absorb manual rev bumps (every 3-4 days) within a day; wall-clock drifting is intended — updates spread themselves.";
     };
 
