@@ -15,6 +15,7 @@ let
     pkgs.writeShellScript "snapper-${period}-home" ''
       set -euo pipefail
 
+      export PATH="${pkgs.coreutils}/bin:${pkgs.gawk}/bin"
       CONFIG="home"
       PERIOD="${period}"
       KEEP="${toString keep}"
