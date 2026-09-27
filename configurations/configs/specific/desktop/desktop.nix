@@ -5,6 +5,7 @@
   imports = [
     ./x11.nix
     ./plymouth.nix
+    ./portal.nix
   ];
 
   ### Option for desktop specific

@@ -8,7 +8,6 @@
 {
   imports = [
     ### Declare all modules (on all sections)
-    ./programs
     ./misc
     ./virtualisation
     #./nix

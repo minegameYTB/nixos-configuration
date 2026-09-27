@@ -9,7 +9,6 @@
   ### Firefox
   programs.firefox = {
     enable = true;
-    #enableHardening = true;
     wrapperConfig.pipewireSupport = true;
     languagePacks = [
       "fr"
