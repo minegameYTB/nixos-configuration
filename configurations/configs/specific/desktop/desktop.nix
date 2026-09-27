@@ -7,6 +7,7 @@
     ./plymouth.nix
     ./portal.nix
     ./gnome-confinement.nix
+    ./host-confinement.nix
   ];
 
   ### Option for desktop specific
