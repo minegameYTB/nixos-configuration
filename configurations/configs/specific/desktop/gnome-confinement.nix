@@ -5,26 +5,35 @@
 }:
 
 {
-  ### Mount-namespace confinement for satellite GNOME services.
-  ### / read-only, /home real but read-only (DBs re-opened RW), network cut
-  ### where the function does not need it. GNOME gate only, no CLI impact.
+  ### Confine satellite GNOME services (/ ro, /home real but ro, network cut
+  ### where unneeded). GNOME gate only, no CLI impact. Live inventory
+  ### (HP-probook): localsearch-3 + evolution×4 ACTIVE (network kept for
+  ### Evolution sync); control/writeback, tinysparql-portal, rygel, RDP
+  ### inactive (hardened upfront).
   ###
-  ### Live inventory (HP-probook): localsearch-3 ACTIVE; evolution×4 ACTIVE
-  ### (Calendar in use → network kept); control/writeback, tinysparql-portal,
-  ### rygel, RDP present but inactive (hardened upfront, effective on start).
-  ###
-  ### Rejected (audited, see ~/Projets/github/nix-system-services-hardened):
-  ### MemoryDenyWriteExecute (in-process extraction may mmap WX),
-  ### PrivateDevices/DevicePolicy (needs /dev/dri), RestrictNamespaces
-  ### (premature in user sessions), IPAddressDeny (redundant with AF_UNIX),
-  ### ProcSubset=pid (would hide /proc/self/mountinfo from the miner).
+  ### Rejected (audited): MemoryDenyWriteExecute (in-process extraction may
+  ### mmap WX), PrivateDevices (needs /dev/dri), RestrictNamespaces +
+  ### ProcSubset=pid (user session, miner needs mountinfo), IPAddressDeny
+  ### (redundant with AF_UNIX).
   systemd.user.services = lib.mkIf config.services.desktopManager.gnome.enable (
     let
-      ### Indexers: no network (AF_UNIX = D-Bus only). CacheDirectory — not
-      ### ReadWritePaths — so systemd creates ~/.cache/tracker3 on pristine
-      ### homes. %t/dconf stays writable: ProtectHome=read-only also covers
-      ### /run/user, and every GNOME service writes its dconf DB there
-      ### (without it: "unable to create file '/run/user/.../dconf/user'").
+      ### Short blacklist only: no ~@clock/~@timer (glib mainloop, alarms),
+      ### no ~@keyring on evolution (secret trousseau), no whitelist (#26913).
+      syscallBlacklist = [
+        "~@swap"
+        "~@obsolete"
+        "~@cpu-emulation"
+        "~@module"
+        "~@mount"
+        "~@reboot"
+        "~@raw-io"
+        "~@debug"
+        "~@privileged"
+      ];
+
+      ### Indexers, no network. CacheDirectory (not ReadWritePaths) so the DB
+      ### is created on pristine homes; %t/dconf writable (ProtectHome also
+      ### covers /run/user, dconf DB lives there).
       minerConfine = {
         ProtectSystem = "strict";
         ProtectHome = "read-only";
@@ -45,24 +54,12 @@
         ProtectProc = "invisible";
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
-        SystemCallFilter = [
-          "~@swap"
-          "~@obsolete"
-          "~@cpu-emulation"
-          "~@module"
-          "~@mount"
-          "~@reboot"
-          "~@raw-io"
-          "~@debug"
-          "~@privileged"
-        ];
+        SystemCallFilter = syscallBlacklist;
         UMask = "0077";
       };
 
-      ### Evolution: same FS, network kept for sync. State/Configuration/
-      ### CacheDirectory are created on pristine profiles and exempt from
-      ### ProtectHome=read-only. No ~@clock/~@timer/~@keyring in the filter
-      ### (glib mainloop, alarms, secret trousseau).
+      ### Evolution: same FS, network kept. State/Configuration/CacheDirectory
+      ### are created on pristine profiles, exempt from ProtectHome=read-only.
       syncConfine = {
         ProtectSystem = "strict";
         ProtectHome = "read-only";
@@ -84,22 +81,11 @@
         ProtectProc = "invisible";
         SystemCallArchitectures = "native";
         SystemCallErrorNumber = "EPERM";
-        SystemCallFilter = [
-          "~@swap"
-          "~@obsolete"
-          "~@cpu-emulation"
-          "~@module"
-          "~@mount"
-          "~@reboot"
-          "~@raw-io"
-          "~@debug"
-          "~@privileged"
-        ];
+        SystemCallFilter = syscallBlacklist;
         UMask = "0077";
       };
 
-      ### Light base (rygel/RDP, inactive, network required): hardened FS
-      ### only. Tighten on the day of a real activation.
+      ### Light base (rygel/RDP, inactive, network required): FS only.
       lightConfine = {
         ProtectSystem = "strict";
         PrivateTmp = true;
@@ -109,8 +95,7 @@
       };
     in
     {
-      ### writeback fails closed on metadata writes (read-only home) —
-      ### no persisted Nautilus notes/tags. Relax if needed.
+      ### writeback fails closed on metadata writes (read-only home).
       "localsearch-3".serviceConfig = minerConfine;
       "localsearch-control-3".serviceConfig = minerConfine;
       "localsearch-writeback-3".serviceConfig = minerConfine;
