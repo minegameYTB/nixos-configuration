@@ -6,6 +6,7 @@
     ./x11.nix
     ./plymouth.nix
     ./portal.nix
+    ./gnome-confinement.nix
   ];
 
   ### Option for desktop specific
