@@ -8,16 +8,9 @@
 {
   ### Nix Settings
   nix = {
-    ### Use nix from ctrl os
-    #package = pkgs.pkgs-lts.nix;
-
     ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
     channel.enable = false;
 
-    ### Point NIX_PATH and the flake registry at the flake-pinned nixpkgs
-    ### (follows flake.lock), so hosts, containers and ISOs share one nixpkgs.
-    ### Use inputs.nixpkgs-main, not pkgs.path (re-stored copy, mangled name).
-    nixPath = lib.mkIf config.nix.enable [ "nixpkgs=${inputs.nixpkgs-main}" ];
     ### mkDefault lets ISO channel.nix (priority 100) win on ISOs, keeping the
     ### bundled nixpkgs channel for offline install; hosts/containers get the
     ### flake-pinned source as before.
@@ -51,6 +44,7 @@
       trusted-public-keys = [
         #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
+      nix-path = lib.mkIf config.nix.enable [ "nixpkgs=${inputs.nixpkgs-main}" ];
     };
     gc = {
       automatic = true;
