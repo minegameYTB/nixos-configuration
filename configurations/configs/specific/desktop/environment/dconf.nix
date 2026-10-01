@@ -92,6 +92,10 @@
               symbolic-icon = true;
             };
 
+            "org/gnome/shell/extensions/tiling-assistant" = {
+              enable-layout-picker = false;
+            };
+
             "org/gnome/shell/extensions/user-theme" = {
               name = "Marble-red-dark-filled";
             };
