@@ -19,6 +19,8 @@
       };
       color.ui = true;
       core.hooksPath = ".githooks";
+      # Skip stat-ing unchanged files: `git status` on nixpkgs drops ~1.7 s → ~0.5 s
+      core.fsmonitor = true;
       fetch.prune = true;
     };
   };
