@@ -495,5 +495,42 @@ run_waiter "" 1
 (( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
   && ok "failing notify-send → no marker, waiter stays green" || ko "backend failure wrongly handled"
 
+# ── _notify_reboot_with_actions (dedup signal for the deadline notice) ──
+# Return 0 => at least one session got the interactive notice, so the
+# caller must skip the actionless copy. Return 1 => nothing interactive,
+# so the caller must fall back to the queue-able actionless notice.
+run_reboot_fanout(){
+  local rundir="$1" notif="$2"
+  local pidfile="$T/fanout-pids"
+  rm -f -- "$pidfile"
+  if AUTO_UPDATE_RUN_USER_DIR="$rundir" NOTIFICATIONS_ENABLED="$notif" bash -c "
+    $BASE_PRELUDE
+    source \"$T/nw.func\"
+    _notify_reboot_with_actions \"$T/waiter-marker\" \"$pidfile\" 'titre FR' 'corps FR' 'title EN' 'body EN'
+  " 2>/dev/null; then
+    FRC=0
+  else
+    FRC=$?
+  fi
+  # Waiters block on the stub; give them a beat to flush the pidfile.
+  sleep 0.2
+}
+run_reboot_fanout "$T/rundir-user" 1
+(( FRC == 0 )) && [[ -s "$T/fanout-pids" ]] \
+  && ok "live session → interactive notice claimed (no actionless duplicate)" \
+  || ko "interactive fan-out did not claim the session"
+run_reboot_fanout "$T/rundir-empty" 1
+(( FRC == 1 )) \
+  && ok "headless → caller falls back to the queue-able notice" \
+  || ko "headless fan-out must request the fallback"
+run_reboot_fanout "$T/rundir-gdm" 1
+(( FRC == 1 )) \
+  && ok "gdm-only → caller falls back (greeter is not a session)" \
+  || ko "gdm greeter wrongly counted as a session"
+run_reboot_fanout "$T/rundir-user" 0
+(( FRC == 1 )) \
+  && ok "notify disabled → no interactive notice, fallback no-ops" \
+  || ko "interactive fan-out ignored NOTIFICATIONS_ENABLED"
+
 echo "--- $pass passed, $fail failed ---"
 (( fail == 0 ))

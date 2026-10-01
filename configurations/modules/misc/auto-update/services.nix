@@ -329,10 +329,19 @@ in
           REBOOT_MSG_FR="Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour reporter : cliquer Reporter, ou sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement quand vous êtes prêt."
           REBOOT_TITLE_EN="NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min"
           REBOOT_MSG_EN="New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to postpone: click Postpone, or sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready."
-          _notify_or_queue "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN" "critical"
+          # Exactly ONE desktop notice for the deadline: the interactive
+          # one (Reporter/Postpone button included) when a graphical
+          # session is live, otherwise the actionless one so headless runs
+          # still queue it for the next login. Sending both is what made
+          # the deadline pop up twice in the same session — the same title
+          # and body, once with and once without the button.
+          if _notify_reboot_with_actions "$REBOOT_POSTPONE_FILE" "$REBOOT_WAITER_PIDS" \
+            "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN"; then
+            _status INFO "Reboot deadline notified with a Postpone button."
+          else
+            _notify_or_queue "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN" "critical"
+          fi
           _wall_tty "NixOS update: automatic reboot in ${toString cfg.rebootDelayMinutes} min (kernel/init change). To postpone: sudo touch $REBOOT_POSTPONE_FILE, then reboot manually when ready. / Mise à jour NixOS : redémarrage automatique dans ${toString cfg.rebootDelayMinutes} min (noyau/init). Pour reporter : sudo touch $REBOOT_POSTPONE_FILE, puis redémarrez manuellement."
-          _notify_reboot_with_actions "$REBOOT_POSTPONE_FILE" "$REBOOT_WAITER_PIDS" \
-            "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN"
           if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_POSTPONE_FILE" "$REBOOT_WINDOW_START"; then
             _status WARNING "Reboot countdown expired, rebooting into the staged generation."
             _notify_or_queue \

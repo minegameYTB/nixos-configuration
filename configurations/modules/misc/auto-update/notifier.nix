@@ -245,18 +245,31 @@ let
       # to $2 for the caller to kill once the window closes; waiters also
       # die with the service (control-group). A late click can only touch
       # the marker, which the window-start guard then ignores.
+      #
+      # Return value is the caller's dedup signal, not a success flag:
+      #   0 — at least one session got the interactive notice (identical
+      #       title/body, plus the Reporter/Postpone button). The caller
+      #       must NOT also send the actionless copy, or the same
+      #       deadline pops up twice in the same session.
+      #   1 — nothing could be notified interactively: notifications
+      #       disabled, no live graphical session, or no usable pidfile.
+      #       The caller must then fall back to the actionless notice,
+      #       which is the only one that can be queued for a later login.
       local marker="$1" pidfile="$2"
       local title_fr="$3" message_fr="$4" title_en="$5" message_en="$6"
       local lang="''${LANG:-en}"
       local run_dir="''${AUTO_UPDATE_RUN_USER_DIR:-/run/user}"
       local title message action_label path uid user waiter_pid
+      local waiter_count=0
+
+      [ "$NOTIFICATIONS_ENABLED" -eq 1 ] || return 1
 
       case "''${lang%%_*}" in
         fr) title="$title_fr"; message="$message_fr"; action_label="Reporter" ;;
         *) title="$title_en"; message="$message_en"; action_label="Postpone" ;;
       esac
 
-      : > "$pidfile" || return 0
+      : > "$pidfile" || return 1
       for path in "$run_dir"/*; do
         [ -d "$path" ] || continue
         [ -S "$path/bus" ] || continue
@@ -272,8 +285,9 @@ let
         _notify_reboot_waiter "$uid" "$user" "$marker" "$action_label" "$title" "$message" &
         waiter_pid=$!
         echo "$waiter_pid" >> "$pidfile"
+        waiter_count=$((waiter_count + 1))
       done
-      return 0
+      [ "$waiter_count" -gt 0 ]
     }
     # <<<END reboot-waiter
 
