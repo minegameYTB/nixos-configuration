@@ -1,27 +1,23 @@
 {
-  config,
   lib,
-  inputs,
+  pkgs,
   ...
 }:
 
 {
+  ### CLI nixpkgs source: the sources actually used to build this system
+  ### (follows pkgsPatched). Upstream nixpkgs-flake.nix derives the flake
+  ### registry and NIX_PATH (nixpkgs=flake:nixpkgs) from it. mkForce beats
+  ### the auto-set outPath (plain, misses the patched tree); toString avoids
+  ### a duplicate store copy by builtins.toJSON. ISOs keep the bundled
+  ### channel (installer/cd-dvd/channel.nix, plain).
+  nixpkgs.flake.source = lib.mkForce (toString pkgs.path);
+
   ### Nix Settings
   nix = {
     ### Directory relative to channel are removed with the service "nix-channel-rm-dirs.service"
     channel.enable = false;
 
-    ### mkDefault lets ISO channel.nix (priority 100) win on ISOs, keeping the
-    ### bundled nixpkgs channel for offline install; hosts/containers get the
-    ### flake-pinned source as before.
-    registry.nixpkgs = lib.mkIf config.nix.enable (
-      lib.mkDefault {
-        to = {
-          type = "path";
-          path = inputs.nixpkgs-main.outPath;
-        };
-      }
-    );
     #registry.nix-custom-repo.to =
     #  owner = "minegameYTB";
     #  repo = "nix-custom-repo";
@@ -44,7 +40,6 @@
       trusted-public-keys = [
         #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       ];
-      nix-path = lib.mkIf config.nix.enable [ "nixpkgs=${inputs.nixpkgs-main}" ];
     };
     gc = {
       automatic = true;
