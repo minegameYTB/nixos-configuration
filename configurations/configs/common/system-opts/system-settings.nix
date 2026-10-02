@@ -110,9 +110,9 @@
   ### Expose flake in top level derivation
   system.copyFlakeConfiguration = true;
 
-  ### Userborn
+  ### Disabled: breaks nixos-install (NixOS/nixpkgs#408507, no /etc/passwd in chroot).
   services.userborn = {
-    enable = true;
+    enable = false;
     importLegacyState = true;
   };
 
