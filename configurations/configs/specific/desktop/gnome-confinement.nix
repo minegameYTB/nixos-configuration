@@ -5,20 +5,14 @@
 }:
 
 {
-  ### Confine satellite GNOME services (/ ro, /home real but ro, network cut
-  ### where unneeded). GNOME gate only, no CLI impact. Live inventory
-  ### (HP-probook): localsearch-3 + evolution×4 ACTIVE (network kept for
-  ### Evolution sync); control/writeback, tinysparql-portal, rygel, RDP
-  ### inactive (hardened upfront).
-  ###
-  ### Rejected (audited): MemoryDenyWriteExecute (in-process extraction may
-  ### mmap WX), PrivateDevices (needs /dev/dri), RestrictNamespaces +
-  ### ProcSubset=pid (user session, miner needs mountinfo), IPAddressDeny
-  ### (redundant with AF_UNIX).
+  ### Confine GNOME user services (GNOME only, no CLI impact).
+  ### localsearch units follow services.gnome.localsearch.enable,
+  ### tinysparql portal follows services.gnome.tinysparql.enable.
+  ### Skipped: MemoryDenyWriteExecute, PrivateDevices, RestrictNamespaces,
+  ### ProcSubset=pid, IPAddressDeny (break miners/user session).
   systemd.user.services = lib.mkIf config.services.desktopManager.gnome.enable (
     let
-      ### Short blacklist only: no ~@clock/~@timer (glib mainloop, alarms),
-      ### no ~@keyring on evolution (secret trousseau), no whitelist (#26913).
+      ### Blacklist only, no whitelist (#26913): keeps glib mainloop + keyring working.
       syscallBlacklist = [
         "~@swap"
         "~@obsolete"
@@ -31,9 +25,8 @@
         "~@privileged"
       ];
 
-      ### Indexers, no network. CacheDirectory (not ReadWritePaths) so the DB
-      ### is created on pristine homes; %t/dconf writable (ProtectHome also
-      ### covers /run/user, dconf DB lives there).
+      ### Miners: no network. CacheDirectory creates DB on pristine homes;
+      ### %t/dconf stays writable.
       minerConfine = {
         ProtectSystem = "strict";
         ProtectHome = "read-only";
@@ -58,8 +51,7 @@
         UMask = "0077";
       };
 
-      ### Evolution: same FS, network kept. State/Configuration/CacheDirectory
-      ### are created on pristine profiles, exempt from ProtectHome=read-only.
+      ### Evolution: same FS, network kept for sync.
       syncConfine = {
         ProtectSystem = "strict";
         ProtectHome = "read-only";
@@ -85,7 +77,7 @@
         UMask = "0077";
       };
 
-      ### Light base (rygel/RDP, inactive, network required): FS only.
+      ### rygel/RDP: FS only, network required.
       lightConfine = {
         ProtectSystem = "strict";
         PrivateTmp = true;
@@ -96,10 +88,18 @@
     in
     {
       ### writeback fails closed on metadata writes (read-only home).
-      "localsearch-3".serviceConfig = minerConfine;
-      "localsearch-control-3".serviceConfig = minerConfine;
-      "localsearch-writeback-3".serviceConfig = minerConfine;
-      "tinysparql-xdg-portal-3".serviceConfig = minerConfine;
+      "localsearch-3" = lib.mkIf config.services.gnome.localsearch.enable {
+        serviceConfig = minerConfine;
+      };
+      "localsearch-control-3" = lib.mkIf config.services.gnome.localsearch.enable {
+        serviceConfig = minerConfine;
+      };
+      "localsearch-writeback-3" = lib.mkIf config.services.gnome.localsearch.enable {
+        serviceConfig = minerConfine;
+      };
+      "tinysparql-xdg-portal-3" = lib.mkIf config.services.gnome.tinysparql.enable {
+        serviceConfig = minerConfine;
+      };
 
       "evolution-source-registry".serviceConfig = syncConfine;
       "evolution-calendar-factory".serviceConfig = syncConfine;
