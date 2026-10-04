@@ -51,7 +51,7 @@ in
     files = [ cfg.logFile ];
     frequency = "daily";
     rotate = 7;
-    compress = false;
+    compress = true;
     copytruncate = true;
     missingok = true;
     notifempty = true;
