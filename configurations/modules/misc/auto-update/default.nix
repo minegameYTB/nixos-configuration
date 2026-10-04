@@ -81,6 +81,12 @@ in
       description = "Only run on AC power (systemd ConditionACPower). Disable on machines that are effectively always plugged in (e.g. transportables): a full rebuild is CPU/IO-heavy and will drain a battery fast.";
     };
 
+    wakeFromSuspend = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Wake the machine from suspend when the update timer elapses (systemd WakeSystem via an RTC wake alarm). No effect when powered off (Persistent covers the boot catch-up instead). Requires RTC wake-alarm support.";
+    };
+
     notify = lib.mkOption {
       type = lib.types.bool;
       default = true;

@@ -530,6 +530,7 @@ in
       OnUnitInactiveSec = cfg.checkInterval;
       RandomizedDelaySec = cfg.randomizedDelay;
       Persistent = true;
+      WakeSystem = cfg.wakeFromSuspend;
       Unit = "nixos-auto-update.service";
     };
   };

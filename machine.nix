@@ -105,11 +105,15 @@ in
       ### Per-machine overrides: stacked modules merge, so these only
       ### affect hp-240 — other autoUpdate hosts keep the defaults.
       ### (Transportable, effectively always plugged in: no AC gate,
-      ### automatic reboot behind a postponable countdown.)
+      ### automatic reboot behind a postponable countdown, wake from
+      ### suspend for the update check.)
       {
-        system.autoUpdate.healthCheck.autoRollback = true;
-        system.autoUpdate.requireACPower = false;
-        system.autoUpdate.allowReboot = true;
+        system.autoUpdate = {
+          healthCheck.autoRollback = true;
+          requireACPower = false;
+          allowReboot = true;
+          wakeFromSuspend = true;
+        };
       }
     ];
     usePatched = false;

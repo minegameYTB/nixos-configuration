@@ -49,7 +49,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. Pre-checks first: free disk on `/nix/store`, internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store`, internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
 
 Smart behavior — unchanged state costs nothing:
 
@@ -73,6 +73,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `allowReboot` | `false` | Reboot automatically on kernel/init change (behind a `rebootDelayMinutes` countdown, postponable). |
 | `rebootDelayMinutes` | `60` | Countdown before an automatic reboot, in minutes (checked once per minute). Touch `/var/lib/nixos-auto-update/postpone-reboot` during the window to cancel it (marker consumed — reboot manually afterwards). |
 | `requireACPower` | `true` | Only run on AC power (`ConditionACPower`). Set `false` on transportables that are effectively always plugged in. |
+| `wakeFromSuspend` | `false` | Wake the machine from suspend when the timer elapses (`WakeSystem`, RTC wake alarm). Needs RTC wake-alarm support; no effect when powered off. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |
 | `notifyTimeout` | `15000` | Display time in milliseconds (`-t`). Per notify-send(1), GNOME Shell ignores `-t` entirely (only critical persists there); honored by dunst/mako and Plasma (except critical). |
@@ -238,6 +239,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **CI `options.json` warning** (`builtins.derivation ... without a proper context`): known benign nix evaluation quirk, filtered in the workflow (exit code and real errors preserved).
 - **No automatic boot rollback by default**: there is no `boot.loader.systemd-boot.bootCounting` option in nixpkgs — the only native mechanism is `boot.uki.tries` (UKI-only, architectural shift, out of scope). The pragmatic net is healthcheck inhibit (+ opt-in `healthCheck.autoRollback` re-pointing the boot profile) + manual rollback via the 30 kept entries (`configurationLimit`).
 - **Service skipped on laptop**: `ConditionACPower` (default `requireACPower = true`) — plug in AC power, or set `requireACPower = false` on transportables.
+- **Wake from suspend never fires**: `wakeFromSuspend` needs an RTC wake alarm (`/sys/class/rtc/rtc0/wakealarm` must exist and be writable); check `journalctl -u nixos-auto-update.timer` for wake-programming errors. It only resumes from suspend, never powers on a machine that is off.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
 - **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.
