@@ -131,7 +131,7 @@ in
 
     minBootMB = lib.mkOption {
       type = lib.types.ints.positive;
-      default = 500;
+      default = 600;
       description = "Minimum free space on /boot (MiB) to start an update run. The EFI partition hosts one kernel+initrd copy per kept generation (configurationLimit): a full ESP fails the boot install with ENOSPC after a successful build.";
     };
 
