@@ -15,6 +15,7 @@ shellcheck -x \
   test/test-auto-update-sh.sh \
   test/test-auto-update-checkout.sh \
   test/test-auto-update-build-retry.sh \
+  test/test-auto-update-disk-space.sh \
   test/test-auto-update-env-runtime.sh \
   script/update-flake \
   script/mksymlink \

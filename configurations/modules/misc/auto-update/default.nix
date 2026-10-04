@@ -129,6 +129,12 @@ in
       description = "Pause in seconds between two build attempts (sleep, already in the main service PATH).";
     };
 
+    minBootMB = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 500;
+      description = "Minimum free space on /boot (MiB) to start an update run. The EFI partition hosts one kernel+initrd copy per kept generation (configurationLimit): a full ESP fails the boot install with ENOSPC after a successful build.";
+    };
+
     timeouts = {
       lsRemote = lib.mkOption {
         type = lib.types.str;

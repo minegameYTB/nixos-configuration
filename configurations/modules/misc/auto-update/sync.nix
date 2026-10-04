@@ -4,6 +4,8 @@
 #
 # Contract (functions exported; globals set: SRC_ID, FLAKE, LOCK_HASH):
 #   _check_disk_space              — _fail disk-space below cfg.minDiskGB on /nix/store
+#   _check_boot_space              — _fail boot-space below cfg.minBootMB on /boot
+#                                    (one kernel+initrd copy per kept generation)
 #   _check_internet_once / _wait_for_internet [MAXWAIT=600] [RETRY=10]
 #                                — curl cache.nixos.org loop, _fail network-offline
 #   _mirror_usable GIT_URL         — 0 iff $WORKDIR/flake is a healthy clone of GIT_URL
@@ -43,6 +45,21 @@ in
     fi
 
     _status INFO "Disk space OK: $available_gb GB available"
+  }
+
+  _check_boot_space() {
+    local min_space_mb=${toString cfg.minBootMB}
+    local available_kb
+    local available_mb
+
+    available_kb=$(df /boot | awk 'NR==2 {print $4}')
+    available_mb=$((available_kb / 1024))
+
+    if [ "$available_mb" -lt "$min_space_mb" ]; then
+      _fail boot-space "$available_mb < $min_space_mb"
+    fi
+
+    _status INFO "Boot space OK: $available_mb MB available"
   }
 
   _check_internet_once() {

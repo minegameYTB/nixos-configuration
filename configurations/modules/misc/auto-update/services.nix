@@ -221,6 +221,7 @@ in
       fi
 
       _check_disk_space
+      _check_boot_space
       _wait_for_internet
 
       ### --- channel: force-sync the machine-owned mirror clone. ---

@@ -49,7 +49,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store`, internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — a full ESP fails the boot install with ENOSPC after a successful build), internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
 
 Smart behavior — unchanged state costs nothing:
 
@@ -79,6 +79,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `notifyTimeout` | `15000` | Display time in milliseconds (`-t`). Per notify-send(1), GNOME Shell ignores `-t` entirely (only critical persists there); honored by dunst/mako and Plasma (except critical). |
 | `logFile` | `"/var/log/nixos-auto-update.log"` | Persistent text log (journald stays the binary source of truth). Rotated by logrotate (daily, 7 kept). |
 | `minDiskGB` | `10` | Minimum free space on `/nix/store` (GiB) to start a run. |
+| `minBootMB` | `500` | Minimum free space on `/boot` (MiB) to start a run. One kernel+initrd copy per kept generation (`configurationLimit`). |
 | `buildMaxAttempts` | `3` | How many times to retry `nixos-rebuild build` within one run (in-memory loop). Systematic failures are retried again on the next timer run. |
 | `buildRetryDelaySeconds` | `60` | Pause in seconds between two build attempts. |
 | `timeouts.lsRemote` | `"5m"` | Budget for `git ls-remote` channel resolution. |
@@ -125,6 +126,7 @@ Every failure goes through `_fail CODE [detail]` (see `errors.nix`, the single s
 | `flake-lock-missing` | Synced tree has no `flake.lock`. |
 | `rebuild-boot` | `nixos-rebuild boot` failed — running generation kept. |
 | `disk-space` | `/nix/store` below `minDiskGB`. |
+| `boot-space` | `/boot` below `minBootMB` (ESP full: old generations fill it, one kernel+initrd copy each). |
 | `network-offline` | No connectivity after `timeouts.internetWait`. |
 | `state-error` | Internal state unreadable/corrupt — manual action. |
 | `boot-recovery` | Interrupted-transaction recovery incomplete — retried next run. |
@@ -239,6 +241,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **CI `options.json` warning** (`builtins.derivation ... without a proper context`): known benign nix evaluation quirk, filtered in the workflow (exit code and real errors preserved).
 - **No automatic boot rollback by default**: there is no `boot.loader.systemd-boot.bootCounting` option in nixpkgs — the only native mechanism is `boot.uki.tries` (UKI-only, architectural shift, out of scope). The pragmatic net is healthcheck inhibit (+ opt-in `healthCheck.autoRollback` re-pointing the boot profile) + manual rollback via the 30 kept entries (`configurationLimit`).
 - **Service skipped on laptop**: `ConditionACPower` (default `requireACPower = true`) — plug in AC power, or set `requireACPower = false` on transportables.
+- **Boot install fails with `ENOSPC` on `/boot` (seen 2026-10-04 on hp-240)**: the ESP fills up with one kernel+initrd copy per kept generation (`configurationLimit = 30`). The `boot-space` pre-check now blocks the run before building; if already stuck, delete old system generations (`nix-env -p /nix/var/nix/profiles/system --delete-generations …`, keep recent ones for rollback) then `switch-to-configuration boot` to prune `/boot`, and restart the service (the preserved transaction resumes the boot install without rebuilding).
 - **Wake from suspend never fires**: `wakeFromSuspend` needs an RTC wake alarm (`/sys/class/rtc/rtc0/wakealarm` must exist and be writable); check `journalctl -u nixos-auto-update.timer` for wake-programming errors. It only resumes from suspend, never powers on a machine that is off.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
 - **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.

@@ -72,6 +72,14 @@ let
       body_en = "Not enough free space on the store to start the update. Free some space and retry.";
     };
 
+    boot-space = {
+      urgency = "critical";
+      title_fr = "Mise à jour NixOS — Partition de démarrage pleine";
+      body_fr = "Pas assez d’espace libre sur la partition de démarrage pour installer la nouvelle génération. Supprimez d’anciennes générations puis réessayez.";
+      title_en = "NixOS Update — Boot partition full";
+      body_en = "Not enough free space on the boot partition to install the new generation. Remove old generations and retry.";
+    };
+
     network-offline = {
       urgency = "critical";
       title_fr = "Mise à jour NixOS — Réseau indisponible";
