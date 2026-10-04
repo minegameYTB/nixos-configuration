@@ -39,6 +39,11 @@ in
 
   nspawnctl = callPackage ./nspawnctl/default.nix { };
 
+  # Linux-next test kernel (pinned commit, see ./linux-next/default.nix).
+  # Exposed here so NixOS modules can use `pkgs.pkgsConfig.linux-next`
+  # and so it is directly buildable via `nix build '.#linux-next'`.
+  linux-next = callPackage ./linux-next/default.nix { };
+
   nixos-auto-update-env-core = autoUpdateEnvs.core;
   nixos-auto-update-env-health = autoUpdateEnvs.health;
   nixos-auto-update-env-main = autoUpdateEnvs.main;

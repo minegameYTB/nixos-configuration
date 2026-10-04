@@ -196,6 +196,29 @@ in
 
   ### --- Test VMs ---
 
+  # Linux-next test bench (CLI efi, btrfs): pinned linux-next kernel straight
+  # from the pkgsConfig package (pkgs/linux-next, see doc/linux-next.md).
+  # No auto-update on purpose (moving-target kernel, manual testing only).
+  vm-linux-next-efi = mkMachine {
+    hostname = "nixos-kvm-srv-next";
+    profile = base "cli";
+    fs = fs "btrfs";
+    extraModules = [
+      boot.efi
+      (
+        { pkgs, lib, ... }:
+        {
+          boot.kernelPackages = lib.mkForce (
+            lib.recurseIntoAttrs (pkgs.linuxPackagesFor pkgs.pkgsConfig.linux-next)
+          );
+        }
+      )
+    ];
+    userOverrides = cliOverrides;
+    withHomeManager = true;
+    usePatched = false;
+  };
+
   # VM preset (desktop efi LUKS btrfs)
   vm-desktop-efi-luks = mkMachine {
     hostname = "nixos-kvm-desktop-luks";

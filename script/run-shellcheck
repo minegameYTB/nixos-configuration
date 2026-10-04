@@ -20,4 +20,5 @@ shellcheck -x \
   script/update-flake \
   script/mksymlink \
   script/run-deadnix \
-  script/build-env
+  script/build-env \
+  pkgs/linux-next/update.sh
