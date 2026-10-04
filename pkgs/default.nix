@@ -44,6 +44,10 @@ in
   # and so it is directly buildable via `nix build '.#linux-next'`.
   linux-next = callPackage ./linux-next/default.nix { };
 
+  # Pinned vanilla kernel (frozen reference, see ./linux-pinned/default.nix).
+  # Same usage: `pkgs.pkgsConfig.linux-pinned`, `nix build '.#linux-pinned'`.
+  linux-pinned = callPackage ./linux-pinned/default.nix { };
+
   nixos-auto-update-env-core = autoUpdateEnvs.core;
   nixos-auto-update-env-health = autoUpdateEnvs.health;
   nixos-auto-update-env-main = autoUpdateEnvs.main;

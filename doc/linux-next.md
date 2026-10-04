@@ -1,4 +1,4 @@
-# Linux-next test kernel
+# Custom test kernels (linux-next + pinned stable)
 
 ## Overview
 
@@ -70,3 +70,28 @@ Full build from source: ~30–60 min, ~20 GiB, no binary cache.
 
 Stop building `vm-linux-next-efi`, or delete its entry from `machine.nix`.
 Nothing else references the package.
+
+## Pinned stable kernel (linux-pinned)
+
+Frozen vanilla reference: same version as the fleet's CachyOS kernels
+(`7.2.8`) minus the CachyOS patches, stock NixOS defconfig
+(`pkgs/linux-pinned/default.nix`, exposed as `pkgsConfig.linux-pinned`
+and flake package `.#linux-pinned`).
+
+Use it when a kernel update misbehaves, to tell a packaging/patch problem
+apart from an upstream regression. ZFS-compatible (unlike linux-next),
+so it can also serve as a fallback on ZFS machines.
+
+To point the test VM at it instead of linux-next, swap one line in the
+`vm-linux-next-efi` inline module in `machine.nix`:
+
+```nix
+pkgs.linuxPackagesFor pkgs.pkgsConfig.linux-pinned
+```
+
+To re-pin to another stable release: take `version` + `hash` from
+`pkgs/os-specific/linux/kernel/kernels-org.json` in nixpkgs (at the
+revision locked in `flake.lock`) and update those two fields in
+`pkgs/linux-pinned/default.nix` (`src.url` and `modDirVersion` follow
+`version` automatically; verify the tarball with
+`nix store prefetch-file <url>`).
