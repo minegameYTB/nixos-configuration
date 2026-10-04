@@ -42,18 +42,18 @@
     };
 
     ### Remote flake modules
-    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.1.9";
+    declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.2.1";
 
     ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
-    # Home-manager - master (26 Aug 2026)
+    # Home-manager - master (2 Oct 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/6b449e35980e1b75dd17da2d6d9b66e757194f1c";
+      url = "github:nix-community/home-manager/833540099ef43cbeb28b1e3f3c21901961edb48e";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - master (26 Aug 2026)
+    # Stylix - master (2 Oct 2026)
     stylix = {
-      url = "github:danth/stylix/5e3809851f486e7fc7e84b40f174c74b60ecc784";
+      url = "github:danth/stylix/7c065d1ed05381fceb2403b963c5ad150f32fe39";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
