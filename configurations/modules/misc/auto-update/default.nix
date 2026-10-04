@@ -111,6 +111,18 @@ in
       description = "Minimum free space on /nix/store (GiB) to start an update run.";
     };
 
+    buildMaxAttempts = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 3;
+      description = "How many times to retry nixos-rebuild build within one run (in-memory loop, 60s pause). A pure build never mutates the system profile, so retrying is safe; systematic failures are retried again on the next timer run.";
+    };
+
+    buildRetryDelaySeconds = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 60;
+      description = "Pause in seconds between two build attempts (sleep, already in the main service PATH).";
+    };
+
     timeouts = {
       lsRemote = lib.mkOption {
         type = lib.types.str;

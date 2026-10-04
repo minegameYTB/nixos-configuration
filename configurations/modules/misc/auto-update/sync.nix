@@ -16,7 +16,9 @@
 #                                    channel-resolve / flake-sync /
 #                                    flake-lock-missing
 #   _run_nixos_build / _install_boot_configuration / _rebuild_system
-#                                — build, boot-install (attempt-counted by the
+#                                — build (in-memory retry loop, pure: no profile
+#                                  mutation, safe before phase applying),
+#                                  boot-install (attempt-counted by the
 #                                  caller via _attempt_boot_installation), nvd diff
 #
 # Callers must set before use: WORKDIR,
@@ -158,18 +160,39 @@ in
 
   _run_nixos_build() {
     local nixos_label_env=()
+    local build_attempt=1
+    local build_max_attempts=${toString cfg.buildMaxAttempts}
+    local build_retry_delay=${toString cfg.buildRetryDelaySeconds}
     if [ "$DEBUG_MODE" -eq 1 ]; then
       nixos_label_env=(NIXOS_LABEL=debug)
       _debug "Debug mode: generation will be labeled 'debug'"
     fi
 
-    "''${nixos_label_env[@]}" timeout \
-      --signal=TERM \
-      --kill-after=1m \
-      "${cfg.timeouts.build}" \
-      nixos-rebuild build \
-      --flake "$FLAKE#${cfg.configuration}" \
-      --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT"
+    # In-memory retry loop (no persistent counter): a pure `build` never
+    # mutates /nix/var/nix/profiles/system, so retrying before phase
+    # `applying` is safe. Covers transient failures (large updates,
+    # substituter hiccups, temporary nixpkgs breakage). Systematic errors
+    # fail again on the next timer run with a fresher channel tree.
+    while true; do
+      if [ "$build_max_attempts" -gt 1 ]; then
+        _status INFO "Building the new system configuration (attempt $build_attempt/$build_max_attempts)..."
+      fi
+      if "''${nixos_label_env[@]}" timeout \
+        --signal=TERM \
+        --kill-after=1m \
+        "${cfg.timeouts.build}" \
+        nixos-rebuild build \
+        --flake "$FLAKE#${cfg.configuration}" \
+        --log-format "$AUTO_UPDATE_NIX_LOG_FORMAT"; then
+        return 0
+      fi
+      if [ "$build_attempt" -ge "$build_max_attempts" ]; then
+        return 1
+      fi
+      _status WARNING "Build attempt $build_attempt/$build_max_attempts failed; retrying in $build_retry_delay seconds..."
+      sleep "$build_retry_delay"
+      build_attempt=$((build_attempt + 1))
+    done
   }
 
   _install_boot_configuration() {
