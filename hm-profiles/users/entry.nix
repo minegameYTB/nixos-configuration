@@ -5,6 +5,12 @@
   featPath,
   userOverrides ? { },
   inputs,
+  # False on systems without system stylix: its NixOS module is what injects
+  # the HM stylix module, so without it the `stylix.*` HM options don't exist
+  # and importing features that set them would fail eval with "option
+  # `stylix' does not exist". Currently only "gnome" sets such options
+  # (home-manager/features/gnome.nix).
+  withStylix ? true,
 }:
 
 let
@@ -19,6 +25,13 @@ let
   effectiveFeatures = builtins.filter (f: !(builtins.elem f (userOvr.without or [ ]))) (
     cfg.hmFeatures ++ (userOvr.extra or [ ])
   );
+
+  stylixGatedFeatures = [ "gnome" ];
+  selectedFeatures =
+    if withStylix then
+      effectiveGlobal ++ effectiveFeatures
+    else
+      builtins.filter (f: !(builtins.elem f stylixGatedFeatures)) (effectiveGlobal ++ effectiveFeatures);
 in
 
 {
@@ -28,5 +41,5 @@ in
   imports = [
     (inputs.self + "/home-manager/config-modules")
   ]
-  ++ map (f: "${featPath}/${f}.nix") (effectiveGlobal ++ effectiveFeatures);
+  ++ map (f: "${featPath}/${f}.nix") selectedFeatures;
 }

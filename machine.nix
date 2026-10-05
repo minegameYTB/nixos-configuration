@@ -199,6 +199,12 @@ in
   # Linux-next test bench (CLI efi, btrfs): pinned linux-next kernel straight
   # from the pkgsConfig package (pkgs/linux-next, see doc/linux-next.md).
   # No auto-update on purpose (moving-target kernel, manual testing only).
+  # NOTE: lighter than cliOverrides on purpose — only the heavy HM features
+  # (games/browser/multimedia) are stripped. `gnome`, `customization` and the
+  # global `desktop-core` are kept so this machine can be flipped to
+  # `base "desktop"` for a test: the session wallpaper comes from the HM
+  # stylix gnome target (home-manager/features/gnome.nix), which cliOverrides
+  # would remove (system stylix only themes GDM/console/plymouth).
   vm-linux-next-efi = mkMachine {
     hostname = "nixos-kvm-srv-next";
     profile = base "cli";
@@ -214,7 +220,15 @@ in
         }
       )
     ];
-    userOverrides = cliOverrides;
+    userOverrides = {
+      minegame = {
+        without = [
+          "games"
+          "browser"
+          "multimedia"
+        ];
+      };
+    };
     withHomeManager = true;
     usePatched = false;
   };

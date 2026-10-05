@@ -4,6 +4,7 @@
   userConfigs,
   userOverrides ? { },
   inputs,
+  withStylix ? true,
   ...
 }:
 
@@ -15,6 +16,7 @@ let
       userConfigs
       userOverrides
       inputs
+      withStylix
       ;
     featPath = ../../../home-manager/features;
   };

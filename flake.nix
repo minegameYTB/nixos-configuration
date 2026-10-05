@@ -221,6 +221,11 @@
                   userOverrides
                   inputs
                   ;
+                ### The HM stylix module is injected by the NixOS stylix
+                ### module, so HM `stylix.*` options only exist when system
+                ### stylix is enabled. Forward it so stylix-gated HM features
+                ### are skipped instead of breaking eval on CLI machines.
+                withStylix = config.stylix.enable;
               }
             ) userConfigs;
             extraSpecialArgs = specialArgs system // {
