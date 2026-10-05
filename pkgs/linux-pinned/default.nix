@@ -10,10 +10,17 @@
 # pkgs/os-specific/linux/kernel/kernels-org.json in nixpkgs and update
 # `version` + `hash` below (`src.url` and `modDirVersion` follow `version`
 # automatically; verify the tarball with `nix store prefetch-file <url>`).
+#
+# Compiler selector: `gccVersion = null` (default) builds with the default
+# toolchain; set it to "13" | "14" | "15" to use pkgs.gcc<version>Stdenv
+# instead (e.g. to bisect a toolchain regression).
 {
   lib,
   fetchurl,
   buildLinux,
+  pkgs,
+  stdenv,
+  gccVersion ? null,
   ...
 }@args:
 
@@ -22,6 +29,13 @@ buildLinux (
   // rec {
     version = "7.2.8";
     modDirVersion = version;
+
+    stdenv =
+      if gccVersion == null then
+        args.stdenv
+      else
+        pkgs."gcc${gccVersion}Stdenv"
+          or (throw "linux-pinned: unsupported gccVersion '${gccVersion}' (use null for the default toolchain, or one of: 13, 14, 15)");
 
     src = fetchurl {
       url = "mirror://kernel/linux/kernel/v${lib.versions.major version}.x/linux-${version}.tar.xz";

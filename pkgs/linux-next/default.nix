@@ -6,10 +6,17 @@
 # `version` MUST match the real kernelrelease
 # (VERSION.PATCHLEVEL.SUBLEVEL + EXTRAVERSION + localversion-next),
 # otherwise the build fails with "modDirVersion ... is wrong, it should be: ...".
+#
+# Compiler selector: `gccVersion = null` (default) builds with the default
+# toolchain; set it to "13" | "14" | "15" to use pkgs.gcc<version>Stdenv
+# instead (e.g. to bisect a toolchain regression).
 {
   lib,
   fetchgit,
   buildLinux,
+  pkgs,
+  stdenv,
+  gccVersion ? null,
   ...
 }@args:
 
@@ -18,6 +25,13 @@ buildLinux (
   // rec {
     version = "7.3.0-rc5-next-20261002";
     modDirVersion = version;
+
+    stdenv =
+      if gccVersion == null then
+        args.stdenv
+      else
+        pkgs."gcc${gccVersion}Stdenv"
+          or (throw "linux-next: unsupported gccVersion '${gccVersion}' (use null for the default toolchain, or one of: 13, 14, 15)");
 
     src = fetchgit {
       url = "https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git";

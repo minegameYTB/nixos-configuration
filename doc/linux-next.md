@@ -71,6 +71,27 @@ Full build from source: ~30–60 min, ~20 GiB, no binary cache.
 Stop building `vm-linux-next-efi`, or delete its entry from `machine.nix`.
 Nothing else references the package.
 
+## Choosing the GCC version
+
+Both kernel packages accept a `gccVersion` parameter (`null` by default =
+current default toolchain, GCC 16.2.0). Set it to `"13"`, `"14"` or `"15"`
+to build with `pkgs.gcc<version>Stdenv` instead — e.g. to bisect a toolchain
+regression. Anything else throws. Only the target compiler changes;
+build-time tools stay on the default `buildPackages`.
+
+```nix
+# In pkgs/linux-next/default.nix or pkgs/linux-pinned/default.nix:
+gccVersion ? "14",
+```
+
+```nix
+# Ad hoc, without editing the file (works because the wrapper forwards
+# every argument to buildLinux):
+pkgs.pkgsConfig.linux-pinned.override { stdenv = pkgs.gcc14Stdenv; }
+```
+
+Check the active compiler with `nix eval '.#linux-pinned.stdenv.cc.version`.
+
 ## Pinned stable kernel (linux-pinned)
 
 Frozen vanilla reference: same version as the fleet's CachyOS kernels
