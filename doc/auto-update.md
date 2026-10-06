@@ -49,7 +49,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — a full ESP fails the boot install with ENOSPC after a successful build), internet connectivity with wait + retries, per-phase `timeouts.*`; a colliding run exits `75` (stays green).
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — a full ESP fails the boot install with ENOSPC after a successful build), internet connectivity with wait + retries (double gate: `cache.nixos.org` body must contain `StoreDir` — a captive portal answers HTTP 200 with a login page — *and* a short `git ls-remote` probe of the channel forge must succeed; the channel resolve itself is then retried in-run 3x/30s before failing as `channel-resolve`), per-phase `timeouts.*`; a colliding run exits `75` (stays green).
 
 Smart behavior — unchanged state costs nothing:
 
@@ -121,7 +121,7 @@ Every failure goes through `_fail CODE [detail]` (see `errors.nix`, the single s
 
 | CODE | Meaning |
 |---|---|
-| `channel-resolve` | `git ls-remote` empty/failed — network or forge unreachable. |
+| `channel-resolve` | `git ls-remote` empty/failed after 3 in-run attempts (30s apart) — network or forge unreachable. |
 | `flake-sync` | Incremental force-sync then fresh clone both failed. |
 | `flake-lock-missing` | Synced tree has no `flake.lock`. |
 | `rebuild-boot` | `nixos-rebuild boot` failed — running generation kept. |
@@ -243,6 +243,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **Service skipped on laptop**: `ConditionACPower` (default `requireACPower = true`) — plug in AC power, or set `requireACPower = false` on transportables.
 - **Boot install fails with `ENOSPC` on `/boot` (seen 2026-10-04 on hp-240)**: the ESP fills up with one kernel+initrd copy per kept generation (`configurationLimit = 30`). The `boot-space` pre-check now blocks the run before building; if already stuck, delete old system generations (`nix-env -p /nix/var/nix/profiles/system --delete-generations …`, keep recent ones for rollback) then `switch-to-configuration boot` to prune `/boot`, and restart the service (the preserved transaction resumes the boot install without rebuilding).
 - **Wake from suspend never fires**: `wakeFromSuspend` needs an RTC wake alarm (`/sys/class/rtc/rtc0/wakealarm` must exist and be writable); check `journalctl -u nixos-auto-update.timer` for wake-programming errors. It only resumes from suspend, never powers on a machine that is off.
+- **Run fails as `channel-resolve` right after resume from suspend**: the service starts immediately on wake (`network-online.target` is already satisfied from before suspend, NetworkManager reconnects async) while the wifi is only half back (associated without upstream, captive portal). The connectivity wait now gates on both the cache body and a forge probe, and the resolve is retried 3x/30s in-run — a failure at this point means the forge stayed unreachable for minutes, will retry on the next run.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
 - **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.

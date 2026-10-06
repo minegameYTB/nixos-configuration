@@ -6,15 +6,23 @@
 #   _check_disk_space              — _fail disk-space below cfg.minDiskGB on /nix/store
 #   _check_boot_space              — _fail boot-space below cfg.minBootMB on /boot
 #                                    (one kernel+initrd copy per kept generation)
-#   _check_internet_once / _wait_for_internet [MAXWAIT=600] [RETRY=10]
-#                                — curl cache.nixos.org loop, _fail network-offline
+#   _check_internet_once         — curl cache.nixos.org + StoreDir content check
+#                                  (a captive portal answers HTTP 200 with a
+#                                  login page — status alone lies)
+#   _check_forge_once GIT_URL    — short git ls-remote probe of the forge
+#                                  actually followed (cache reachable does not
+#                                  imply the forge is: partial DNS, broken
+#                                  IPv6, half-back wifi at resume)
+#   _wait_for_internet [MAXWAIT=600] [RETRY=10]
+#                                — cache + forge loop, _fail network-offline
 #   _mirror_usable GIT_URL         — 0 iff $WORKDIR/flake is a healthy clone of GIT_URL
 #   _force_sync_mirror GIT_URL     — fetch --force + reset --hard + clean +
 #                                    verify rev==SRC_ID and flake.lock present
 #   _fresh_clone GIT_URL           — clone --depth 1 --no-tags into flake.new,
 #                                    verify rev, atomic mv into place
 #   _sync_channel_clone            — reuse | force-sync | fresh clone; sets
-#                                    SRC_ID, FLAKE=$WORKDIR/flake; _fail
+#                                    SRC_ID, FLAKE=$WORKDIR/flake; ls-remote
+#                                    retried 3x/30s, then _fail
 #                                    channel-resolve / flake-sync /
 #                                    flake-lock-missing
 #   _run_nixos_build / _install_boot_configuration / _rebuild_system
@@ -63,19 +71,41 @@ in
   }
 
   _check_internet_once() {
-    curl \
+    local cache_body
+    # Content-checked, not just HTTP 200: a captive portal (wifi associé
+    # sans accès) answers 200 with a login page — --output /dev/null would
+    # call that "online" and the very next git ls-remote would fail.
+    # nix-cache-info always carries a StoreDir line; anything else is not
+    # the real cache.
+    if ! cache_body=$(curl \
       --connect-timeout 10 \
       --max-time 20 \
       --fail \
       --location \
       --silent \
-      --output /dev/null \
-      "https://cache.nixos.org/nix-cache-info"
+      "https://cache.nixos.org/nix-cache-info"); then
+      return 1
+    fi
+    [[ "$cache_body" == *"StoreDir"* ]]
+  }
+
+  _check_forge_once() {
+    # Lightweight probe of the forge actually used (git protocol, not just
+    # HTTP): cache.nixos.org reachable does NOT imply the channel forge is —
+    # partial DNS, broken IPv6, or a half-back wifi at resume from suspend
+    # all produce exactly that split.
+    local git_url="$1"
+    timeout \
+      --signal=TERM \
+      --kill-after=30s \
+      30s \
+      git ls-remote "$git_url" "refs/heads/${channel}" >/dev/null 2>&1
   }
 
   _wait_for_internet() {
     local max_wait="''${1:-${toString cfg.timeouts.internetWait}}"
     local retry_delay="''${2:-10}"
+    local git_url="''${AUTO_UPDATE_GIT_URL:-${repo.gitUrl}}"
     local wait_started_at
     local internet_available=0
     local wait_elapsed
@@ -83,7 +113,11 @@ in
     _status INFO "Waiting for internet connectivity (max $max_wait sec)..."
     wait_started_at=$(date +%s)
     while true; do
-      if _check_internet_once; then
+      # Both gates in one iteration: the cache check alone goes green on a
+      # captive portal or while the forge is still unreachable (wifi
+      # associated without upstream at resume) — the very next git
+      # ls-remote would then fail the run as channel-resolve.
+      if _check_internet_once && _check_forge_once "$git_url"; then
         _status INFO "Internet connectivity is available."
         internet_available=1
         break
@@ -150,12 +184,33 @@ in
 
   _sync_channel_clone() {
     local git_url="''${AUTO_UPDATE_GIT_URL:-${repo.gitUrl}}"
+    local resolve_attempt=1
+    local resolve_max_attempts=3
+    local resolve_retry_delay=30
 
-    SRC_ID=$(timeout \
-      --signal=TERM \
-      --kill-after=30s \
-      "${cfg.timeouts.lsRemote}" \
-      git ls-remote "$git_url" "refs/heads/${channel}" | cut -f1) || _fail channel-resolve
+    # First real forge round-trip: right after resume from suspend the wifi
+    # flaps, so one ls-remote can fail seconds after the connectivity wait
+    # just passed. Retry in-run before failing as channel-resolve.
+    SRC_ID=""
+    while true; do
+      if SRC_ID=$(timeout \
+        --signal=TERM \
+        --kill-after=30s \
+        "${cfg.timeouts.lsRemote}" \
+        git ls-remote "$git_url" "refs/heads/${channel}" | cut -f1); then
+        if [ -n "$SRC_ID" ]; then
+          break
+        fi
+      else
+        SRC_ID=""
+      fi
+      if [ "$resolve_attempt" -ge "$resolve_max_attempts" ]; then
+        break
+      fi
+      _status WARNING "Channel resolution attempt $resolve_attempt/$resolve_max_attempts failed; retrying in $resolve_retry_delay seconds..."
+      sleep "$resolve_retry_delay"
+      resolve_attempt=$((resolve_attempt + 1))
+    done
     [ -n "$SRC_ID" ] || _fail channel-resolve
 
     if [ -d "$WORKDIR/flake/.git" ] \
