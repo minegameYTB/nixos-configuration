@@ -532,5 +532,118 @@ run_reboot_fanout "$T/rundir-user" 0
   && ok "notify disabled → no interactive notice, fallback no-ops" \
   || ko "interactive fan-out ignored NOTIFICATIONS_ENABLED"
 
+# ── sleep inhibitor acquire/release (transaction.nix, fail-open) ──
+grep -q '_acquire_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
+  && grep -q '_release_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
+  && grep -q 'inhibitSleep' "$REPO/configurations/modules/misc/auto-update/default.nix" \
+  && ok "sleep-inhibitor wired in services.nix + option present" || ko "sleep-inhibitor wiring missing"
+fragment transaction.nix transaction > "$T/transaction.func"
+sed -i "s|''\${|\${|g" "$T/transaction.func"
+grep -q '^[ \t]*_acquire_sleep_inhibitor() {' "$T/transaction.func" \
+  && grep -q '^[ \t]*_release_sleep_inhibitor() {' "$T/transaction.func" \
+  && ! grep -Eq '\$\{(cfg|repo|lib)\.' "$T/transaction.func" \
+  && ok "sleep-inhibitor functions extracted intact" || ko "sleep-inhibitor extraction broken"
+
+# Stub tier: systemd-inhibit dispatches on the probe command (last arg);
+# the holder execs `sleep infinity` through the sleep stub (infinity is
+# capped so a missed kill can never strand a process forever).
+REALSLEEP=$(command -v sleep)
+mkdir -p "$T/fakebin2"
+cat > "$T/fakebin2/sleep" <<EOF
+#!/usr/bin/env bash
+echo "SLEEP2: \$*" >> "$CALLS"
+if [[ "\${1:-}" == "infinity" ]]; then
+  exec "$REALSLEEP" 30
+fi
+exec "$REALSLEEP" "\$@"
+EOF
+cat > "$T/fakebin2/systemd-inhibit" <<'EOF'
+#!/usr/bin/env bash
+echo "INHIBIT: $*" >> "$CALLS"
+if [[ "${@: -1}" == "true" ]]; then exit "${PROBE_RC:-0}"; fi
+exec sleep infinity
+EOF
+chmod +x "$T/fakebin2/"*
+# Driver via file (not `bash -c "...$script..."`): a $2 expansion inside
+# double quotes is not re-processed, so `\$` escapes would reach the child
+# literally. Case scripts below use plain `$` and are written verbatim.
+run_inhibit(){
+  local probe_rc="$1" script="$2"
+  {
+    printf '_status() { echo "STATUS: $*" >> "%s"; }\n' "$CALLS"
+    printf 'SLEEP_INHIBITOR_PID=""\nLOG_FILE=/tmp/inhibit-test.log\nsource "%s"\n' "$T/transaction.func"
+    printf '%s\n' "$script"
+  } > "$T/inhibit-driver.sh"
+  if PATH="$T/fakebin2:$PATH" PROBE_RC="$probe_rc" bash "$T/inhibit-driver.sh" > "$T/inhibit.out" 2>&1; then
+    IRC=0
+  else
+    IRC=$?
+  fi
+}
+
+: > "$CALLS"
+run_inhibit 0 '
+_acquire_sleep_inhibitor
+# The holder is backgrounded: let it get scheduled (log its start) before
+# killing it, otherwise the kill wins the race and the start is never logged.
+for ((i=0; i<100; i++)); do
+  if grep -q "SLEEP2: infinity" "$CALLS" 2>/dev/null; then break; fi
+  sleep 0.05
+done
+echo "PID=$SLEEP_INHIBITOR_PID"
+HOLDER="$SLEEP_INHIBITOR_PID"
+if kill -0 "$HOLDER" 2>/dev/null; then echo HOLDER-ALIVE; else echo HOLDER-DEAD-EARLY; fi
+_release_sleep_inhibitor
+echo "PID-AFTER=$SLEEP_INHIBITOR_PID"
+if kill -0 "$HOLDER" 2>/dev/null; then echo HOLDER-STILL-ALIVE; else echo HOLDER-REAPED; fi
+'
+(( IRC == 0 )) \
+  && grep -q 'HOLDER-ALIVE' "$T/inhibit.out" \
+  && grep -q 'HOLDER-REAPED' "$T/inhibit.out" \
+  && grep -q 'PID-AFTER=$' "$T/inhibit.out" \
+  && [[ "$(grep -c '^INHIBIT:.*--what=sleep.*--mode=block' "$CALLS" || true)" == 2 ]] \
+  && grep -q 'SLEEP2: infinity' "$CALLS" \
+  && grep -q 'STATUS: INFO Suspend/hibernate inhibited' "$CALLS" \
+  && grep -q 'STATUS: INFO Suspend/hibernate inhibition released' "$CALLS" \
+  && ok "acquire holds a live holder, release kills + clears (block sleep)" \
+  || ko "acquire/release broken (rc=$IRC): $(cat "$T/inhibit.out") // $(cat "$CALLS")"
+
+: > "$CALLS"
+run_inhibit 1 '
+_acquire_sleep_inhibitor
+echo "PID=$SLEEP_INHIBITOR_PID"
+'
+(( IRC == 0 )) \
+  && grep -q 'PID=$' "$T/inhibit.out" \
+  && grep -q 'STATUS: WARNING Unable to inhibit' "$CALLS" \
+  && [[ "$(grep -c '^INHIBIT:' "$CALLS" || true)" == 1 ]] \
+  && ! grep -q 'SLEEP2:' "$CALLS" \
+  && ok "probe refused → WARNING, empty PID, rc 0 (fail-open, no holder)" \
+  || ko "fail-open broken (rc=$IRC): $(cat "$T/inhibit.out") // $(cat "$CALLS")"
+
+: > "$CALLS"
+run_inhibit 0 '
+_release_sleep_inhibitor
+echo RELEASE-RC-OK
+'
+(( IRC == 0 )) \
+  && grep -q 'RELEASE-RC-OK' "$T/inhibit.out" \
+  && [[ ! -s "$CALLS" ]] \
+  && ok "release with no holder → silent no-op" \
+  || ko "empty release not silent (rc=$IRC): $(cat "$T/inhibit.out") // $(cat "$CALLS")"
+
+: > "$CALLS"
+run_inhibit 0 '
+_acquire_sleep_inhibitor
+_release_sleep_inhibitor
+_release_sleep_inhibitor
+echo DOUBLE-DONE
+'
+(( IRC == 0 )) \
+  && grep -q 'DOUBLE-DONE' "$T/inhibit.out" \
+  && [[ "$(grep -c 'inhibition released' "$CALLS" || true)" == 1 ]] \
+  && ok "double release → single release log, still green" \
+  || ko "double release broken (rc=$IRC): $(cat "$T/inhibit.out") // $(cat "$CALLS")"
+
 echo "--- $pass passed, $fail failed ---"
 (( fail == 0 ))

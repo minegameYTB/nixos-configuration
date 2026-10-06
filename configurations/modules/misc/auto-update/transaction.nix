@@ -8,7 +8,15 @@
 #                                    bilingual critical notify, exit 1
 #   _acquire_lock                  — flock --nonblock on $LOCK_FILE; holder
 #                                    collision exits 75 (SuccessExitStatus)
-#   _release_lock / _cleanup       — EXIT trap: rollback unless committed
+#   _acquire_sleep_inhibitor       — logind block lock on sleep (suspend/
+#                                    hibernate) via systemd-inhibit + sleep
+#                                    infinity; records $SLEEP_INHIBITOR_PID.
+#                                    Fail-open: WARNING + empty PID when the
+#                                    lock cannot be taken, the run proceeds
+#   _release_sleep_inhibitor       — kill the inhibitor holder (idempotent
+#                                    no-op when no PID recorded); always green
+#   _release_lock / _cleanup       — EXIT trap: release the sleep inhibitor,
+#                                    rollback unless committed
 #   _install_transaction_traps     — ERR/HUP/INT/TERM/EXIT wiring
 #   _begin_transaction             — record old-system, phase=prepared
 #   _set_transaction_phase PHASE / _commit_transaction
@@ -22,7 +30,7 @@
 #
 # Callers must set before use: WORKDIR, STATE_DIR, STATE_FILE, LOG_FILE,
 # LOCK_FILE, TRANSACTION_ROOT/DIR (+ ACTIVE/PRESERVE/RECOVERED/ROLLED_BACK
-# flags, SYSTEM_PROFILE). Heavy network/build steps live in sync.nix.
+# flags, SLEEP_INHIBITOR_PID, SYSTEM_PROFILE). Heavy network/build steps live in sync.nix.
 { }:
 
 ''
@@ -79,6 +87,47 @@
   _release_lock() {
     flock --unlock 9 2>/dev/null || true
     exec 9>&-
+  }
+
+  _acquire_sleep_inhibitor() {
+    # Block suspend/hibernate while the run owns the machine: the network
+    # wait, channel sync, build and boot install must never be frozen
+    # mid-flight (a machine woken by WakeSystem for its check would
+    # otherwise suspend again before the wifi is back). Only `sleep` is
+    # locked, never `shutdown`: this service reboots the machine itself.
+    # The holder dies with the service (control-group), so the lock can
+    # never outlive the run. Fail-open by design: without logind/D-Bus the
+    # update still proceeds, warned.
+    local inhibit_args=(
+      --what=sleep
+      --mode=block
+      --who="nixos-auto-update"
+      --why="NixOS automatic update in progress (see $LOG_FILE)"
+    )
+
+    SLEEP_INHIBITOR_PID=""
+    # Synchronous probe first: acquiring for `true` succeeds iff logind
+    # grants the lock. A bare `cmd &` if-condition cannot do this — the
+    # fork succeeding says nothing about the lock itself (a D-Bus-less
+    # systemd-inhibit dies instantly, after the branch was taken).
+    if systemd-inhibit "''${inhibit_args[@]}" true; then
+      systemd-inhibit "''${inhibit_args[@]}" sleep infinity &
+      SLEEP_INHIBITOR_PID=$!
+      _status INFO "Suspend/hibernate inhibited for the duration of the update run."
+    else
+      SLEEP_INHIBITOR_PID=""
+      _status WARNING "Unable to inhibit suspend/hibernate; proceeding unprotected."
+    fi
+  }
+
+  _release_sleep_inhibitor() {
+    # Idempotent: safe on every exit path, including before any acquire.
+    if [ -n "''${SLEEP_INHIBITOR_PID:-}" ]; then
+      kill "$SLEEP_INHIBITOR_PID" 2>/dev/null || true
+      wait "$SLEEP_INHIBITOR_PID" 2>/dev/null || true
+      SLEEP_INHIBITOR_PID=""
+      _status INFO "Suspend/hibernate inhibition released."
+    fi
   }
 
   _set_transaction_phase() {
@@ -339,6 +388,7 @@
     local exit_status="$1"
 
     trap - EXIT
+    _release_sleep_inhibitor
     _rollback_transaction || true
 
     if [ "$DEBUG_MODE" -eq 0 ]; then

@@ -20,8 +20,8 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
 - `core` (12): `base64 cat chmod date mkdir mktemp mv stat sync test timeout notify-send`
-- `health` (22): `core` + `basename env id readlink rm timeout touch flock runuser systemctl grep`
-- `main` (40): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
+- `health` (23): `core` + `basename env id readlink rm timeout touch flock runuser systemctl systemd-inhibit grep`
+- `main` (41): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
 
@@ -37,8 +37,8 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 40
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 22
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 23
 nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 12
 # or all at once:
 make env
@@ -49,7 +49,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — a full ESP fails the boot install with ENOSPC after a successful build), internet connectivity with wait + retries (double gate: `cache.nixos.org` body must contain `StoreDir` — a captive portal answers HTTP 200 with a login page — *and* a short `git ls-remote` probe of the channel forge must succeed; the channel resolve itself is then retried in-run 3x/30s before failing as `channel-resolve`), per-phase `timeouts.*`; a colliding run exits `75` (stays green).
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — a full ESP fails the boot install with ENOSPC after a successful build), internet connectivity with wait + retries (double gate: `cache.nixos.org` body must contain `StoreDir` — a captive portal answers HTTP 200 with a login page — *and* a short `git ls-remote` probe of the channel forge must succeed; the channel resolve itself is then retried in-run 3x/30s before failing as `channel-resolve`), per-phase `timeouts.*`; a colliding run exits `75` (stays green). Each run holds a logind `sleep` inhibitor (block mode, `inhibitSleep`) from lock acquisition until the generation is staged, so no suspend/hibernate can freeze it mid-flight.
 
 Smart behavior — unchanged state costs nothing:
 
@@ -74,6 +74,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `rebootDelayMinutes` | `60` | Countdown before an automatic reboot, in minutes (checked once per minute). Touch `/var/lib/nixos-auto-update/postpone-reboot` during the window to cancel it (marker consumed — reboot manually afterwards). |
 | `requireACPower` | `true` | Only run on AC power (`ConditionACPower`). Set `false` on transportables that are effectively always plugged in. |
 | `wakeFromSuspend` | `false` | Wake the machine from suspend when the timer elapses (`WakeSystem`, RTC wake alarm). Needs RTC wake-alarm support; no effect when powered off. |
+| `inhibitSleep` | `true` | Block suspend/hibernate (logind `sleep` inhibitor, block mode) while a run downloads, builds and installs — acquired after the run lock, released once staged (before any reboot countdown) and on every exit. Fail-open with a warning when the lock cannot be taken. |
 | `notify` | `true` | Desktop notification on success/failure (see below). |
 | `notifyIcon` | `"nix-snowflake-white"` | Icon name for desktop notifications. |
 | `notifyTimeout` | `15000` | Display time in milliseconds (`-t`). Per notify-send(1), GNOME Shell ignores `-t` entirely (only critical persists there); honored by dunst/mako and Plasma (except critical). |

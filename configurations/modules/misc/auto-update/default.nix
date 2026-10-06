@@ -87,6 +87,12 @@ in
       description = "Wake the machine from suspend when the update timer elapses (systemd WakeSystem via an RTC wake alarm). No effect when powered off (Persistent covers the boot catch-up instead). Requires RTC wake-alarm support.";
     };
 
+    inhibitSleep = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Block suspend/hibernate (logind sleep inhibitor, mode block) while an update run downloads, builds and installs. Acquired right after the run lock (so a machine woken for its check cannot suspend mid-wait), released once the generation is staged (before any reboot countdown) and on every exit path, success or failure. Fail-open: when the lock cannot be taken the run proceeds with a warning.";
+    };
+
     notify = lib.mkOption {
       type = lib.types.bool;
       default = true;

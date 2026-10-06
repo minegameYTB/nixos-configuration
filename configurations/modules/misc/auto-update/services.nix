@@ -151,8 +151,9 @@ in
       PREVIOUS_FILE="$WORKDIR/previous-system"
       INHIBITED_FILE="$WORKDIR/inhibited"
       NOTIFIED_FILE="$WORKDIR/notified-generation"
-      SRC_ID=""
-      LOCK_HASH=""
+       SRC_ID=""
+       LOCK_HASH=""
+       SLEEP_INHIBITOR_PID=""
 
       ${errBash}
       ${output.full}
@@ -188,8 +189,15 @@ in
       mkdir -p "$STATE_DIR"
       touch "$LOG_FILE" 2>/dev/null || true
       STATUS_LOGGING_ENABLED=1
-      _install_transaction_traps
-      _debug "Lock acquired, traps installed"
+       _install_transaction_traps
+       ### Sleep inhibitor right after the traps (and the run lock above):
+       ### a machine woken for its check must not suspend again during the
+       ### connectivity wait or mid-build. Released after staging and in
+       ### _cleanup, so every exit path stays covered.
+       if ${lib.boolToString cfg.inhibitSleep}; then
+         _acquire_sleep_inhibitor
+       fi
+       _debug "Lock acquired, traps installed"
 
       if ! _write_state "running|$(date -Is)|update-interrupted|pending"; then
         rm -f -- "$STATE_FILE"
@@ -277,11 +285,18 @@ in
       ### redoes everything, idempotently) — never ahead with staged files
       ### missing (next run would skip and the healthcheck would stay blind).
       ### Staged target first, then the healthy pre-update generation.
-      echo "$BOOTED_SYSTEM" > "$PREVIOUS_FILE"
-      echo "$NEW_SYSTEM" > "$STAGED_FILE"
-      echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
+       echo "$BOOTED_SYSTEM" > "$PREVIOUS_FILE"
+       echo "$NEW_SYSTEM" > "$STAGED_FILE"
+       echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
 
-      if (( NEEDS_REBOOT )); then
+       ### The update itself is staged: release the sleep inhibitor before
+       ### any reboot countdown — waiting for a reboot is not updating.
+       ### (Nothing staged yet on the early exits above: _cleanup releases.)
+       if ${lib.boolToString cfg.inhibitSleep}; then
+         _release_sleep_inhibitor
+       fi
+
+       if (( NEEDS_REBOOT )); then
         if ${lib.boolToString cfg.allowReboot}; then
           # >>>BEGIN reboot-countdown
           _await_reboot_window() {

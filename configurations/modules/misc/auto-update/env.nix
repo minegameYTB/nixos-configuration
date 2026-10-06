@@ -16,8 +16,8 @@
 # no unused envs.
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 40
-#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 22
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 41
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 23
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 {
@@ -54,10 +54,13 @@ let
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 22 binaries.
+  # Small root services (healthcheck + notify-failure): 23 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.
+  # `systemd-inhibit` likewise: transaction.nix defines the sleep-inhibitor
+  # lifecycle shared with the main service, so the binary must resolve here
+  # too even though the healthcheck never calls it (binary-level coverage).
   # `timeout` now comes from coreBins (do not repeat it here: mkEnv links
   # one symlink per entry and a duplicate fails the build).
   healthBins = coreBins ++ [
@@ -70,6 +73,7 @@ let
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
     "${config.systemd.package}/bin/systemctl"
+    "${config.systemd.package}/bin/systemd-inhibit"
     "${pkgs.gnugrep}/bin/grep"
   ];
 
@@ -93,6 +97,10 @@ let
     # systemd is up (nix.py SWITCH_TO_CONFIGURATION_CMD_PREFIX). Without
     # it, boot fails with [Errno 2] right after the test check passes.
     "${config.systemd.package}/bin/systemd-run"
+    # Sleep inhibitor for the update run (transaction.nix
+    # _acquire_sleep_inhibitor): suspend/hibernate stay blocked from lock
+    # acquisition until staging finishes. Same package, no new closure.
+    "${config.systemd.package}/bin/systemd-inhibit"
     "${config.nix.package}/bin/nix"
     "${config.nix.package}/bin/nix-env"
     # Edge-case insurance (zero new closure: same nix package): classic,

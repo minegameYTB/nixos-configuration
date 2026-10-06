@@ -21,9 +21,9 @@ pass=0; fail=0
 ok(){ pass=$((pass+1)); echo "PASS: $*"; }
 ko(){ fail=$((fail+1)); echo "FAIL: $*" >&2; }
 
-# kill is a shell builtin (reaping reboot waiters); the rest are either
-# shell syntax or covered by NEED/FUNCS/LOCALS below.
-KEYWORDS='then if fi else elif do done while for continue return local set shift exit echo true break case esac in printf exec trap kill'
+# kill/wait are shell builtins (reaping reboot waiters / the sleep-inhibitor
+# holder); the rest are either shell syntax or covered by NEED/FUNCS/LOCALS below.
+KEYWORDS='then if fi else elif do done while for continue return local set shift exit echo true break case esac in printf exec trap kill wait'
 
 # command -> explicit PATH entry (keep in sync with environment.PATH).
 # When services use the tight envs (env.nix), the actual PATH is a
@@ -64,6 +64,7 @@ declare -A NEED=(
   [wall]=pkgs.util-linux.bin
   [touch]=pkgs.coreutils
   [systemctl]=config.systemd.package
+  [systemd-inhibit]=config.systemd.package
   [runuser]=pkgs.util-linux.bin
   [notify-send]=pkgs.libnotify
 )
