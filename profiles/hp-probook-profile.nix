@@ -46,7 +46,7 @@
   ### Keep only what this machine needs (see containerSubsystems.* in
   ### configurations/configs/specific/container/*.nix).
   containerSubsystems = {
-    nixos = true; # Declarative NixOS containers (containers.*)
+    nixos = false; # Declarative NixOS containers (containers.*)
     podman = true;
     nspawn = true; # nspawnctl (systemd-nspawn on ZFS)
   };
