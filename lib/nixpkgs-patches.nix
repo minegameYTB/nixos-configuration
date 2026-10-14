@@ -15,10 +15,11 @@ let
   ### Patch sources: GitHub PR patches (url + hash) or local patch files
   patchList = [
     {
-      ### libcap_ng static fix (doCheck=false when isStatic) — remove after merge
-      ### https://github.com/NixOS/nixpkgs/pull/562812 (fixes #562705, upstream stevegrubb/libcap-ng#85)
-      url = "https://github.com/NixOS/nixpkgs/pull/562812.patch";
-      hash = "sha256-BgXRpxLl561YrlsUNJ5QmNELDHZThkLZHWJ+6At7wq0=";
+      ### typescript-language-server 6.0.2 pnpm hash fix — remove after
+      ### nixos-unstable promotion of #572951
+      ### https://github.com/NixOS/nixpkgs/pull/572951
+      url = "https://github.com/NixOS/nixpkgs/pull/572951.patch";
+      hash = "sha256-aQG98PUp2WsbI7ZKuTPcjCibCIKb2ldl75Tbl58+i8A=";
     }
 
     ### Local patches (uncomment as needed)
