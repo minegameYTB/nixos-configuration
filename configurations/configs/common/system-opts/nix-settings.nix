@@ -38,6 +38,14 @@
       warn-dirty = false;
       auto-optimise-store = true;
       trusted-users = [ "@wheel" ];
+      ### Refuse flake nixConfig (incl. the nix-cachyos-kernel input, which
+      ### injects the dead attic.xuyh0120.win substituter).
+      accept-flake-config = false;
+      ### Third-party binary substituters disabled (incl. attic.xuyh0120.win,
+      ### URL/key kept as comments in cachyos-kernel.nix).
+      ### Empty lists = no extra substituters.
+      extra-substituters = [ ];
+      extra-trusted-public-keys = [ ];
       download-buffer-size = 134217728; # 128M for download buffer
       experimental-features = [
         "nix-command"
