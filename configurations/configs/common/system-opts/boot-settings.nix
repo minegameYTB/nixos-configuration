@@ -6,8 +6,11 @@
 }:
 
 {
-  ### Add cachyOS kernel expression
-  imports = [ ./cachyos-kernel.nix ];
+  ### CachyOS kernel DISABLED (dead binary server): falling back to stock nixpkgs kernel.
+  ### Uncomment to re-enable.
+  imports = [
+    # ./cachyos-kernel.nix
+  ];
 
   ### Boot config (followed this guide for hardening: https://madaidans-insecurities.github.io/guides/linux-hardening.html)
   boot = {
