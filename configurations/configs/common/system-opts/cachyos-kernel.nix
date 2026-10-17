@@ -128,15 +128,13 @@
     ];
   };
 
-  ### Third-party CachyOS binary substituter (attic.xuyh0120.win) DISABLED:
-  ### dead server (unreachable, breaks every rebuild).
-  ### Uncomment to re-enable once the server is back.
+  ### Third-party CachyOS binary substituter (attic.xuyh0120.win)
   nix.settings = {
     extra-substituters = [
-      # "https://attic.xuyh0120.win/lantian"
+      "https://attic.xuyh0120.win/lantian"
     ];
     extra-trusted-public-keys = [
-      # "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+      "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
     ];
   };
 }
