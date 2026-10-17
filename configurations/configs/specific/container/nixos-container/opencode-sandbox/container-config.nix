@@ -35,7 +35,7 @@
     nixd
     pyright
     rust-analyzer
-    typescript-language-server
+    #typescript-language-server
     yaml-language-server
 
     ### Utils
