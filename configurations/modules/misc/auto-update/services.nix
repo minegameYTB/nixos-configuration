@@ -190,10 +190,12 @@ in
       touch "$LOG_FILE" 2>/dev/null || true
       STATUS_LOGGING_ENABLED=1
        _install_transaction_traps
-       ### Sleep inhibitor right after the traps (and the run lock above):
-       ### a machine woken for its check must not suspend again during the
-       ### connectivity wait or mid-build. Released after staging and in
-       ### _cleanup, so every exit path stays covered.
+       ### Sleep/lid inhibitor right after the traps (and the run lock
+       ### above): a machine woken for its check must not suspend again
+       ### during the connectivity wait or mid-build, and a lid close must
+       ### not suspend it while it waits for the reboot countdown to
+       ### expire. Held for the whole run (see _acquire_sleep_inhibitor)
+       ### and released in _cleanup, so every exit path stays covered.
        if ${lib.boolToString cfg.inhibitSleep}; then
          _acquire_sleep_inhibitor
        fi
@@ -289,12 +291,12 @@ in
        echo "$NEW_SYSTEM" > "$STAGED_FILE"
        echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
 
-       ### The update itself is staged: release the sleep inhibitor before
-       ### any reboot countdown — waiting for a reboot is not updating.
-       ### (Nothing staged yet on the early exits above: _cleanup releases.)
-       if ${lib.boolToString cfg.inhibitSleep}; then
-         _release_sleep_inhibitor
-       fi
+       ### The sleep/lid inhibitor deliberately stays held until the run
+       ### exits: releasing it before the reboot countdown below would let
+       ### GNOME suspend an idle machine — `sleep` follows the monotonic
+       ### clock, so the countdown would freeze and the automatic reboot
+       ### of a machine woken for its check would stall indefinitely.
+       ### _cleanup releases on every exit path.
 
        if (( NEEDS_REBOOT )); then
         if ${lib.boolToString cfg.allowReboot}; then

@@ -90,7 +90,7 @@ in
     inhibitSleep = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Block suspend/hibernate (logind sleep inhibitor, mode block) while an update run downloads, builds and installs. Acquired right after the run lock (so a machine woken for its check cannot suspend mid-wait), released once the generation is staged (before any reboot countdown) and on every exit path, success or failure. Fail-open: when the lock cannot be taken the run proceeds with a warning.";
+      description = "Block suspend/hibernate and lid-switch handling (logind block locks on sleep + handle-lid-switch) while an update run downloads, builds and installs. Acquired right after the run lock and held for the whole run (reboot countdown included), released on every exit path, success or failure. The lid lock is required because logind's own lid handling ignores sleep blockers by default (LidSwitchIgnoreInhibited=yes): closing the lid mid-run would otherwise suspend the machine. Fail-open: when the locks cannot be taken the run proceeds with a warning.";
     };
 
     notify = lib.mkOption {

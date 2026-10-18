@@ -532,17 +532,19 @@ run_reboot_fanout "$T/rundir-user" 0
   && ok "notify disabled → no interactive notice, fallback no-ops" \
   || ko "interactive fan-out ignored NOTIFICATIONS_ENABLED"
 
-# ── sleep inhibitor acquire/release (transaction.nix, fail-open) ──
+# ── sleep/lid inhibitor acquire/release (transaction.nix, fail-open) ──
 grep -q '_acquire_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
-  && grep -q '_release_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
+  && ! grep -q '_release_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
   && grep -q 'inhibitSleep' "$REPO/configurations/modules/misc/auto-update/default.nix" \
-  && ok "sleep-inhibitor wired in services.nix + option present" || ko "sleep-inhibitor wiring missing"
+  && ok "sleep/lid inhibitor wired: acquired for the whole run, no early release in services.nix" \
+  || ko "sleep/lid inhibitor wiring missing (or early release came back)"
 fragment transaction.nix transaction > "$T/transaction.func"
 sed -i "s|''\${|\${|g" "$T/transaction.func"
 grep -q '^[ \t]*_acquire_sleep_inhibitor() {' "$T/transaction.func" \
   && grep -q '^[ \t]*_release_sleep_inhibitor() {' "$T/transaction.func" \
+  && grep -A5 '^[ \t]*_cleanup() {' "$T/transaction.func" | grep -q '_release_sleep_inhibitor' \
   && ! grep -Eq '\$\{(cfg|repo|lib)\.' "$T/transaction.func" \
-  && ok "sleep-inhibitor functions extracted intact" || ko "sleep-inhibitor extraction broken"
+  && ok "sleep-inhibitor functions extracted intact (cleanup releases on every exit)" || ko "sleep-inhibitor extraction broken"
 
 # Stub tier: systemd-inhibit dispatches on the probe command (last arg);
 # the holder execs `sleep infinity` through the sleep stub (infinity is
@@ -601,11 +603,11 @@ if kill -0 "$HOLDER" 2>/dev/null; then echo HOLDER-STILL-ALIVE; else echo HOLDER
   && grep -q 'HOLDER-ALIVE' "$T/inhibit.out" \
   && grep -q 'HOLDER-REAPED' "$T/inhibit.out" \
   && grep -q 'PID-AFTER=$' "$T/inhibit.out" \
-  && [[ "$(grep -c '^INHIBIT:.*--what=sleep.*--mode=block' "$CALLS" || true)" == 2 ]] \
+  && [[ "$(grep -c '^INHIBIT:.*--what=sleep:handle-lid-switch.*--mode=block' "$CALLS" || true)" == 2 ]] \
   && grep -q 'SLEEP2: infinity' "$CALLS" \
-  && grep -q 'STATUS: INFO Suspend/hibernate inhibited' "$CALLS" \
-  && grep -q 'STATUS: INFO Suspend/hibernate inhibition released' "$CALLS" \
-  && ok "acquire holds a live holder, release kills + clears (block sleep)" \
+  && grep -q 'STATUS: INFO Suspend/hibernate and lid-switch inhibited' "$CALLS" \
+  && grep -q 'STATUS: INFO Suspend/hibernate and lid-switch inhibition released' "$CALLS" \
+  && ok "acquire holds a live holder, release kills + clears (block sleep + lid-switch)" \
   || ko "acquire/release broken (rc=$IRC): $(cat "$T/inhibit.out") // $(cat "$CALLS")"
 
 : > "$CALLS"
@@ -615,7 +617,7 @@ echo "PID=$SLEEP_INHIBITOR_PID"
 '
 (( IRC == 0 )) \
   && grep -q 'PID=$' "$T/inhibit.out" \
-  && grep -q 'STATUS: WARNING Unable to inhibit' "$CALLS" \
+  && grep -q 'STATUS: WARNING Unable to inhibit suspend/hibernate and lid-switch' "$CALLS" \
   && [[ "$(grep -c '^INHIBIT:' "$CALLS" || true)" == 1 ]] \
   && ! grep -q 'SLEEP2:' "$CALLS" \
   && ok "probe refused → WARNING, empty PID, rc 0 (fail-open, no holder)" \

@@ -8,11 +8,12 @@
 #                                    bilingual critical notify, exit 1
 #   _acquire_lock                  — flock --nonblock on $LOCK_FILE; holder
 #                                    collision exits 75 (SuccessExitStatus)
-#   _acquire_sleep_inhibitor       — logind block lock on sleep (suspend/
-#                                    hibernate) via systemd-inhibit + sleep
-#                                    infinity; records $SLEEP_INHIBITOR_PID.
-#                                    Fail-open: WARNING + empty PID when the
-#                                    lock cannot be taken, the run proceeds
+#   _acquire_sleep_inhibitor       — logind block locks on sleep (suspend/
+#                                    hibernate) and on lid-switch handling
+#                                    via systemd-inhibit + sleep infinity;
+#                                    records $SLEEP_INHIBITOR_PID. Fail-open:
+#                                    WARNING + empty PID when the lock cannot
+#                                    be taken, the run proceeds
 #   _release_sleep_inhibitor       — kill the inhibitor holder (idempotent
 #                                    no-op when no PID recorded); always green
 #   _release_lock / _cleanup       — EXIT trap: release the sleep inhibitor,
@@ -90,16 +91,30 @@
   }
 
   _acquire_sleep_inhibitor() {
-    # Block suspend/hibernate while the run owns the machine: the network
-    # wait, channel sync, build and boot install must never be frozen
-    # mid-flight (a machine woken by WakeSystem for its check would
-    # otherwise suspend again before the wifi is back). Only `sleep` is
-    # locked, never `shutdown`: this service reboots the machine itself.
-    # The holder dies with the service (control-group), so the lock can
-    # never outlive the run. Fail-open by design: without logind/D-Bus the
-    # update still proceeds, warned.
+    # Block suspend/hibernate and lid-switch handling while the run owns the
+    # machine: the network wait, channel sync, build, boot install and the
+    # reboot countdown must never be frozen mid-flight (a machine woken by
+    # WakeSystem for its check would otherwise suspend again before the wifi
+    # is back, and a suspended countdown stalls the automatic reboot).
+    #
+    # Two lock types behind one holder:
+    #   sleep             — logind refuses every suspend/hibernate request
+    #                       from unprivileged callers (GNOME's gsd-power
+    #                       also goes through logind; it only consults
+    #                       gnome-session inhibitors, so it still *tries*
+    #                       its idle timeout, but the request fails).
+    #   handle-lid-switch — logind's own lid handling is NOT subject to
+    #                       sleep blockers by default
+    #                       (LidSwitchIgnoreInhibited=yes): GNOME drops its
+    #                       own lid inhibitor on lid close and lets logind
+    #                       suspend, which would freeze the run.
+    #
+    # Only sleep/lid locks, never `shutdown`: this service reboots the
+    # machine itself. The holder dies with the service (control-group), so
+    # the locks can never outlive the run. Fail-open by design: without
+    # logind/D-Bus the update still proceeds, warned.
     local inhibit_args=(
-      --what=sleep
+      --what=sleep:handle-lid-switch
       --mode=block
       --who="nixos-auto-update"
       --why="NixOS automatic update in progress (see $LOG_FILE)"
@@ -107,16 +122,16 @@
 
     SLEEP_INHIBITOR_PID=""
     # Synchronous probe first: acquiring for `true` succeeds iff logind
-    # grants the lock. A bare `cmd &` if-condition cannot do this — the
+    # grants the locks. A bare `cmd &` if-condition cannot do this — the
     # fork succeeding says nothing about the lock itself (a D-Bus-less
     # systemd-inhibit dies instantly, after the branch was taken).
     if systemd-inhibit "''${inhibit_args[@]}" true; then
       systemd-inhibit "''${inhibit_args[@]}" sleep infinity &
       SLEEP_INHIBITOR_PID=$!
-      _status INFO "Suspend/hibernate inhibited for the duration of the update run."
+      _status INFO "Suspend/hibernate and lid-switch inhibited for the duration of the update run."
     else
       SLEEP_INHIBITOR_PID=""
-      _status WARNING "Unable to inhibit suspend/hibernate; proceeding unprotected."
+      _status WARNING "Unable to inhibit suspend/hibernate and lid-switch; proceeding unprotected."
     fi
   }
 
@@ -126,7 +141,7 @@
       kill "$SLEEP_INHIBITOR_PID" 2>/dev/null || true
       wait "$SLEEP_INHIBITOR_PID" 2>/dev/null || true
       SLEEP_INHIBITOR_PID=""
-      _status INFO "Suspend/hibernate inhibition released."
+      _status INFO "Suspend/hibernate and lid-switch inhibition released."
     fi
   }
 
