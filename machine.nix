@@ -116,7 +116,7 @@ in
         };
       }
     ];
-    usePatched = true;
+    usePatched = false;
   };
 
   ### --- Desktop VMs ---
@@ -132,7 +132,7 @@ in
       (autoUpdate "vm-desktop-efi")
     ];
     withHomeManager = true;
-    usePatched = true;
+    usePatched = false;
   };
 
   # VM preset (desktop bios)
