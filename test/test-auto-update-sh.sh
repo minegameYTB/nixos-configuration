@@ -478,16 +478,16 @@ run_waiter(){
   rm -f -- "$marker"
   if WAIT_ACTION="$action" WAIT_RC="$rc" bash -c "
     source \"$T/nw.func\"
-    _notify_reboot_waiter 1000 minegame \"$marker\" Reporter 'titre' 'corps'
+    _notify_reboot_waiter 1000 minegame \"$marker\" 'Ne pas redémarrer maintenant' 'titre' 'corps'
   " 2>/dev/null; then
     WRC=0
   else
     WRC=$?
   fi
 }
-run_waiter postpone 0
+run_waiter cancel 0
 (( WRC == 0 )) && [[ -f "$T/waiter-marker" ]] \
-  && ok "click Reporter → postpone marker created" || ko "click did not create the marker"
+  && ok "click cancel button → cancel marker created" || ko "click did not create the marker"
 run_waiter "" 0
 (( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
   && ok "dismissed notice → no marker, waiter stays green" || ko "dismiss wrongly handled"

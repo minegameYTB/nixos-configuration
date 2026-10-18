@@ -210,9 +210,9 @@ let
     # >>>BEGIN reboot-waiter
     _notify_reboot_waiter() {
       # One interactive reboot notice for a single graphical session:
-      # shows a Reporter/Postpone button and touches $3 (the reboot
-      # postpone marker) when clicked. Dismissed, expired or failed
-      # delivery exits quietly: dismiss != postpone, and a missing
+      # shows a "Ne pas redémarrer maintenant" button and touches $3
+      # (the reboot cancel marker) when clicked. Dismissed, expired or
+      # failed delivery exits quietly: dismiss != cancel, and a missing
       # action backend must never fail the update run.
       local uid="$1" user="$2" marker="$3" action_label="$4" title="$5" message="$6"
       local action=""
@@ -229,10 +229,10 @@ let
           -a "NixOS" \
           -i "${notifyIcon}" \
           -t 0 \
-          -A "postpone=$action_label" \
+          -A "cancel=$action_label" \
           "$title" \
           "$message" 2>/dev/null) || return 0
-      if [ "$action" = "postpone" ]; then
+      if [ "$action" = "cancel" ]; then
         touch "$marker"
       fi
       return 0
@@ -248,7 +248,7 @@ let
       #
       # Return value is the caller's dedup signal, not a success flag:
       #   0 — at least one session got the interactive notice (identical
-      #       title/body, plus the Reporter/Postpone button). The caller
+      #       title/body, plus the "Ne pas redémarrer maintenant" button). The caller
       #       must NOT also send the actionless copy, or the same
       #       deadline pops up twice in the same session.
       #   1 — nothing could be notified interactively: notifications
@@ -265,8 +265,8 @@ let
       [ "$NOTIFICATIONS_ENABLED" -eq 1 ] || return 1
 
       case "''${lang%%_*}" in
-        fr) title="$title_fr"; message="$message_fr"; action_label="Reporter" ;;
-        *) title="$title_en"; message="$message_en"; action_label="Postpone" ;;
+        fr) title="$title_fr"; message="$message_fr"; action_label="Ne pas redémarrer maintenant" ;;
+        *) title="$title_en"; message="$message_en"; action_label="Don't reboot now" ;;
       esac
 
       : > "$pidfile" || return 1

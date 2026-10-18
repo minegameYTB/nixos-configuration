@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ### Tests the reboot countdown (_await_reboot_window from services.nix):
-### expiry proceeds, a postponement marker aborts and is consumed, and
+### expiry proceeds, a cancel marker aborts and is consumed, and
 ### the wait happens in 1-minute slices. The function comes verbatim via
 ### test/lib-fragments.sh; sleep is stubbed so the suite runs instantly.
 set -euo pipefail
@@ -59,9 +59,9 @@ run_case(){
 : > "$T/ticks.log"
 
 run_case 3 0 0 0 3 "no marker -> window expires, reboot proceeds"
-run_case 60 fresh 0 1 1 "fresh marker -> postponed at first check, marker consumed"
+run_case 60 fresh 0 1 1 "fresh marker -> cancelled at first check, marker consumed"
 run_case 60 stale 0 0 60 "stale marker -> ignored and cleaned, reboot proceeds"
-run_case 60 0 2 1 2 "marker mid-window -> postponed when seen, marker consumed"
+run_case 60 0 2 1 2 "marker mid-window -> cancelled when seen, marker consumed"
 run_case 0 0 0 0 0 "zero delay edge -> immediate expiry, no sleep"
 
 echo "--- $pass passed, $fail failed ---"
