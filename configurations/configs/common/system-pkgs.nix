@@ -22,8 +22,9 @@
       man-pages
 
       # Provide xdg-open alias (open) as a command
+      # >/dev/null silences the objectpath leak from the portal gdbus call path
       (pkgs.writeShellScriptBin "open" ''
-        exec -a "$0" ${pkgs.xdg-utils}/bin/xdg-open "$@"
+        exec -a "$0" ${pkgs.xdg-utils}/bin/xdg-open "$@" >/dev/null
       '')
 
     ])
