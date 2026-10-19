@@ -98,6 +98,11 @@
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
+  ### GNOME Remote Desktop (system RDP/screencast daemon) is mkDefault-enabled
+  ### by the GNOME module — disabled: unused attack surface on a local-only
+  ### desktop (screen sharing/RDP reachable otherwise).
+  services.gnome.gnome-remote-desktop.enable = false;
+
   ### xdg mime (fix neovim association)
   xdg.mime.defaultApplications = {
     "text/plain" = "org.gnome.TextEditor.desktop";
