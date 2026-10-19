@@ -25,7 +25,7 @@ sed -e 's|\${cfg.channel}|flake|g' \
     -e 's|\${cfg.timeouts.clone}|5m|g' \
     -e 's|\${cfg.timeouts.lsRemote}|5m|g' \
     -e 's|\${toString cfg.minDiskGB}|10|g' \
-    -e 's|\${toString cfg.minBootMB}|500|g' \
+    -e 's|\${toString cfg.minBootMB}|200|g' \
     -e 's|\${toString cfg.timeouts.internetWait}|600|g' \
     -e 's|\${toString cfg.buildMaxAttempts}|3|g' \
     -e 's|\${toString cfg.buildRetryDelaySeconds}|60|g' \
@@ -34,12 +34,17 @@ sed -e 's|\${cfg.channel}|flake|g' \
 sed -i "s|''\\\${|\${|g" "$T/sync.func"
 grep -q '_check_disk_space() {' "$T/sync.func" && grep -q '_check_boot_space() {' "$T/sync.func" \
   && ! grep -Eq '\$\{(cfg|repo|lib)\.' "$T/sync.func" \
-  && ok "sync fragment extracted intact (+ boot-space check)" || ko "extraction broken"
+  && ! grep -q '_fail boot-space' "$T/sync.func" \
+  && ok "sync fragment extracted intact (+ advisory boot-space check)" || ko "extraction broken"
 
-# ── stub df: canned Available (1K blocks) per mountpoint ──
+# ── stub df: canned Available (1K blocks) per mountpoint; DF_BOOT_KB=fail
+#    simulates an unreadable/unmounted /boot (df exits non-zero) ──
 cat > "$T/fakebin/df" <<'EOF'
 #!/usr/bin/env bash
-if [[ "${1:-}" == "/nix/store" ]]; then avail="$DF_STORE_KB"; else avail="$DF_BOOT_KB"; fi
+if [[ "${1:-}" == "/nix/store" ]]; then avail="$DF_STORE_KB"
+elif [[ "${DF_BOOT_KB:-}" == "fail" ]]; then
+  echo "df: /boot: No such file or directory" >&2; exit 1
+else avail="$DF_BOOT_KB"; fi
 printf 'Filesystem 1K-blocks Used Available Use%% Mounted on\n/dev/fake 100000000 50000000 %s 50%% %s\n' "$avail" "$1"
 EOF
 chmod +x "$T/fakebin/df"
@@ -83,21 +88,32 @@ else
   ko "case store-low ($rc): $(cat "$T/out.log")"
 fi
 
-# ── 3: boot below 500M (the hp-240 ESP incident) → fail boot-space ──
+# ── 3: boot below 200M → WARNING only, run keeps going (advisory check) ──
 rc=$(run_case 57344 100)
-if [[ "$rc" != "rc=0" ]] && grep -q "Disk space OK" "$T/out.log" \
-  && grep -q "ERROR(boot-space:" "$T/out.log"; then
-  ok "100M boot → fail boot-space after store OK ($rc)"
+if [[ "$rc" == "rc=0" ]] && grep -q "Disk space OK" "$T/out.log" \
+  && grep -q "Boot space low: 100 MB < 200 MB" "$T/out.log" \
+  && ! grep -q "ERROR(" "$T/out.log"; then
+  ok "100M boot → warning, no failure ($rc)"
 else
   ko "case boot-low ($rc): $(cat "$T/out.log")"
 fi
 
 # ── 4: exactly at thresholds → pass (strict < comparison) ──
-rc=$(run_case 10240 500)
+rc=$(run_case 10240 200)
 if [[ "$rc" == "rc=0" ]]; then
-  ok "exactly 10G/500M → pass ($rc)"
+  ok "exactly 10G/200M → pass ($rc)"
 else
   ko "case boundary ($rc): $(cat "$T/out.log")"
+fi
+
+# ── 5: df cannot read /boot → warning, never treated as 0 MB ──
+export DF_STORE_KB=$(( 57344 * 1024 )) DF_BOOT_KB=fail
+if bash <(driver) > "$T/out.log" 2>&1; then rc=0; else rc=$?; fi
+if [[ "$rc" == "0" ]] && grep -q "Unable to determine free space on /boot" "$T/out.log" \
+  && ! grep -q "ERROR(" "$T/out.log"; then
+  ok "df /boot failing → warning, no failure (rc=$rc)"
+else
+  ko "case boot-unreadable ($rc): $(cat "$T/out.log")"
 fi
 
 echo "--- $pass passed, $fail failed ---"

@@ -4,8 +4,10 @@
 #
 # Contract (functions exported; globals set: SRC_ID, FLAKE, LOCK_HASH):
 #   _check_disk_space              — _fail disk-space below cfg.minDiskGB on /nix/store
-#   _check_boot_space              — _fail boot-space below cfg.minBootMB on /boot
-#                                    (one kernel+initrd copy per kept generation)
+#   _check_boot_space              — WARNING only below cfg.minBootMB on /boot,
+#                                    never fails the run (advisory: one
+#                                    kernel+initrd copy per kept generation);
+#                                    unreadable /boot → warning, continue
 #   _check_internet_once         — curl cache.nixos.org + StoreDir content check
 #                                  (a captive portal answers HTTP 200 with a
 #                                  login page — status alone lies)
@@ -56,15 +58,27 @@ in
   }
 
   _check_boot_space() {
+    # Advisory only: a low ESP must never block the run (the 850 default
+    # blocked every 1G ESP with 2+ kept generations — false boot-space
+    # failures, updates frozen). Below the threshold the run continues and
+    # the real failure, if any, surfaces later as rebuild-boot (ENOSPC).
+    # df -P keeps the row on a single line (long device names wrap in the
+    # default format, NR==2 then reads garbage); a failing df means an
+    # unreadable/unmounted /boot — warn and continue, never treat as 0.
     local min_space_mb=${toString cfg.minBootMB}
     local available_kb
     local available_mb
 
-    available_kb=$(df /boot | awk 'NR==2 {print $4}')
+    if ! available_kb=$(df -P /boot 2>/dev/null | awk 'NR==2 {print $4}') \
+      || [[ ! "$available_kb" =~ ^[0-9]+$ ]]; then
+      _status WARNING "Unable to determine free space on /boot; continuing."
+      return 0
+    fi
     available_mb=$((available_kb / 1024))
 
     if [ "$available_mb" -lt "$min_space_mb" ]; then
-      _fail boot-space "$available_mb < $min_space_mb"
+      _status WARNING "Boot space low: $available_mb MB < $min_space_mb MB — continuing (boot install may fail with ENOSPC; prune old generations if so)."
+      return 0
     fi
 
     _status INFO "Boot space OK: $available_mb MB available"
