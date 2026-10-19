@@ -63,6 +63,8 @@ in
       "debugfs=off"
       "module.sig_enforce=1"
       "random.trust_cpu=off"
+      "init_on_alloc=0"
+      "init_on_free=1"
     ];
     #++
     #  lib.optionals (config.hardware.cpu.intel.updateMicrocode && config.virtualisation.libvirtd.enable)
