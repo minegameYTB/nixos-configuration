@@ -27,6 +27,13 @@
       warn-dirty = false;
       auto-optimise-store = true;
       trusted-users = [ "@wheel" ];
+      ### Who may talk to the daemon at all (default "*", anyone). Trusted
+      ### users are always allowed; the whole stack (auto-update, nspawnctl,
+      ### nixos-rebuild) runs as root/wheel so nothing else needs in.
+      allowed-users = [
+        "root"
+        "@wheel"
+      ];
       ### Refuse flake nixConfig (incl. the nix-cachyos-kernel input, which
       ### injects the dead attic.xuyh0120.win substituter).
       accept-flake-config = false;
@@ -60,6 +67,36 @@
       automatic = true;
       dates = [ "monthly" ];
     };
+  };
+
+  ### nix-daemon socket: default is world-connectable (0666) — pair with
+  ### allowed-users above so only root/wheel can even reach the socket.
+  ### Re-login needed for the group change to matter; root always connects.
+  systemd.sockets.nix-daemon.socketConfig = {
+    SocketMode = "0660";
+    SocketGroup = "wheel";
+  };
+
+  ### nix-daemon unit hardening (Tier A: zero functional risk on top of the
+  ### upstream unit, which ships none of these). Deliberately NOT set here —
+  ### each one breaks builds or the daemon itself:
+  ###   MemoryDenyWriteExecute  — JIT/lang runtime builds (rustc, V8, java)
+  ###   LockPersonality         — kills 32-bit builds (enable32Bit, games)
+  ###   SystemCallFilter        — sandbox/seccomp interaction with the builder
+  ###   RestrictNamespaces      — the nix sandbox IS unshare/namespaces
+  ###   NoNewPrivileges         — inherited by build children, setuid fixups
+  ###   PrivateTmp              — nested sandbox mount setup
+  ### ProtectSystem=full keeps /nix and /tmp writable (builds, profiles,
+  ### downloads), only /etc /usr /boot go read-only for the daemon.
+  systemd.services.nix-daemon.serviceConfig = {
+    ProtectKernelTunables = true;
+    ProtectKernelModules = true;
+    ProtectKernelLogs = true;
+    ProtectControlGroups = true;
+    ProtectClock = true;
+    ProtectHostname = true;
+    RestrictRealtime = true;
+    ProtectSystem = "full";
   };
 
   #specialisation.all-cores = {
