@@ -46,7 +46,7 @@
       gnome-extension-manager
       thunderbird
       file-roller
-      amberol
+      #amberol
       #pika-backup
 
       ### Themes

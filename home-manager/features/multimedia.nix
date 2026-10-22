@@ -14,7 +14,7 @@ in
   home.packages =
     (with pkgs; [
       vlc
-      amberol
+      #amberol
       #pika-backup
       #warp
     ])
