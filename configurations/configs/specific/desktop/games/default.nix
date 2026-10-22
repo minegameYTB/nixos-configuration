@@ -48,5 +48,8 @@
     else
       ""
   );
-  hardware.xone.enable = true;
+  # TODO(xone): disabled temporarily — xpad-noone fails to build with the new
+  # kmodigest module signing (missing .ko.cer), fixed by nixpkgs PR #576469
+  # (merged 2026-10-22, not yet in nixpkgs-main). Re-enable once it lands.
+  hardware.xone.enable = false;
 }
