@@ -340,6 +340,14 @@
         )
       );
 
+      ### VM integration tests (healthcheck + auto-rollback wiring)
+      checks = lib.genAttrs systems (
+        system:
+        lib.optionalAttrs (system == "x86_64-linux") {
+          auto-update-vm = import ./test/auto-update-vm.nix { pkgs = pkgsFor system; };
+        }
+      );
+
       ### NixOS configurations (defined in machine.nix)
       nixosConfigurations = import ./machine.nix {
         inherit
