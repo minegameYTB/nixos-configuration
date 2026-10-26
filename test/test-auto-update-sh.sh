@@ -578,8 +578,10 @@ setup_vstate(){
   VDIR="$dir"
 }
 run_validate(){
-  local healthfile="$1" healthy="$2" verdict
-  if HEALTHY="$healthy" VDIR="$VDIR" BOOTED_SYS="$VDIR/booted" bash -c "
+  local healthfile="$1" healthy="$2" verdict vdir booted
+  vdir="$VDIR"
+  booted="$vdir/booted"
+  if HEALTHY="$healthy" VDIR="$vdir" BOOTED_SYS="$booted" bash -c "
     _status() { echo \"STATUS: \$*\" >> \"\$VDIR/calls\"; }
     _write_state() { echo \"STATE: \$*\" >> \"\$VDIR/calls\"; }
     _notify_or_queue() { echo \"NOTIFY: \$*\" >> \"\$VDIR/calls\"; return 0; }
