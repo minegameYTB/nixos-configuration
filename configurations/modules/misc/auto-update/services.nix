@@ -487,11 +487,6 @@ in
   systemd.services.nixos-autoupdate-healthcheck = lib.mkIf cfg.healthCheck.enable {
     description = "Validate staged auto-update generation after boot";
 
-    unitConfig = {
-      After = lib.optional cfg.healthCheck.requireNetwork "network-online.target";
-      Wants = lib.optional cfg.healthCheck.requireNetwork "network-online.target";
-    };
-
     wantedBy = [ "multi-user.target" ];
 
     serviceConfig = {

@@ -543,6 +543,22 @@ run_health "sshd.service cron.service" "$T/route-bad"
 (( HRc != 0 )) && grep -q 'no default IPv4 route' "$T/health.out" \
   && ok "missing route → 1 + logged" || ko "missing route not detected"
 
+# The route may appear just after multi-user.target (NetworkManager is
+# async): poll within the same settle budget instead of requiring
+# network-online.target.
+cp "$T/route-bad" "$T/route-late"
+( sleep 0.2; cp "$T/route-good" "$T/route-late" ) &
+route_pid=$!
+if ACTIVE_UNITS="sshd.service cron.service" PROC_NET_ROUTE="$T/route-late" FAILED_UNITS="" \
+  HEALTH_WAIT_TIMEOUT=10 HEALTH_WAIT_INTERVAL=0 \
+  bash -c "_status() { echo \"STATUS: \$*\"; }; source \"$T/health.resolved\"; check_health" > "$T/health.out" 2>&1; then
+  HRc=0
+else
+  HRc=$?
+fi
+wait "$route_pid" || true
+(( HRc == 0 )) && ok "late default route → polled until present" || ko "late route not polled"
+
 run_health "sshd.service cron.service" "$T/route-good" "● foo.service loaded failed failed Foo"
 (( HRc != 0 )) && grep -q 'failed unit: foo.service' "$T/health.out" \
   && ok "failed unit → 1 + logged" || ko "failed unit not detected"

@@ -228,7 +228,7 @@ in
       timeout = lib.mkOption {
         type = lib.types.ints.positive;
         default = 120;
-        description = "Settle budget in seconds for units that start after multi-user.target (the healthcheck polls instead of failing on the first probe; the service allows 2h for an auto-rollback).";
+        description = "Settle budget in seconds for units that start after multi-user.target and for the default IPv4 route (the healthcheck polls instead of failing on the first probe; the service allows 2h for an auto-rollback).";
       };
     };
 

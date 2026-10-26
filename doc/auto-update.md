@@ -95,7 +95,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `healthCheck.checkFailedUnits` | `true` | Fail validation when any unit is failed (essential-boot signal). |
 | `healthCheck.failedUnitsIgnore` | `[ ]` | Unit names ignored by `checkFailedUnits` (known-benign, unrelated failures). |
 | `healthCheck.autoRollback` | `false` | Restore the previous healthy system as next boot generation on unhealthy staged boot (one-shot per staged generation; inhibit gate kept — human must clear it). |
-| `healthCheck.timeout` | `120` | Settle budget in seconds for units that start after `multi-user.target` (the healthcheck polls instead of failing on the first probe). |
+| `healthCheck.timeout` | `120` | Settle budget in seconds for units that start after `multi-user.target` and for the default IPv4 route (the healthcheck polls instead of failing on the first probe). |
 
 Example (test VM profile):
 
@@ -236,7 +236,7 @@ Rollback only drops the updater's own tracking state (plus a leftover `flake.new
 When the service stages a generation it records its store path in `/var/lib/nixos-auto-update/staged-system` plus the healthy pre-update generation in `previous-system`. After the next boot, `nixos-autoupdate-healthcheck.service` (oneshot, wanted by `multi-user.target`) compares: booted system ≠ staged → nothing to validate, silent exit. Booted == staged → validation boot:
 
 - units in `healthCheck.units` must be `active` (default: `display-manager.service` on desktop profiles, `sshd.service` on servers — overridable per machine),
-- default IPv4 route required when `healthCheck.requireNetwork` (loopback excluded),
+- default IPv4 route required when `healthCheck.requireNetwork` (loopback excluded, polled within `healthCheck.timeout` instead of depending on `network-online.target`),
 - no unit in `failed` state when `healthCheck.checkFailedUnits` (essential-boot signal; names in `healthCheck.failedUnitsIgnore` are skipped),
 - healthy → markers deleted, generation adopted, journal only (success never notifies),
 - unhealthy → persistent `critical` bilingual notification + `inhibited` file (reason + date) + failed unit + structured state (`healthcheck-failed`). **Further auto-update runs stop** on the inhibit flag until a human deletes it — deliberate gate.

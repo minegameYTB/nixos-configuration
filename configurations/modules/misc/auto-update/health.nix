@@ -45,17 +45,26 @@
     done
     if ${lib.boolToString cfg.healthCheck.requireNetwork}; then
       # Default route via a gateway (lo excluded: destination 00000000
-      # with a 00000000 gateway is just loopback, not uplink).
-      while read -r iface dest gw _; do
-        if [[ "$iface" != "lo" && "$dest" == "00000000" && "$gw" != "00000000" ]]; then
-          route_ok=1
+      # with a 00000000 gateway is just loopback, not uplink). Poll within
+      # the same settle budget instead of pulling network-online.target:
+      # the target is optional in many network setups, and failing on a
+      # route that appears one second later would roll back a healthy boot.
+      while true; do
+        route_ok=0
+        while read -r iface dest gw _; do
+          if [[ "$iface" != "lo" && "$dest" == "00000000" && "$gw" != "00000000" ]]; then
+            route_ok=1
+            break
+          fi
+        done < "''${PROC_NET_ROUTE:-/proc/net/route}" 2>/dev/null || true
+        (( route_ok )) && break
+        if (( SECONDS >= deadline )); then
+          _status WARNING "no default IPv4 route"
+          bad=1
           break
         fi
-      done < "''${PROC_NET_ROUTE:-/proc/net/route}" 2>/dev/null || true
-      if (( ! route_ok )); then
-        _status WARNING "no default IPv4 route"
-        bad=1
-      fi
+        sleep "$interval"
+      done
     fi
     # Essential-boot signal: any failed unit fails validation.
     # (Fail-open on tool error: systemctl itself failing will usually
