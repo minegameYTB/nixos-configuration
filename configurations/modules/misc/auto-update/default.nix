@@ -48,7 +48,7 @@ in
     checkInterval = lib.mkOption {
       type = lib.types.str;
       default = "12h";
-      description = "How often to check for updates (systemd monotonic OnUnitInactiveSec — counted from the previous run's end, unlike GLF-OS OnUnitActiveSec which counts from its start). Daily checks absorb manual rev bumps (every 3-4 days) within a day; wall-clock drifting is intended — updates spread themselves.";
+      description = "How often to check for updates (systemd monotonic OnUnitInactiveSec — counted from the previous run's end, unlike GLF-OS OnUnitActiveSec which counts from its start). Twice-daily checks absorb manual rev bumps (every 3-4 days) within half a day; wall-clock drifting is intended — updates spread themselves.";
     };
 
     startDelay = lib.mkOption {
@@ -96,7 +96,7 @@ in
     notify = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Desktop notification on success/failure. Only effective with a real DE installed and an active graphical session; otherwise journal-only (failures are queued for the next login).";
+      description = "Desktop notification on success/failure. Only effective with a real DE installed and an active graphical session; otherwise journal-only (queued delivery applies only to desktop builds with no live session).";
     };
 
     notifyIcon = lib.mkOption {

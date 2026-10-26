@@ -44,6 +44,11 @@ _err_lookup() {
     rebuild-boot:body_fr) printf '%s' "La reconstruction du système a échoué." ;;
     rebuild-boot:title_en) printf '%s' "NixOS Update — Rebuild failed" ;;
     rebuild-boot:body_en) printf '%s' "System rebuild failed." ;;
+    state-error:urgency) printf '%s' "critical" ;;
+    state-error:title_fr) printf '%s' "Mise à jour NixOS — État incohérent" ;;
+    state-error:body_fr) printf '%s' "L’état interne de mise à jour est corrompu." ;;
+    state-error:title_en) printf '%s' "NixOS Update — Inconsistent state" ;;
+    state-error:body_en) printf '%s' "The updater internal state is inconsistent." ;;
     *) printf '%s' "" ;;
   esac
 }
@@ -468,6 +473,13 @@ AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" bash -c "$FAIL_PRE
 _notify_failure" 2>/dev/null
 [[ -f "$T/state/pending-notification" ]] \
   && ok "headless failure → queued" || ko "headless failure not queued"
+
+printf 'corrupt-state-without-pipes' > "$T/state/last-rebuild-status"
+: > "$CALLS"
+LANG=C AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" bash -c "$FAIL_PRE
+_notify_failure" 2>/dev/null || true
+grep -q 'RUNUSER:.*Inconsistent state' "$CALLS" \
+  && ok "corrupt state → state-error notification" || ko "corrupt state not reported"
 
 # ── check_health cases ──
 cat > "$T/fakebin/systemctl" <<'EOF'

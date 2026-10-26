@@ -49,7 +49,7 @@ bash test/test-auto-update-env-runtime.sh
 
 ## How it works
 
-Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 2 days) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — advisory only: below the threshold the run logs a warning and continues, it is never blocked there; a genuinely full ESP still fails the boot install with ENOSPC after a successful build, reported as `rebuild-boot`), internet connectivity with wait + retries (double gate: `cache.nixos.org` body must contain `StoreDir` — a captive portal answers HTTP 200 with a login page — *and* a short `git ls-remote` probe of the channel forge must succeed; the channel resolve itself is then retried in-run 3x/30s before failing as `channel-resolve`), per-phase `timeouts.*`; a colliding run exits `75` (stays green). Each run holds logind `sleep` + `handle-lid-switch` block inhibitors (`inhibitSleep`) for its whole execution (reboot countdown included), so no suspend/hibernate can freeze it mid-flight; the inhibitor holder has a 24h backstop in case the run dies without releasing it. The `sleep` lock makes logind refuse GNOME's idle suspend (gsd-power only consults gnome-session inhibitors, so it still attempts one at each idle timeout — the request fails); the `handle-lid-switch` lock covers logind's own lid handling, which ignores sleep blockers by default (`LidSwitchIgnoreInhibited=yes`) — without it, closing the lid would suspend the machine mid-run.
+Each timer run (`nixos-auto-update.service`, oneshot, low CPU/IO priority, skipped on battery via `ConditionACPower` unless `requireACPower = false`). The timer is monotonic (`OnBootSec` + `OnUnitInactiveSec`, default every 12h) — cadence drifts by design, no wall-clock anchoring. While suspended the monotonic clock is frozen, so the timer neither elapses nor wakes the machine by default; opt-in `wakeFromSuspend = true` (e.g. hp-240) programs an RTC wake alarm (`WakeSystem`) so a suspended machine resumes for its check — no effect when powered off (`Persistent` still covers the boot catch-up instead). Pre-checks first: free disk on `/nix/store` (`minDiskGB`) and on `/boot` (`minBootMB` — advisory only: below the threshold the run logs a warning and continues, it is never blocked there; a genuinely full ESP still fails the boot install with ENOSPC after a successful build, reported as `rebuild-boot`), internet connectivity with wait + retries (double gate: `cache.nixos.org` body must contain `StoreDir` — a captive portal answers HTTP 200 with a login page — *and* a short `git ls-remote` probe of the channel forge must succeed; the channel resolve itself is then retried in-run 3x/30s before failing as `channel-resolve`), per-phase `timeouts.*`; a colliding run exits `75` (stays green). Each run holds logind `sleep` + `handle-lid-switch` block inhibitors (`inhibitSleep`) for its whole execution (reboot countdown included), so no suspend/hibernate can freeze it mid-flight; the inhibitor holder has a 24h backstop in case the run dies without releasing it. The `sleep` lock makes logind refuse GNOME's idle suspend (gsd-power only consults gnome-session inhibitors, so it still attempts one at each idle timeout — the request fails); the `handle-lid-switch` lock covers logind's own lid handling, which ignores sleep blockers by default (`LidSwitchIgnoreInhibited=yes`) — without it, closing the lid would suspend the machine mid-run.
 
 Smart behavior — unchanged state costs nothing:
 
@@ -67,7 +67,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `enable` | `false` | Opt-in per machine profile. |
 | `channel` | `"flake-autoupdate"` | Last soaked-green source commit followed (not the local `.branch`). |
 | `configuration` | `null` (required) | `nixosConfigurations.<name>` to build — intentionally not `networking.hostName`. |
-| `checkInterval` | `"1d"` | Check cadence (`OnUnitInactiveSec`, from previous run's end). Daily absorbs manual rev bumps (every 3-4 days) within a day. |
+| `checkInterval` | `"12h"` | Check cadence (`OnUnitInactiveSec`, from previous run's end). Twice-daily absorbs manual rev bumps (every 3-4 days) within half a day. |
 | `startDelay` | `"5min"` | First-check delay after boot (`OnBootSec`). Short like GLF-OS (`1min`) for prompt catch-up. |
 | `randomizedDelay` | `"10min"` | Jitter per trigger (spread a fleet). Added on top of `startDelay` at boot, so worst case the first check runs ~15min after boot. |
 | `allowReboot` | `false` | Reboot automatically on kernel/init/initrd change (behind a `rebootDelayMinutes` countdown, postponable). |
@@ -109,7 +109,7 @@ system.autoUpdate = {
 
 Journal (`journalctl -u nixos-auto-update.service`) is always written and is the source of truth; `logFile` keeps the persistent text copy. Every substantive line goes through `_status` (fd 5) or `_prefix_lines` (streamed command output: rebuild logs, `nvd` diff): uniform `[LEVEL]` lines under a single PID per run in both sinks, ANSI control sequences stripped. Desktop `notify-send` is best-effort, bilingual (FR/EN per user, from the systemd user session `LANG` when available), with a double gate:
 
-- **Eval time**: real DE installed (`services.desktopManager.gnome.enable`), not just `marker.hostProfile`. Servers and headless profiles stay journal-only (failures are queued, never lost).
+- **Eval time**: real DE installed (`services.desktopManager.gnome.enable`), not just `marker.hostProfile`. Servers and headless profiles stay journal-only; queued delivery only applies to desktop builds with no active session at that moment.
 - **Runtime**: an active graphical session must own `/run/user/<uid>/bus` (user other than a display-manager greeter: `gdm`, `lightdm`, `sddm`, `greeter`); otherwise the bilingual notification is queued in `/var/lib/nixos-auto-update/pending-notification` and delivered at the next graphical login by the per-user `nixos-auto-update-notify-pending.service` (dedup by id).
 - **Failures**: a crash before notifying is covered by `nixos-auto-update-notify-failure.service` (`onFailure`), which reads the machine-readable CODE from the state file and notifies (or queues) accordingly.
 - **Anti-spam**: each generation notifies at most once — re-runs on an unchanged tree stay journal-only. Failures always notify.
@@ -118,7 +118,7 @@ Journal (`journalctl -u nixos-auto-update.service`) is always written and is the
 
 ## Error catalogue
 
-Every failure goes through `_fail CODE [detail]` (see `errors.nix`, the single source of truth — edit messages there, never in the fragments). The CODE lands in the journal, the state file (`failed|<date>|<CODE>|pending|notified`), and the notification:
+Every failure goes through `_fail CODE [detail]` (see `errors.nix`, the single source of truth — edit messages there, never in the fragments). The CODE lands in the journal, the state file (`failed|<date>|<CODE>|<pending|notified>`), and the notification:
 
 | CODE | Meaning |
 |---|---|
@@ -206,7 +206,7 @@ Target: `vm-cli-efi` (btrfs, ~2 vCPU / 2–3 GiB RAM / 40 GiB qcow2). ZFS specif
   - **g.** Power cut during update → start the service, then `kill -KILL` its MainPID (or power off the VM) mid-run → `verify` shows the recovery lines and a clean rerun instead of a blind rebuild; needs `/nix/store` writable.
 6. Acceptance: staged generations accumulate, rollback boots, timer + journal clean.
 
-## Transaction (`prepared → applying → staged → validating → committed`)
+## Transaction (`prepared → applying → committed`, then `staged`/`validating` via markers)
 
 Each run opens a transaction in `/var/lib/nixos-auto-update/update-transactions/current`
 (`phase`, `old-system`, `boot-install-attempts`, max 3) under `flock --nonblock`
@@ -226,11 +226,13 @@ traps. `_recover_transaction()` runs first every time:
   (`boot-recovery-rolled-back`) or preserve the transaction (`boot-recovery`);
 - `restoring-*` → resume the restoration; anything else → drop the tracking dir.
 
+`staged` and `validating` are logical stages after the transaction dir is gone:
+`staged-system`/`previous-system` markers hand over to the post-boot healthcheck.
 Rollback only drops the updater's own tracking state (plus a leftover `flake.new`).
 
 ## Post-boot healthcheck (the `validating` phase)
 
-When the service stages a generation it records its store path in `/var/lib/nixos-auto-update/staged-system` plus the healthy pre-update generation in `previous-system`. After the next boot, `nixos-autoupdate-healthcheck.service` (oneshot, after `multi-user.target`) compares: booted system ≠ staged → nothing to validate, silent exit. Booted == staged → validation boot:
+When the service stages a generation it records its store path in `/var/lib/nixos-auto-update/staged-system` plus the healthy pre-update generation in `previous-system`. After the next boot, `nixos-autoupdate-healthcheck.service` (oneshot, wanted by `multi-user.target`) compares: booted system ≠ staged → nothing to validate, silent exit. Booted == staged → validation boot:
 
 - units in `healthCheck.units` must be `active` (default: `display-manager.service` on desktop profiles, `sshd.service` on servers — overridable per machine),
 - default IPv4 route required when `healthCheck.requireNetwork` (loopback excluded),

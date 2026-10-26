@@ -260,7 +260,7 @@ in
 
       ### Smart state: (source-id, lock-hash) of the last fully successful
       ### run. Identical state → nothing changed upstream: skip update AND
-      ### rebuild (no network, no generation spam).
+      ### rebuild (no generation spam; the channel sync above already ran).
       if [[ -n "$last_ok" && "$last_ok" == "$SRC_ID $LOCK_HASH" ]]; then
         _debug "Unchanged since last run, skipping"
         _status INFO "Source and inputs unchanged since last successful run, skipping."

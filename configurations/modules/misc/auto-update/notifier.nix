@@ -388,7 +388,7 @@ let
       local reason="unknown"
       local state_kind="" state_date="" stored_reason="" notification_status=""
       local title_fr message_fr title_en message_en
-      local notified_any=0
+      local notified_any=0 state_valid=0
 
       # Journal-only builds (no DE / notify=false) never queue: there will
       # never be a graphical login to deliver to.
@@ -396,7 +396,30 @@ let
 
       if [ -f "$STATE_FILE" ]; then
         IFS='|' read -r state_kind state_date stored_reason notification_status < "$STATE_FILE" || true
-        [ -n "$stored_reason" ] && reason="$stored_reason"
+        case "$state_kind" in
+          running)
+            if [ -n "$state_date" ] && [ -n "$stored_reason" ] \
+              && { [ "$notification_status" = "pending" ] || [ "$notification_status" = "notified" ]; }; then
+              state_valid=1
+            fi
+            ;;
+          failed)
+            if [ -n "$state_date" ] && [ -n "$stored_reason" ] \
+              && { [ "$notification_status" = "pending" ] || [ "$notification_status" = "notified" ]; }; then
+              state_valid=1
+            fi
+            ;;
+          ok)
+            [ -n "$state_date" ] && state_valid=1
+            ;;
+        esac
+        if [ "$state_valid" -eq 1 ]; then
+          [ -n "$stored_reason" ] && reason="$stored_reason"
+        else
+          # A state file that exists but cannot be parsed is not a normal
+          # crash: surface it as state-error instead of a generic unknown.
+          reason="state-error"
+        fi
       fi
 
       # A detailed notification was already sent by _fail().
