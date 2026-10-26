@@ -429,16 +429,17 @@ in
     '';
   };
 
-  ### Symmetric GC ordering: the main service waits for nix-gc via After=,
-  ### and nix-gc waits for a running update here. flock on the update lock
-  ### (held for the whole run, see _acquire_lock — instant no-op when idle).
+  ### GC ordering: the main service waits for nix-gc via After=, and nix-gc
+  ### waits for a running update through ExecStartPre (flock on the update
+  ### lock, held for the whole run — instant no-op when idle). Do NOT add
+  ### After=nixos-auto-update.service here too: combined with the update's
+  ### own After=nix-gc.service that is a systemd ordering cycle.
   ### On timeout the GC fails instead of collecting mid-build (weekly retry);
   ### TimeoutStartSec must exceed the flock wait since ExecStartPre counts
   ### toward start timeout (stock default is 90s). Absolute flock path: the
   ### stock nix-gc unit has no restrictive PATH of ours. Scoped to
   ### autoUpdate-enabled machines like the rest of this file.
   systemd.services.nix-gc = {
-    unitConfig.After = [ "nixos-auto-update.service" ];
     serviceConfig = {
       ExecStartPre = [
         "+${pkgs.util-linux.bin}/bin/flock -w 10800 /run/lock/nixos-auto-update.lock -c true"
