@@ -19,6 +19,37 @@ fragment services.nix reboot-countdown > "$T/reboot.func"
 grep -q '_await_reboot_window() {' "$T/reboot.func" \
   && ok "reboot-countdown extracted intact" || ko "reboot-countdown extraction broken"
 
+# ── _needs_reboot: boot-critical files, including initrd ──
+fragment services.nix reboot-needed > "$T/need.func"
+grep -q '_needs_reboot() {' "$T/need.func" \
+  && ok "reboot-needed extracted intact" || ko "reboot-needed extraction broken"
+
+run_need(){
+  local mut="$1" want="$2" desc="$3"
+  local b="$T/need-booted-$pass-$fail" n="$T/need-new-$pass-$fail"
+  rm -rf "$b" "$n"; mkdir -p "$b" "$n"
+  for f in kernel init initrd; do echo "base-$f" > "$b/$f"; echo "base-$f" > "$n/$f"; done
+  case "$mut" in
+    kernel) echo changed > "$n/kernel" ;;
+    init) echo changed > "$n/init" ;;
+    initrd) echo changed > "$n/initrd" ;;
+    missing) rm -f "$n/initrd" ;;
+  esac
+  local rc=0
+  if bash -c "source \"$T/need.func\"; _needs_reboot \"$b\" \"$n\"" 2>/dev/null; then
+    rc=0
+  else
+    rc=$?
+  fi
+  if [[ "$rc" == "$want" ]]; then ok "$desc (rc=$rc)"; else ko "$desc: got rc=$rc, want $want"; fi
+}
+
+run_need same 1 "identical kernel/init/initrd -> no reboot"
+run_need kernel 0 "kernel change -> reboot"
+run_need init 0 "init change -> reboot"
+run_need initrd 0 "initrd-only change -> reboot (regression)"
+run_need missing 0 "missing boot file -> reboot"
+
 # run_case <delay> <precreate:0|fresh|stale> <create_at_tick:0=never> <want_rc> <want_ticks> <desc>
 # CREATE_AT>0: the stubbed sleep creates the marker once ticks reach it.
 # Only markers created during the window count: stale ones are dropped.

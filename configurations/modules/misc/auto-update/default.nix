@@ -66,7 +66,7 @@ in
     allowReboot = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Automatically reboot when the new generation changes kernel or init. The reboot waits out rebootDelayMinutes first and can be cancelled by creating the cancel marker file.";
+      description = "Automatically reboot when the new generation changes kernel, init or initrd. The reboot waits out rebootDelayMinutes first and can be cancelled by creating the cancel marker file.";
     };
 
     rebootDelayMinutes = lib.mkOption {

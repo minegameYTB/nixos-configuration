@@ -162,6 +162,20 @@ in
       ${syncScript}
       ${debugScript}
 
+      # >>>BEGIN reboot-needed
+      _needs_reboot() {
+        # A new boot generation differs in more than kernel/init: initrd is
+        # rebuilt whenever stage-1 modules, firmware or kernel config change.
+        # Missing any of these files means the generation cannot be compared
+        # safely, so prefer a reboot over silently booting stale boot files.
+        local booted="$1" new="$2" f
+        for f in kernel init initrd; do
+          cmp -s "$booted/$f" "$new/$f" || return 0
+        done
+        return 1
+      }
+      # <<<END reboot-needed
+
       ### Anti-spam state for note_once (see notifier.nix): each generation
       ### notifies at most once.
       last_notified=""
@@ -278,9 +292,9 @@ in
       fi
 
       NEEDS_REBOOT=0
-      for f in kernel init; do
-        cmp -s "$BOOTED_SYSTEM/$f" "$NEW_SYSTEM/$f" || NEEDS_REBOOT=1
-      done
+      if _needs_reboot "$BOOTED_SYSTEM" "$NEW_SYSTEM"; then
+        NEEDS_REBOOT=1
+      fi
 
       ### Record both ends for post-boot validation (healthcheck) BEFORE
       ### last-ok: a crash in between must leave last-ok behind (next run
