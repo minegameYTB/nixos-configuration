@@ -33,19 +33,28 @@ let
       local notification_tmp
       local notification_id
 
-      mkdir -p "$STATE_DIR"
-      notification_tmp=$(mktemp "$STATE_DIR/.pending-notification.XXXXXX")
+      # This function is called from `if _queue...`, where bash disables
+      # errexit for the whole body: every step must report failure itself,
+      # otherwise a failed mkdir/mktemp/mv looked like a successful queue.
+      mkdir -p "$STATE_DIR" || return 1
+      notification_tmp=$(mktemp "$STATE_DIR/.pending-notification.XXXXXX") || return 1
       notification_id="$(date +%s%N)-$$"
-      printf '%s|%s|%s|%s|%s|%s\n' \
+      if ! printf '%s|%s|%s|%s|%s|%s\n' \
         "$notification_id" \
         "$urgency" \
         "$(printf '%s' "$1" | base64 -w 0)" \
         "$(printf '%s' "$2" | base64 -w 0)" \
         "$(printf '%s' "$3" | base64 -w 0)" \
         "$(printf '%s' "$4" | base64 -w 0)" \
-        > "$notification_tmp"
-      chmod 0644 "$notification_tmp"
-      mv -f -- "$notification_tmp" "$PENDING_NOTIFICATION_FILE"
+        > "$notification_tmp"; then
+        rm -f -- "$notification_tmp"
+        return 1
+      fi
+      if ! chmod 0644 "$notification_tmp" \
+        || ! mv -f -- "$notification_tmp" "$PENDING_NOTIFICATION_FILE"; then
+        rm -f -- "$notification_tmp"
+        return 1
+      fi
       sync -f "$STATE_DIR" || true
     }
 
@@ -143,11 +152,32 @@ let
         _status INFO "$1: $2 (already notified, silent)"
         return 0
       fi
-      _notify_or_queue "$@"
+      if ! _notify_or_queue "$@"; then
+        _status WARNING "Notification could not be delivered or queued; it will be retried on the next run."
+        return 0
+      fi
       echo "$sys" > "$NOTIFIED_FILE"
       last_notified="$sys"
     }
     # <<<END notifier-once
+    _user_lang() {
+      # Prefer the language of the user's systemd session over the service's
+      # LANG: the root service inherits the system locale, which can differ
+      # from what the logged-in user chose. Fall back to the caller's LANG.
+      local uid="$1" user="$2" env_dump="" lang=""
+
+      env_dump=$(timeout --signal=TERM 2s runuser -u "$user" -- env \
+        XDG_RUNTIME_DIR="/run/user/$uid" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        systemctl --user show-environment 2>/dev/null) || true
+      case "$env_dump" in
+        LANG=*) lang="$env_dump" ;;
+        *$'\nLANG='*) lang="''${env_dump#*$'\n'LANG=}" ;;
+      esac
+      lang="''${lang%%$'\n'*}"
+      printf '%s' "$lang"
+    }
+
     _notify_user() {
       local uid="$1" user="$2" urgency="$3" title="$4" message="$5"
 
@@ -172,13 +202,8 @@ let
       local urgency="''${5:-normal}"
       local lang="''${LANG:-en}"
       local run_dir="''${AUTO_UPDATE_RUN_USER_DIR:-/run/user}"
-      local notified_any=0
-      local title message path uid user
-
-      case "''${lang%%_*}" in
-        fr) title="$title_fr"; message="$message_fr" ;;
-        *) title="$title_en"; message="$message_en" ;;
-      esac
+      local notified_any=0 failed_any=0
+      local title message path uid user user_lang
 
       for path in "$run_dir"/*; do
         [ -d "$path" ] || continue
@@ -189,17 +214,30 @@ let
         esac
         user=$(id -nu "$uid" 2>/dev/null) || continue
         [ -n "$user" ] || continue
-        # Never notify the display-manager greeter itself.
-        [ "$user" != "gdm" ] || continue
+        # Never notify a display-manager greeter itself.
+        case "$user" in
+          gdm|lightdm|sddm|greeter) continue ;;
+        esac
+
+        user_lang=$(_user_lang "$uid" "$user")
+        [ -n "$user_lang" ] || user_lang="$lang"
+        case "''${user_lang%%_*}" in
+          fr) title="$title_fr"; message="$message_fr" ;;
+          *) title="$title_en"; message="$message_en" ;;
+        esac
 
         if _notify_user "$uid" "$user" "$urgency" "$title" "$message"; then
           notified_any=1
         else
+          failed_any=1
           _status WARNING "Unable to notify user $user."
         fi
       done
 
-      [ "$notified_any" -eq 1 ]
+      # 0 = all live sessions notified, 2 = only some, 1 = none.
+      [ "$notified_any" -eq 1 ] || return 1
+      [ "$failed_any" -eq 0 ] || return 2
+      return 0
     }
 
     _notify() {
@@ -221,7 +259,7 @@ let
       # survive the whole reboot window (a timeout would dismiss the
       # notice early). -t 0 asks for no server-side expiry; critical
       # urgency persists on GNOME regardless.
-      action=$(runuser -u "$user" -- env \
+      if ! action=$(runuser -u "$user" -- env \
         XDG_RUNTIME_DIR="/run/user/$uid" \
         DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
         notify-send \
@@ -231,7 +269,9 @@ let
           -t 0 \
           -A "cancel=$action_label" \
           "$title" \
-          "$message" 2>/dev/null) || return 0
+          "$message" 2>/dev/null); then
+        return 1
+      fi
       if [ "$action" = "cancel" ]; then
         touch "$marker"
       fi
@@ -259,17 +299,14 @@ let
       local title_fr="$3" message_fr="$4" title_en="$5" message_en="$6"
       local lang="''${LANG:-en}"
       local run_dir="''${AUTO_UPDATE_RUN_USER_DIR:-/run/user}"
-      local title message action_label path uid user waiter_pid
-      local waiter_count=0
+      local title message action_label user_lang path uid user
+      local waiter_pid waiter_count=0 delivered=0 waiter_rc
+      local resultfile="''${pidfile}.results"
 
       [ "$NOTIFICATIONS_ENABLED" -eq 1 ] || return 1
 
-      case "''${lang%%_*}" in
-        fr) title="$title_fr"; message="$message_fr"; action_label="Ne pas redémarrer maintenant" ;;
-        *) title="$title_en"; message="$message_en"; action_label="Don't reboot now" ;;
-      esac
-
       : > "$pidfile" || return 1
+      : > "$resultfile" || return 1
       for path in "$run_dir"/*; do
         [ -d "$path" ] || continue
         [ -S "$path/bus" ] || continue
@@ -279,20 +316,46 @@ let
         esac
         user=$(id -nu "$uid" 2>/dev/null) || continue
         [ -n "$user" ] || continue
-        # Never notify the display-manager greeter itself.
-        [ "$user" != "gdm" ] || continue
+        # Never notify a display-manager greeter itself.
+        case "$user" in
+          gdm|lightdm|sddm|greeter) continue ;;
+        esac
 
-        _notify_reboot_waiter "$uid" "$user" "$marker" "$action_label" "$title" "$message" &
+        user_lang=$(_user_lang "$uid" "$user")
+        [ -n "$user_lang" ] || user_lang="$lang"
+        case "''${user_lang%%_*}" in
+          fr) title="$title_fr"; message="$message_fr"; action_label="Ne pas redémarrer maintenant" ;;
+          *) title="$title_en"; message="$message_en"; action_label="Don't reboot now" ;;
+        esac
+
+        ( waiter_rc=0
+          _notify_reboot_waiter "$uid" "$user" "$marker" "$action_label" "$title" "$message" || waiter_rc=$?
+          echo "$waiter_rc" >> "$resultfile"
+        ) &
         waiter_pid=$!
         echo "$waiter_pid" >> "$pidfile"
         waiter_count=$((waiter_count + 1))
       done
-      [ "$waiter_count" -gt 0 ]
+      [ "$waiter_count" -gt 0 ] || return 1
+
+      # A waiter lives until the notice is clicked/dismissed, so a still-empty
+      # result file after this short grace means delivery is in progress (the
+      # normal case). An immediate non-zero result is a delivery failure and
+      # must let the caller fall back to the queue-able actionless notice.
+      sleep 1
+      if [ -s "$resultfile" ]; then
+        while read -r waiter_rc; do
+          if [ "$waiter_rc" -eq 0 ]; then delivered=1; fi
+        done < "$resultfile"
+        [ "$delivered" -eq 1 ] || return 1
+      fi
+      return 0
     }
     # <<<END reboot-waiter
 
     _notify_or_queue() {
       local notification_queued=0
+      local notify_rc=1
 
       [ "$NOTIFICATIONS_ENABLED" -eq 1 ] || return 0
 
@@ -302,12 +365,21 @@ let
         _status WARNING "Unable to prepare the desktop notification for deferred delivery."
       fi
 
-      if _notify "$@"; then
+      notify_rc=0
+      _notify "$@" || notify_rc=$?
+      if [ "$notify_rc" -eq 0 ]; then
+        # Every live session got it; a partial fan-out (2) keeps the pending
+        # copy for the users that could not be reached.
         rm -f -- "$PENDING_NOTIFICATION_FILE"
       elif [ "$notification_queued" -eq 1 ]; then
-        _status INFO "No active graphical session; notification queued for the next login."
+        if [ "$notify_rc" -eq 2 ]; then
+          _status INFO "Some sessions could not be notified; notification queued for them."
+        else
+          _status INFO "No active graphical session; notification queued for the next login."
+        fi
       else
-        _status WARNING "No active graphical session could be notified."
+        _status WARNING "No active graphical session could be notified and the notification could not be queued."
+        return 1
       fi
       return 0
     }
@@ -341,15 +413,21 @@ let
         message_en="Automatic update failed (reason: $reason). See $LOG_FILE."
       }
 
-      if _notify_all_users \
-        "$title_fr" "$message_fr" "$title_en" "$message_en" "critical"; then
+      local notify_rc=0
+      _notify_all_users \
+        "$title_fr" "$message_fr" "$title_en" "$message_en" "critical" || notify_rc=$?
+      if [ "$notify_rc" -eq 0 ]; then
         notified_any=1
       fi
       if [ "$notified_any" -eq 1 ]; then
         rm -f -- "$PENDING_NOTIFICATION_FILE"
       elif _queue_pending_notification \
         "$title_fr" "$message_fr" "$title_en" "$message_en" "critical"; then
-        _status INFO "No active graphical session; failure notification queued for the next login."
+        if [ "$notify_rc" -eq 2 ]; then
+          _status INFO "Some sessions could not be notified; failure notification queued for them."
+        else
+          _status INFO "No active graphical session; failure notification queued for the next login."
+        fi
       else
         _status WARNING "No active graphical session could be notified and the notification could not be queued."
       fi

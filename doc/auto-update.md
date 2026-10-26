@@ -19,7 +19,7 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
-- `core` (12): `base64 cat chmod date mkdir mktemp mv stat sync test timeout notify-send`
+- `core` (13): `base64 cat chmod date mkdir mktemp mv rm stat sync test timeout notify-send`
 - `health` (23): `core` + `basename env id readlink rm timeout touch flock runuser systemctl systemd-inhibit grep`
 - `main` (41): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
@@ -107,10 +107,10 @@ system.autoUpdate = {
 
 ## Notifications
 
-Journal (`journalctl -u nixos-auto-update.service`) is always written and is the source of truth; `logFile` keeps the persistent text copy. Every substantive line goes through `_status` (fd 5) or `_prefix_lines` (streamed command output: rebuild logs, `nvd` diff): uniform `[LEVEL]` lines under a single PID per run in both sinks, ANSI control sequences stripped. Desktop `notify-send` is best-effort, bilingual (FR/EN by session `LANG`), with a double gate:
+Journal (`journalctl -u nixos-auto-update.service`) is always written and is the source of truth; `logFile` keeps the persistent text copy. Every substantive line goes through `_status` (fd 5) or `_prefix_lines` (streamed command output: rebuild logs, `nvd` diff): uniform `[LEVEL]` lines under a single PID per run in both sinks, ANSI control sequences stripped. Desktop `notify-send` is best-effort, bilingual (FR/EN per user, from the systemd user session `LANG` when available), with a double gate:
 
 - **Eval time**: real DE installed (`services.desktopManager.gnome.enable`), not just `marker.hostProfile`. Servers and headless profiles stay journal-only (failures are queued, never lost).
-- **Runtime**: an active graphical session must own `/run/user/<uid>/bus` (user other than `gdm`); otherwise the bilingual notification is queued in `/var/lib/nixos-auto-update/pending-notification` and delivered at the next graphical login by the per-user `nixos-auto-update-notify-pending.service` (dedup by id).
+- **Runtime**: an active graphical session must own `/run/user/<uid>/bus` (user other than a display-manager greeter: `gdm`, `lightdm`, `sddm`, `greeter`); otherwise the bilingual notification is queued in `/var/lib/nixos-auto-update/pending-notification` and delivered at the next graphical login by the per-user `nixos-auto-update-notify-pending.service` (dedup by id).
 - **Failures**: a crash before notifying is covered by `nixos-auto-update-notify-failure.service` (`onFailure`), which reads the machine-readable CODE from the state file and notifies (or queues) accordingly.
 - **Anti-spam**: each generation notifies at most once — re-runs on an unchanged tree stay journal-only. Failures always notify.
 - Icon: `notifyIcon` (default `nix-snowflake-white` monochrome, from the hicolor theme — rendered with the title by GNOME Shell).

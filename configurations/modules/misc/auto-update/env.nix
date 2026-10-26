@@ -33,7 +33,7 @@ let
       ${lib.concatMapStrings (b: "ln -s ${b} \"$out/bin/${builtins.baseNameOf b}\"\n") bins}
     '';
 
-  # Common core (12 binaries): serves the unprivileged per-user pending
+  # Common core (13 binaries): serves the unprivileged per-user pending
   # service directly, and is the base of every other tier. `timeout` is
   # required by the pending delivery path (_deliver_pending_notification
   # hangs guard): without it queued notifications were never delivered
@@ -47,6 +47,7 @@ let
     "${coreutils}/bin/mkdir"
     "${coreutils}/bin/mktemp"
     "${coreutils}/bin/mv"
+    "${coreutils}/bin/rm"
     "${coreutils}/bin/stat"
     "${coreutils}/bin/sync"
     "${coreutils}/bin/test"
@@ -54,7 +55,7 @@ let
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 24 binaries.
+  # Small root services (healthcheck + notify-failure): 23 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.
@@ -68,7 +69,6 @@ let
     "${pkgs.coreutils}/bin/env"
     "${pkgs.coreutils}/bin/id"
     "${pkgs.coreutils}/bin/readlink"
-    "${pkgs.coreutils}/bin/rm"
     "${pkgs.coreutils}/bin/sleep"
     "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
@@ -86,7 +86,6 @@ let
     "${pkgs.coreutils}/bin/head"
     "${pkgs.coreutils}/bin/id"
     "${pkgs.coreutils}/bin/readlink"
-    "${pkgs.coreutils}/bin/rm"
     "${pkgs.coreutils}/bin/sha256sum"
     "${pkgs.coreutils}/bin/sleep"
     "${pkgs.coreutils}/bin/touch"

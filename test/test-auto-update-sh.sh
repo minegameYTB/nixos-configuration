@@ -96,6 +96,8 @@ if [[ "${1:-}" == "-nu" ]]; then
   case "${2:-}" in
     1000) echo minegame;;
     120) echo gdm;;
+    121) echo lightdm;;
+    122) echo other;;
     *) exit 1;;
   esac
 else
@@ -244,6 +246,11 @@ mksock "$T/rundir-gdm/120"
 run_notify_all "$T/rundir-gdm" 1
 [[ ! -s "$CALLS" ]] && ok "gdm greeter session ignored" || ko "gdm was notified"
 
+mkdir -p "$T/rundir-lightdm/121"
+mksock "$T/rundir-lightdm/121"
+run_notify_all "$T/rundir-lightdm" 1
+[[ ! -s "$CALLS" ]] && ok "lightdm greeter session ignored" || ko "lightdm was notified"
+
 run_notify_all "$T/rundir-user" 0
 [[ ! -s "$CALLS" ]] && ok "notify disabled → silent" || ko "notified while disabled"
 
@@ -266,6 +273,41 @@ AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" NOTIFICATIONS_ENABLED=1 bash -c "
 " 2>/dev/null || true
 [[ -f "$T/state/pending-notification" ]] \
   && ok "headless notify → queued for next login" || ko "headless notify not queued"
+
+# Neither an active session nor a writable queue: _notify_or_queue must
+# report failure so _fail/note_once do not mark it as delivered.
+if AUTO_UPDATE_RUN_USER_DIR="$T/rundir-empty" NOTIFICATIONS_ENABLED=1 bash -c "
+    ${BASE_PRELUDE}
+    source \"$T/nu.func\"
+    source \"$T/nr.func\"
+    STATE_DIR=/proc/nixos-auto-update-test
+    _notify_or_queue 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+  " 2>/dev/null; then
+  NQRC=0
+else
+  NQRC=$?
+fi
+(( NQRC != 0 )) \
+  && ok "no session + unwritable queue → failure reported" || ko "silent notification loss"
+
+# Partial fan-out: one session notified, one failing -> 2, so the caller
+# keeps the pending copy instead of dropping the unreachable user.
+mkdir -p "$T/rundir-mixed/1000" "$T/rundir-mixed/122"
+mksock "$T/rundir-mixed/1000"
+mksock "$T/rundir-mixed/122"
+if AUTO_UPDATE_RUN_USER_DIR="$T/rundir-mixed" NOTIFICATIONS_ENABLED=1 bash -c "
+  ${BASE_PRELUDE}
+  source \"$T/nu.func\"
+  source \"$T/nr.func\"
+  _notify_user() { [[ \"\$2\" == minegame ]]; }
+  _notify_all_users 'titre FR' 'corps FR' 'title EN' 'body EN' normal
+" 2>/dev/null; then
+  MIXRC=0
+else
+  MIXRC=$?
+fi
+(( MIXRC == 2 )) \
+  && ok "partial fan-out → queued for unreachable users (rc=2)" || ko "partial fan-out reported rc=$MIXRC"
 
 # ── pending delivery dedup (user service path) ──
 export HOME="$T/home" XDG_STATE_HOME="$T/home/.local/state"
@@ -591,8 +633,8 @@ run_waiter "" 0
 (( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
   && ok "dismissed notice → no marker, waiter stays green" || ko "dismiss wrongly handled"
 run_waiter "" 1
-(( WRC == 0 )) && [[ ! -f "$T/waiter-marker" ]] \
-  && ok "failing notify-send → no marker, waiter stays green" || ko "backend failure wrongly handled"
+(( WRC != 0 )) && [[ ! -f "$T/waiter-marker" ]] \
+  && ok "failing notify-send → no marker, waiter reports failure" || ko "backend failure wrongly handled"
 
 # ── _notify_reboot_with_actions (dedup signal for the deadline notice) ──
 # Return 0 => at least one session got the interactive notice, so the
@@ -630,6 +672,10 @@ run_reboot_fanout "$T/rundir-user" 0
 (( FRC == 1 )) \
   && ok "notify disabled → no interactive notice, fallback no-ops" \
   || ko "interactive fan-out ignored NOTIFICATIONS_ENABLED"
+WAIT_RC=1 run_reboot_fanout "$T/rundir-user" 1
+(( FRC == 1 )) \
+  && ok "failing interactive delivery → caller falls back" \
+  || ko "interactive delivery failure did not request fallback"
 
 # ── sleep/lid inhibitor acquire/release (transaction.nix, fail-open) ──
 grep -q '_acquire_sleep_inhibitor' "$REPO/configurations/modules/misc/auto-update/services.nix" \
