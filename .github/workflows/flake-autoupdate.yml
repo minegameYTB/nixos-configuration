@@ -75,7 +75,7 @@ jobs:
         id: validated
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - uses: DeterminateSystems/nix-installer-action@v23
+      - uses: DeterminateSystems/determinate-nix-action@v3.24.1
       # GHA-backed cache, zero-config. FlakeHub upload explicitly off: it
       # needs an account + id-token and only adds noise without one.
       - uses: DeterminateSystems/magic-nix-cache-action@v15
