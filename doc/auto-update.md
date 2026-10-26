@@ -47,7 +47,9 @@ make env
 bash test/test-shell-paths.sh
 bash test/test-auto-update-env-runtime.sh
 
-# booted VM integration test (healthcheck + one-shot rollback wiring, ~1 min):
+# booted VM integration test (test/nixos/auto-update-vm.nix, healthcheck + one-shot rollback wiring, ~1 min):
+# Uses the stock nixpkgs kernel and no QEMU user-mode NIC (eth0): the VM closure stays
+# cacheable and the guests cannot reach the host or the Internet, only the test VLAN.
 nix build '.#checks.x86_64-linux.auto-update-vm'
 
 ## How it works

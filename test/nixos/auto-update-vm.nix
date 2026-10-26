@@ -22,11 +22,21 @@ pkgs.testers.runNixOSTest {
 
   nodes =
     let
-      base = { lib, ... }: {
+      base = { lib, pkgs, ... }: {
         imports = [
-          ../configurations/modules/misc/marker.nix
-          ../configurations/modules/misc/auto-update
+          ../../configurations/modules/misc/marker.nix
+          ../../configurations/modules/misc/auto-update
         ];
+
+        # Keep flake tests on the stock NixOS kernel. Host profiles pull
+        # CachyOS kernels whose per-arch builds churn the test closure on
+        # every kernel update; these tests only exercise auto-update wiring.
+        boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+
+        # Drop QEMU's user-mode NIC (eth0): these VMs only need the VDE
+        # VLAN that connects test nodes, never host or Internet access.
+        virtualisation.qemu.networkingOptions = lib.mkForce [ ];
+        networking.useDHCP = false;
 
         marker = {
           hostProfile = "server";
@@ -75,6 +85,11 @@ pkgs.testers.runNixOSTest {
 
     broken.wait_for_unit("multi-user.target")
     healthy.wait_for_unit("multi-user.target")
+
+    # The QEMU user-mode NIC is deliberately removed: only the VLAN NIC
+    # (eth1) may exist, so the VMs cannot reach the host or the Internet.
+    broken.succeed("test ! -e /sys/class/net/eth0")
+    healthy.succeed("test ! -e /sys/class/net/eth0")
 
     booted = broken.succeed("readlink -f /run/booted-system").strip()
     broken.succeed("install -d /var/lib/nixos-auto-update /tmp/fake-previous/bin")

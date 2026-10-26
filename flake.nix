@@ -340,11 +340,11 @@
         )
       );
 
-      ### VM integration tests (healthcheck + auto-rollback wiring)
+      ### VM integration tests (healthcheck + auto-rollback wiring, stock kernel)
       checks = lib.genAttrs systems (
         system:
         lib.optionalAttrs (system == "x86_64-linux") {
-          auto-update-vm = import ./test/auto-update-vm.nix { pkgs = pkgsFor system; };
+          auto-update-vm = import ./test/nixos/auto-update-vm.nix { pkgs = pkgsFor system; };
         }
       );
 
