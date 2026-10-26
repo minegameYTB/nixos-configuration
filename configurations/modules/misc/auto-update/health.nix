@@ -24,8 +24,23 @@
   # >>>BEGIN health
   check_health() {
     local u bad=0 route_ok=0 iface dest gw
+    local deadline interval
+    # The healthcheck is wanted by multi-user.target, which can complete
+    # before graphical units (display-manager) or late network services are
+    # active. Poll within the configured budget instead of failing on the
+    # first is-active probe. HEALTH_WAIT_TIMEOUT=0 keeps the old one-shot
+    # behavior for tests and callers that do not need a settle window.
+    deadline=$(( SECONDS + ''${HEALTH_WAIT_TIMEOUT:-0} ))
+    interval=''${HEALTH_WAIT_INTERVAL:-5}
     for u in ${lib.escapeShellArgs cfg.healthCheck.units}; do
-      systemctl is-active --quiet "$u" || { _status WARNING "unhealthy unit: $u"; bad=1; }
+      while ! systemctl is-active --quiet "$u"; do
+        if (( SECONDS >= deadline )); then
+          _status WARNING "unhealthy unit: $u"
+          bad=1
+          break
+        fi
+        sleep "$interval"
+      done
     done
     if ${lib.boolToString cfg.healthCheck.requireNetwork}; then
       # Default route via a gateway (lo excluded: destination 00000000

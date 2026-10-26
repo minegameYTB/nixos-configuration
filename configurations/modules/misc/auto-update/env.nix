@@ -54,7 +54,7 @@ let
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 23 binaries.
+  # Small root services (healthcheck + notify-failure): 24 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.
@@ -69,6 +69,7 @@ let
     "${pkgs.coreutils}/bin/id"
     "${pkgs.coreutils}/bin/readlink"
     "${pkgs.coreutils}/bin/rm"
+    "${pkgs.coreutils}/bin/sleep"
     "${pkgs.coreutils}/bin/touch"
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"

@@ -332,9 +332,17 @@ _notify_failure" 2>/dev/null
 # ── check_health cases ──
 cat > "$T/fakebin/systemctl" <<'EOF'
 #!/usr/bin/env bash
-# is-active --quiet <unit> -> 0 iff listed in $ACTIVE_UNITS
+# is-active --quiet <unit> -> 0 iff listed in $ACTIVE_UNITS; otherwise the
+# optional ACTIVE_AFTER counter lets a test simulate a unit that starts late.
 if [[ "${1:-}" == "is-active" ]]; then
-  [[ " $ACTIVE_UNITS " == *" ${@: -1} "* ]] && exit 0 || exit 3
+  [[ " $ACTIVE_UNITS " == *" ${@: -1} "* ]] && exit 0
+  if [[ -n "${ACTIVE_AFTER:-}" ]]; then
+    count=$(cat "$ACTIVE_AFTER" 2>/dev/null || echo 0)
+    count=$((count + 1))
+    printf '%s\n' "$count" > "$ACTIVE_AFTER"
+    (( count >= ${ACTIVE_AFTER_CALLS:-1} )) && exit 0
+  fi
+  exit 3
 fi
 # list-units -> lines from $FAILED_UNITS (empty = none failed)
 if [[ "${1:-}" == "list-units" ]]; then
@@ -364,6 +372,19 @@ run_health "sshd.service cron.service" "$T/route-good"
 run_health "sshd.service" "$T/route-good"
 (( HRc != 0 )) && grep -q 'unhealthy unit: cron.service' "$T/health.out" \
   && ok "down unit → 1 + logged" || ko "down unit not detected"
+
+# A unit may become active after multi-user.target (display-manager is the
+# real case): check_health must poll within HEALTH_WAIT_TIMEOUT.
+rm -f "$T/active-count"
+if ACTIVE_UNITS="" ACTIVE_AFTER="$T/active-count" ACTIVE_AFTER_CALLS=2 \
+  HEALTH_WAIT_TIMEOUT=10 HEALTH_WAIT_INTERVAL=0 \
+  PROC_NET_ROUTE="$T/route-good" FAILED_UNITS="" \
+  bash -c "_status() { echo \"STATUS: \$*\"; }; source \"$T/health.resolved\"; check_health" > "$T/health.out" 2>&1; then
+  HRc=0
+else
+  HRc=$?
+fi
+(( HRc == 0 )) && ok "late unit → polled until active" || ko "late unit not polled"
 
 run_health "sshd.service cron.service" "$T/route-bad"
 (( HRc != 0 )) && grep -q 'no default IPv4 route' "$T/health.out" \

@@ -511,6 +511,8 @@ in
       INHIBITED_FILE="$WORKDIR/inhibited"
       ROLLED_BACK_FILE="$WORKDIR/rolled-back"
       REBUILD_BOOT_TIMEOUT="${cfg.timeouts.boot}"
+      HEALTH_WAIT_TIMEOUT="${toString cfg.healthCheck.timeout}"
+      HEALTH_WAIT_INTERVAL=5
 
       ${errBash}
       ${output.core}
