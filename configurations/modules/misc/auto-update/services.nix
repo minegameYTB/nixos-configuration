@@ -492,7 +492,10 @@ in
 
     serviceConfig = {
       Type = "oneshot";
-      TimeoutStartSec = cfg.healthCheck.timeout + 60;
+      ### Must outlive the check budget and the boot rollback: autoRollback
+      ### runs `switch-to-configuration boot` under cfg.timeouts.boot (1h
+      ### default). The old check+60s killed that rollback mid-write.
+      TimeoutStartSec = "2h";
       StateDirectory = stateDir;
     };
 

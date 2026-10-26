@@ -94,7 +94,7 @@ No garbage collection is performed (default nix behavior kept); rollback uses th
 | `healthCheck.requireNetwork` | `true` | Require a default IPv4 route (loopback excluded). |
 | `healthCheck.checkFailedUnits` | `true` | Fail validation when any unit is failed (essential-boot signal). |
 | `healthCheck.autoRollback` | `false` | Restore the previous healthy system as next boot generation on unhealthy staged boot (one-shot per staged generation; inhibit gate kept — human must clear it). |
-| `healthCheck.timeout` | `120` | Per-check budget in seconds. |
+| `healthCheck.timeout` | `120` | Settle budget in seconds for units that start after `multi-user.target` (the healthcheck polls instead of failing on the first probe). |
 
 Example (test VM profile):
 
@@ -234,7 +234,7 @@ When the service stages a generation it records its store path in `/var/lib/nixo
 - unhealthy → persistent `critical` bilingual notification + `inhibited` file (reason + date) + failed unit + structured state (`healthcheck-failed`). **Further auto-update runs stop** on the inhibit flag until a human deletes it — deliberate gate.
 - with `healthCheck.autoRollback = true` (opt-in, default `false`): the previous healthy system is restored as next boot generation via `switch-to-configuration boot` (one-shot guard `rolled-back` per staged generation; the inhibit gate is kept regardless — a human must still clear it). With `allowReboot` also true the machine reboots into the restored system immediately, otherwise the notification explicitly says to reboot manually (until then the unhealthy system keeps running). No automatic reboot unless `allowReboot` is also true.
 
-Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNetwork` (default true), `checkFailedUnits` (default true), `autoRollback` (default false), `timeout` (default 120s, service `TimeoutStartSec` adds a minute).
+Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNetwork` (default true), `checkFailedUnits` (default true), `autoRollback` (default false), `timeout` (default 120s; the service allows 2h so a boot rollback can finish).
 
 ## Troubleshooting
 
