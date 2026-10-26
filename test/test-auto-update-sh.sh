@@ -508,8 +508,9 @@ printf 'Iface\tDestination\tGateway\tFlags\neth0\t00000000\t0101A8C0\t0003\nlo\t
 printf 'Iface\tDestination\tGateway\tFlags\nlo\t00000000\t00000000\t0001\n' > "$T/route-bad"
 
 run_health(){
-  local units="$1" route="$2" failed="${3:-}"
+  local units="$1" route="$2" failed="${3:-}" ignore="${4:-}"
   if ACTIVE_UNITS="$units" PROC_NET_ROUTE="$route" FAILED_UNITS="$failed" \
+    FAILED_UNITS_IGNORE="$ignore" \
     bash -c "_status() { echo \"STATUS: \$*\"; }; source \"$T/health.resolved\"; check_health" > "$T/health.out" 2>&1; then
     rc=0
   else
@@ -542,9 +543,17 @@ run_health "sshd.service cron.service" "$T/route-bad"
 (( HRc != 0 )) && grep -q 'no default IPv4 route' "$T/health.out" \
   && ok "missing route → 1 + logged" || ko "missing route not detected"
 
-run_health "sshd.service cron.service" "$T/route-good" "foo.service● loaded failed failed Foo"
-(( HRc != 0 )) && grep -q 'failed units present' "$T/health.out" \
+run_health "sshd.service cron.service" "$T/route-good" "● foo.service loaded failed failed Foo"
+(( HRc != 0 )) && grep -q 'failed unit: foo.service' "$T/health.out" \
   && ok "failed unit → 1 + logged" || ko "failed unit not detected"
+
+run_health "sshd.service cron.service" "$T/route-good" "● foo.service loaded failed failed Foo" "foo.service"
+(( HRc == 0 )) && [[ ! -s "$T/health.out" ]] \
+  && ok "ignored failed unit → 0" || ko "failedUnitsIgnore not honoured"
+
+run_health "sshd.service cron.service" "$T/route-good" "● bar.service loaded failed failed Bar" "foo.service"
+(( HRc != 0 )) && grep -q 'failed unit: bar.service' "$T/health.out" \
+  && ok "non-ignored failed unit still fails" || ko "ignore list masked another failure"
 
 # ── _validate_staged_boot (phase validating) ──
 setup_vstate(){

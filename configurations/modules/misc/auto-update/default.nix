@@ -212,6 +212,13 @@ in
         description = "Fail validation when any unit is in failed state after a staged boot (essential-boot signal).";
       };
 
+      failedUnitsIgnore = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        example = [ "NetworkManager-wait-online.service" ];
+        description = "Unit names that checkFailedUnits ignores. Use for known-benign failures unrelated to the staged generation (e.g. a connectivity waiter that lost a race without affecting the required route).";
+      };
+
       autoRollback = lib.mkOption {
         type = lib.types.bool;
         default = false;

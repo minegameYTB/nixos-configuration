@@ -61,10 +61,19 @@
     # (Fail-open on tool error: systemctl itself failing will usually
     # trip the unit checks above anyway.)
     if ${lib.boolToString cfg.healthCheck.checkFailedUnits}; then
-      if systemctl list-units --state=failed --no-legend --no-pager 2>/dev/null | grep -q .; then
-        _status WARNING "failed units present"
+      local failed_units failed_unit ignored_failed_units
+      ignored_failed_units="''${FAILED_UNITS_IGNORE:-}"
+      failed_units=$(systemctl list-units --state=failed --no-legend --no-pager 2>/dev/null || true)
+      while read -r _ failed_unit _; do
+        [ -n "$failed_unit" ] || continue
+        if [ -n "$ignored_failed_units" ]; then
+          case " $ignored_failed_units " in
+            *" $failed_unit "*) continue ;;
+          esac
+        fi
+        _status WARNING "failed unit: $failed_unit"
         bad=1
-      fi
+      done <<< "$failed_units"
     fi
     return $bad
   }

@@ -524,6 +524,7 @@ in
       REBUILD_BOOT_TIMEOUT="${cfg.timeouts.boot}"
       HEALTH_WAIT_TIMEOUT="${toString cfg.healthCheck.timeout}"
       HEALTH_WAIT_INTERVAL=5
+      FAILED_UNITS_IGNORE="${lib.concatStringsSep " " cfg.healthCheck.failedUnitsIgnore}"
 
       ${errBash}
       ${output.core}
