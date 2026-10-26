@@ -264,6 +264,10 @@ in
       if [[ -n "$last_ok" && "$last_ok" == "$SRC_ID $LOCK_HASH" ]]; then
         _debug "Unchanged since last run, skipping"
         _status INFO "Source and inputs unchanged since last successful run, skipping."
+        ### Close the transaction opened for this run: it did no work. Without
+        ### this commit, the EXIT trap treats it as unfinished and logs a
+        ### misleading rollback after every unchanged run.
+        _commit_transaction
         exit 0
       fi
       _debug "Source or inputs changed, proceeding to rebuild"

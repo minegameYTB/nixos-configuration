@@ -149,6 +149,18 @@ commit_line=$(grep -n '^      _commit_transaction$' configurations/modules/misc/
 [[ -n "$stage_line" && -n "$commit_line" && "$stage_line" -lt "$commit_line" ]] \
   && ok "staged marker written before transaction commit" || ko "marker/commit order broken"
 
+# The unchanged-source shortcut exits 0; it must commit the (empty)
+# transaction it opened first, or the EXIT trap logs a bogus rollback.
+skip_line=$(grep -nF 'if [[ -n "$last_ok" && "$last_ok" == "$SRC_ID $LOCK_HASH" ]]; then' \
+  configurations/modules/misc/auto-update/services.nix | cut -d: -f1 | head -1)
+skip_block=$(awk -v s="$skip_line" 'NR >= s { print; if (NR > s && /^      fi$/) exit }' \
+  configurations/modules/misc/auto-update/services.nix)
+skip_commit=$(grep -n '^        _commit_transaction$' <<<"$skip_block" | cut -d: -f1)
+skip_exit=$(grep -n '^        exit 0$' <<<"$skip_block" | cut -d: -f1)
+[[ -n "$skip_line" && -n "$skip_commit" && -n "$skip_exit" && "$skip_commit" -lt "$skip_exit" ]] \
+  && ok "unchanged-source skip commits its empty transaction before exit" \
+  || ko "unchanged-source skip exits with an active transaction"
+
 # ── recovery installs from the built profile, not an empty flake ──
 attempt_out=$(WORKDIR="$T/rundir" bash -c '
   set -euo pipefail
