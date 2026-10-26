@@ -295,6 +295,7 @@
   }
 
   _attempt_boot_installation() {
+    local target="''${1:-}"
     local attempts
 
     attempts=$(_boot_install_attempts)
@@ -304,11 +305,21 @@
     attempts=$((attempts + 1))
     _write_boot_install_attempts "$attempts"
     _status INFO "Boot installation attempt $attempts/$BOOT_INSTALL_MAX_ATTEMPTS."
-    _install_boot_configuration
+    if [ -n "$target" ]; then
+      # Recovery after the profile advanced: reinstall from the already-built
+      # store path. The flake checkout is not available yet at this point
+      # (FLAKE is set later by _sync_channel_clone), and rebuilding the flake
+      # would needlessly re-resolve the network.
+      _switch_boot_to_system "$target"
+    else
+      _install_boot_configuration
+    fi
   }
 
   _recover_transaction() {
     local attempts
+    local new_system
+    local old_system
     local phase="unknown"
 
     [ -d "$TRANSACTION_DIR" ] || return 0
@@ -343,7 +354,16 @@
           return $?
         fi
         _status WARNING "The system profile advanced during the interrupted transaction; retrying boot installation."
-        if _attempt_boot_installation; then
+        new_system=$(readlink -f "$SYSTEM_PROFILE")
+        old_system=$(cat "$TRANSACTION_DIR/old-system")
+        if _attempt_boot_installation "$new_system"; then
+          # Record the recovered generation for the post-boot healthcheck.
+          # LAST_OK is intentionally left alone: the source/lock of the
+          # interrupted run is not known here, so the next full run rebuilds
+          # once, then records it normally.
+          rm -f "$ROLLED_BACK_FILE"
+          _write_marker "$PREVIOUS_FILE" "$old_system"
+          _write_marker "$STAGED_FILE" "$new_system"
           _commit_transaction
           TRANSACTION_RECOVERED=1
           _status INFO "Interrupted boot installation recovered successfully."
@@ -375,6 +395,14 @@
 
     mkdir -p "$TRANSACTION_ROOT"
     _recover_transaction
+    # Recovery already committed (success) or restored the previous system
+    # (auto-rollback). Do not open an empty transaction: the caller exits or
+    # fails right after, and the EXIT cleanup would otherwise drop a
+    # transaction that was never meant to exist.
+    if [ "''${TRANSACTION_RECOVERED:-0}" -eq 1 ] \
+      || [ "''${TRANSACTION_AUTO_ROLLED_BACK:-0}" -eq 1 ]; then
+      return 0
+    fi
     TRANSACTION_PRESERVE_ON_FAILURE=0
 
     transaction_tmp=$(mktemp -d "$TRANSACTION_ROOT/.current.XXXXXX")

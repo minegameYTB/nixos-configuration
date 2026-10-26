@@ -214,8 +214,9 @@ Each run opens a transaction in `/var/lib/nixos-auto-update/update-transactions/
 traps. `_recover_transaction()` runs first every time:
 
 - `applying` + profile advanced (crash after `boot`, before `staged-system` was
-  written) → boot-install retry, then commit — the interrupted run is recovered,
-  not replayed;
+  written) → reinstall boot from the already-built system profile (no flake or
+  network needed), record `staged-system`/`previous-system`, then commit — the
+  interrupted run is recovered, not replayed;
 - `applying` + profile unchanged + attempts left → retry `boot` (max 3), else
   restore the previous system via `$old_system/bin/switch-to-configuration boot`
   (`boot-recovery-rolled-back`) or preserve for the next run (`boot-recovery`);

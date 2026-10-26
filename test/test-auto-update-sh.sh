@@ -25,6 +25,8 @@ fragment notifier.nix notifier-once > "$T/notifier-once.func"
 fragment notifier.nix reboot-waiter > "$T/notifier-waiter.func"
 fragment health.nix health > "$T/health.func"
 fragment transaction.nix write-marker > "$T/write-marker.func"
+fragment transaction.nix transaction > "$T/transaction.func"
+sed -i "s|''\${|\${|g" "$T/transaction.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-user.func" > "$T/nu.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
@@ -83,6 +85,8 @@ grep -q '^_err_lookup() {' "$T/errors.func" \
   && ok "errors stub in place" || ko "errors stub missing"
 grep -q '^[ \t]*_write_marker() {' "$T/write-marker.func" \
   && ok "write-marker extracted intact" || ko "write-marker extraction broken"
+grep -q '^[ \t]*_attempt_boot_installation() {' "$T/transaction.func" \
+  && ok "transaction extracted intact" || ko "transaction extraction broken"
 
 # ── stubs ──
 cat > "$T/fakebin/id" <<'EOF'
@@ -137,6 +141,59 @@ stage_line=$(grep -n '^      _write_marker "\$STAGED_FILE"' configurations/modul
 commit_line=$(grep -n '^      _commit_transaction$' configurations/modules/misc/auto-update/services.nix | cut -d: -f1 | head -1)
 [[ -n "$stage_line" && -n "$commit_line" && "$stage_line" -lt "$commit_line" ]] \
   && ok "staged marker written before transaction commit" || ko "marker/commit order broken"
+
+# ── recovery installs from the built profile, not an empty flake ──
+attempt_out=$(WORKDIR="$T/rundir" bash -c '
+  set -euo pipefail
+  source "$1"
+  _status() { :; }
+  TRANSACTION_DIR="$WORKDIR/attempt-txn"
+  BOOT_INSTALL_MAX_ATTEMPTS=3
+  mkdir -p "$TRANSACTION_DIR"
+  printf "0\n" > "$TRANSACTION_DIR/boot-install-attempts"
+  _switch_boot_to_system() { echo "SWITCH:$1"; }
+  _install_boot_configuration() { echo INSTALL; }
+  _attempt_boot_installation /nix/store/new-system
+  _attempt_boot_installation
+  cat "$TRANSACTION_DIR/boot-install-attempts"
+' _ "$T/transaction.func")
+[[ "$attempt_out" == *"SWITCH:/nix/store/new-system"* && "$attempt_out" == *"INSTALL"* \
+  && "$(tail -1 <<<"$attempt_out")" == "2" ]] \
+  && ok "recovery boots the built profile; normal path still rebuilds" \
+  || ko "boot-install dispatch broken"
+
+recovery_out=$(WORKDIR="$T/rundir" bash -c '
+  set -euo pipefail
+  source "$1"
+  _status() { :; }
+  T="$2"
+  TRANSACTION_DIR="$T/txn"
+  SYSTEM_PROFILE="$T/profile"
+  PREVIOUS_FILE="$T/previous-system"
+  STAGED_FILE="$T/staged-system"
+  ROLLED_BACK_FILE="$T/rolled-back"
+  BOOT_INSTALL_MAX_ATTEMPTS=3
+  TRANSACTION_ACTIVE=1
+  TRANSACTION_RECOVERED=0
+  TRANSACTION_AUTO_ROLLED_BACK=0
+  mkdir -p "$TRANSACTION_DIR" "$T/new/bin" "$T/old/bin"
+  ln -s "$T/new" "$SYSTEM_PROFILE"
+  printf "%s\n" "$T/old" > "$TRANSACTION_DIR/old-system"
+  printf "0\n" > "$TRANSACTION_DIR/boot-install-attempts"
+  printf "applying\n" > "$TRANSACTION_DIR/phase"
+  _attempt_boot_installation() { echo "ATTEMPT:$1"; }
+  _commit_transaction() { echo COMMITTED; }
+  _write_marker() { echo "MARKER:$(basename "$1"):$2"; }
+  _preserve_transaction_for_recovery() { echo PRESERVED; }
+  _restore_previous_system() { echo RESTORED; }
+  _recover_transaction
+  echo "RECOVERED:$TRANSACTION_RECOVERED"
+' _ "$T/transaction.func" "$T/recovery")
+[[ "$recovery_out" == *"ATTEMPT:$T/recovery/new"* \
+  && "$recovery_out" == *"MARKER:previous-system:$T/recovery/old"* \
+  && "$recovery_out" == *"MARKER:staged-system:$T/recovery/new"* \
+  && "$recovery_out" == *"COMMITTED"* && "$recovery_out" == *"RECOVERED:1"* ]] \
+  && ok "recovery records staged/previous and commits" || ko "recovery markers broken"
 
 BASE_PRELUDE='
 log() { :; }
