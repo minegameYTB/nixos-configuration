@@ -217,9 +217,13 @@ traps. `_recover_transaction()` runs first every time:
   written) → reinstall boot from the already-built system profile (no flake or
   network needed), record `staged-system`/`previous-system`, then commit — the
   interrupted run is recovered, not replayed;
-- `applying` + profile unchanged + attempts left → retry `boot` (max 3), else
-  restore the previous system via `$old_system/bin/switch-to-configuration boot`
-  (`boot-recovery-rolled-back`) or preserve for the next run (`boot-recovery`);
+- `applying` + profile unchanged + attempts > 0 → drop the stale transaction and
+  rebuild on this run: nixos-rebuild-ng updates the profile *before*
+  `switch-to-configuration`, so there is no built generation to reinstall and
+  the previous system is already the running one. The 3-attempt cap only applies
+  when the profile advanced; a repeated pre-profile failure is retried on the
+  next run. Exhausted advanced-profile attempts restore the previous system
+  (`boot-recovery-rolled-back`) or preserve the transaction (`boot-recovery`);
 - `restoring-*` → resume the restoration; anything else → drop the tracking dir.
 
 Rollback only drops the updater's own tracking state (plus a leftover `flake.new`).

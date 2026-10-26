@@ -197,6 +197,30 @@ recovery_out=$(WORKDIR="$T/rundir" bash -c '
   && "$recovery_out" == *"COMMITTED"* && "$recovery_out" == *"RECOVERED:1"* ]] \
   && ok "recovery records staged/previous and commits" || ko "recovery markers broken"
 
+retry_out=$(WORKDIR="$T/rundir" bash -c '
+  set -euo pipefail
+  source "$1"
+  _status() { :; }
+  T="$2"
+  TRANSACTION_DIR="$T/txn"
+  TRANSACTION_ROOT="$T"
+  SYSTEM_PROFILE="$T/profile"
+  BOOT_INSTALL_MAX_ATTEMPTS=3
+  TRANSACTION_ACTIVE=1
+  TRANSACTION_PRESERVE_ON_FAILURE=0
+  mkdir -p "$TRANSACTION_DIR" "$T/old"
+  ln -s "$T/old" "$SYSTEM_PROFILE"
+  printf "%s\n" "$T/old" > "$TRANSACTION_DIR/old-system"
+  printf "1\n" > "$TRANSACTION_DIR/boot-install-attempts"
+  printf "applying\n" > "$TRANSACTION_DIR/phase"
+  _restore_previous_system() { echo RESTORED; }
+  _recover_transaction
+  echo "ACTIVE:$TRANSACTION_ACTIVE"
+' _ "$T/transaction.func" "$T/retry")
+[[ "$retry_out" == *"ACTIVE:0"* && "$retry_out" != *"RESTORED"* && ! -d "$T/retry/txn" ]] \
+  && ok "unchanged profile after boot failure → fresh retry, no restore" \
+  || ko "unchanged-profile recovery restored instead of retrying"
+
 BASE_PRELUDE='
 log() { :; }
 _status() { :; }

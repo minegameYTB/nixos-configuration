@@ -380,9 +380,18 @@
 
       attempts=$(_boot_install_attempts)
       if [ "$attempts" -gt 0 ]; then
-        _status WARNING "Boot installation was interrupted before the system profile advanced; reinstalling the previous boot generation."
-        _restore_previous_system
-        return $?
+        # nixos-rebuild-ng updates the system profile before
+        # switch-to-configuration, so an unchanged profile means the boot
+        # command failed before that point (usually a transient rebuild
+        # error). Do not restore the previous system: it already is the
+        # running generation. Drop the stale transaction and let this run
+        # rebuild/install again. The attempt counter is per transaction and
+        # is intentionally reset here: the 3-attempt cap protects the
+        # profile-advanced recovery path (built generation available), not a
+        # boot command that never produced a new profile.
+        _status WARNING "Boot installation was interrupted before the system profile advanced; retrying with a fresh build on this run."
+        _rollback_transaction
+        return 0
       fi
     fi
 
