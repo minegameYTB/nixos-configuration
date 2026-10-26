@@ -300,7 +300,10 @@ in
       ### last-ok: a crash in between must leave last-ok behind (next run
       ### redoes everything, idempotently) — never ahead with staged files
       ### missing (next run would skip and the healthcheck would stay blind).
-      ### Staged target first, then the healthy pre-update generation.
+       ### Staged target first, then the healthy pre-update generation.
+       ### A new staging re-arms auto-rollback: the one-shot guard belongs
+       ### to the previous staged generation, not to this one.
+       rm -f "$ROLLED_BACK_FILE"
        echo "$BOOTED_SYSTEM" > "$PREVIOUS_FILE"
        echo "$NEW_SYSTEM" > "$STAGED_FILE"
        echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
@@ -510,6 +513,7 @@ in
       PREVIOUS_FILE="$WORKDIR/previous-system"
       INHIBITED_FILE="$WORKDIR/inhibited"
       ROLLED_BACK_FILE="$WORKDIR/rolled-back"
+      LAST_OK_FILE="$WORKDIR/last-ok"
       REBUILD_BOOT_TIMEOUT="${cfg.timeouts.boot}"
       HEALTH_WAIT_TIMEOUT="${toString cfg.healthCheck.timeout}"
       HEALTH_WAIT_INTERVAL=5

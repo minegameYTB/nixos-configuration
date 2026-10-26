@@ -14,8 +14,9 @@
 #                                 (one-shot guard $ROLLED_BACK_FILE).
 #
 # Callers must set before use: STAGED_FILE, INHIBITED_FILE, PREVIOUS_FILE,
-# ROLLED_BACK_FILE, STATE_DIR/FILE, LOG_FILE, REBUILD_BOOT_TIMEOUT,
-# NOTIFICATIONS_ENABLED. Uses _write_state (output.nix), _notify_or_queue
+# ROLLED_BACK_FILE, LAST_OK_FILE, PENDING_NOTIFICATION_FILE, STATE_DIR/FILE,
+# LOG_FILE, REBUILD_BOOT_TIMEOUT, NOTIFICATIONS_ENABLED.
+# Uses _write_state (output.nix), _notify_or_queue
 # (notifier.nix), _switch_boot_to_system (transaction.nix), _err_lookup
 # (errors.nix).
 { lib, cfg }:
@@ -86,9 +87,18 @@
     _status INFO "Validating staged generation $staged."
     if check_health; then
       rm -f "$STAGED_FILE" "$INHIBITED_FILE" "$PREVIOUS_FILE" "$ROLLED_BACK_FILE"
+      rm -f "$PENDING_NOTIFICATION_FILE"
+      if ! _write_state "ok|$(date -Is)||none"; then
+        _status WARNING "Unable to record the healthy healthcheck state."
+      fi
       _status INFO "Staged generation healthy, adopted."
       return 0
     fi
+
+    # Do not let a failed validation leave last-ok behind: after a human
+    # clears the inhibit file, the next run must rebuild and stage again
+    # instead of skipping the identical source/lock as already successful.
+    rm -f "$LAST_OK_FILE"
 
     {
       echo "auto-update inhibited: unhealthy staged boot"

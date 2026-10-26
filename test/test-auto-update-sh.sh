@@ -413,6 +413,7 @@ run_validate(){
     STATE_DIR=\"\$VDIR\" STATE_FILE=\"\$VDIR/status\" LOG_FILE=\"\$VDIR/log\"
     STAGED_FILE=\"\$VDIR/staged\" INHIBITED_FILE=\"\$VDIR/inhibited\"
     PREVIOUS_FILE=\"\$VDIR/previous\" ROLLED_BACK_FILE=\"\$VDIR/rolled-back\"
+    LAST_OK_FILE=\"\$VDIR/last-ok\" PENDING_NOTIFICATION_FILE=\"\$VDIR/pending\"
     REBUILD_BOOT_TIMEOUT=1h NOTIFICATIONS_ENABLED=1
     AUTO_UPDATE_BOOTED_SYSTEM=\"\$BOOTED_SYS\"
     _validate_staged_boot
@@ -440,20 +441,23 @@ run_validate "$T/health.resolved" 0
 
 setup_vstate healthy
 echo "/nix/store/aaa-system" > "$VDIR/staged"
+echo stale > "$VDIR/pending"
 ln -sfn /nix/store/aaa-system "$VDIR/booted"
 : > "$VDIR/calls"
 run_validate "$T/health.resolved" 0
-(( VRC == 0 )) && [[ ! -f "$VDIR/staged" ]] && grep -q 'adopted' "$VDIR/calls" \
-  && ok "healthy staged boot → adopted" || ko "healthy path broken"
+(( VRC == 0 )) && [[ ! -f "$VDIR/staged" && ! -f "$VDIR/pending" ]] \
+  && grep -q 'STATE: ok|' "$VDIR/calls" && grep -q 'adopted' "$VDIR/calls" \
+  && ok "healthy staged boot → adopted, state ok, pending cleared" || ko "healthy path broken"
 
 setup_vstate sick
 echo "/nix/store/aaa-system" > "$VDIR/staged"
+echo "src lock" > "$VDIR/last-ok"
 ln -sfn /nix/store/aaa-system "$VDIR/booted"
 : > "$VDIR/calls"
 run_validate "$T/health.resolved" 1
-(( VRC != 0 )) && [[ -f "$VDIR/inhibited" ]] && grep -q 'NOTIFY' "$VDIR/calls" \
-  && ! grep -q 'SWITCH' "$VDIR/calls" \
-  && ok "sick staged boot → inhibited, no auto-rollback by default" || ko "sick path broken"
+(( VRC != 0 )) && [[ -f "$VDIR/inhibited" && ! -f "$VDIR/last-ok" ]] \
+  && grep -q 'NOTIFY' "$VDIR/calls" && ! grep -q 'SWITCH' "$VDIR/calls" \
+  && ok "sick staged boot → inhibited, last-ok cleared, no auto-rollback by default" || ko "sick path broken"
 
 setup_vstate sick-rb
 echo "/nix/store/aaa-system" > "$VDIR/staged"
