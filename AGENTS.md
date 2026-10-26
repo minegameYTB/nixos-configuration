@@ -49,7 +49,7 @@ Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch 
 
 - Suites in `test/`: `bash test/<name>.sh` (install-logic, repo-info, auto-update-sh, auto-update-checkout, auto-update-env-runtime, auto-update-reboot, nspawnctl, shell-paths).
 - `make run-deadnix` (`deadnix -eqlL .`), `make run-shellcheck` (install.sh, build.sh, install-lib, test, script). Format with `nix fmt`.
-- CI (`.github/workflows/flake-autoupdate.yml`): runs **all** `test/test-*.sh` + `nix eval` of `vm-cli-efi vm-cli-bios` (both carry the real autoUpdate wiring — EFI + BIOS coverage) + `nix build` of the `nixos-auto-update-env-*` packages (no full toplevel builds — KBs not GBs; runtime-only failures like the missing `test` can't be caught by builds anyway, see `test-auto-update-env-runtime.sh`). Buffer branch `flake-autoupdate` soaks off `prepare/nixos-26.11` (`SOAK_RUNS=3`) — **never move the buffer pointer by hand**; see `doc/auto-update.md`.
+- CI (`.github/workflows/flake-autoupdate.yml`): runs **all** `test/test-*.sh` + `nix eval` of `vm-cli-efi vm-cli-bios` (both carry the real autoUpdate wiring — EFI + BIOS coverage) + `nix build` of the `nixos-auto-update-env-*` packages + the booted `checks.auto-update-vm` test (healthcheck inhibition/one-shot rollback; minimal VMs, not production toplevels — runtime-only env failures still come from `test-auto-update-env-runtime.sh`). Buffer branch `flake-autoupdate` soaks off `prepare/nixos-26.11` (`SOAK_RUNS=3`) — **never move the buffer pointer by hand**; see `doc/auto-update.md`.
 
 ## Gotchas
 

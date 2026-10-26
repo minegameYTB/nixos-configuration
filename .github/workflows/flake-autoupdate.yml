@@ -119,6 +119,14 @@ jobs:
             nix build ".#nixos-auto-update-env-$e" --print-out-paths
           done
 
+      - name: VM healthcheck/rollback test
+        run: |
+          set -euo pipefail
+          # Booted integration test: real systemd unit, StateDirectory and
+          # PATH, inactive-unit inhibition, one-shot rollback invocation.
+          # QEMU uses kvm:tcg, so it also works on runners without KVM.
+          nix build '.#checks.x86_64-linux.auto-update-vm' --print-build-logs --print-out-paths
+
   advance:
     needs: check
     runs-on: ubuntu-latest

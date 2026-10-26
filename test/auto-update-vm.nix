@@ -13,8 +13,12 @@
 # directly, so a real bootloader rollback cannot be observed here. The fake
 # records the exact command the healthcheck runs.
 { pkgs }:
-pkgs.testers.nixosTest {
+pkgs.testers.runNixOSTest {
   name = "auto-update-healthcheck";
+
+  # Let runners without an advertised `kvm` system feature run under TCG;
+  # QEMU still picks kvm:tcg when the device is usable.
+  requiredFeatures.kvm = false;
 
   nodes =
     let
