@@ -275,13 +275,13 @@ in
       if ! _rebuild_system; then
         _fail rebuild-boot
       fi
-      _commit_transaction
 
       NEW_SYSTEM=$(readlink -f /nix/var/nix/profiles/system)
       BOOTED_SYSTEM=$(readlink -f /run/booted-system)
       if [[ "$NEW_SYSTEM" == "$BOOTED_SYSTEM" ]]; then
         rm -f "$STAGED_FILE" "$PREVIOUS_FILE"
-        echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
+        _write_marker "$LAST_OK_FILE" "$SRC_ID $LOCK_HASH"
+        _commit_transaction
         note_once "$NEW_SYSTEM" \
           "Mise à jour NixOS — Déjà à jour" \
           "La génération en cours est la plus récente." \
@@ -296,19 +296,22 @@ in
         NEEDS_REBOOT=1
       fi
 
-      ### Record both ends for post-boot validation (healthcheck) BEFORE
-      ### last-ok: a crash in between must leave last-ok behind (next run
-      ### redoes everything, idempotently) — never ahead with staged files
-      ### missing (next run would skip and the healthcheck would stay blind).
-       ### Staged target first, then the healthy pre-update generation.
-       ### A new staging re-arms auto-rollback: the one-shot guard belongs
-       ### to the previous staged generation, not to this one.
-       rm -f "$ROLLED_BACK_FILE"
-       echo "$BOOTED_SYSTEM" > "$PREVIOUS_FILE"
-       echo "$NEW_SYSTEM" > "$STAGED_FILE"
-       echo "$SRC_ID $LOCK_HASH" > "$LAST_OK_FILE"
+      ### Record both ends for post-boot validation (healthcheck) and then
+      ### last-ok, all atomically and all BEFORE committing the transaction:
+      ### a crash after any marker leaves last-ok behind, so the next run
+      ### redoes everything idempotently. Never commit first: that used to
+      ### leave a bootable generation with no staged file, invisible to the
+      ### healthcheck, when the process died between commit and markers.
+      ### Staged target first, then the healthy pre-update generation.
+      ### A new staging re-arms auto-rollback: the one-shot guard belongs
+      ### to the previous staged generation, not to this one.
+      rm -f "$ROLLED_BACK_FILE"
+      _write_marker "$PREVIOUS_FILE" "$BOOTED_SYSTEM"
+      _write_marker "$STAGED_FILE" "$NEW_SYSTEM"
+      _write_marker "$LAST_OK_FILE" "$SRC_ID $LOCK_HASH"
+      _commit_transaction
 
-       ### The sleep/lid inhibitor deliberately stays held until the run
+      ### The sleep/lid inhibitor deliberately stays held until the run
        ### exits: releasing it before the reboot countdown below would let
        ### GNOME suspend an idle machine — `sleep` follows the monotonic
        ### clock, so the countdown would freeze and the automatic reboot

@@ -24,6 +24,7 @@ fragment notifier.nix notifier-root > "$T/notifier-root.func"
 fragment notifier.nix notifier-once > "$T/notifier-once.func"
 fragment notifier.nix reboot-waiter > "$T/notifier-waiter.func"
 fragment health.nix health > "$T/health.func"
+fragment transaction.nix write-marker > "$T/write-marker.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-user.func" > "$T/nu.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
@@ -80,6 +81,8 @@ grep -q '^[ \t]*check_health() {' "$T/health.resolved" \
   && ok "health extracted intact" || ko "health extraction broken"
 grep -q '^_err_lookup() {' "$T/errors.func" \
   && ok "errors stub in place" || ko "errors stub missing"
+grep -q '^[ \t]*_write_marker() {' "$T/write-marker.func" \
+  && ok "write-marker extracted intact" || ko "write-marker extraction broken"
 
 # ── stubs ──
 cat > "$T/fakebin/id" <<'EOF'
@@ -120,6 +123,20 @@ EOF
 chmod +x "$T/fakebin/"*
 export PATH="$T/fakebin:$PATH"
 export CALLS="$T/calls.log"
+
+# ── durable atomic markers ──
+marker_out=$(WORKDIR="$T/rundir" MARKER_VALUE="src lock" bash -c '
+  source "$1"
+  _write_marker "$WORKDIR/marker" "$MARKER_VALUE"
+  cat "$WORKDIR/marker"
+' _ "$T/write-marker.func")
+[[ "$marker_out" == "src lock" ]] && ! ls "$T/rundir"/.marker.* >/dev/null 2>&1 \
+  && ok "marker write is atomic (no temp left)" || ko "marker write broken"
+
+stage_line=$(grep -n '^      _write_marker "\$STAGED_FILE"' configurations/modules/misc/auto-update/services.nix | cut -d: -f1 | head -1)
+commit_line=$(grep -n '^      _commit_transaction$' configurations/modules/misc/auto-update/services.nix | cut -d: -f1 | head -1)
+[[ -n "$stage_line" && -n "$commit_line" && "$stage_line" -lt "$commit_line" ]] \
+  && ok "staged marker written before transaction commit" || ko "marker/commit order broken"
 
 BASE_PRELUDE='
 log() { :; }

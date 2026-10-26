@@ -20,6 +20,7 @@
 #                                    rollback unless committed
 #   _install_transaction_traps     — ERR/HUP/INT/TERM/EXIT wiring
 #   _begin_transaction             — record old-system, phase=prepared
+#   _write_marker FILE VALUE       — durable atomic marker write
 #   _set_transaction_phase PHASE / _commit_transaction
 #   _boot_install_attempts / _write_boot_install_attempts /
 #     _boot_install_attempts_exhausted
@@ -387,6 +388,20 @@
     TRANSACTION_ACTIVE=1
     _status INFO "Update transaction prepared."
   }
+
+  # >>>BEGIN write-marker
+  _write_marker() {
+    local target="$1"
+    local value="$2"
+    local tmp
+
+    tmp=$(mktemp "$WORKDIR/.marker.XXXXXX")
+    printf '%s\n' "$value" > "$tmp"
+    sync -f "$tmp" 2>/dev/null || sync
+    mv -f -- "$tmp" "$target"
+    sync -f "$WORKDIR" 2>/dev/null || true
+  }
+  # <<<END write-marker
 
   _commit_transaction() {
     [ "$TRANSACTION_ACTIVE" -eq 1 ] || return 0
