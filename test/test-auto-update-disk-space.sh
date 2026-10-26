@@ -41,13 +41,18 @@ grep -q '_check_disk_space() {' "$T/sync.func" && grep -q '_check_boot_space() {
 #    simulates an unreadable/unmounted /boot (df exits non-zero) ──
 cat > "$T/fakebin/df" <<'EOF'
 #!/usr/bin/env bash
-if [[ "${1:-}" == "/nix/store" ]]; then avail="$DF_STORE_KB"
+echo "$*" >> "$DF_LOG"
+mount="${@: -1}"
+if [[ "$mount" == "/nix/store" ]]; then
+  [[ "${DF_STORE_KB:-}" == "fail" ]] && { echo "df: /nix/store: Input/output error" >&2; exit 1; }
+  avail="$DF_STORE_KB"
 elif [[ "${DF_BOOT_KB:-}" == "fail" ]]; then
   echo "df: /boot: No such file or directory" >&2; exit 1
 else avail="$DF_BOOT_KB"; fi
-printf 'Filesystem 1K-blocks Used Available Use%% Mounted on\n/dev/fake 100000000 50000000 %s 50%% %s\n' "$avail" "$1"
+printf 'Filesystem 1K-blocks Used Available Use%% Mounted on\n/dev/fake 100000000 50000000 %s 50%% %s\n' "$avail" "$mount"
 EOF
 chmod +x "$T/fakebin/df"
+export DF_LOG="$T/df.log"
 export PATH="$T/fakebin:$PATH"
 
 driver(){
@@ -106,7 +111,25 @@ else
   ko "case boundary ($rc): $(cat "$T/out.log")"
 fi
 
-# ── 5: df cannot read /boot → warning, never treated as 0 MB ──
+# ── 5: df /nix/store must use -P (long device names wrap otherwise) ──
+: > "$DF_LOG"
+rc=$(run_case 57344 800)
+if [[ "$rc" == "rc=0" ]] && grep -qx -- '-P /nix/store' "$DF_LOG"; then
+  ok "disk check uses df -P /nix/store ($rc)"
+else
+  ko "case df-P ($rc): $(cat "$DF_LOG")"
+fi
+
+# ── 6: df cannot read /nix/store → fail closed (not 0 GB) ──
+export DF_STORE_KB=fail DF_BOOT_KB=$(( 800 * 1024 ))
+if bash <(driver) > "$T/out.log" 2>&1; then rc=0; else rc=$?; fi
+if [[ "$rc" != "0" ]] && grep -q "ERROR(disk-space:unable to read free space" "$T/out.log"; then
+  ok "df /nix/store failing → fail closed ($rc)"
+else
+  ko "case store-unreadable ($rc): $(cat "$T/out.log")"
+fi
+
+# ── 7: df cannot read /boot → warning, never treated as 0 MB ──
 export DF_STORE_KB=$(( 57344 * 1024 )) DF_BOOT_KB=fail
 if bash <(driver) > "$T/out.log" 2>&1; then rc=0; else rc=$?; fi
 if [[ "$rc" == "0" ]] && grep -q "Unable to determine free space on /boot" "$T/out.log" \

@@ -47,7 +47,15 @@ in
     local available_kb
     local available_gb
 
-    available_kb=$(df /nix/store | awk 'NR==2 {print $4}')
+    # df -P forces one line per filesystem: long device names (LVM,
+    # mapper, btrfs subvolumes) wrap in the default format, so NR==2 then
+    # reads a continuation row and Available becomes 0/garbage. A failing
+    # df or non-numeric output must fail closed: auto-update cannot safely
+    # build without knowing the free space.
+    if ! available_kb=$(df -P /nix/store 2>/dev/null | awk 'NR==2 {print $4}') \
+      || [[ ! "$available_kb" =~ ^[0-9]+$ ]]; then
+      _fail disk-space "unable to read free space on /nix/store"
+    fi
     available_gb=$((available_kb / 1024 / 1024))
 
     if [ "$available_gb" -lt "$min_space_gb" ]; then
