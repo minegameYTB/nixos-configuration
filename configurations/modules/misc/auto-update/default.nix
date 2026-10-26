@@ -90,7 +90,7 @@ in
     inhibitSleep = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Block suspend/hibernate and lid-switch handling (logind block locks on sleep + handle-lid-switch) while an update run downloads, builds and installs. Acquired right after the run lock and held for the whole run (reboot countdown included), released on every exit path, success or failure. The lid lock is required because logind's own lid handling ignores sleep blockers by default (LidSwitchIgnoreInhibited=yes): closing the lid mid-run would otherwise suspend the machine. Fail-open: when the locks cannot be taken the run proceeds with a warning.";
+      description = "Block suspend/hibernate and lid-switch handling (logind block locks on sleep + handle-lid-switch) while an update run downloads, builds and installs. Acquired right after the run lock and held for the whole run (reboot countdown included), released on every exit path, success or failure. The lid lock is required because logind's own lid handling ignores sleep blockers by default (LidSwitchIgnoreInhibited=yes): closing the lid mid-run would otherwise suspend the machine. Fail-open: when the locks cannot be taken the run proceeds with a warning. The holder is bounded to 24h as a crash backstop.";
     };
 
     notify = lib.mkOption {

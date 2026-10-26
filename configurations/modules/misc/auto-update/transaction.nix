@@ -10,8 +10,9 @@
 #                                    collision exits 75 (SuccessExitStatus)
 #   _acquire_sleep_inhibitor       — logind block locks on sleep (suspend/
 #                                    hibernate) and on lid-switch handling
-#                                    via systemd-inhibit + sleep infinity;
-#                                    records $SLEEP_INHIBITOR_PID. Fail-open:
+#                                    via systemd-inhibit + a bounded sleep
+#                                    holder (24h backstop); records
+#                                    $SLEEP_INHIBITOR_PID. Fail-open:
 #                                    WARNING + empty PID when the lock cannot
 #                                    be taken, the run proceeds
 #   _release_sleep_inhibitor       — kill the inhibitor holder (idempotent
@@ -127,7 +128,13 @@
     # fork succeeding says nothing about the lock itself (a D-Bus-less
     # systemd-inhibit dies instantly, after the branch was taken).
     if systemd-inhibit "''${inhibit_args[@]}" true; then
-      systemd-inhibit "''${inhibit_args[@]}" sleep infinity &
+      # The holder is bounded as a last-resort backstop: every phase has its
+      # own timeout and the service's control-group reaps the holder, but a
+      # `sleep infinity` could otherwise keep the logind lock forever if the
+      # main process vanished without cleanup. 24h is comfortably above the
+      # worst-case run (GC wait + build + boot + reboot countdown).
+      timeout --signal=TERM --kill-after=1m 24h \
+        systemd-inhibit "''${inhibit_args[@]}" sleep infinity &
       SLEEP_INHIBITOR_PID=$!
       _status INFO "Suspend/hibernate and lid-switch inhibited for the duration of the update run."
     else
