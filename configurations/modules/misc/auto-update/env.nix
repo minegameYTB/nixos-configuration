@@ -17,7 +17,7 @@
 #
 # Build / inspect independently (no full system rebuild):
 #   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 41
-#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 23
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 24
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 {
@@ -55,7 +55,7 @@ let
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 23 binaries.
+  # Small root services (healthcheck + notify-failure): 24 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.

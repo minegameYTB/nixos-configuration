@@ -20,7 +20,7 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
 - `core` (13): `base64 cat chmod date mkdir mktemp mv rm stat sync test timeout notify-send`
-- `health` (23): `core` + `basename env id readlink rm timeout touch flock runuser systemctl systemd-inhibit grep`
+- `health` (24): `core` + `basename env id readlink sleep touch flock runuser systemctl systemd-inhibit grep`
 - `main` (41): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
@@ -38,8 +38,8 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.service
 
 # what is inside each env? — standalone flake packages (no system eval)
 nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 23
-nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 12
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 24
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 13
 # or all at once:
 make env
 
@@ -252,7 +252,7 @@ Options: `healthCheck.enable` (defaults to master `enable`), `units`, `requireNe
 - **Wake from suspend never fires**: `wakeFromSuspend` needs an RTC wake alarm (`/sys/class/rtc/rtc0/wakealarm` must exist and be writable); check `journalctl -u nixos-auto-update.timer` for wake-programming errors. It only resumes from suspend, never powers on a machine that is off.
 - **Run fails as `channel-resolve` right after resume from suspend**: the service starts immediately on wake (`network-online.target` is already satisfied from before suspend, NetworkManager reconnects async) while the wifi is only half back (associated without upstream, captive portal). The connectivity wait now gates on both the cache body and a forge probe, and the resolve is retried 3x/30s in-run — a failure at this point means the forge stayed unreachable for minutes, will retry on the next run.
 - **No network at boot-time runs**: service orders after `network-online.target`; check `journalctl` for fetch errors.
-- **Update vs GC ordering is symmetric**: the service has `After=nix-gc.service`, `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock, and the service has an `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap) — whichever starts second waits (`After=` alone can't order against an already-active unit: same-transaction jobs only). GC timeout fails the weekly run (retried next week) rather than collecting mid-build.
+- **Update vs GC ordering**: the service has `After=nix-gc.service`, and `nix-gc` has an `ExecStartPre` `flock -w 3h` on the update lock plus the service's own `ExecStartPre` polling `systemctl is-active nix-gc` (2h cap). `nix-gc` must not carry `After=nixos-auto-update.service` too: together with the updater's `After=nix-gc.service` that is a systemd ordering cycle. Whichever starts second waits; a GC timeout fails the weekly run rather than collecting mid-build.
 - **`configuration` assertion**: set it to the exact `machine.nix` key (`vm-cli-efi`, `hp-probook`, …), not the hostname.
 - **Fails behind proxy/VPN**: same requirements as a manual `nixos-rebuild boot`.
 - **`[Errno 2]` on a binary right after an env fix (`test`, `systemd-run`, …)**: the service executes under the *running* generation's `PATH`, not the staged one — a tight-PATH service cannot self-heal a PATH gap (seen 2026-09-20: `test` fixed in `04c9469`, next run failed on `systemd-run` from the old env). One-time manual recovery with a full user PATH, then the timer resumes on the fixed env — do NOT delete the transaction dir, recovery commits it:
