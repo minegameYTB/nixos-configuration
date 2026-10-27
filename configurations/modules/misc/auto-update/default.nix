@@ -162,7 +162,7 @@ in
 
       build = lib.mkOption {
         type = lib.types.str;
-        default = "1h";
+        default = "10h";
         description = "Budget for nixos-rebuild build.";
       };
 
