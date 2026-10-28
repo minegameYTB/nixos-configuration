@@ -11,7 +11,7 @@
 
   ### Vm specific package
   environment.systemPackages = with pkgs; [
-    libguestfs
+    #libguestfs
     nur.repos.minegameYTB.kvm-archive
   ];
 
