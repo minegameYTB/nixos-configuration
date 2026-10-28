@@ -61,15 +61,7 @@ in
       "pti=on"
       "vsyscall=none"
       "debugfs=off"
-      # TODO(module-signing): re-enable `module.sig_enforce=1` once unstable trusts
-      # kmodigest-signed modules. Since nixpkgs ~02c087f every module is signed by
-      # kmodigest (deterministic per-module certs), but the kernel's builtin trust
-      # (SYSTEM_EXTRA_CERTIFICATE) isn't wired yet — so with sig_enforce=1 every
-      # load fails "Key was rejected by service" (virtio_pci won't load → build-vm
-      # can't see its disk and drops to emergency). Dropping sig_enforce lets modules
-      # load (tainted). Upstream: #576469 fixes xpad-noone's build only; the runtime
-      # trust fix is a separate change. Re-enable when unstable ships it.
-      # "module.sig_enforce=1"
+      "module.sig_enforce=1"
       "random.trust_cpu=off"
       "init_on_alloc=0"
       "init_on_free=1"
