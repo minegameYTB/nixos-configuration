@@ -422,10 +422,10 @@ step_nixos_install() {
     info "Installing NixOS configuration: '${nixosProfile}'"
     ### Third-party CachyOS binary cache DISABLED (dead server: attic.xuyh0120.win).
     ### To re-enable, use :
-    ###   nixos-install --no-channel-copy --flake ".#${nixosProfile}" \
-    ###     --option extra-substituters        "https://attic.xuyh0120.win/lantian" \
-    ###     --option extra-trusted-public-keys "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
-    run_command nixos-install --no-channel-copy --flake ".#${nixosProfile}"
+       nixos-install --no-channel-copy --flake ".#${nixosProfile}" \
+         --option extra-substituters        "https://cache.lantian.pub/lantian" \
+         --option extra-trusted-public-keys "lantian:WVGO7vsRMSEN+h7Lp7kv6SAmrkEXgUGbbXm7jMDjBuQ="
+    ### run_command nixos-install --no-channel-copy --flake ".#${nixosProfile}"
     checkpoint_done "STEP_NIXOS_INSTALL"
   fi
 
