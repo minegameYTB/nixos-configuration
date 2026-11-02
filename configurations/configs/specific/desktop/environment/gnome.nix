@@ -128,6 +128,26 @@
       gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
         mesonFlags = oldAttrs.mesonFlags or [ ] ++ [ "-Dextensions_app=false" ];
       });
+
+      ### blur-my-shell v77 — native fix for rounded corners on popups
+      ### (Quick Settings). The square-corner regression was introduced in
+      ### v74 (blur-my-shell#1052) and fixed upstream by PR #976 in v76, which
+      ### also deprecated the gnome-rounded-blur library: installing that
+      ### library is now useless and only triggers a legacy notice in the
+      ### extension preferences. nixpkgs still ships v75, hence the override.
+      ###
+      ### Reuses buildGnomeExtension's .override, so extensionUuid keeps being
+      ### exposed (dconf.nix relies on it). "metadata" pins the EGO-generated
+      ### metadata.json, which fetchzip substitutes post-download to keep the
+      ### fixed-output derivation deterministic (EGO regenerates that file over
+      ### time without bumping the version).
+      gnomeExtensions = super.gnomeExtensions // {
+        blur-my-shell = super.gnomeExtensions.blur-my-shell.override {
+          version = 77;
+          sha256 = "1g7xqs4mcayragrrdq1fldr462bjyigfwspqlmracvmrk9m1q6rb";
+          metadata = "ewogICJfZ2VuZXJhdGVkIjogIkdlbmVyYXRlZCBieSBTd2VldFRvb3RoLCBkbyBub3QgZWRpdCIsCiAgImRlc2NyaXB0aW9uIjogIkFkZHMgYSBibHVyIGxvb2sgdG8gZGlmZmVyZW50IHBhcnRzIG9mIEdOT01FIFNoZWxsLCBpbmNsdWRpbmcgdGhlIHRvcCBwYW5lbCwgZGFzaCBhbmQgb3ZlcnZpZXcuXG5cbk5vdGU6IGlmIHRoZSBleHRlbnNpb24gc2hvd3MgYW4gZXJyb3IgYWZ0ZXIgdXBkYXRpbmcsIHJlc3RhcnQgeW91ciBzZXNzaW9uIHRvIHNlZSB3aGV0aGVyIGl0IHBlcnNpc3RzLiBUaGlzIGlzIGR1ZSB0byBhIEdOT01FIFNoZWxsIGJ1ZyB0aGF0IHRoZSBleHRlbnNpb24gY2Fubm90IHdvcmsgYXJvdW5kLiIsCiAgImRvbmF0aW9ucyI6IHsKICAgICJnaXRodWIiOiAiYXVuZXR4IiwKICAgICJrb2ZpIjogImF1bmV0eCIKICB9LAogICJnZXR0ZXh0LWRvbWFpbiI6ICJibHVyLW15LXNoZWxsQGF1bmV0eCIsCiAgIm5hbWUiOiAiQmx1ciBteSBTaGVsbCIsCiAgIm9yaWdpbmFsLWF1dGhvcnMiOiBbCiAgICAibWVAYXVuZXR4LmRldiIKICBdLAogICJzZXNzaW9uLW1vZGVzIjogWwogICAgInVubG9jay1kaWFsb2ciLAogICAgInVzZXIiCiAgXSwKICAic2V0dGluZ3Mtc2NoZW1hIjogIm9yZy5nbm9tZS5zaGVsbC5leHRlbnNpb25zLmJsdXItbXktc2hlbGwiLAogICJzaGVsbC12ZXJzaW9uIjogWwogICAgIjQ2IiwKICAgICI0NyIsCiAgICAiNDgiLAogICAgIjQ5IiwKICAgICI1MCIsCiAgICAiNTEiCiAgXSwKICAidXJsIjogImh0dHBzOi8vZ2l0aHViLmNvbS9hdW5ldHgvYmx1ci1teS1zaGVsbCIsCiAgInV1aWQiOiAiYmx1ci1teS1zaGVsbEBhdW5ldHgiLAogICJ2ZXJzaW9uIjogNzcKfQ==";
+        };
+      };
     })
   ];
 }
