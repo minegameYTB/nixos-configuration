@@ -158,6 +158,11 @@ in
             ### migration disabled nothing rewrites it, so the declared value
             ### has to win the read.
             "/org/gnome/shell/extensions/blur-my-shell/dash-to-dock/pipeline"
+
+            ### Same story for the blur mode: the user database holds the v72
+            ### static blur, and that key would otherwise shadow the dynamic
+            ### mode declared below.
+            "/org/gnome/shell/extensions/blur-my-shell/dash-to-dock/static-blur"
           ];
           settings = {
             "org/gnome/desktop/wm/preferences" = {
@@ -223,6 +228,12 @@ in
               # database still references it and is locked out above, so the
               # real default has to be spelled out here.
               pipeline = "pipeline_default";
+              # Dynamic blur rather than static — "static-blur" reads
+              # "whether to use static or dynamic blur" in the schema, and
+              # both the schema default and the user database say static.
+              # Dynamic follows the dock as its background changes, at a
+              # small extra GPU cost.
+              static-blur = false;
             };
 
             "org/gnome/shell/extensions/dash-to-dock" = {
