@@ -5,6 +5,117 @@
   ...
 }:
 
+let
+  gv = lib.gvariant;
+
+  ### blur-my-shell effect pipelines.
+  ###
+  ### The `pipelines` key (type a{sa{sv}}) holds every pipeline definition.
+  ### dconf knows nothing about sub-keys: writing this key *replaces* the
+  ### schema default wholesale, so all five pipelines shipped by the schema
+  ### must be spelled out here — omitting `pipeline_default` would break the
+  ### panel/applications/overview components, which reference it by name.
+  ###
+  ### The definitions below are the v77 schema default verbatim, except for
+  ### `pipeline_liquid_glass`, whose luminosity effect carries the tweaks made
+  ### in the preferences (that pipeline is what `popup.pipeline` selects).
+  ### Params left out of an effect fall back to the effect class defaults
+  ### (see `effects_manager.js`), so only the changed ones need to be listed —
+  ### `saturation_multiplicator` is kept explicit because the schema default
+  ### (1.1) differs from the class default (1.0).
+
+  # a{sv} — dict whose values are GVariant variants: pipelines, effects, params
+  svDict =
+    attrs: gv.mkArray (lib.mapAttrsToList (k: v: gv.mkDictionaryEntry k (gv.mkVariant v)) attrs);
+
+  # a{sT} — dict keeping each value's own type: the top-level a{sa{sv}} map,
+  # whose values are a{sv} and must NOT be wrapped in a variant again.
+  sDict = attrs: gv.mkArray (lib.mapAttrsToList (k: v: gv.mkDictionaryEntry k v) attrs);
+
+  # An effect entry: { type, id, params? } wrapped in a variant.
+  effect =
+    type: id: params:
+    gv.mkVariant (
+      svDict ({ inherit type id; } // lib.optionalAttrs (params != { }) { params = svDict params; })
+    );
+
+  pipelines = sDict {
+    pipeline_default = svDict {
+      name = "Default";
+      effects = gv.mkArray [
+        (effect "dual_kawase_blur" "effect_000000000000" {
+          unscaled_radius = gv.mkInt32 30;
+          brightness = 0.6;
+        })
+      ];
+    };
+
+    pipeline_liquid_glass = svDict {
+      name = "Liquid Glass";
+      effects = gv.mkArray [
+        (effect "luminosity" "effect_liquid_glass_luminosity" {
+          saturation_multiplicator = 1.1;
+          # "Shift brightness" / "Brightness multiplier" — the two sliders
+          # tuned in the pipeline editor (defaults: 0.0 / 1.0).
+          brightness_shift = 0.0;
+          brightness_multiplicator = 0.7;
+        })
+        (effect "refraction" "effect_liquid_glass_refraction" { tint = gv.mkInt32 0; })
+        (effect "noise" "effect_liquid_glass_noise" { noise = 0.1; })
+      ];
+    };
+
+    pipeline_vapor_glass = svDict {
+      name = "Vapor Glass";
+      effects = gv.mkArray [
+        (effect "luminosity" "effect_vapor_glass_luminosity" {
+          saturation_multiplicator = 1.1;
+        })
+        (effect "wave" "effect_vapor_glass_wave" { })
+        (effect "refraction" "effect_vapor_glass_refraction" { tint = gv.mkInt32 0; })
+        (effect "noise" "effect_vapor_glass_noise" { noise = 0.1; })
+      ];
+    };
+
+    pipeline_classic_light_background = svDict {
+      name = "Classic Light Background";
+      effects = gv.mkArray [
+        (effect "dual_kawase_blur" "effect_classic_light_blur" {
+          unscaled_radius = gv.mkInt32 30;
+          brightness = 0.6;
+        })
+        (effect "color" "effect_classic_light_color" {
+          color = gv.mkTuple [
+            1.0
+            1.0
+            1.0
+            0.25
+          ];
+          blend_mode = gv.mkInt32 17;
+        })
+      ];
+    };
+
+    pipeline_classic_dark_background = svDict {
+      name = "Classic Dark Background";
+      effects = gv.mkArray [
+        (effect "dual_kawase_blur" "effect_classic_dark_blur" {
+          unscaled_radius = gv.mkInt32 30;
+          brightness = 0.6;
+        })
+        (effect "color" "effect_classic_dark_color" {
+          color = gv.mkTuple [
+            0.4
+            0.4
+            0.4
+            0.35
+          ];
+          blend_mode = gv.mkInt32 17;
+        })
+      ];
+    };
+  };
+in
 {
   ### Dconf settings
   programs.dconf = {
@@ -51,6 +162,10 @@
               current-workspace-only = true;
             };
 
+            "org/gnome/shell/extensions/blur-my-shell" = {
+              inherit pipelines;
+            };
+
             "org/gnome/shell/extensions/blur-my-shell/panel" = {
               static-blur = false;
               gradient-panel = true;
@@ -70,6 +185,10 @@
               # performance cost (default false)
               blur-on-overview = true;
               whitelist = [ "com.mitchellh.ghostty" ];
+            };
+
+            "org/gnome/shell/extensions/blur-my-shell/popup" = {
+              pipeline = "pipeline_liquid_glass";
             };
 
             "org/gnome/shell/extensions/dash-to-dock" = {
