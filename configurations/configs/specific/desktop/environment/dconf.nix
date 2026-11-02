@@ -53,6 +53,12 @@
 
             "org/gnome/shell/extensions/blur-my-shell/panel" = {
               static-blur = false;
+              gradient-panel = true;
+              # 0 = Top, 1 = Bottom
+              gradient-panel-mode = lib.gvariant.mkInt32 0;
+              override-background-dynamically = true;
+              # 0 = Blur on Window Proximity, 1 = Background on Window Proximity
+              override-background-dynamically-mode = lib.gvariant.mkInt32 0;
             };
 
             "org/gnome/shell/extensions/blur-my-shell/applications" = {
@@ -60,6 +66,9 @@
               brightness = "0.8";
               opacity = lib.gvariant.mkInt32 245;
               dynamic-opacity = false;
+              # "Blur on overview" — shows the blur on every workspace, at some
+              # performance cost (default false)
+              blur-on-overview = true;
               whitelist = [ "com.mitchellh.ghostty" ];
             };
 
