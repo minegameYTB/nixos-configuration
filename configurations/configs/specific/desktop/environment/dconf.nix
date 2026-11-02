@@ -45,7 +45,8 @@ let
       effects = gv.mkArray [
         (effect "dual_kawase_blur" "effect_000000000000" {
           unscaled_radius = gv.mkInt32 30;
-          brightness = 0.6;
+          # Tuned: 0.45 instead of the 0.6 schema default.
+          brightness = 0.45;
         })
       ];
     };
@@ -135,6 +136,28 @@ in
           ### Lock some settings
           locks = [
             "/org/gnome/desktop/app-folders/folder-children"
+
+            ### blur-my-shell runs `update_from_old_settings` on every load
+            ### while `settings-version` is below CURRENT_SETTINGS_VERSION (8
+            ### as of v77). That migration reads the legacy per-component
+            ### sigma/brightness values still present in the user database,
+            ### creates a `pipeline_migrated_dynamic_blur` pipeline, reassigns
+            ### the components to it and writes the whole `pipelines` dict
+            ### back — into the user database, which comes first in the
+            ### profile and therefore shadows the declarative value below for
+            ### good. Declaring version 8 makes the migration a no-op, and the
+            ### lock makes the user database's stale `2` lose on read (a lock
+            ### redirects reads to the database holding it, and also blocks
+            ### writes to that key).
+            ### Bump only if upstream raises CURRENT_SETTINGS_VERSION and its
+            ### new migration steps become wanted.
+            "/org/gnome/shell/extensions/blur-my-shell/settings-version"
+
+            ### The user database still points the dock at the v72
+            ### `pipeline_default_rounded`, which v77 dropped; with the
+            ### migration disabled nothing rewrites it, so the declared value
+            ### has to win the read.
+            "/org/gnome/shell/extensions/blur-my-shell/dash-to-dock/pipeline"
           ];
           settings = {
             "org/gnome/desktop/wm/preferences" = {
@@ -164,6 +187,9 @@ in
 
             "org/gnome/shell/extensions/blur-my-shell" = {
               inherit pipelines;
+              # CURRENT_SETTINGS_VERSION of v77's settings_updater.js — the
+              # value must be >= it or the migration described above runs.
+              settings-version = lib.gvariant.mkInt32 8;
             };
 
             "org/gnome/shell/extensions/blur-my-shell/panel" = {
@@ -178,7 +204,8 @@ in
 
             "org/gnome/shell/extensions/blur-my-shell/applications" = {
               blur = true;
-              brightness = "0.8";
+              # type `d` — a quoted string here would be rejected by GSettings
+              brightness = 0.8;
               opacity = lib.gvariant.mkInt32 245;
               dynamic-opacity = false;
               # "Blur on overview" — shows the blur on every workspace, at some
@@ -189,6 +216,13 @@ in
 
             "org/gnome/shell/extensions/blur-my-shell/popup" = {
               pipeline = "pipeline_liquid_glass";
+            };
+
+            "org/gnome/shell/extensions/blur-my-shell/dash-to-dock" = {
+              # v72's `pipeline_default_rounded` no longer exists; the user
+              # database still references it and is locked out above, so the
+              # real default has to be spelled out here.
+              pipeline = "pipeline_default";
             };
 
             "org/gnome/shell/extensions/dash-to-dock" = {
