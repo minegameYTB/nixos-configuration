@@ -39,6 +39,11 @@ in
 
   nspawnctl = callPackage ./nspawnctl/default.nix { };
 
+  ### Companion daemon of the GNOME Global Menu extension (see
+  ### configurations/configs/specific/desktop/environment/gnome.nix, which
+  ### installs it so the extension finds `global-menu` on the session PATH).
+  global-menu = callPackage ./global-menu/default.nix { };
+
   # Linux-next test kernel (pinned commit, see ./linux-next/default.nix).
   # Exposed here so NixOS modules can use `pkgs.pkgsConfig.linux-next`
   # and so it is directly buildable via `nix build '.#linux-next'`.

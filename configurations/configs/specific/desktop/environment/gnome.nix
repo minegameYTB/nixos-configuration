@@ -76,7 +76,12 @@
       caffeine
       bluetooth-battery-meter
       gsconnect
-    ]);
+      global-menu
+    ])
+    ### Companion daemon of the global-menu extension: the extension spawns
+    ### `global-menu` off the session PATH when an app exports a menu over
+    ### D-Bus (see pkgs/global-menu/default.nix).
+    ++ [ pkgs.pkgsConfig.global-menu ];
 
   ### Exclude some Gnome default packages
   environment.gnome.excludePackages = with pkgs; [
@@ -146,6 +151,33 @@
           version = 77;
           sha256 = "1g7xqs4mcayragrrdq1fldr462bjyigfwspqlmracvmrk9m1q6rb";
           metadata = "ewogICJfZ2VuZXJhdGVkIjogIkdlbmVyYXRlZCBieSBTd2VldFRvb3RoLCBkbyBub3QgZWRpdCIsCiAgImRlc2NyaXB0aW9uIjogIkFkZHMgYSBibHVyIGxvb2sgdG8gZGlmZmVyZW50IHBhcnRzIG9mIEdOT01FIFNoZWxsLCBpbmNsdWRpbmcgdGhlIHRvcCBwYW5lbCwgZGFzaCBhbmQgb3ZlcnZpZXcuXG5cbk5vdGU6IGlmIHRoZSBleHRlbnNpb24gc2hvd3MgYW4gZXJyb3IgYWZ0ZXIgdXBkYXRpbmcsIHJlc3RhcnQgeW91ciBzZXNzaW9uIHRvIHNlZSB3aGV0aGVyIGl0IHBlcnNpc3RzLiBUaGlzIGlzIGR1ZSB0byBhIEdOT01FIFNoZWxsIGJ1ZyB0aGF0IHRoZSBleHRlbnNpb24gY2Fubm90IHdvcmsgYXJvdW5kLiIsCiAgImRvbmF0aW9ucyI6IHsKICAgICJnaXRodWIiOiAiYXVuZXR4IiwKICAgICJrb2ZpIjogImF1bmV0eCIKICB9LAogICJnZXR0ZXh0LWRvbWFpbiI6ICJibHVyLW15LXNoZWxsQGF1bmV0eCIsCiAgIm5hbWUiOiAiQmx1ciBteSBTaGVsbCIsCiAgIm9yaWdpbmFsLWF1dGhvcnMiOiBbCiAgICAibWVAYXVuZXR4LmRldiIKICBdLAogICJzZXNzaW9uLW1vZGVzIjogWwogICAgInVubG9jay1kaWFsb2ciLAogICAgInVzZXIiCiAgXSwKICAic2V0dGluZ3Mtc2NoZW1hIjogIm9yZy5nbm9tZS5zaGVsbC5leHRlbnNpb25zLmJsdXItbXktc2hlbGwiLAogICJzaGVsbC12ZXJzaW9uIjogWwogICAgIjQ2IiwKICAgICI0NyIsCiAgICAiNDgiLAogICAgIjQ5IiwKICAgICI1MCIsCiAgICAiNTEiCiAgXSwKICAidXJsIjogImh0dHBzOi8vZ2l0aHViLmNvbS9hdW5ldHgvYmx1ci1teS1zaGVsbCIsCiAgInV1aWQiOiAiYmx1ci1teS1zaGVsbEBhdW5ldHgiLAogICJ2ZXJzaW9uIjogNzcKfQ==";
+        };
+
+        ### Global Menu (EGO 11414) — not in nixpkgs yet. uuid
+        ### global-menu@unmade.space, repo Unmade760/orbit-global-menu.
+        ### `version` is EGO's file version (the download URL is
+        ### extension-data/global-menuunmade.space.v5.shell-extension.zip);
+        ### the extension's own version-name is 1.1.4 (shell 48-51, we ship
+        ### shell 50). `metadata` pins the EGO-generated metadata.json for the
+        ### same determinism reason as blur-my-shell above — regenerate with
+        ### `base64 -w0 metadata.json` from that zip. sha256 comes from
+        ### `nix-prefetch-url --unpack` (the zip is flat, so it matches
+        ### fetchzip with stripRoot = false).
+        global-menu = super.gnomeExtensions.buildShellExtension {
+          pname = "global-menu";
+          name = "Global Menu";
+          uuid = "global-menu@unmade.space";
+          version = 5;
+          link = "https://extensions.gnome.org/extension/11414/global-menu/";
+          description = ''
+            A menu bar for GNOME. The focused application's menus appear in the top panel.
+
+            It tries three sources in order: the menu the application exports over D-Bus, then a curated menu that fires the application's own keyboard shortcuts, then a generic window and system menu.
+
+            Reading a menu an application exports needs the companion global-menu daemon, installed separately.
+          '';
+          sha256 = "03a8q8ybv1dqnw95187gwzf9nnd4ws7jdkx1zi9sqpn1rz2p58x0";
+          metadata = "ewogICJfZ2VuZXJhdGVkIjogIkdlbmVyYXRlZCBieSBTd2VldFRvb3RoLCBkbyBub3QgZWRpdCIsCiAgImRlc2NyaXB0aW9uIjogIkEgbWVudSBiYXIgZm9yIEdOT01FLiBUaGUgZm9jdXNlZCBhcHBsaWNhdGlvbidzIG1lbnVzIGFwcGVhciBpbiB0aGUgdG9wIHBhbmVsLlxuXG5JdCB0cmllcyB0aHJlZSBzb3VyY2VzIGluIG9yZGVyOiB0aGUgbWVudSB0aGUgYXBwbGljYXRpb24gZXhwb3J0cyBvdmVyIEQtQnVzLCB0aGVuIGEgY3VyYXRlZCBtZW51IHRoYXQgZmlyZXMgdGhlIGFwcGxpY2F0aW9uJ3Mgb3duIGtleWJvYXJkIHNob3J0Y3V0cywgdGhlbiBhIGdlbmVyaWMgd2luZG93IGFuZCBzeXN0ZW0gbWVudS5cblxuUmVhZGluZyBhIG1lbnUgYW4gYXBwbGljYXRpb24gZXhwb3J0cyBuZWVkcyB0aGUgY29tcGFuaW9uIGdsb2JhbC1tZW51IGRhZW1vbiwgaW5zdGFsbGVkIHNlcGFyYXRlbHkuIiwKICAiZ2V0dGV4dC1kb21haW4iOiAiZ2xvYmFsLW1lbnUiLAogICJuYW1lIjogIkdsb2JhbCBNZW51IiwKICAic2V0dGluZ3Mtc2NoZW1hIjogIm9yZy5nbm9tZS5zaGVsbC5leHRlbnNpb25zLmdsb2JhbC1tZW51IiwKICAic2hlbGwtdmVyc2lvbiI6IFsKICAgICI0OCIsCiAgICAiNDkiLAogICAgIjUwIiwKICAgICI1MSIKICBdLAogICJ1cmwiOiAiaHR0cHM6Ly9naXRodWIuY29tL1VubWFkZTc2MC9vcmJpdC1nbG9iYWwtbWVudSIsCiAgInV1aWQiOiAiZ2xvYmFsLW1lbnVAdW5tYWRlLnNwYWNlIiwKICAidmVyc2lvbiI6IDUsCiAgInZlcnNpb24tbmFtZSI6ICIxLjEuNCIKfQ==";
         };
       };
     })

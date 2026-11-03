@@ -289,6 +289,7 @@ in
                 caffeine.extensionUuid
                 bluetooth-battery-meter.extensionUuid
                 gsconnect.extensionUuid
+                global-menu.extensionUuid
               ];
               favorite-apps = [
                 "zen-beta.desktop"
