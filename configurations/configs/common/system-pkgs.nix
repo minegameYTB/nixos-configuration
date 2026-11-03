@@ -50,7 +50,7 @@
         ]
         ### x86_64 only GUI packages
         ++ lib.optionals pkgs.stdenvNoCC.hostPlatform.isx86_64 [
-          onlyoffice-desktopeditors
+          # onlyoffice-desktopeditors
           upscayl
         ]
       )
