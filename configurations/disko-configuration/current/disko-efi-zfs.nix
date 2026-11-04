@@ -139,7 +139,7 @@
             mountpoint = "/nix";
             options = {
               mountpoint = "legacy";
-              compression = "zstd-5";
+              compression = "zstd-3";
               atime = "off";
               xattr = "sa";
               dnodesize = "auto";
