@@ -1,0 +1,681 @@
+# French translation of the Global Menu GNOME Shell extension
+# (EGO 11414, uuid global-menu@unmade.space).
+#
+# Extracted from po/global-menu.pot at upstream rev 77ea74cf — byte-identical
+# to the pot regenerated from the EGO v5 zip this config ships. Refresh with:
+#   xgettext (see upstream tools/i18n.sh) > new.pot
+#   msgmerge --update fr.po new.pot && msgfmt --check fr.po
+# The .mo is compiled into the extension by gnome.nix (overrideAttrs).
+msgid ""
+msgstr ""
+"Project-Id-Version: global-menu 1.1.4\n"
+"Report-Msgid-Bugs-To: https://github.com/Unmade760/orbit-global-menu/issues\n"
+"POT-Creation-Date: 2026-11-04 00:00+0100\n"
+"PO-Revision-Date: 2026-11-04 00:00+0100\n"
+"Last-Translator: Minegame YTB <53137994+minegameYTB@users.noreply.github.com>\n"
+"Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: fallbackMenu.js:116
+msgid "Untitled Folder"
+msgstr "Dossier sans titre"
+
+#: fallbackMenu.js:116
+#, javascript-format
+msgid "Untitled Folder %d"
+msgstr "Dossier sans titre %d"
+
+#: fallbackMenu.js:137
+msgid "Empty all items from Trash?"
+msgstr "Vider tous les éléments de la corbeille ?"
+
+#: fallbackMenu.js:138
+msgid "All items in the Trash will be permanently deleted."
+msgstr "Tous les éléments de la corbeille seront définitivement supprimés."
+
+#: fallbackMenu.js:142 prefsPages/editorPage.js:232
+msgid "Cancel"
+msgstr "Annuler"
+
+#: fallbackMenu.js:147
+msgid "Empty Trash"
+msgstr "Vider la corbeille"
+
+#: fallbackMenu.js:274
+msgid "No Window"
+msgstr "Aucune fenêtre"
+
+#: fallbackMenu.js:281
+msgid "Snap Window Left"
+msgstr "Ancrer la fenêtre à gauche"
+
+#: fallbackMenu.js:282
+msgid "Snap Window Right"
+msgstr "Ancrer la fenêtre à droite"
+
+#: fallbackMenu.js:284
+msgid "Switch Between Applications"
+msgstr "Basculer entre les applications"
+
+#: fallbackMenu.js:285
+msgid "Cycle Through Windows"
+msgstr "Parcourir les fenêtres"
+
+#: fallbackMenu.js:286
+msgid "Window Menu"
+msgstr "Menu de la fenêtre"
+
+#: fallbackMenu.js:314
+msgid "New Window"
+msgstr "Nouvelle fenêtre"
+
+#: fallbackMenu.js:318
+#, javascript-format
+msgid "Hide %s"
+msgstr "Masquer %s"
+
+#: fallbackMenu.js:324
+#, javascript-format
+msgid "Quit %s"
+msgstr "Quitter %s"
+
+#: fallbackMenu.js:331 fallbackMenu.js:433
+msgid "Desktop"
+msgstr "Bureau"
+
+#: fallbackMenu.js:336
+msgid "File"
+msgstr "Fichier"
+
+#: fallbackMenu.js:338
+msgid "New Folder on Desktop"
+msgstr "Nouveau dossier sur le bureau"
+
+#: fallbackMenu.js:339
+msgid "New Tab"
+msgstr "Nouvel onglet"
+
+#: fallbackMenu.js:340
+msgid "Open"
+msgstr "Ouvrir"
+
+#: fallbackMenu.js:342
+msgid "Properties"
+msgstr "Propriétés"
+
+#: fallbackMenu.js:344
+msgid "Show Desktop"
+msgstr "Afficher le bureau"
+
+#: fallbackMenu.js:346
+msgid "Close Window"
+msgstr "Fermer la fenêtre"
+
+#: fallbackMenu.js:350
+msgid "Edit"
+msgstr "Édition"
+
+#: fallbackMenu.js:352
+msgid "Undo"
+msgstr "Annuler"
+
+#: fallbackMenu.js:353
+msgid "Redo"
+msgstr "Rétablir"
+
+#: fallbackMenu.js:355
+msgid "Cut"
+msgstr "Couper"
+
+#: fallbackMenu.js:356
+msgid "Copy"
+msgstr "Copier"
+
+#: fallbackMenu.js:357
+msgid "Paste"
+msgstr "Coller"
+
+#: fallbackMenu.js:358
+msgid "Delete"
+msgstr "Supprimer"
+
+#: fallbackMenu.js:360
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+#: fallbackMenu.js:362
+msgid "Take Screenshot"
+msgstr "Prendre une capture d'écran"
+
+#: fallbackMenu.js:363
+msgid "Screenshot of Window"
+msgstr "Capture d'écran de la fenêtre"
+
+#: fallbackMenu.js:364
+msgid "Screenshot of Area"
+msgstr "Capture d'écran d'une zone"
+
+#: fallbackMenu.js:368
+msgid "Go"
+msgstr "Aller"
+
+#: fallbackMenu.js:370
+msgid "Back"
+msgstr "Précédent"
+
+#: fallbackMenu.js:371
+msgid "Forward"
+msgstr "Suivant"
+
+#: fallbackMenu.js:373
+msgid "Next Workspace"
+msgstr "Espace de travail suivant"
+
+#: fallbackMenu.js:374
+msgid "Previous Workspace"
+msgstr "Espace de travail précédent"
+
+#: fallbackMenu.js:375
+msgid "First Workspace"
+msgstr "Premier espace de travail"
+
+#: fallbackMenu.js:379
+msgid "Window"
+msgstr "Fenêtre"
+
+#: fallbackMenu.js:383
+msgid "System"
+msgstr "Système"
+
+#: fallbackMenu.js:386
+msgid "Show Applications"
+msgstr "Afficher les applications"
+
+#: fallbackMenu.js:387
+msgid "Show Notifications"
+msgstr "Afficher les notifications"
+
+#: fallbackMenu.js:389
+msgid "Open Files"
+msgstr "Ouvrir les fichiers"
+
+#: fallbackMenu.js:390
+msgid "Settings"
+msgstr "Paramètres"
+
+#: fallbackMenu.js:392
+msgid "Empty Trash…"
+msgstr "Vider la corbeille…"
+
+#: fallbackMenu.js:394
+msgid "Lock Screen"
+msgstr "Verrouiller l'écran"
+
+#: fallbackMenu.js:395
+msgid "Suspend"
+msgstr "Mettre en veille"
+
+#: fallbackMenu.js:396
+msgid "Hibernate"
+msgstr "Hiberner"
+
+#: fallbackMenu.js:398
+msgid "Log Out"
+msgstr "Se déconnecter"
+
+#: fallbackMenu.js:399
+msgid "Power Off / Restart"
+msgstr "Éteindre / Redémarrer"
+
+#: prefs.js:16
+msgid "General"
+msgstr "Général"
+
+#: prefs.js:17 prefsPages/editorPage.js:103
+msgid "Menus"
+msgstr "Menus"
+
+#: prefs.js:21
+msgid "Fallback menu"
+msgstr "Menu de repli"
+
+#: prefs.js:22
+msgid ""
+"Show a generic app name, File, Edit, Go and Window menu for apps that have "
+"none of their own"
+msgstr "Affiche un nom d'application générique ainsi que les menus Fichier, Édition, Aller et Fenêtre pour les applications qui n'en ont pas"
+
+#: prefs.js:28
+msgid "Shortcut menus"
+msgstr "Menus de raccourcis"
+
+#: prefs.js:29
+msgid ""
+"For supported apps without a menu of their own, show curated menus that send "
+"the app's real keyboard shortcuts"
+msgstr "Pour les applications prises en charge qui n'ont pas de menu, affiche des menus soignés qui envoient les vrais raccourcis clavier de l'application"
+
+#: prefs.js:34
+msgid "Development"
+msgstr "Développement"
+
+#: prefs.js:38
+msgid "Debug shortcut menus"
+msgstr "Déboguer les menus de raccourcis"
+
+#: prefs.js:39
+msgid "Log shortcut-menu resolution and key synthesis to the journal"
+msgstr "Journalise la résolution des menus de raccourcis et la synthèse des touches"
+
+#: prefsPages/appearancePage.js:24
+msgid "Appearance"
+msgstr "Apparence"
+
+#: prefsPages/appearancePage.js:55
+msgid "Keyboard Shortcuts"
+msgstr "Raccourcis clavier"
+
+#: prefsPages/appearancePage.js:59
+msgid "Show shortcuts"
+msgstr "Afficher les raccourcis"
+
+#: prefsPages/appearancePage.js:62
+msgid "Always"
+msgstr "Toujours"
+
+#: prefsPages/appearancePage.js:63
+msgid "While holding a key"
+msgstr "Lors de l'appui sur une touche"
+
+#: prefsPages/appearancePage.js:64
+msgid "Never"
+msgstr "Jamais"
+
+#: prefsPages/appearancePage.js:69
+msgid "Key to hold"
+msgstr "Touche à maintenir"
+
+#: prefsPages/appearancePage.js:72
+msgid "Alt"
+msgstr "Alt"
+
+#: prefsPages/appearancePage.js:73
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#: prefsPages/appearancePage.js:74
+msgid "Shift"
+msgstr "Shift"
+
+#: prefsPages/appearancePage.js:75
+msgid "Super"
+msgstr "Super"
+
+#: prefsPages/appearancePage.js:106
+msgid "Popup Blur"
+msgstr "Flou des menus contextuels"
+
+#: prefsPages/appearancePage.js:108
+msgid ""
+"Blurs what is behind popup menus, through Blur My Shell. The panel bar "
+"itself is blurred by Blur My Shell's own \"Panel\" setting."
+msgstr "Floute l'arrière-plan des menus contextuels, via Blur My Shell. La barre du panneau est elle-même floutée par le réglage « Panel » de Blur My Shell."
+
+#: prefsPages/appearancePage.js:109
+msgid "Blur My Shell is not installed, so these options will have no effect."
+msgstr "Blur My Shell n'est pas installé : ces options n'auront donc aucun effet."
+
+#: prefsPages/appearancePage.js:114
+msgid "Blur behind popup menus"
+msgstr "Flouter derrière les menus contextuels"
+
+#: prefsPages/appearancePage.js:115
+msgid "Dynamic blur: re-rendered as the content behind moves"
+msgstr "Flou dynamique : recalculé quand le contenu derrière bouge"
+
+#: prefsPages/appearancePage.js:121
+msgid "Blur intensity"
+msgstr "Intensité du flou"
+
+#: prefsPages/appearancePage.js:122
+msgid "Sigma of the gaussian blur"
+msgstr "Sigma du flou gaussien"
+
+#: prefsPages/appearancePage.js:126
+msgid "Brightness"
+msgstr "Luminosité"
+
+#: prefsPages/appearancePage.js:127
+msgid "1.00 = no dimming of the blurred area"
+msgstr "1,00 = aucune atténuation de la zone floutée"
+
+#: prefsPages/appearancePage.js:137
+msgid "Popup Menus"
+msgstr "Menus contextuels"
+
+#: prefsPages/appearancePage.js:141
+msgid "Background opacity"
+msgstr "Opacité de l'arrière-plan"
+
+#: prefsPages/appearancePage.js:142
+msgid "Lower is more translucent. Blur is invisible at 100%."
+msgstr "Valeur basse = plus translucide. Le flou est invisible à 100 %."
+
+#: prefsPages/appearancePage.js:146
+msgid "Corner radius"
+msgstr "Rayon des coins"
+
+#: prefsPages/appearancePage.js:147
+msgid "In pixels"
+msgstr "En pixels"
+
+#: prefsPages/appearancePage.js:152
+msgid "Hide pointer arrow"
+msgstr "Masquer la pointe du pointeur"
+
+#: prefsPages/appearancePage.js:153
+msgid "Menus drop straight down from the bar instead of pointing at the button"
+msgstr "Les menus tombent droit depuis la barre au lieu de pointer vers le bouton"
+
+#: prefsPages/appearancePage.js:160
+msgid "Menu Bar"
+msgstr "Barre de menus"
+
+#: prefsPages/appearancePage.js:164
+msgid "Button spacing"
+msgstr "Espacement des boutons"
+
+#: prefsPages/appearancePage.js:165
+msgid "Horizontal button padding in pixels. The GNOME default is 12."
+msgstr "Marge horizontale des boutons en pixels. La valeur par défaut de GNOME est 12."
+
+#: prefsPages/appearancePage.js:169
+msgid "Font size"
+msgstr "Taille de la police"
+
+#: prefsPages/appearancePage.js:170
+msgid "In points. 0 keeps the theme default."
+msgstr "En points. 0 conserve la valeur par défaut du thème."
+
+#: prefsPages/appearancePage.js:175
+msgid "Bold app name"
+msgstr "Nom de l'application en gras"
+
+#: prefsPages/appearancePage.js:176
+msgid "Show the focused app's name button in bold"
+msgstr "Affiche en gras le bouton du nom de l'application active"
+
+#: prefsPages/appearancePage.js:182
+msgid "Hide App Name"
+msgstr "Masquer le nom de l'application"
+
+#: prefsPages/appearancePage.js:183
+msgid "Removes the focused app's name button from the bar"
+msgstr "Retire de la barre le bouton du nom de l'application active"
+
+#: prefsPages/appearancePage.js:189
+msgid "Hide workspace indicator"
+msgstr "Masquer l'indicateur d'espace de travail"
+
+#: prefsPages/appearancePage.js:190
+msgid "Hides GNOME's Activities and workspace pill at the left of the panel"
+msgstr "Masque le bouton Activités et la pastille d'espace de travail de GNOME à gauche du panneau"
+
+#: prefsPages/applicationsPage.js:26
+msgid "Applications"
+msgstr "Applications"
+
+#: prefsPages/applicationsPage.js:31
+msgid "Shortcut Menus"
+msgstr "Menus de raccourcis"
+
+#: prefsPages/applicationsPage.js:32
+msgid ""
+"Per-app curated menus that synthesize the app's real keyboard shortcuts. "
+"Editing a built-in creates a user override; built-in files are never "
+"modified."
+msgstr "Menus soignés par application qui synthétisent les vrais raccourcis clavier de l'application. Modifier un menu intégré crée une surcharge utilisateur ; les fichiers intégrés ne sont jamais modifiés."
+
+#: prefsPages/applicationsPage.js:59
+msgid "Add Application…"
+msgstr "Ajouter une application…"
+
+#: prefsPages/applicationsPage.js:75
+#, javascript-format
+msgid "Error: %s"
+msgstr "Erreur : %s"
+
+#: prefsPages/applicationsPage.js:75
+msgid "failed to load"
+msgstr "échec du chargement"
+
+#: prefsPages/applicationsPage.js:78
+msgid "Built-in, overridden"
+msgstr "Intégré, surchargé"
+
+#: prefsPages/applicationsPage.js:80
+msgid "Custom"
+msgstr "Personnalisé"
+
+#: prefsPages/applicationsPage.js:82
+msgid "Built-in"
+msgstr "Intégré"
+
+#: prefsPages/applicationsPage.js:120
+msgid "Add Application"
+msgstr "Ajouter une application"
+
+#: prefsPages/applicationsPage.js:129
+msgid "Or type an app id / identifier manually"
+msgstr "Ou saisissez manuellement un identifiant d'application"
+
+#: prefsPages/applicationsPage.js:131
+msgid "Create Blank Mapping"
+msgstr "Créer une correspondance vide"
+
+#: prefsPages/applicationsPage.js:141
+msgid "Search installed applications"
+msgstr "Rechercher parmi les applications installées"
+
+#: prefsPages/editorPage.js:67
+msgid "Save"
+msgstr "Enregistrer"
+
+#: prefsPages/editorPage.js:74
+msgid "Reset to Built-in Default"
+msgstr "Rétablir la valeur intégrée par défaut"
+
+#: prefsPages/editorPage.js:74
+msgid "Delete This Mapping"
+msgstr "Supprimer cette correspondance"
+
+#: prefsPages/editorPage.js:81
+msgid "Application"
+msgstr "Application"
+
+#: prefsPages/editorPage.js:84
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#: prefsPages/editorPage.js:88
+msgid "App ID (file name, fixed)"
+msgstr "ID d'application (nom de fichier, fixe)"
+
+#: prefsPages/editorPage.js:93
+msgid "Identifiers (comma-separated)"
+msgstr "Identifiants (séparés par des virgules)"
+
+#: prefsPages/editorPage.js:99
+msgid ""
+"This is a built-in mapping. Saving creates a user override in ~/.config/"
+"global-menu/shortcuts/apps. The built-in file itself is never modified."
+msgstr "Ceci est une correspondance intégrée. L'enregistrement crée une surcharge utilisateur dans ~/.config/global-menu/shortcuts/apps. Le fichier intégré n'est jamais modifié."
+
+#: prefsPages/editorPage.js:104
+msgid ""
+"Click the shortcut button on an item to set it, exactly like GNOME Settings' "
+"Keyboard Shortcuts panel."
+msgstr "Cliquez sur le bouton de raccourci d'un élément pour le définir, exactement comme dans le panneau Raccourcis clavier des Paramètres GNOME."
+
+#: prefsPages/editorPage.js:117
+msgid "(untitled menu)"
+msgstr "(menu sans titre)"
+
+#: prefsPages/editorPage.js:134
+msgid "Add Item"
+msgstr "Ajouter un élément"
+
+#: prefsPages/editorPage.js:136
+msgid "New Item"
+msgstr "Nouvel élément"
+
+#: prefsPages/editorPage.js:141
+msgid "Add Separator"
+msgstr "Ajouter un séparateur"
+
+#: prefsPages/editorPage.js:152
+msgid "Add Menu…"
+msgstr "Ajouter un menu…"
+
+#: prefsPages/editorPage.js:154
+msgid "New Menu"
+msgstr "Nouveau menu"
+
+#: prefsPages/editorPage.js:163
+msgid "── Separator ──"
+msgstr "── Séparateur ──"
+
+#: prefsPages/editorPage.js:173
+msgid "(complex item)"
+msgstr "(élément complexe)"
+
+#: prefsPages/editorPage.js:174
+msgid "Submenu or advanced item. Not editable here, kept as it is on save."
+msgstr "Sous-menu ou élément avancé. Non modifiable ici, conservé tel quel à l'enregistrement."
+
+#: prefsPages/editorPage.js:183
+msgid "Label"
+msgstr "Libellé"
+
+#: prefsPages/editorPage.js:192
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: prefsPages/editorPage.js:200
+msgid "(unnamed item)"
+msgstr "(élément sans nom)"
+
+#: prefsPages/editorPage.js:229
+msgid "Rename Menu"
+msgstr "Renommer le menu"
+
+#: prefsPages/editorPage.js:233
+msgid "Rename"
+msgstr "Renommer"
+
+#: prefsPages/editorPage.js:273
+#, javascript-format
+msgid "Saved, but %d item had a problem: %s"
+msgid_plural "Saved, but %d items had problems: %s"
+msgstr[0] "Enregistré, mais %d élément pose un problème : %s"
+msgstr[1] "Enregistré, mais %d éléments posent des problèmes : %s"
+
+#: prefsPages/editorPage.js:276
+msgid "Saved"
+msgstr "Enregistré"
+
+#: prefsPages/editorPage.js:285
+#, javascript-format
+msgid "Could not delete: %s"
+msgstr "Impossible de supprimer : %s"
+
+#: prefsPages/shortcutCapture.js:32
+msgid "Set Shortcut"
+msgstr "Définir le raccourci"
+
+#: prefsPages/shortcutCapture.js:35
+#, javascript-format
+msgid "Enter new shortcut to change <b>%s</b>"
+msgstr "Saisissez un nouveau raccourci pour modifier <b>%s</b>"
+
+#: prefsPages/shortcutCapture.js:42 prefsPages/shortcutCapture.js:79
+msgid "Enter a new shortcut…"
+msgstr "Saisissez un nouveau raccourci…"
+
+#: prefsPages/shortcutCapture.js:50
+msgid "Press Esc to cancel or Backspace to disable the keyboard shortcut"
+msgstr "Appuyez sur Échap pour annuler ou sur Retour arrière pour désactiver le raccourci clavier"
+
+#. Translators: %s is a key combination such as "Ctrl+Shift+F"
+#: prefsPages/shortcutCapture.js:86
+#, javascript-format
+msgid "\"%s\" is not supported, try another"
+msgstr "« %s » n'est pas pris en charge, essayez autre chose"
+
+#: windowActions.js:16
+msgid "Minimize"
+msgstr "Réduire"
+
+#: windowActions.js:17
+msgid "Unmaximize"
+msgstr "Restaurer"
+
+#: windowActions.js:18
+msgid "Maximize"
+msgstr "Agrandir"
+
+#: windowActions.js:19
+msgid "Move"
+msgstr "Déplacer"
+
+#: windowActions.js:20
+msgid "Resize"
+msgstr "Redimensionner"
+
+#: windowActions.js:21
+msgid "Always on Top"
+msgstr "Toujours au premier plan"
+
+#: windowActions.js:22
+msgid "Always on Visible Workspace"
+msgstr "Toujours sur l'espace de travail visible"
+
+#: windowActions.js:23
+msgid "Move to Workspace Left"
+msgstr "Déplacer vers l'espace de travail de gauche"
+
+#: windowActions.js:24
+msgid "Move to Workspace Right"
+msgstr "Déplacer vers l'espace de travail de droite"
+
+#: windowActions.js:25
+msgid "Move to Workspace Up"
+msgstr "Déplacer vers l'espace de travail supérieur"
+
+#: windowActions.js:26
+msgid "Move to Workspace Down"
+msgstr "Déplacer vers l'espace de travail inférieur"
+
+#: windowActions.js:27
+msgid "Move to Monitor Up"
+msgstr "Déplacer vers l'écran supérieur"
+
+#: windowActions.js:28
+msgid "Move to Monitor Down"
+msgstr "Déplacer vers l'écran inférieur"
+
+#: windowActions.js:29
+msgid "Move to Monitor Left"
+msgstr "Déplacer vers l'écran de gauche"
+
+#: windowActions.js:30
+msgid "Move to Monitor Right"
+msgstr "Déplacer vers l'écran de droite"
+
+#: windowActions.js:31
+msgid "Close"
+msgstr "Fermer"

@@ -163,22 +163,39 @@
         ### `base64 -w0 metadata.json` from that zip. sha256 comes from
         ### `nix-prefetch-url --unpack` (the zip is flat, so it matches
         ### fetchzip with stripRoot = false).
-        global-menu = super.gnomeExtensions.buildShellExtension {
-          pname = "global-menu";
-          name = "Global Menu";
-          uuid = "global-menu@unmade.space";
-          version = 5;
-          link = "https://extensions.gnome.org/extension/11414/global-menu/";
-          description = ''
-            A menu bar for GNOME. The focused application's menus appear in the top panel.
+        ### French translation: the EGO zip only ships zh_CN, so compile
+        ### ./po/fr.po ourselves (159 messages, extension UI only — the
+        ### shortcut-menu JSON labels come from files, not gettext). The
+        ### metadata's gettext-domain is "global-menu", which GNOME Shell
+        ### binds to <ext>/locale at load; `--check` revalidates the format
+        ### strings on every build, so a stale po fails loudly.
+        global-menu =
+          (super.gnomeExtensions.buildShellExtension {
+            pname = "global-menu";
+            name = "Global Menu";
+            uuid = "global-menu@unmade.space";
+            version = 5;
+            link = "https://extensions.gnome.org/extension/11414/global-menu/";
+            description = ''
+              A menu bar for GNOME. The focused application's menus appear in the top panel.
 
-            It tries three sources in order: the menu the application exports over D-Bus, then a curated menu that fires the application's own keyboard shortcuts, then a generic window and system menu.
+              It tries three sources in order: the menu the application exports over D-Bus, then a curated menu that fires the application's own keyboard shortcuts, then a generic window and system menu.
 
-            Reading a menu an application exports needs the companion global-menu daemon, installed separately.
-          '';
-          sha256 = "03a8q8ybv1dqnw95187gwzf9nnd4ws7jdkx1zi9sqpn1rz2p58x0";
-          metadata = "ewogICJfZ2VuZXJhdGVkIjogIkdlbmVyYXRlZCBieSBTd2VldFRvb3RoLCBkbyBub3QgZWRpdCIsCiAgImRlc2NyaXB0aW9uIjogIkEgbWVudSBiYXIgZm9yIEdOT01FLiBUaGUgZm9jdXNlZCBhcHBsaWNhdGlvbidzIG1lbnVzIGFwcGVhciBpbiB0aGUgdG9wIHBhbmVsLlxuXG5JdCB0cmllcyB0aHJlZSBzb3VyY2VzIGluIG9yZGVyOiB0aGUgbWVudSB0aGUgYXBwbGljYXRpb24gZXhwb3J0cyBvdmVyIEQtQnVzLCB0aGVuIGEgY3VyYXRlZCBtZW51IHRoYXQgZmlyZXMgdGhlIGFwcGxpY2F0aW9uJ3Mgb3duIGtleWJvYXJkIHNob3J0Y3V0cywgdGhlbiBhIGdlbmVyaWMgd2luZG93IGFuZCBzeXN0ZW0gbWVudS5cblxuUmVhZGluZyBhIG1lbnUgYW4gYXBwbGljYXRpb24gZXhwb3J0cyBuZWVkcyB0aGUgY29tcGFuaW9uIGdsb2JhbC1tZW51IGRhZW1vbiwgaW5zdGFsbGVkIHNlcGFyYXRlbHkuIiwKICAiZ2V0dGV4dC1kb21haW4iOiAiZ2xvYmFsLW1lbnUiLAogICJuYW1lIjogIkdsb2JhbCBNZW51IiwKICAic2V0dGluZ3Mtc2NoZW1hIjogIm9yZy5nbm9tZS5zaGVsbC5leHRlbnNpb25zLmdsb2JhbC1tZW51IiwKICAic2hlbGwtdmVyc2lvbiI6IFsKICAgICI0OCIsCiAgICAiNDkiLAogICAgIjUwIiwKICAgICI1MSIKICBdLAogICJ1cmwiOiAiaHR0cHM6Ly9naXRodWIuY29tL1VubWFkZTc2MC9vcmJpdC1nbG9iYWwtbWVudSIsCiAgInV1aWQiOiAiZ2xvYmFsLW1lbnVAdW5tYWRlLnNwYWNlIiwKICAidmVyc2lvbiI6IDUsCiAgInZlcnNpb24tbmFtZSI6ICIxLjEuNCIKfQ==";
-        };
+              Reading a menu an application exports needs the companion global-menu daemon, installed separately.
+            '';
+            sha256 = "03a8q8ybv1dqnw95187gwzf9nnd4ws7jdkx1zi9sqpn1rz2p58x0";
+            metadata = "ewogICJfZ2VuZXJhdGVkIjogIkdlbmVyYXRlZCBieSBTd2VldFRvb3RoLCBkbyBub3QgZWRpdCIsCiAgImRlc2NyaXB0aW9uIjogIkEgbWVudSBiYXIgZm9yIEdOT01FLiBUaGUgZm9jdXNlZCBhcHBsaWNhdGlvbidzIG1lbnVzIGFwcGVhciBpbiB0aGUgdG9wIHBhbmVsLlxuXG5JdCB0cmllcyB0aHJlZSBzb3VyY2VzIGluIG9yZGVyOiB0aGUgbWVudSB0aGUgYXBwbGljYXRpb24gZXhwb3J0cyBvdmVyIEQtQnVzLCB0aGVuIGEgY3VyYXRlZCBtZW51IHRoYXQgZmlyZXMgdGhlIGFwcGxpY2F0aW9uJ3Mgb3duIGtleWJvYXJkIHNob3J0Y3V0cywgdGhlbiBhIGdlbmVyaWMgd2luZG93IGFuZCBzeXN0ZW0gbWVudS5cblxuUmVhZGluZyBhIG1lbnUgYW4gYXBwbGljYXRpb24gZXhwb3J0cyBuZWVkcyB0aGUgY29tcGFuaW9uIGdsb2JhbC1tZW51IGRhZW1vbiwgaW5zdGFsbGVkIHNlcGFyYXRlbHkuIiwKICAiZ2V0dGV4dC1kb21haW4iOiAiZ2xvYmFsLW1lbnUiLAogICJuYW1lIjogIkdsb2JhbCBNZW51IiwKICAic2V0dGluZ3Mtc2NoZW1hIjogIm9yZy5nbm9tZS5zaGVsbC5leHRlbnNpb25zLmdsb2JhbC1tZW51IiwKICAic2hlbGwtdmVyc2lvbiI6IFsKICAgICI0OCIsCiAgICAiNDkiLAogICAgIjUwIiwKICAgICI1MSIKICBdLAogICJ1cmwiOiAiaHR0cHM6Ly9naXRodWIuY29tL1VubWFkZTc2MC9vcmJpdC1nbG9iYWwtbWVudSIsCiAgInV1aWQiOiAiZ2xvYmFsLW1lbnVAdW5tYWRlLnNwYWNlIiwKICAidmVyc2lvbiI6IDUsCiAgInZlcnNpb24tbmFtZSI6ICIxLjEuNCIKfQ==";
+          }).overrideAttrs
+            (old: {
+              ### postInstall runs right after installPhase copied the extension
+              ### tree into $out; compile the French po where GNOME Shell looks
+              ### (<ext>/locale/<lang>/LC_MESSAGES/<gettext-domain>.mo).
+              nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ super.gettext ];
+              postInstall = (old.postInstall or "") + ''
+                mkdir -p $out/share/gnome-shell/extensions/global-menu@unmade.space/locale/fr/LC_MESSAGES
+                msgfmt --check -o $out/share/gnome-shell/extensions/global-menu@unmade.space/locale/fr/LC_MESSAGES/global-menu.mo ${./po/fr.po}
+              '';
+            });
       };
     })
   ];
