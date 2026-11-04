@@ -68,6 +68,7 @@ declare -A NEED=(
   [touch]=pkgs.coreutils
   [systemctl]=config.systemd.package
   [systemd-inhibit]=config.systemd.package
+  [systemd-run]=config.systemd.package
   [runuser]=pkgs.util-linux.bin
   [notify-send]=pkgs.libnotify
 )
@@ -274,6 +275,20 @@ for spec in "nixos-auto-update:$T/main.sh:main" \
             "pending:$T/pending.sh:core"; do
   svc="${spec%%:*}"; rest="${spec#*:}"; script="${rest%%:*}"; tier="${rest##*:}"
   check_binaries "$svc" "$script" "$tier"
+done
+
+# ── scanner hole: `systemd-run` sits mid-chain in notifier-root ──
+# scan_prep only sees the first word of a continuation-joined line, so
+# `runuser … env … systemd-run` never reaches the loops above (same for the
+# `notify-send` right next to it) — the NEED entry alone would then protect
+# nothing. The click-to-open waiter (notifier.nix) needs the real binary in
+# every tier carrying that fragment, so assert the /bin link directly.
+for tier in main health; do
+  if tier_bins "$tier" | grep -qx 'systemd-run'; then
+    ok "[$tier] systemd-run symlinked (open-log waiter, scanner-invisible)"
+  else
+    ko "[$tier] systemd-run missing from the $tier env bin list (open-log waiter)"
+  fi
 done
 
 # ── bash -n syntax gate on assembled flows (catches broken `\`

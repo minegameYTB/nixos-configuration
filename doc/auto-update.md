@@ -20,12 +20,12 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
 - `core` (13): `base64 cat chmod date mkdir mktemp mv rm stat sync test timeout notify-send`
-- `health` (24): `core` + `basename env id readlink sleep touch flock runuser systemctl systemd-inhibit grep`
+- `health` (25): `core` + `basename env id readlink sleep touch flock runuser systemctl systemd-run systemd-inhibit grep`
 - `main` (41): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
 
-Binary-level guard: `test/test-shell-paths.sh` also requires every bare command to be *symlinked* into its tier's bin list, not merely covered by a package — the package-granularity check alone passed while `timeout` was missing from `core` (2026-09-26 incident: `_deliver_pending_notification` died with `command not found`, so queued notifications were never delivered at login).
+Binary-level guard: `test/test-shell-paths.sh` also requires every bare command to be *symlinked* into its tier's bin list, not merely covered by a package — the package-granularity check alone passed while `timeout` was missing from `core` (2026-09-26 incident: `_deliver_pending_notification` died with `command not found`, so queued notifications were never delivered at login). The command scan only sees the *first* word of a continuation-joined line, so anything behind `runuser … env …` (`notify-send`, `systemd-run`) is invisible to both checks and gets a direct `/bin` assertion instead.
 
 Unbound-variable guard (same test): every uppercase name an assembled flow references must be assigned in that flow, or be allowlisted (environment-provided, or only reachable from functions the flow never calls). Under `set -u` an unbound expansion aborts the script *without* the ERR trap — an expansion error is not a simple-command failure — so there is no ERROR line, no `_fail`, no state file: only the EXIT trap's misleading `Rolling back the unfinished update transaction...` follows a fully built and boot-installed update (2026-11-04 hp-240 incident: `ROLLED_BACK_FILE` was referenced by the main flow but defined only in the health flow, so every run died right after the `nvd` diff and staged nothing).
 
@@ -40,7 +40,7 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.service
 
 # what is inside each env? — standalone flake packages (no system eval)
 nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 24
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 25
 nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 13
 # or all at once:
 make env
@@ -120,6 +120,7 @@ Journal (`journalctl -u nixos-auto-update.service`) is always written and is the
 - **Eval time**: real DE installed (`services.desktopManager.gnome.enable`), not just `marker.hostProfile`. Servers and headless profiles stay journal-only; queued delivery only applies to desktop builds with no active session at that moment.
 - **Runtime**: an active graphical session must own `/run/user/<uid>/bus` (user other than a display-manager greeter: `gdm`, `lightdm`, `sddm`, `greeter`); otherwise the bilingual notification is queued in `/var/lib/nixos-auto-update/pending-notification` and delivered at the next graphical login by the per-user `nixos-auto-update-notify-pending.service` (dedup by id).
 - **Failures**: a crash before notifying is covered by `nixos-auto-update-notify-failure.service` (`onFailure`), which reads the machine-readable CODE from the state file and notifies (or queues) accordingly.
+- **Click to open the log**: failure notices (from `_fail`, `_notify_failure` and the healthcheck) carry a default action — "Ouvrir le log" / "Open log", in the recipient's language — that runs `xdg-open` on `logFile` in the default editor. The notice is sent from a transient systemd *user* unit (`_spawn_open_log_waiter`) because the root service exits right after notifying: a backgrounded `notify-send --wait` would die with it, while a user unit outlives the service, keeps the session's `DISPLAY`/`WAYLAND_DISPLAY` (imported by `systemd --user` at login) for the `xdg-open`, and is reaped at logout — `RuntimeMaxSec=86400` bounds a wait nobody ever clicks. Success notices stay actionless, and so does a *queued* copy: one delivered at the next login has no waiter behind it, so a headless failure is the one case where clicking is unavailable.
 - **Anti-spam**: each generation notifies at most once — re-runs on an unchanged tree stay journal-only. Failures always notify.
 - Icon: `notifyIcon` (default `nix-snowflake-white` monochrome, from the hicolor theme — rendered with the title by GNOME Shell).
 - Branding: `--app-name="NixOS"` puts "NixOS" in the header (instead of "notify-send") with the event as title. A header *icon* would require a `.desktop` entry shipping the snowflake — none exists, so the icon stays with the title.

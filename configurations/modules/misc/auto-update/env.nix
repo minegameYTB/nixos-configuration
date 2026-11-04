@@ -55,13 +55,17 @@ let
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 24 binaries.
+  # Small root services (healthcheck + notify-failure): 25 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.
   # `systemd-inhibit` likewise: transaction.nix defines the sleep-inhibitor
   # lifecycle shared with the main service, so the binary must resolve here
   # too even though the healthcheck never calls it (binary-level coverage).
+  # `systemd-run` is the same story: notifier-root (in every flow) spawns
+  # the click-to-open waiter as a transient user unit, and mainBins only
+  # carries systemd-run for nixos-rebuild-ng's boot prefix — a separate
+  # reason, not a shared one.
   # `timeout` now comes from coreBins (do not repeat it here: mkEnv links
   # one symlink per entry and a duplicate fails the build).
   healthBins = coreBins ++ [
@@ -74,6 +78,7 @@ let
     "${pkgs.util-linux.bin}/bin/flock"
     "${pkgs.util-linux.bin}/bin/runuser"
     "${config.systemd.package}/bin/systemctl"
+    "${config.systemd.package}/bin/systemd-run"
     "${config.systemd.package}/bin/systemd-inhibit"
     "${pkgs.gnugrep}/bin/grep"
   ];

@@ -30,11 +30,20 @@ sed -i "s|''\${|\${|g" "$T/transaction.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-user.func" > "$T/nu.func"
 sed -e 's|\${toString notifyTimeout}|15000|' -e 's|\${notifyIcon}|nix-snowflake-white|' \
+    -e 's|\${openLogScript}|/nix/store/test-open-log|' \
   "$T/notifier-root.func" > "$T/nr.func"
 sed -e 's|\${notifyIcon}|nix-snowflake-white|' \
   "$T/notifier-waiter.func" > "$T/nw.func"
 # Fragments carry Nix `''${...}` escapes: resolve them to plain bash ${...}.
 sed -i "s|''\${|\${|g" "$T/nu.func" "$T/nr.func" "$T/nw.func" "$T/output-render.func"
+# ── click-to-open waiter body (failure notice → xdg-open the log) ──
+fragment notifier.nix open-log-waiter-script > "$T/ol.func"
+sed -e "s|''\${|\${|g" \
+    -e 's|\${notifyIcon}|nix-snowflake-white|g' \
+    -e 's|\${pkgs\.[a-zA-Z0-9._-]*}|/nix/store/test-pkg|g' \
+  "$T/ol.func" > "$T/ol.sh"
+bash -n "$T/ol.sh" \
+  && ok "open-log waiter extracted intact" || ko "open-log waiter extraction broken"
 # errors.toBash is Nix-generated; emulate the two codes under test.
 cat > "$T/errors.func" <<'EOF'
 _err_lookup() {
@@ -492,6 +501,78 @@ LANG=C AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" bash -c "$FAIL_PRE
 _notify_failure" 2>/dev/null || true
 grep -q 'RUNUSER:.*Inconsistent state' "$CALLS" \
   && ok "corrupt state → state-error notification" || ko "corrupt state not reported"
+
+# ── click-to-open: failure notice → transient user unit → xdg-open the log ──
+# The waiter body runs with absolute store paths (a transient unit has no
+# service PATH), so the fakes are injected through AU_NOTIFY_SEND/AU_XDG_OPEN.
+mkdir -p "$T/clickbin"
+cat > "$T/clickbin/notify-send" <<'EOF'
+#!/usr/bin/env bash
+# records the call, then answers with $CLICK_ACTION (the clicked action id,
+# empty = dismissed) or fails with $CLICK_RC.
+echo "CLICK-NOTIFY: $*" >> "$CALLS"
+if [[ "${CLICK_RC:-0}" -ne 0 ]]; then exit "$CLICK_RC"; fi
+printf '%s' "${CLICK_ACTION:-}"
+EOF
+cat > "$T/clickbin/xdg-open" <<'EOF'
+#!/usr/bin/env bash
+echo "XDG-OPEN: $*" >> "$CALLS"
+EOF
+chmod +x "$T/clickbin/"*
+
+run_open_log_waiter(){
+  local action="$1" rc="$2"
+  : > "$CALLS"
+  if CLICK_ACTION="$action" CLICK_RC="$rc" \
+      AU_NOTIFY_SEND="$T/clickbin/notify-send" \
+      AU_XDG_OPEN="$T/clickbin/xdg-open" \
+      AU_LOG_FILE="/var/log/nixos-auto-update.log" \
+      AU_ACTION_LABEL="Ouvrir le log" \
+      AU_TITLE="titre" AU_BODY="corps" \
+      bash "$T/ol.sh" > "$T/ol.out" 2>&1; then
+    OLRC=0
+  else
+    OLRC=$?
+  fi
+}
+run_open_log_waiter default 0
+(( OLRC == 0 )) && grep -q 'CLICK-NOTIFY:' "$CALLS" \
+  && grep -q 'XDG-OPEN: /var/log/nixos-auto-update.log' "$CALLS" \
+  && ok "click on the failure notice → xdg-open the log" \
+  || ko "click did not open the log (rc=$OLRC): $(tr '\n' ' ' < "$CALLS")"
+run_open_log_waiter "" 0
+(( OLRC == 0 )) && grep -q 'CLICK-NOTIFY:' "$CALLS" && ! grep -q 'XDG-OPEN' "$CALLS" \
+  && ok "dismissed failure notice → no editor, quiet exit" \
+  || ko "dismiss mishandled (rc=$OLRC): $(tr '\n' ' ' < "$CALLS")"
+run_open_log_waiter "" 1
+(( OLRC != 0 )) && ! grep -q 'XDG-OPEN' "$CALLS" \
+  && ok "notify-send failure → waiter reports non-zero" \
+  || ko "waiter masked a notify-send failure (rc=$OLRC)"
+
+# _notify_failure must route the notice through the waiter unit; the runuser
+# stub only records the call, so no real systemd-run ever runs here.
+printf 'failed|2026-01-01T00:00:00|rebuild-boot|pending' > "$T/state/last-rebuild-status"
+rm -f "$T/state/pending-notification"
+: > "$CALLS"
+LANG=C AUTO_UPDATE_RUN_USER_DIR="$T/rundir-user" bash -c "$FAIL_PRE
+_notify_failure" 2>/dev/null || true
+grep -q 'RUNUSER:.*systemd-run --user' "$CALLS" \
+  && grep -q -- '--setenv=AU_TITLE=' "$CALLS" \
+  && grep -q -- '--setenv=AU_LOG_FILE=' "$CALLS" \
+  && grep -q -- '--setenv=AU_ACTION_LABEL=Open log' "$CALLS" \
+  && ok "failure notice → transient user unit carrying the click action" \
+  || ko "open-log waiter not spawned: $(tr '\n' ' ' < "$CALLS")"
+
+# Scope guard: only failures get the click target (success notices keep the
+# plain, non-blocking delivery).
+run_notify_all "$T/rundir-user" 1
+if grep -q 'systemd-run' "$CALLS"; then
+  ko "success notice spawned a waiter unit"
+elif grep -q 'notify-send' "$CALLS"; then
+  ok "success notice stays actionless (no waiter unit)"
+else
+  ko "success notice not delivered at all"
+fi
 
 # ── check_health cases ──
 cat > "$T/fakebin/systemctl" <<'EOF'

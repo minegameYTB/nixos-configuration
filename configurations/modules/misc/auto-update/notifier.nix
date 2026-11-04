@@ -7,17 +7,61 @@
 #          _deliver_pending_notification (coreutils + libnotify only)
 #   full — user + _notify_user, _notify_all_users, _notify,
 #          _notify_or_queue, _notify_failure,
-#          _notify_reboot_waiter, _notify_reboot_with_actions
-#          (adds util-linux runuser)
+#          _notify_reboot_waiter, _notify_reboot_with_actions,
+#          _spawn_open_log_waiter + openLogScript
+#          (adds util-linux runuser; systemd-run for the transient unit)
+#
+# Failure notices carry a 6th argument `1` down the _notify_or_queue →
+# _notify → _notify_all_users → _notify_user chain: they are sent with an
+# "Ouvrir le log" / "Open log" default action, and clicking it runs
+# xdg-open on $LOG_FILE from a transient systemd *user* unit — the root
+# service exits right after notifying, so a `notify-send --wait` job
+# backgrounded here would die with it. Success notices stay actionless, and
+# so does a queued copy (delivered at the next login, when no session was
+# live): the click target only exists for a live delivery.
 #
 # The /run/user scan honors $AUTO_UPDATE_RUN_USER_DIR (tests point it at a
 # fake tree; production leaves it unset).
 #
 # Callers must set before use: STATE_DIR, STATE_FILE, LOG_FILE,
 # NOTIFICATIONS_ENABLED (1 in root services when AUTO_UPDATE_NOTIFY=1).
-{ notifyIcon, notifyTimeout }:
+{
+  notifyIcon,
+  notifyTimeout,
+  pkgs,
+}:
 
 let
+  ### Body of the click-to-open waiter, run by the transient user unit
+  ### spawned in _spawn_open_log_waiter below. Every binary is an absolute
+  ### store path on purpose: a transient unit gets no service PATH (a test
+  ### unit could not even resolve notify-send). The AU_* variables arrive
+  ### through systemd-run --setenv; the AU_NOTIFY_SEND/AU_XDG_OPEN overrides
+  ### exist only for test/test-auto-update-sh.sh.
+  openLogScript = pkgs.writeShellScript "nixos-auto-update-open-log" ''
+    # >>>BEGIN open-log-waiter-script
+    set -euo pipefail
+    notify_send="''${AU_NOTIFY_SEND:-${pkgs.libnotify}/bin/notify-send}"
+    xdg_open="''${AU_XDG_OPEN:-${pkgs.xdg-utils}/bin/xdg-open}"
+    # -t 0: no server-side expiry — the notice must stay clickable for as
+    # long as it has not been read (critical urgency persists on GNOME
+    # anyway); RuntimeMaxSec on the unit bounds the wait instead.
+    action=$("$notify_send" \
+      -u "critical" \
+      -a "NixOS" \
+      -i "${notifyIcon}" \
+      -t 0 \
+      -A "default=''${AU_ACTION_LABEL:?AU_ACTION_LABEL is required}" \
+      "''${AU_TITLE:?AU_TITLE is required}" \
+      "''${AU_BODY:?AU_BODY is required}")
+    # Only the default action opens the log: dismissal or expiry is a
+    # decision, not an error, and exits quietly. A failing notify-send
+    # exits non-zero (set -e) so the unit shows up as failed in the journal.
+    [ "$action" = "default" ] || exit 0
+    exec "$xdg_open" "''${AU_LOG_FILE:?AU_LOG_FILE is required}"
+    # <<<END open-log-waiter-script
+  '';
+
   user = ''
     # >>>BEGIN notifier-user
     _init_notifier() {
@@ -180,6 +224,15 @@ let
 
     _notify_user() {
       local uid="$1" user="$2" urgency="$3" title="$4" message="$5"
+      local open_log="''${6:-0}" action_label="''${7:-}"
+
+      # Failure notice (open_log=1): sent from the transient user unit
+      # below, with the click action that opens the log. Every other
+      # notice keeps the plain, timeout-bounded delivery.
+      if [ "$open_log" = "1" ]; then
+        _spawn_open_log_waiter "$uid" "$user" "$title" "$message" "$action_label"
+        return $?
+      fi
 
       timeout \
         --signal=TERM \
@@ -197,13 +250,50 @@ let
           "$message"
     }
 
+    # >>>BEGIN open-log-waiter
+    _spawn_open_log_waiter() {
+      # Send the failure notice from a transient systemd *user* unit that
+      # waits for the click: this service exits right after notifying, so a
+      # `notify-send --wait` job backgrounded here would die with it, while
+      # a user unit outlives the service, inherits the session's
+      # DISPLAY/WAYLAND_DISPLAY (systemd --user imports them at login) for
+      # the xdg-open that follows a click, and is reaped with the session.
+      # RuntimeMaxSec bounds an unclicked wait. systemd-run returns as soon
+      # as the unit is exec'd (measured: 24 ms), so the NOTIFICATION_TIMEOUT
+      # wrapper only bounds the spawn — never the wait itself.
+      #
+      # $1 uid, $2 user, $3 title, $4 message, $5 action label.
+      local uid="$1" user="$2" title="$3" message="$4" label="$5"
+      local unit="nixos-auto-update-open-log-$uid-$(date +%s%N)-$$"
+
+      timeout \
+        --signal=TERM \
+        --kill-after=5s \
+        "$NOTIFICATION_TIMEOUT" \
+        runuser -u "$user" -- env \
+        XDG_RUNTIME_DIR="/run/user/$uid" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        systemd-run \
+          --user \
+          --collect \
+          --unit="$unit" \
+          --property=RuntimeMaxSec=86400 \
+          --setenv=AU_TITLE="$title" \
+          --setenv=AU_BODY="$message" \
+          --setenv=AU_ACTION_LABEL="$label" \
+          --setenv=AU_LOG_FILE="$LOG_FILE" \
+          "${openLogScript}"
+    }
+    # <<<END open-log-waiter
+
     _notify_all_users() {
       local title_fr="$1" message_fr="$2" title_en="$3" message_en="$4"
       local urgency="''${5:-normal}"
+      local open_log="''${6:-0}"
       local lang="''${LANG:-en}"
       local run_dir="''${AUTO_UPDATE_RUN_USER_DIR:-/run/user}"
       local notified_any=0 failed_any=0
-      local title message path uid user user_lang
+      local title message action_label path uid user user_lang
 
       for path in "$run_dir"/*; do
         [ -d "$path" ] || continue
@@ -222,11 +312,11 @@ let
         user_lang=$(_user_lang "$uid" "$user")
         [ -n "$user_lang" ] || user_lang="$lang"
         case "''${user_lang%%_*}" in
-          fr) title="$title_fr"; message="$message_fr" ;;
-          *) title="$title_en"; message="$message_en" ;;
+          fr) title="$title_fr"; message="$message_fr"; action_label="Ouvrir le log" ;;
+          *) title="$title_en"; message="$message_en"; action_label="Open log" ;;
         esac
 
-        if _notify_user "$uid" "$user" "$urgency" "$title" "$message"; then
+        if _notify_user "$uid" "$user" "$urgency" "$title" "$message" "$open_log" "$action_label"; then
           notified_any=1
         else
           failed_any=1
@@ -437,8 +527,10 @@ let
       }
 
       local notify_rc=0
+      # open_log=1: this is a failure, so the notice gets the click action
+      # that opens $LOG_FILE (live deliveries only — see the header).
       _notify_all_users \
-        "$title_fr" "$message_fr" "$title_en" "$message_en" "critical" || notify_rc=$?
+        "$title_fr" "$message_fr" "$title_en" "$message_en" "critical" 1 || notify_rc=$?
       if [ "$notify_rc" -eq 0 ]; then
         notified_any=1
       fi

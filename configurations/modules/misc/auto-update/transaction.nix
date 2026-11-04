@@ -70,9 +70,10 @@
       rm -f -- "$STATE_FILE"
       _status ERROR "Unable to persist the update failure state."
     fi
+    # open_log=1: a failure gets the click action that opens $LOG_FILE.
     if [ "$NOTIFICATIONS_ENABLED" -eq 1 ] \
       && _notify_or_queue \
-        "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency"; then
+        "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency" 1; then
       _write_state "failed|$failed_at|$reason|notified" || \
         _status WARNING "Unable to record that the failure notification was sent."
     fi

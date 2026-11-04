@@ -146,7 +146,7 @@
           title_en=$(_err_lookup boot-recovery-rolled-back title_en)
           body_en=$(_err_lookup boot-recovery-rolled-back body_en)
           if ${lib.boolToString cfg.allowReboot}; then
-            _notify_or_queue "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency"
+            _notify_or_queue "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency" 1
             _status WARNING "Automatic reboot into the restored healthy system."
             systemctl reboot
             return 1
@@ -165,7 +165,7 @@
       fi
     fi
 
-    _notify_or_queue "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency"
+    _notify_or_queue "$title_fr" "$body_fr" "$title_en" "$body_en" "$urgency" 1
     return 1
   }
   # <<<END health

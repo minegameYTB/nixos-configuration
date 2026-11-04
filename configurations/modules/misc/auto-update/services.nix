@@ -22,6 +22,7 @@ let
   output = import ./output.nix { };
   notifier = import ./notifier.nix {
     inherit (cfg) notifyIcon notifyTimeout;
+    inherit pkgs;
   };
   transactionScript = import ./transaction.nix { };
   syncScript = import ./sync.nix { inherit cfg repo; };
