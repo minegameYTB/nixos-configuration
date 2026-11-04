@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-### PATH-coverage guards (the `cmp: command not found` class of bugs):
+### Script guards (the `cmp: command not found` and unbound-variable classes):
 ###  1. every external command used by each auto-update service script must
 ###     resolve to a package in THAT service's explicit environment.PATH.
 ###     Scripts are assembled from fragments (see assemble() below — keep in
 ###     sync with configurations/modules/misc/auto-update/default.nix);
 ###     when a fragment gains commands, extend NEED and/or the service PATH.
 ###  2. no `export PATH=` clobbering in home-manager activation blocks.
+###  3. no unbound uppercase variable in an assembled flow (the
+###     `ROLLED_BACK_FILE: unbound variable` class): `set -u` aborts without
+###     the ERR trap, so only the EXIT trap's misleading rollback shows.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -301,6 +304,67 @@ for spec in "nixos-auto-update:$T/main.sh" \
   svc="${spec%%:*}"; script="${spec#*:}"
   check_syntax "$svc" "$script"
 done
+
+# ── unbound-variable gate (the 2026-11-04 hp-240 incident) ──
+# A `$VAR` referenced but never assigned kills the script under `set -u`
+# *without* the ERR trap: an expansion error is not a simple-command failure,
+# so there is no ERROR line and no `_fail` — only the EXIT trap's misleading
+# "Rolling back the unfinished update transaction..." after a fully staged
+# update. Static scan of the assembled flows: every referenced uppercase name
+# must be assigned somewhere in that flow, or be listed in its allowlist
+# (environment-provided names, plus names only reachable from functions the
+# flow never calls — e.g. the transaction state the healthcheck includes but
+# does not drive).
+check_unbound(){
+  local svc="$1" script="$2" allow="$3"
+  local resolved="$T/unbound-$svc.sh" nostrings="$T/unbound-assign-$svc.sh" refs assigned missing
+  # Nix ''${...} → bash ${...}; then drop Nix interpolations carrying spaces
+  # (${lib...}, ${toString ...}, ${if ... then ... else ...}), bash refs with
+  # a default/operator (${VAR:-x} is safe under `set -u`) and array indexes
+  # (${PIPESTATUS[@]} — allowlisted below). Full-line comments go too: a
+  # commented-out `ROLLED_BACK_FILE=...` must not count as an assignment.
+  sed -e "s|''\\\${|\\\${|g" \
+      -e '/^[[:space:]]*#/d' \
+      -e 's|\${[^{}]* [^{}]*}||g' \
+      -e 's|\${[A-Z][A-Z0-9_]*[-:+?=][^}]*}||g' \
+      -e 's|\${[A-Z][A-Z0-9_]*\[[^}]*\]}||g' "$script" > "$resolved"
+  refs=$(grep -oE '\$\{?[A-Z][A-Z0-9_]*\}?' "$resolved" \
+    | sed -E 's/^\$\{?//; s/\}$//' | grep -v '^$' | sort -u || true)
+  # Assignments are matched anywhere in the file (no order tracking): the
+  # gate targets never-assigned names, the class that aborts every run.
+  # Quoted strings are stripped first so `echo "FOO=1"` / `_debug "FLAKE=..."`
+  # cannot masquerade as an assignment (the reference pass keeps them: refs
+  # live inside quotes).
+  sed -e 's/"[^"]*"//g' -e "s/'[^']*'//g" "$resolved" > "$nostrings"
+  assigned=$({
+    grep -oE '[A-Z][A-Z0-9_]*=' "$nostrings" | sed 's/=$//' || true
+    grep -oE '\b(local|declare|readonly|export|typeset) +(-[a-zA-Z]+ +)*[A-Z][A-Z0-9_]*' \
+      "$nostrings" | awk '{print $NF}' || true
+    grep -oE '\bfor +[A-Z][A-Z0-9_]*' "$nostrings" | awk '{print $NF}' || true
+  } | grep -v '^$' | sort -u || true)
+  { printf '%s\n' "$allow" | tr ' ' '\n'; } | grep -v '^$' > "$T/unbound-allow-$svc" || true
+  if [[ -s "$T/unbound-allow-$svc" ]]; then
+    missing=$(comm -23 <(printf '%s\n' "$refs") <(printf '%s\n' "$assigned") \
+      | { grep -vxF -f "$T/unbound-allow-$svc" || true; })
+  else
+    missing=$(comm -23 <(printf '%s\n' "$refs") <(printf '%s\n' "$assigned"))
+  fi
+  if [[ -n "$missing" ]]; then
+    ko "[$svc] referenced but never assigned (dies under set -u, no ERR trap): $(tr '\n' ' ' <<<"$missing")"
+  else
+    ok "[$svc] no unbound uppercase variables"
+  fi
+}
+
+check_unbound nixos-auto-update "$T/main.sh" \
+  "AUTO_UPDATE_NOTIFY PIPESTATUS"
+check_unbound nixos-auto-update-notify-failure "$T/failure.sh" \
+  "AUTO_UPDATE_NOTIFY NOTIFIED_FILE"
+check_unbound nixos-autoupdate-healthcheck "$T/health.sh" \
+  "AUTO_UPDATE_NOTIFY BOOT_INSTALL_MAX_ATTEMPTS DEBUG_MODE LOCK_FILE NOTIFIED_FILE \
+SYSTEM_PROFILE TRANSACTION_DIR TRANSACTION_ROOT"
+check_unbound pending "$T/pending.sh" \
+  "STATE_DIR"
 
 # ── continuation gate: a lone `"..."` line is only valid as a `\`-continued
 # argument. A missing backslash turns it into a bogus command (`"normal":

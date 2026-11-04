@@ -150,6 +150,12 @@ in
       STAGED_FILE="$WORKDIR/staged-system"
       PREVIOUS_FILE="$WORKDIR/previous-system"
       INHIBITED_FILE="$WORKDIR/inhibited"
+      ### One-shot auto-rollback guard of the *previous* staged generation,
+      ### dropped when a new one is staged (see the marker block below). Must
+      ### be defined here: under `set -u` an unbound reference aborts the run
+      ### without the ERR trap (expansion errors are not command failures), so
+      ### only the EXIT trap's misleading rollback would show in the log.
+      ROLLED_BACK_FILE="$WORKDIR/rolled-back"
       NOTIFIED_FILE="$WORKDIR/notified-generation"
        SRC_ID=""
        LOCK_HASH=""
