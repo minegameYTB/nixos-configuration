@@ -491,6 +491,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-deezer": {
+      "locked": {
+        "lastModified": 1794004329,
+        "narHash": "sha256-TakgzEQFQJ5hbaCTeKRxTTNRY73UiUZ8TXh7o0kkrtM=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "dead6acc7a39a0ed657a95995e8fd3d94f33194d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "pull/584173/head",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1793504054,
@@ -635,6 +651,7 @@
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nix-index-database": "nix-index-database",
         "nixpkgs-25-11": "nixpkgs-25-11",
+        "nixpkgs-deezer": "nixpkgs-deezer",
         "nixpkgs-main": "nixpkgs-main",
         "nixpkgs-pr": "nixpkgs-pr",
         "nixpkgs-unstable": "nixpkgs-unstable",

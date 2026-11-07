@@ -48,7 +48,11 @@ with inputs;
             config = nixpkgsConfig;
             overlays = [ ];
           };
-
+          pkgsDeezer = import nixpkgs-deezer {
+            inherit system;
+            config = nixpkgsConfig;
+            overlays = [ ];
+          };
           ### Config packages namespace — delegates to pkgs/default.nix
           pkgsConfig = super.callPackage ./pkgs/default.nix {
             flakePath = flake.outPath;

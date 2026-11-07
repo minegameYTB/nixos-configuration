@@ -21,6 +21,7 @@
     ### Specific nixpkgs revisions (staging, master, or PR branches)
     #nixpkgs-master.url = "github:NixOS/nixpkgs/034c0f3a92afae7fd757537058c060720844c004";
     nixpkgs-pr.url = "github:NixOS/nixpkgs?ref=pull/537215/head";
+    nixpkgs-deezer.url = "github:NixOS/nixpkgs?ref=pull/584173/head";
 
     ### Kernel
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
