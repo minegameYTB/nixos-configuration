@@ -134,11 +134,11 @@
     "dotfiles-minegameYTB": {
       "flake": false,
       "locked": {
-        "lastModified": 1784902176,
-        "narHash": "sha256-THpiL3LOeRz7ppZXqZpC7jAxylCZ+uvuh8DNpRXKqS0=",
+        "lastModified": 1794225012,
+        "narHash": "sha256-eNLdZYB7XZJNOtRoX3pYFTRxKXJhV+/gGVmZRUzWvMY=",
         "owner": "minegameYTB",
         "repo": "dotfiles",
-        "rev": "345046a6378b7417bf0cbb3f0bb386ff76f25c94",
+        "rev": "59d0070462daffc96223a7412e228bd287a5a966",
         "type": "github"
       },
       "original": {
@@ -578,11 +578,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793968359,
-        "narHash": "sha256-9BUS3zUvpsuhsRcycIaSvqh5Fslw2r2QXJ0kzsxqdsA=",
+        "lastModified": 1794224971,
+        "narHash": "sha256-Yso1cPJsmHvNpkN5R26f0A5LkkqK6E6lNS/ShChITQ0=",
         "owner": "nix-community",
         "repo": "nur",
-        "rev": "e28f1022487fe7eca29a2c6453dd023270baafc0",
+        "rev": "e56ce8b67978d4b7cd54286075f4540e170d38eb",
         "type": "github"
       },
       "original": {
