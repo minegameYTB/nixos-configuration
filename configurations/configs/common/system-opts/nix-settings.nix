@@ -88,16 +88,16 @@
   ###   PrivateTmp              — nested sandbox mount setup
   ### ProtectSystem=full keeps /nix and /tmp writable (builds, profiles,
   ### downloads), only /etc /usr /boot go read-only for the daemon.
-  systemd.services.nix-daemon.serviceConfig = {
-    ProtectKernelTunables = true;
-    ProtectKernelModules = true;
-    ProtectKernelLogs = true;
-    ProtectControlGroups = true;
-    ProtectClock = true;
-    ProtectHostname = true;
-    RestrictRealtime = true;
-    ProtectSystem = "full";
-  };
+  #systemd.services.nix-daemon.serviceConfig = {
+  #  ProtectKernelTunables = true;
+  #  ProtectKernelModules = true;
+  #  ProtectKernelLogs = true;
+  #  ProtectControlGroups = true;
+  #  ProtectClock = true;
+  #  ProtectHostname = true;
+  #  RestrictRealtime = true;
+  #  ProtectSystem = "full";
+  #};
 
   #specialisation.all-cores = {
   #  configuration = {
