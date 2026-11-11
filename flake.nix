@@ -134,7 +134,7 @@
       ### Allow unfree packages
       nixpkgsConfig = {
         allowUnfree = true;
-        permittedInsecurePackages = [ "nwjs-0.102.1" ];
+        permittedInsecurePackages = [ "deezer-enhanced-1.5.1" ];
       };
 
       inherit (nixpkgs-main) lib;
