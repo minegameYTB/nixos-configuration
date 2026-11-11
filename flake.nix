@@ -46,15 +46,15 @@
     declarative-flatpak.url = "github:in-a-dil-emma/declarative-flatpak/v4.2.1";
 
     ### Pinned inputs (lock file ensures reproducibility; update manually after testing)
-    # Home-manager - master (2 Oct 2026)
+    # Home-manager - master (16 Oct 2026)
     home-manager = {
-      url = "github:nix-community/home-manager/833540099ef43cbeb28b1e3f3c21901961edb48e";
+      url = "github:nix-community/home-manager/82ce401aa350502897c3f2e85f384d61cd3b0b6d";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
-    # Stylix - master (2 Oct 2026)
+    # Stylix - master (25 Oct 2026)
     stylix = {
-      url = "github:danth/stylix/7c065d1ed05381fceb2403b963c5ad150f32fe39";
+      url = "github:danth/stylix/3e27b6c499e507df6e3bb8eca3614f5c95e28140";
       inputs.nixpkgs.follows = "nixpkgs-main";
     };
 
