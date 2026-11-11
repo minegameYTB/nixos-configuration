@@ -124,11 +124,6 @@
           ]);
       });
 
-      ### disable extensions_app option on gnome-shell
-      gnome-shell = super.gnome-shell.overrideAttrs (oldAttrs: {
-        mesonFlags = oldAttrs.mesonFlags or [ ] ++ [ "-Dextensions_app=false" ];
-      });
-
       ### blur-my-shell v77 — native fix for rounded corners on popups
       ### (Quick Settings). The square-corner regression was introduced in
       ### v74 (blur-my-shell#1052) and fixed upstream by PR #976 in v76, which
