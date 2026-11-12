@@ -27,10 +27,14 @@
   ++ (
     if config.marker.hostProfile == "desktop" then
       [
-        ### Alternative for high-RAM machines (8 GiB):
+        ### Desktop: cap the ARC at 4 GiB (was 6). The useful data working
+        ### set is much smaller (~1.7 GiB on hp-probook) while ARC metadata
+        ### grows to fill the cap and lands in the kernel slab, so a high cap
+        ### costs userspace RAM (seen as zram swap usage on an 18 GiB box).
+        ### Alternative for high-RAM machines (16 GiB+):
         ### 8 * 1024 * 1024 * 1024 = 8589934592
         "zfs.zfs_arc_min=1073741824" # 1G min
-        "zfs.zfs_arc_max=6442450944" # 6G max
+        "zfs.zfs_arc_max=4294967296" # 4G max
       ]
     else
       [
