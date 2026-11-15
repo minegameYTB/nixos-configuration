@@ -24,7 +24,7 @@ in
       (with pkgs; [
         discord
       ])
-      ++ (with pkgs.pkgsDeezer; [
+      ++ (with pkgs.pkgsMaster; [
         deezer-enhanced
       ])
     )

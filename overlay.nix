@@ -48,7 +48,7 @@ with inputs;
             config = nixpkgsConfig;
             overlays = [ ];
           };
-          pkgsDeezer = import nixpkgs-deezer {
+          pkgsMaster = import nixpkgs-master {
             inherit system;
             config = nixpkgsConfig;
             overlays = [ ];
