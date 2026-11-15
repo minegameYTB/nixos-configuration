@@ -291,6 +291,23 @@ for tier in main health; do
   fi
 done
 
+# ── scanner hole: `true` is an *argument* to systemd-inhibit, not a command ──
+# transaction.nix probes the sleep/lid inhibitor with
+# `systemd-inhibit … true`, and systemd-inhibit execvp's that argument
+# through the tight PATH: `true` sits at no command position (the CANDS
+# regex never sees it) and it is a shell keyword anyway, so both checks
+# above skip it. A missing link made the probe die with
+# `Failed to execute 'true': No such file or directory` and the inhibitor
+# failed open (2026-11-15 incident). Assert the /bin link directly, in
+# every tier carrying transaction.nix (main drives it; health shares it).
+for tier in main health; do
+  if tier_bins "$tier" | grep -qx 'true'; then
+    ok "[$tier] true symlinked (systemd-inhibit probe, scanner-invisible)"
+  else
+    ko "[$tier] true missing from the $tier env bin list (sleep/lid inhibitor probe fails open)"
+  fi
+done
+
 # ── bash -n syntax gate on assembled flows (catches broken `\`
 # continuations and bad nesting — the PATH scan cannot see those) ──
 check_syntax(){

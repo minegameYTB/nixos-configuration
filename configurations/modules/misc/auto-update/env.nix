@@ -16,8 +16,8 @@
 # no unused envs.
 #
 # Build / inspect independently (no full system rebuild):
-#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 41
-#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 24
+#   nix build '.#nixos-auto-update-env-main' && ls -1 result/bin  # 42
+#   nix build '.#nixos-auto-update-env-health' && ls -1 result/bin # 26
 #   make env  # all tiers + system-wired PATHs
 #   nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nixos-auto-update.environment.PATH'
 {
@@ -33,12 +33,19 @@ let
       ${lib.concatMapStrings (b: "ln -s ${b} \"$out/bin/${builtins.baseNameOf b}\"\n") bins}
     '';
 
-  # Common core (13 binaries): serves the unprivileged per-user pending
+  # Common core (14 binaries): serves the unprivileged per-user pending
   # service directly, and is the base of every other tier. `timeout` is
   # required by the pending delivery path (_deliver_pending_notification
   # hangs guard): without it queued notifications were never delivered
   # (`timeout: command not found`, 2026-09-26 — guarded by the
   # binary-level check in test-shell-paths.sh).
+  # `true` is the systemd-inhibit probe command (transaction.nix
+  # _acquire_sleep_inhibitor): systemd-inhibit execvp's its argument
+  # through this PATH, so a missing link made the probe die with
+  # `Failed to execute 'true': No such file or directory` and the
+  # sleep/lid inhibitor failed open (2026-11-15 — `true` is both a
+  # shell keyword and an argument, invisible to the command scanner;
+  # guarded by a direct /bin assertion in test-shell-paths.sh).
   coreBins = with pkgs; [
     "${coreutils}/bin/base64"
     "${coreutils}/bin/cat"
@@ -52,10 +59,11 @@ let
     "${coreutils}/bin/sync"
     "${coreutils}/bin/test"
     "${coreutils}/bin/timeout"
+    "${coreutils}/bin/true"
     "${libnotify}/bin/notify-send"
   ];
 
-  # Small root services (healthcheck + notify-failure): 25 binaries.
+  # Small root services (healthcheck + notify-failure): 26 binaries.
   # `touch` (mainBins sibling) is needed because notifier.full also carries
   # the reboot-waiter functions into these scripts — the PATH must cover
   # every command the assembled script *defines*, not just the ones it runs.

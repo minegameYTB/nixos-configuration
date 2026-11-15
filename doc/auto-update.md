@@ -19,13 +19,13 @@ recovery, `_fail`), `sync.nix` (channel force-sync, flake inputs, rebuild),
 
 Each service gets a single `$out/bin` (no host `PATH` inherited) built by `env.nix` via `pkgs.runCommand` with explicit `ln -s` per binary — the closure stays minimal while the binaries keep their original store RPATHs to their libs. Three tiers (audit of every bare invocation in `configurations/modules/misc/auto-update/*.nix`, checked by `test/test-shell-paths.sh`):
 
-- `core` (13): `base64 cat chmod date mkdir mktemp mv rm stat sync test timeout notify-send`
-- `health` (25): `core` + `basename env id readlink sleep touch flock runuser systemctl systemd-run systemd-inhibit grep`
-- `main` (41): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
+- `core` (14): `base64 cat chmod date mkdir mktemp mv rm stat sync test timeout true notify-send`
+- `health` (26): `core` + `basename env id readlink sleep touch flock runuser systemctl systemd-run systemd-inhibit grep`
+- `main` (42): `core` + `basename cut df env head id readlink rm sha256sum sleep timeout touch flock runuser wall notify-send systemctl systemd-run systemd-inhibit nix nix-env nix-store nix-build nix-instantiate nixos-rebuild git cmp curl awk sed nvd`
 
 Only bare invocations that rely on `PATH` are kept — absolute `${pkgs.*}/bin/*` calls and shell builtins (`printf`) are excluded. `services.nix` wires them as `pathCore` (per-user pending service), `pathHealth` (healthcheck + notify-failure services), `pathMain` (updater service).
 
-Binary-level guard: `test/test-shell-paths.sh` also requires every bare command to be *symlinked* into its tier's bin list, not merely covered by a package — the package-granularity check alone passed while `timeout` was missing from `core` (2026-09-26 incident: `_deliver_pending_notification` died with `command not found`, so queued notifications were never delivered at login). The command scan only sees the *first* word of a continuation-joined line, so anything behind `runuser … env …` (`notify-send`, `systemd-run`) is invisible to both checks and gets a direct `/bin` assertion instead.
+Binary-level guard: `test/test-shell-paths.sh` also requires every bare command to be *symlinked* into its tier's bin list, not merely covered by a package — the package-granularity check alone passed while `timeout` was missing from `core` (2026-09-26 incident: `_deliver_pending_notification` died with `command not found`, so queued notifications were never delivered at login). The command scan only sees the *first* word of a continuation-joined line, so anything behind `runuser … env …` (`notify-send`, `systemd-run`) is invisible to both checks and gets a direct `/bin` assertion instead. Same hole for commands passed as *arguments* to another program: `systemd-inhibit … true` (the sleep/lid inhibitor probe) `execvp`s `true` through the tight PATH, and `true` is also a shell keyword the scanner skips — a missing link made the probe die with `Failed to execute 'true': No such file or directory` and the inhibitor failed open (2026-11-15 incident), so it gets a direct `/bin` assertion too.
 
 Unbound-variable guard (same test): every uppercase name an assembled flow references must be assigned in that flow, or be allowlisted (environment-provided, or only reachable from functions the flow never calls). Under `set -u` an unbound expansion aborts the script *without* the ERR trap — an expansion error is not a simple-command failure — so there is no ERROR line, no `_fail`, no state file: only the EXIT trap's misleading `Rolling back the unfinished update transaction...` follows a fully built and boot-installed update (2026-11-04 hp-240 incident: `ROLLED_BACK_FILE` was referenced by the main flow but defined only in the health flow, so every run died right after the `nvd` diff and staged nothing).
 
@@ -39,9 +39,9 @@ nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.services.nix
 nix eval --raw '.#nixosConfigurations.vm-desktop-efi.config.systemd.user.services.nixos-auto-update-notify-pending.environment.PATH'
 
 # what is inside each env? — standalone flake packages (no system eval)
-nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 41
-nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 25
-nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 13
+nix build '.#nixos-auto-update-env-main'  && ls -1 result/bin | tr '\n' ' ' # 42
+nix build '.#nixos-auto-update-env-health' && ls -1 result/bin | tr '\n' ' ' # 26
+nix build '.#nixos-auto-update-env-core'   && ls -1 result/bin | tr '\n' ' ' # 14
 # or all at once:
 make env
 
