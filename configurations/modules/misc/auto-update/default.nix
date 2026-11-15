@@ -66,13 +66,13 @@ in
     allowReboot = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Automatically reboot when the new generation changes kernel, init or initrd. The reboot waits out rebootDelayMinutes first and can be cancelled by creating the cancel marker file.";
+      description = "Automatically reboot when the new generation changes kernel, init or initrd. The reboot waits out rebootDelayMinutes first and can be cancelled by creating the cancel marker file. A countdown interrupted before it could reboot (suspend, service stop, power-off) is rescheduled by the next run while the staged generation still differs from the running one.";
     };
 
     rebootDelayMinutes = lib.mkOption {
       type = lib.types.ints.positive;
       default = 60;
-      description = "Countdown before an automatic reboot (allowReboot), in minutes, checked once per minute. Touch /var/lib/nixos-auto-update/cancel-reboot during the window to cancel the reboot (the marker is consumed); reboot manually afterwards to activate the staged generation.";
+      description = "Countdown before an automatic reboot (allowReboot), in minutes, checked once per minute. Touch /var/lib/nixos-auto-update/cancel-reboot during the window to cancel the reboot (the marker is consumed); the refusal is then persisted in /var/lib/nixos-auto-update/reboot-cancelled so later runs do not reschedule it — delete that file to resume; reboot manually afterwards to activate the staged generation.";
     };
 
     requireACPower = lib.mkOption {

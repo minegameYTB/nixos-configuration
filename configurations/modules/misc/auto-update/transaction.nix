@@ -477,6 +477,18 @@
     local signal="$1"
 
     trap - HUP INT TERM
+    ### Nothing in flight → nothing to recover. Either the run was stopped
+    ### before it touched anything (pre-checks / channel sync) or — the
+    ### 2026-11-15 hp-240 case — systemd delivered TERM because the
+    ### machine is going down *after* the generation was staged (countdown
+    ### phase, desktop-initiated reboot): reporting `boot-recovery` there
+    ### emitted a false "recovery failed" notice on every such reboot and
+    ### tripped OnFailure mid-shutdown. Exit cleanly; the EXIT trap still
+    ### releases the lock and the sleep inhibitor.
+    if [ "''${TRANSACTION_ACTIVE:-0}" -eq 0 ]; then
+      _status INFO "Received $signal with no update transaction in flight; stopping cleanly."
+      exit 0
+    fi
     _status WARNING "Received $signal; stopping the update safely."
     _preserve_transaction_during_interruption
     _fail boot-recovery

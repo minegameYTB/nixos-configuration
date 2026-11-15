@@ -151,6 +151,13 @@ in
       STAGED_FILE="$WORKDIR/staged-system"
       PREVIOUS_FILE="$WORKDIR/previous-system"
       INHIBITED_FILE="$WORKDIR/inhibited"
+      ### Persistent refusal of the automatic reboot (allowReboot): written
+      ### when a countdown is cancelled, dropped when a new generation is
+      ### staged or the machine finally boots into the current one. The
+      ### in-window cancel marker alone is consumed by the window, so
+      ### without this file the unchanged-source path would reschedule the
+      ### very reboot the user just declined.
+      REBOOT_CANCELLED_FILE="$WORKDIR/reboot-cancelled"
       ### One-shot auto-rollback guard of the *previous* staged generation,
       ### dropped when a new one is staged (see the marker block below). Must
       ### be defined here: under `set -u` an unbound reference aborts the run
@@ -181,7 +188,135 @@ in
         done
         return 1
       }
+
+      _reboot_pending() {
+        # Is a reboot still owed to an earlier run? True while the running
+        # generation differs from the profile one in kernel/init/initrd —
+        # i.e. a staged update whose countdown never reached
+        # `systemctl reboot` (suspend froze it, the service was stopped,
+        # the machine was powered off mid-window). Derived from the live
+        # symlinks, never from a marker, so a completed reboot clears it
+        # by itself.
+        local booted new
+        booted=$(readlink -f "''${AUTO_UPDATE_BOOTED_SYSTEM:-/run/booted-system}") || return 1
+        new=$(readlink -f "''${AUTO_UPDATE_SYSTEM_PROFILE:-/nix/var/nix/profiles/system}") || return 1
+        ### Both ends must be real generations: readlink -f succeeds on a
+        ### missing leaf, and a vanished profile must never read as
+        ### "reboot pending" (a machine could then reboot on every run).
+        [ -d "$booted" ] && [ -d "$new" ] || return 1
+        [ "$booted" != "$new" ] || return 1
+        _needs_reboot "$booted" "$new"
+      }
       # <<<END reboot-needed
+
+      # >>>BEGIN reboot-countdown
+      _await_reboot_window() {
+        # Countdown before an automatic reboot (allowReboot): sleeps
+        # $1 minutes in 1-minute slices so a cancel marker ($2)
+        # is honoured promptly. Returns 0 when the window expires
+        # (reboot), 1 when cancelled (marker consumed). Only markers
+        # created at/after $3 (window start epoch) count: stale ones
+        # (forgotten manual touch, late notification clicks) are
+        # dropped. Callers timestamp $3 before announcing the
+        # deadline, so nothing created afterwards can be missed.
+        local delay_min="$1" cancel_file="$2" window_start="$3"
+        local waited=0 marker_mtime
+        # No cleanup up front: a marker touched between the deadline
+        # announcement and this loop must still qualify (its mtime is
+        # >= window_start). Found markers are consumed below whether
+        # honoured or stale, so nothing accumulates.
+        _status INFO "Automatic reboot in $delay_min min (touch $cancel_file to cancel the automatic reboot)."
+        while (( waited < delay_min )); do
+          sleep 60
+          waited=$((waited + 1))
+          if [[ -f "$cancel_file" ]]; then
+            marker_mtime=$(stat -c %Y "$cancel_file" 2>/dev/null || echo 0)
+            rm -f -- "$cancel_file"
+            if (( marker_mtime >= window_start )); then
+              return 1
+            fi
+          fi
+        done
+        return 0
+      }
+
+      # TTY broadcast for CLI sessions (notify-send only reaches
+      # graphical ones): best-effort, never fails the run.
+      _wall_tty() {
+        wall "$1" 2>/dev/null || _status WARNING "Unable to broadcast to logged-in terminals."
+      }
+
+      _run_reboot_countdown() {
+        # Announce the deadline, wait out the postponable window, then
+        # reboot into the staged generation — or record the refusal so a
+        # later run never reschedules a reboot the user already declined.
+        # Defined up here, outside the staging branch: the
+        # unchanged-source path calls it too when a previous countdown
+        # was interrupted before it could reboot (2026-11-15 hp-240:
+        # suspend froze the window for 10 h, then a manual desktop
+        # reboot killed the run — nothing ever retried it).
+        REBOOT_CANCEL_FILE="$WORKDIR/cancel-reboot"
+        REBOOT_WAITER_PIDS="$WORKDIR/reboot-waiter-pids"
+        # Timestamped before any announcement: a marker touched from
+        # the moment the deadline is known always qualifies.
+        REBOOT_WINDOW_START=$(date +%s)
+        # One text per channel (desktop notice, TTY wall, action
+        # buttons): same wording everywhere, resolved once.
+        REBOOT_TITLE_FR="Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min"
+        REBOOT_MSG_FR="Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour annuler le redémarrage automatique : cliquer « Ne pas redémarrer maintenant », ou sudo touch $REBOOT_CANCEL_FILE, puis redémarrez manuellement quand vous êtes prêt."
+        REBOOT_TITLE_EN="NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min"
+        REBOOT_MSG_EN="New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to cancel the automatic reboot: click “Don't reboot now”, or sudo touch $REBOOT_CANCEL_FILE, then reboot manually when ready."
+        # Exactly ONE desktop notice for the deadline: the interactive
+        # one (with the "Ne pas redémarrer maintenant" button) when a graphical
+        # session is live, otherwise the actionless one so headless runs
+        # still queue it for the next login. Sending both is what made
+        # the deadline pop up twice in the same session — the same title
+        # and body, once with and once without the button.
+        if _notify_reboot_with_actions "$REBOOT_CANCEL_FILE" "$REBOOT_WAITER_PIDS" \
+          "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN"; then
+          _status INFO "Reboot deadline notified with a cancel button."
+        else
+          _notify_or_queue "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN" "critical"
+        fi
+        _wall_tty "NixOS update: automatic reboot in ${toString cfg.rebootDelayMinutes} min (kernel/init change). To cancel the automatic reboot: sudo touch $REBOOT_CANCEL_FILE, then reboot manually when ready. / Mise à jour NixOS : redémarrage automatique dans ${toString cfg.rebootDelayMinutes} min (noyau/init). Pour annuler le redémarrage automatique : sudo touch $REBOOT_CANCEL_FILE, puis redémarrez manuellement."
+        if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_CANCEL_FILE" "$REBOOT_WINDOW_START"; then
+          _status WARNING "Reboot countdown expired, rebooting into the staged generation."
+          _notify_or_queue \
+            "Mise à jour NixOS — Redémarrage imminent" \
+            "Le système redémarre maintenant sur la nouvelle génération." \
+            "NixOS Update — Rebooting now" \
+            "Rebooting into the new generation now." \
+            "critical"
+          _wall_tty "NixOS update: rebooting into the new generation now. / Mise à jour NixOS : redémarrage immédiat sur la nouvelle génération."
+          systemctl reboot
+        else
+          ### Explicit refusal: persist it across runs (the in-window
+          ### marker is consumed by the window itself), otherwise the
+          ### unchanged-source path would reschedule the very reboot the
+          ### user just declined. Dropped as soon as a new generation is
+          ### staged or the machine boots into the current one.
+          _write_marker "$REBOOT_CANCELLED_FILE" "$(date -Is)"
+          _status INFO "Automatic reboot cancelled and recorded in $REBOOT_CANCELLED_FILE."
+          _notify_or_queue \
+            "Mise à jour NixOS — Redémarrage automatique annulé" \
+            "Le redémarrage automatique est annulé. Redémarrez manuellement pour activer la génération staged." \
+            "NixOS Update — Automatic reboot cancelled" \
+            "The automatic reboot was cancelled. Reboot manually to activate the staged generation." \
+            "normal"
+          _wall_tty "NixOS update: automatic reboot cancelled, reboot manually when ready. / Mise à jour NixOS : redémarrage automatique annulé, redémarrez manuellement quand vous êtes prêt."
+        fi
+        ### Reboot waiters only live for the window: reap them so a late
+        ### click cannot touch the marker afterwards (the mtime guard
+        ### would ignore it anyway). Stragglers also die with the
+        ### service (control-group).
+        if [[ -f "$REBOOT_WAITER_PIDS" ]]; then
+          while IFS= read -r reboot_waiter_pid || [ -n "$reboot_waiter_pid" ]; do
+            kill "$reboot_waiter_pid" 2>/dev/null || true
+          done < "$REBOOT_WAITER_PIDS"
+          rm -f -- "$REBOOT_WAITER_PIDS"
+        fi
+      }
+      # <<<END reboot-countdown
 
       ### Anti-spam state for note_once (see notifier.nix): each generation
       ### notifies at most once.
@@ -275,6 +410,27 @@ in
         ### this commit, the EXIT trap treats it as unfinished and logs a
         ### misleading rollback after every unchanged run.
         _commit_transaction
+        ### A reboot owed to an earlier run may still be pending: the
+        ### previous countdown was interrupted (suspend froze it, the
+        ### service was stopped, the machine was powered off mid-window).
+        ### This skip path is the only one that runs again once the source
+        ### stops changing, so it is also the only place that can retry —
+        ### without it the staged generation would sit forever behind a
+        ### one-shot notification (2026-11-15 hp-240 incident).
+        if _reboot_pending; then
+          if ${lib.boolToString cfg.allowReboot}; then
+            if [ -f "$REBOOT_CANCELLED_FILE" ]; then
+              _status INFO "Reboot into the staged generation was declined earlier; not rescheduling (delete $REBOOT_CANCELLED_FILE to resume)."
+            else
+              _status WARNING "Staged generation still requires a reboot — rescheduling the automatic reboot countdown."
+              _run_reboot_countdown
+            fi
+          fi
+        else
+          ### Nothing left to reboot into: drop a stale refusal so it can
+          ### never suppress a future, unrelated countdown.
+          rm -f -- "$REBOOT_CANCELLED_FILE"
+        fi
         exit 0
       fi
       _debug "Source or inputs changed, proceeding to rebuild"
@@ -291,6 +447,9 @@ in
       BOOTED_SYSTEM=$(readlink -f /run/booted-system)
       if [[ "$NEW_SYSTEM" == "$BOOTED_SYSTEM" ]]; then
         rm -f "$STAGED_FILE" "$PREVIOUS_FILE"
+        ### Running the current profile: any earlier reboot refusal refers
+        ### to a reboot that is no longer owed.
+        rm -f -- "$REBOOT_CANCELLED_FILE"
         _write_marker "$LAST_OK_FILE" "$SRC_ID $LOCK_HASH"
         _commit_transaction
         note_once "$NEW_SYSTEM" \
@@ -317,6 +476,9 @@ in
       ### A new staging re-arms auto-rollback: the one-shot guard belongs
       ### to the previous staged generation, not to this one.
       rm -f "$ROLLED_BACK_FILE"
+      ### A fresh staging supersedes any refusal recorded for the previous
+      ### generation: the new countdown starts with a clean slate.
+      rm -f -- "$REBOOT_CANCELLED_FILE"
       _write_marker "$PREVIOUS_FILE" "$BOOTED_SYSTEM"
       _write_marker "$STAGED_FILE" "$NEW_SYSTEM"
       _write_marker "$LAST_OK_FILE" "$SRC_ID $LOCK_HASH"
@@ -331,95 +493,7 @@ in
 
        if (( NEEDS_REBOOT )); then
         if ${lib.boolToString cfg.allowReboot}; then
-          # >>>BEGIN reboot-countdown
-          _await_reboot_window() {
-            # Countdown before an automatic reboot (allowReboot): sleeps
-            # $1 minutes in 1-minute slices so a cancel marker ($2)
-            # is honoured promptly. Returns 0 when the window expires
-            # (reboot), 1 when cancelled (marker consumed). Only markers
-            # created at/after $3 (window start epoch) count: stale ones
-            # (forgotten manual touch, late notification clicks) are
-            # dropped. Callers timestamp $3 before announcing the
-            # deadline, so nothing created afterwards can be missed.
-            local delay_min="$1" cancel_file="$2" window_start="$3"
-            local waited=0 marker_mtime
-            # No cleanup up front: a marker touched between the deadline
-            # announcement and this loop must still qualify (its mtime is
-            # >= window_start). Found markers are consumed below whether
-            # honoured or stale, so nothing accumulates.
-            _status INFO "Automatic reboot in $delay_min min (touch $cancel_file to cancel the automatic reboot)."
-            while (( waited < delay_min )); do
-              sleep 60
-              waited=$((waited + 1))
-              if [[ -f "$cancel_file" ]]; then
-                marker_mtime=$(stat -c %Y "$cancel_file" 2>/dev/null || echo 0)
-                rm -f -- "$cancel_file"
-                if (( marker_mtime >= window_start )); then
-                  return 1
-                fi
-              fi
-            done
-            return 0
-          }
-          # <<<END reboot-countdown
-          REBOOT_CANCEL_FILE="$WORKDIR/cancel-reboot"
-          REBOOT_WAITER_PIDS="$WORKDIR/reboot-waiter-pids"
-          # Timestamped before any announcement: a marker touched from
-          # the moment the deadline is known always qualifies.
-          REBOOT_WINDOW_START=$(date +%s)
-          # TTY broadcast for CLI sessions (notify-send only reaches
-          # graphical ones): best-effort, never fails the run.
-          _wall_tty() {
-            wall "$1" 2>/dev/null || _status WARNING "Unable to broadcast to logged-in terminals."
-          }
-          # One text per channel (desktop notice, TTY wall, action
-          # buttons): same wording everywhere, resolved once.
-          REBOOT_TITLE_FR="Mise à jour NixOS — Redémarrage dans ${toString cfg.rebootDelayMinutes} min"
-          REBOOT_MSG_FR="Nouveau noyau ou init. Redémarrage automatique dans ${toString cfg.rebootDelayMinutes} minutes — pour annuler le redémarrage automatique : cliquer « Ne pas redémarrer maintenant », ou sudo touch $REBOOT_CANCEL_FILE, puis redémarrez manuellement quand vous êtes prêt."
-          REBOOT_TITLE_EN="NixOS Update — Rebooting in ${toString cfg.rebootDelayMinutes} min"
-          REBOOT_MSG_EN="New kernel/init. Automatic reboot in ${toString cfg.rebootDelayMinutes} minutes — to cancel the automatic reboot: click “Don't reboot now”, or sudo touch $REBOOT_CANCEL_FILE, then reboot manually when ready."
-          # Exactly ONE desktop notice for the deadline: the interactive
-          # one (with the "Ne pas redémarrer maintenant" button) when a graphical
-          # session is live, otherwise the actionless one so headless runs
-          # still queue it for the next login. Sending both is what made
-          # the deadline pop up twice in the same session — the same title
-          # and body, once with and once without the button.
-          if _notify_reboot_with_actions "$REBOOT_CANCEL_FILE" "$REBOOT_WAITER_PIDS" \
-            "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN"; then
-            _status INFO "Reboot deadline notified with a cancel button."
-          else
-            _notify_or_queue "$REBOOT_TITLE_FR" "$REBOOT_MSG_FR" "$REBOOT_TITLE_EN" "$REBOOT_MSG_EN" "critical"
-          fi
-          _wall_tty "NixOS update: automatic reboot in ${toString cfg.rebootDelayMinutes} min (kernel/init change). To cancel the automatic reboot: sudo touch $REBOOT_CANCEL_FILE, then reboot manually when ready. / Mise à jour NixOS : redémarrage automatique dans ${toString cfg.rebootDelayMinutes} min (noyau/init). Pour annuler le redémarrage automatique : sudo touch $REBOOT_CANCEL_FILE, puis redémarrez manuellement."
-          if _await_reboot_window ${toString cfg.rebootDelayMinutes} "$REBOOT_CANCEL_FILE" "$REBOOT_WINDOW_START"; then
-            _status WARNING "Reboot countdown expired, rebooting into the staged generation."
-            _notify_or_queue \
-              "Mise à jour NixOS — Redémarrage imminent" \
-              "Le système redémarre maintenant sur la nouvelle génération." \
-              "NixOS Update — Rebooting now" \
-              "Rebooting into the new generation now." \
-              "critical"
-            _wall_tty "NixOS update: rebooting into the new generation now. / Mise à jour NixOS : redémarrage immédiat sur la nouvelle génération."
-            systemctl reboot
-          else
-            _notify_or_queue \
-              "Mise à jour NixOS — Redémarrage automatique annulé" \
-              "Le redémarrage automatique est annulé. Redémarrez manuellement pour activer la génération staged." \
-              "NixOS Update — Automatic reboot cancelled" \
-              "The automatic reboot was cancelled. Reboot manually to activate the staged generation." \
-              "normal"
-            _wall_tty "NixOS update: automatic reboot cancelled, reboot manually when ready. / Mise à jour NixOS : redémarrage automatique annulé, redémarrez manuellement quand vous êtes prêt."
-          fi
-          ### Reboot waiters only live for the window: reap them so a late
-          ### click cannot touch the marker afterwards (the mtime guard
-          ### would ignore it anyway). Stragglers also die with the
-          ### service (control-group).
-          if [[ -f "$REBOOT_WAITER_PIDS" ]]; then
-            while IFS= read -r reboot_waiter_pid || [ -n "$reboot_waiter_pid" ]; do
-              kill "$reboot_waiter_pid" 2>/dev/null || true
-            done < "$REBOOT_WAITER_PIDS"
-            rm -f -- "$REBOOT_WAITER_PIDS"
-          fi
+          _run_reboot_countdown
         else
           note_once "$NEW_SYSTEM" \
             "Mise à jour NixOS — Redémarrage requis" \
