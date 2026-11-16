@@ -212,23 +212,27 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.mapAttrs (
-              username: _:
-              import ./hm-profiles/users/${username}/default.nix {
-                inherit
-                  username
-                  globalFeatures
-                  userConfigs
-                  userOverrides
-                  inputs
-                  ;
-                ### The HM stylix module is injected by the NixOS stylix
-                ### module, so HM `stylix.*` options only exist when system
-                ### stylix is enabled. Forward it so stylix-gated HM features
-                ### are skipped instead of breaking eval on CLI machines.
-                withStylix = config.stylix.enable;
-              }
-            ) userConfigs;
+            users = lib.mapAttrs (username: _: {
+              imports = [
+                (import ./hm-profiles/users/${username}/default.nix {
+                  inherit
+                    username
+                    globalFeatures
+                    userConfigs
+                    userOverrides
+                    inputs
+                    ;
+                  ### The HM stylix module is injected by the NixOS stylix
+                  ### module, so HM `stylix.*` options only exist when system
+                  ### stylix is enabled. Forward it so stylix-gated HM features
+                  ### are skipped instead of breaking eval on CLI machines.
+                  withStylix = config.stylix.enable;
+                })
+                ### NixOS-only HM additions (gated via osConfig), the
+                ### counterpart of configs/specific/standalone in mkHome.
+                ./home-manager/configs/specific/nixos
+              ];
+            }) userConfigs;
             extraSpecialArgs = specialArgs system // {
               inherit
                 globalFeatures
