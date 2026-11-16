@@ -26,7 +26,7 @@
       yaml-language-server
     ]
     ++ (with pkgs; [
-      nur.repos.minegameYTB.rea
+      nur.repos.minegameYTB.rea-ghidra
     ])
     ++ (lib.optionals config.services.xserver.enable (with pkgs.pkgsPr; [ claude-desktop ]));
 }
