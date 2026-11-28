@@ -1,7 +1,21 @@
 # NixOS Configuration — Agent Guide
 
-Flake-based NixOS config on `nixpkgs-main` = **nixos-unstable** (current branch `prepare/nixos-26.11`).
+Flake-based NixOS config on `nixpkgs-main` = **nixos-26.11** channel (current cycle `prepare/nixos-26.11` — authoritative value in the `.branch` file).
 15 `nixosConfigurations` in `machine.nix`: 13 machines (2 physical + 9 VM presets + 2 CI vanilla) + `iso-gnome` + `iso-minimal`.
+
+## Branch model — read `.branch` before acting
+
+`.branch` (repo root) is the source of truth for "which context am I in". It feeds `lib/repo.nix` (`repoUrl`, `/etc/os-release`, install clone) and mirrors the auto-update buffer source. **Read it first** (with `git branch --show-current`) so you know what rules apply; if the two disagree, you are on the wrong context — stop and ask.
+
+| Branch | Role / how to treat it |
+| --- | --- |
+| `flake` | **Production** (remote default). What installed machines clone. Treat as read-mostly: no experiments, only reviewed + CI-soaked changes reach it. |
+| `prepare/<cycle>` (e.g. `prepare/nixos-26.11`) | **Preparation** branch for a release cycle / large change set. Convention: `prepare/` prefix, usually named after the target NixOS channel. Current value = `.branch`. |
+| `flake-autoupdate` | **CI buffer** soaking the current `prepare/*` (`SOAK_RUNS=3`) before it is promoted. Never move this pointer by hand. |
+| `main-legacy` | Archived legacy line — do not build on it. |
+
+- The `prepare/*` → `flake` squash/merge **is** the production event: input bumps (channels, HM, Stylix, prompt migration…) all land at once, atomically.
+- When starting a **new cycle**, the branch name is hand-duplicated in exactly one other place: `SOURCE_BRANCH` in `.github/workflows/flake-autoupdate.yml` (plus the diagrams/steps in `doc/auto-update.md`). Update `.branch` + those together.
 
 ## Flake wiring
 
