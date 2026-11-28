@@ -8,8 +8,8 @@
 
   ### Inputs (nixpkgs-main, unstable, hm, stylix...)
   inputs = {
-    ### Main nixpkgs channel (prepare nixos-26.11)
-    nixpkgs-main.url = "github:NixOS/nixpkgs/release-26.11";
+    ### Main nixpkgs channel
+    nixpkgs-main.url = "github:NixOS/nixpkgs/nixos-26.11";
 
     ### To test a PR: github:username/repo?ref=pull/<PR number>/head
 
